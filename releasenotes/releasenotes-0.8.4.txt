@@ -1,0 +1,16 @@
+Release Notes jdbacl 0.8.4
+--------------------------
+
+
+Enhancements
+------------
+- Supporting joins in Query class
+- new method SQLUtil.allNull()
+
+
+Bug fixes
+---------
+- Avoiding NPE in ResultSetIterator 
+- Wrong column mapping in DBUtil.queryScalarRow()
+- Default value handling in DBTable
+- Recognizing WITH expressions as queries

@@ -1,0 +1,106 @@
+<assembly>
+    <id>dist</id>
+    <formats>
+        <format>zip</format>
+        <format>tar.gz</format>
+    </formats>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <fileSets>
+    
+        <!-- license files and release notes -->
+        <fileSet>
+            <directory></directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>license.txt</include>
+            </includes>
+            <excludes>
+            	<exclude>__MACOSX</exclude>
+            </excludes>
+        </fileSet>
+
+        <!-- main -->
+        <fileSet>
+            <directory>src/main/java</directory>
+            <outputDirectory>src</outputDirectory>
+            <excludes>
+            	<exclude>__MACOSX</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>src</outputDirectory>
+            <excludes>
+            	<exclude>__MACOSX</exclude>
+            </excludes>
+        </fileSet>
+
+        <!-- tests -->
+        <fileSet>
+            <directory>src/test/java</directory>
+            <outputDirectory>test</outputDirectory>
+            <excludes>
+            	<exclude>__MACOSX</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>src/test/resources</directory>
+            <outputDirectory>test</outputDirectory>
+            <excludes>
+            	<exclude>__MACOSX</exclude>
+            </excludes>
+        </fileSet>
+
+		<!-- batch files -->
+		<fileSet>
+			<directory>src/main/script</directory>
+			<outputDirectory>bin</outputDirectory>
+            <excludes>
+            	<exclude>__MACOSX</exclude>
+            </excludes>
+		</fileSet>
+
+        <!-- doc -->
+        <fileSet>
+            <directory>target/site/apidocs</directory>
+            <outputDirectory>doc/api</outputDirectory>
+            <excludes>
+            	<exclude>__MACOSX</exclude>
+            </excludes>
+        </fileSet>
+	    <fileSet>
+			<directory>target</directory>
+			<outputDirectory>lib</outputDirectory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+			<excludes>
+				<exclude>*-sources.jar</exclude>
+            	<exclude>__MACOSX</exclude>
+            </excludes>
+	    </fileSet>
+    </fileSets>
+
+    <files>
+		<file>
+			<source>src/test/resources/log4j.xml</source>
+			<outputDirectory>bin</outputDirectory>
+			<filtered>false</filtered>
+		</file>
+	</files>
+	
+    <dependencySets>
+        <dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
+            <scope>compile</scope>
+            <outputDirectory>lib</outputDirectory>
+            <unpack>false</unpack>
+        </dependencySet>
+        <dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
+            <scope>provided</scope>
+            <outputDirectory>lib</outputDirectory>
+            <unpack>false</unpack>
+        </dependencySet>
+    </dependencySets>
+</assembly>

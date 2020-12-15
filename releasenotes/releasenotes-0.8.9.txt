@@ -1,0 +1,7 @@
+Release Notes jdbacl 0.8.9
+--------------------------
+
+
+Summary
+------------
+This version is released to benefit from bug fixes in the underlying libraries

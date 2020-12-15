@@ -1,0 +1,6 @@
+Release Notes jdbacl 0.6.6
+--------------------------
+
+Bug fixes
+- 3172816: NullPointerException on MySQL
+- 3172871: NullPointerException on PostgreSQL

@@ -1,0 +1,23 @@
+Release Notes jdbacl 0.8.1
+--------------------------
+
+
+Enhancements
+------------
+- DB Metadata cache expiry can be configured by the system property jdbacl.cache.timetolive,
+  setting it to -1 deactivates expiry. The time to live is specified as a number of milliseconds, 
+  or as a number of days with a 'd' appended, e.g. -Djdbacl.cache.timetolive=7d for a week.
+- new method DatabaseDialect.trim()
+
+Changes
+-------
+ 
+
+
+Bug fixes
+---------
+- Oracle check import fails
+- Failure reading metadata cache
+- On Oracle SQLUtil.join() causes SQLException
+- duplicate SQL log output
+- resource leaks in DBUtil.query...()

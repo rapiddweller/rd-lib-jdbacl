@@ -1,0 +1,15 @@
+Release Notes jdbacl 0.8.8
+--------------------------
+
+
+Enhancements
+------------
+- Created method DBTable.setColumnsImported() for better cache control
+- Implemented H2Dialect.restrictRownums()
+- Improved database meta data cache behaviour
+
+
+Bug fixes
+---------
+- table dependency checking fails on self-referencing tables with referers
+- NPE in column rendering

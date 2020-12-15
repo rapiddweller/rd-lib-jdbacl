@@ -1,0 +1,39 @@
+Release Notes jdbacl 0.6.13
+---------------------------
+
+
+Enhancements
+------------
+- Defined CSV export of database schema structure information
+- Providing SQL normalization in SQLUtil.normalize(sql, removeComments)
+- Completed sequence support on PostgreSQL
+- Introduced sequence support on Derby 10.6+
+- Completed CREATE SEQUENCE rendering with advanced options
+- Created H2Util class
+- new methods in DatabaseDialect:
+  - renderCreateSequence()
+  - renderCase()
+- new properties in Database interface:
+  - databaseProductName
+  - databaseProductVersion
+  - importDate
+  - user
+  - tableInclusionPattern
+  - tableExclusionPattern
+  - importedChecks
+  - importedUKs
+  - importedIndexes
+  - importedSequences
+
+
+Changes
+-------
+- renamed setSequenceValue() in DatabaseDialect class to setNextSequenceValue()
+
+
+Bug fixes
+---------
+- Resource leak in OracleDialect's sequence query
+- PostgreSQL sequence query not implemented
+- SQLUtil.removeComments() only removes the first comment
+- new method SQLUtil.normalize()

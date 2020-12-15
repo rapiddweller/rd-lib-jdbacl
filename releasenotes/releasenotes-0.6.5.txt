@@ -1,0 +1,10 @@
+Release Notes jdbacl 0.6.5
+--------------------------
+
+
+Enhancements
+- new class BufferedDBImporter
+
+
+Bug fixes
+- JDBC type is ignored when persisting and reloading database models in/from XML

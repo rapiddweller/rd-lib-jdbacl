@@ -1,0 +1,17 @@
+Release Notes jdbacl 0.6.12
+---------------------------
+
+
+Enhancements
+------------
+- Introduced VersionProvider feature
+- Added regular expression support to DatabaseDialect
+- New Dialects for HSQLDB 2 and Firbird 2.5+
+
+Changes
+-------
+- Supporting different database dialects for different product versions
+
+Bug fixes
+---------
+- 

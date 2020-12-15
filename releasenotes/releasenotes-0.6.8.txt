@@ -1,0 +1,16 @@
+Release Notes jdbacl 0.6.8
+--------------------------
+
+
+Enhancements
+------------
+- generic version configuration and dependency verification
+- connection counting
+- introduced DBSequence class and improved sequence fetching in DatabaseDialect
+- introduced DBCheckConstraint with condition parser
+
+
+Bug fixes
+---------
+- Importing multiple foreign keys with multiple columns fails
+- Procedure calls cause NullPointerExceptions

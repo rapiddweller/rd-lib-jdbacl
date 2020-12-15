@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- (c) Copyright 2009-2010 by Volker Bergmann. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, is permitted under the terms of the
+GNU General Public License.
+
+For redistributing this software or a derivative work under a license other
+than the GPL-compatible Free Software License as defined by the Free
+Software Foundation or approved by OSI, you must first obtain a commercial
+license to this software product from Volker Bergmann.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+WITHOUT A WARRANTY OF ANY KIND. ALL EXPRESS OR IMPLIED CONDITIONS,
+REPRESENTATIONS AND WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT, ARE
+HEREBY EXCLUDED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE. -->
+ 
+<drivers>
+
+    <driver id="ORACLE"
+    		system="Oracle" 
+            name="Oracle Thin Driver" 
+            class="oracle.jdbc.OracleDriver" 
+            port="1521"
+            defaultDatabase="XE"
+            url="jdbc:oracle:thin:@{0}:{1}:XE"
+            user="system"
+            info="http://www.oracle.com/technology/tech/java/sqlj_jdbc/index.html"
+            download="http://www.oracle.com/technology/software/tech/java/sqlj_jdbc/index.html">
+        <dependency javaVersion="2" lib="classes12.jar" artifact="com.oracle:classes12:10.2.0.4" official="no"/>
+        <dependency javaVersion="4" lib="ojdbc14.jar" artifact="com.oracle:ojdbc14:10.2.0.4" official="no" />
+        <dependency javaVersion="5" lib="ojdbc5.jar" artifact="com.oracle:ojdbc5:11.1.0.7" official="no" />
+        <dependency javaVersion="6" lib="ojdbc6.jar" artifact="com.oracle:ojdbc6:11.1.0.7" official="no" />
+        <!-- alternative paths: oracle:ojdbc:10.2.0.3.0 -->
+    </driver>
+    
+    <driver id="DB2"
+    		system="IBM DB2" 
+            name="DB2" 
+            class="com.ibm.db2.jcc.DB2Driver" 
+            port="50000"
+            url="jdbc:db2://{0}:{1}/{2}"
+            user="user"
+            info="http://www-306.ibm.com/software/data/db2/java">
+        <dependency lib="db2jcc.jar" artifact="com.ibm.db2jcc:db2jcc:3.50.152" official="no" />
+    </driver>
+    
+    <driver id="SQL_SERVER"
+    		database="MS SQL Server"
+            system="MS SQL Server (jTDS Driver)" 
+            name="jTDS JDBC Driver" 
+            class="net.sourceforge.jtds.jdbc.Driver" 
+            port="1433"
+            url="jdbc:jtds:sqlserver://{0}:{1}/{2}"
+            user="user"
+            info="http://jtds.sourceforge.net/">
+        <dependency lib="jtds-1.2.2.jar" artifact="net.sourceforge.jtds:jtds:1.2.2" official="no" />
+    </driver>
+    
+    <driver id="SYBASE"
+    		database="Sybase"
+            system="Sybase (jTDS Driver)" 
+            name="Sybase" 
+            class="net.sourceforge.jtds.jdbc.Driver" 
+            port="7100"
+            url="jdbc:jtds:sybase://{0}:{1}/{2}"
+            user="user"
+            info="http://jtds.sourceforge.net/">
+        <dependency lib="jtds-1.2.2.jar" artifact="net.sourceforge.jtds:jtds:1.2.2" official="no" />
+    </driver>
+    
+    <driver id="MYSQL"
+    		system="MySQL" 
+            name="MySQL" 
+            class="com.mysql.jdbc.Driver" 
+            port="3306"
+            url="jdbc:mysql://{0}:{1}/{2}"
+            user="user"
+            info="http://dev.mysql.com/downloads/connector/j/">
+        <dependency lib="mysql-connector-java.jar" artifact="mysql:mysql-connector-java:5.1.6" official="yes" />
+    </driver>
+    
+    <driver id="HSQL_EMBEDDED"
+    		system="HSQL Embedded" 
+            name="HSQL Embedded" 
+            class="org.hsqldb.jdbcDriver" 
+            url="jdbc:hsqldb:database"
+            defaultSchema="PUBLIC"
+            user="sa"
+            info="http://hsqldb.sourceforge.net/">
+        <dependency lib="hsqldb.jar" artifact="hsqldb:hsqldb:1.8.0.7" official="yes" />
+    </driver>
+    
+    <driver id="HSQL"
+    		system="HSQL Server" 
+            name="HSQL Server" 
+            class="org.hsqldb.jdbcDriver" 
+            port="9001"
+            url="jdbc:hsqldb:hsql://{0}:{1}/{2}"
+            defaultSchema="PUBLIC"
+            user="sa"
+            info="http://hsqldb.sourceforge.net/">
+        <dependency lib="hsqldb.jar" artifact="hsqldb:hsqldb:1.8.0.7" official="yes" />
+    </driver>
+    
+    <driver id="H2"
+    		system="H2" 
+            name="H2" 
+            class="org.h2.Driver" 
+            port="9001"
+            url="jdbc:h2:{2}"
+            defaultSchema="PUBLIC"
+            user="sa"
+            info="http://hsqldb.sourceforge.net/">
+        <dependency lib="hsqldb.jar" artifact="hsqldb:hsqldb:1.8.0.7" official="yes" />
+    </driver>
+    
+    <driver id="DERBY"
+    		system="Derby" 
+            name="Derby" 
+            class="org.apache.derby.jdbc.ClientDriver" 
+            port="1527"
+            url="jdbc:derby://{0}:{1}/{2}"
+            user="user"
+            info="http://db.apache.org/derby/derby_downloads.html">
+        <dependency lib="derbyclient.jar" artifact="org.apache.derby:derbyclient:10.4.2.0" official="yes" />
+    </driver>
+    
+    <driver id="POSTGRES"
+    		system="PostgreSQL" 
+            name="PostgreSQL" 
+            class="org.postgresql.Driver" 
+            port="5432"
+            url="jdbc:postgresql://{0}:{1}/{2}"
+            user="user"
+            info="http://jdbc.postgresql.org/download.html">
+        <dependency lib="postgresql-nn.jdbc3.jar" artifact="postgresql:postgresql:8.3-603.jdbc4" official="yes" />
+    </driver>
+    
+    <driver id="FIREBIRD"
+    		system="Firebird (Jaybird Driver)" 
+            name="Jaybird" 
+            class="org.firebirdsql.jdbc.FBDriver" 
+            port="3050"
+            url="jdbc:firebirdsql:{0}/{1}:{2}"
+            user="sysdba"
+            password="masterkey"
+            info="http://www.firebirdsql.org/index.php?op=files&amp;id=jaybird">
+        <dependency lib="jaybird-full-2.1.6.jar" artifact="org.firebird:jaybird:2.1.6" official="no" />
+    </driver>
+    
+</drivers>

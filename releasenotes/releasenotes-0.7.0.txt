@@ -1,0 +1,18 @@
+Release Notes jdbacl 0.6.14
+---------------------------
+
+
+Enhancements
+------------
+- Drastic improvement of index import performance
+- Added features to DatabaseDialect: Querying triggers and database packages
+- Supporting Oracle triggers and packages
+
+
+Changes
+-------
+- Introduced DBTable.getUniqueConstraint(String name)
+
+
+Bug fixes
+---------

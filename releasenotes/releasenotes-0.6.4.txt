@@ -1,0 +1,9 @@
+Release Notes jdbacl 0.6.4
+--------------------------
+
+Enhancements
+- Introduced 'catalog' property in JDBCDBImporter
+- Added default catalog and schema recognition to DatabaseDialect
+- Introduced generic structure access by 'Composite' design pattern (based on the DBObject interface)
+- Added support for meta data export to and import from XML files
+- Introduced identity concept 

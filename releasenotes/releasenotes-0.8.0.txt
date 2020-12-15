@@ -1,0 +1,20 @@
+Release Notes jdbacl 0.8.0
+--------------------------
+
+
+Enhancements
+------------
+- Dramatic improvement of Oracle index parsing speed
+- Recognition of reserved words
+- Made lazy loading of table meta data more fine-grained
+
+
+Changes
+-------
+- 
+
+
+Bug fixes
+---------
+- matching same environment names with different capitalization
+- Fail-over for bug in Oracle JDBC driver occurring on index import

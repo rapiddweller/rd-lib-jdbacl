@@ -1,0 +1,21 @@
+Release Notes jdbacl 0.6.10
+---------------------------
+
+
+Enhancements
+------------
+- CreateExporter exports database meta data to a DDL file with CREATE TABLE and CREATE SEQUENCE commands.
+- recognition if a database constraint or index name is deterministic 
+  (explicitly defined or generated in a reproducible manner)
+- Added catalog and schema information to DBSequence
+
+
+Changes
+-------
+- removed DBColumn.setUnique()
+
+
+Bug fixes
+---------
+- Bug fixes in column meta data import
+- Avoiding duplicate query logging

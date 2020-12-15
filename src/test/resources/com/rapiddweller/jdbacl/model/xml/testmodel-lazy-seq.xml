@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<database environment="com/rapiddweller/jdbacl/model/hsqlmem" databaseProductName="hsql" databaseProductVersion="1.5.8" importDate="2011-10-21 16:50:38" user="Alice" tableInclusionPattern="MY_.*" tableExclusionPattern=".*_JN" checksImported="false" sequencesImported="false" triggersImported="false" packagesImported="false">
+  <catalog>
+    <schema name="public">
+      <table name="table1" fksImported="false" checksImported="false">
+        <column name="id1" jdbcType="4" type="INT"/>
+        <column name="name1" jdbcType="4" type="INT"/>
+        <pk name="table1_pk" column="id1"/>
+        <uk name="table1_name1_uk" column="name1"/>
+        <index name="index1" unique="true" column="name1"/>
+      </table>
+      <table name="table2" indexesImported="false" checksImported="false">
+        <column name="id2" jdbcType="4" type="INT"/>
+        <column name="ref2" jdbcType="4" type="INT"/>
+        <pk name="table2_pk" column="id2"/>
+        <fk name="table2_fk2" column="ref2" refereeTable="table1" refereeColumn="id1"/>
+      </table>
+      <table name="table3" fksImported="false" checksImported="false">
+        <column name="id3_1" jdbcType="4" type="INT"/>
+        <column name="id3_2" jdbcType="4" type="INT"/>
+        <column name="name3" jdbcType="4" type="VARCHAR(8)"/>
+        <column name="type3" jdbcType="4" type="CHAR"/>
+        <pk name="table3_pk">
+          <columns>
+            <column name="id3_1"/>
+            <column name="id3_2"/>
+          </columns>
+        </pk>
+        <uk name="table3_name3_uk">
+          <columns>
+            <column name="name3"/>
+            <column name="type3"/>
+          </columns>
+        </uk>
+      </table>
+      <table name="table4" checksImported="false">
+        <column name="id4" jdbcType="4" type="INT"/>
+        <column name="ref4_1" jdbcType="4" type="INT"/>
+        <column name="ref4_2" jdbcType="4" type="INT"/>
+        <pk name="table4_pk" column="id4"/>
+        <fk name="table4_fk2" refereeTable="table3">
+          <columns>
+            <column name="ref4_1" refereeColumn="id3_1"/>
+            <column name="ref4_2" refereeColumn="id3_2"/>
+          </columns>
+        </fk>
+        <index name="index4">
+          <columns>
+            <column name="ref4_1"/>
+            <column name="ref4_2"/>
+          </columns>
+        </index>
+      </table>
+    </schema>
+  </catalog>
+</database>

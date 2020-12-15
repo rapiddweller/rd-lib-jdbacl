@@ -1,0 +1,14 @@
+Release Notes jdbacl 0.6.9
+--------------------------
+
+
+Enhancements
+------------
+- Defined MySQL dialect
+- Supporting rules on foreign key update and deletion
+
+
+Bug fixes
+---------
+- #3329989: Connecting SQL server with NTLM causes NPE
+- Sequences are not imported
