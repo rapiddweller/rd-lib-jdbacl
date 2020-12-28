@@ -41,7 +41,7 @@ public class XMLModelExporterTest extends AbstractModelTest {
 
 	@Test
 	public void testLazy() throws Exception {
-		Database db = createTestModel(false);
+		Database db = createTestModel();
 		File file = new File("target", getClass().getSimpleName() + ".xml");
 		new XMLModelExporter(file).export(db);
 		String[] expectedLines = IOUtil.readTextLines(LAZY_TEST_MODEL_FILENAME, false);
@@ -51,7 +51,7 @@ public class XMLModelExporterTest extends AbstractModelTest {
 
 	@Test
 	public void testEager() throws Exception {
-		Database db = createTestModel(false);
+		Database db = createTestModel();
 		File file = new File("target", getClass().getSimpleName() + ".xml");
 		new XMLModelExporter(file, false).export(db);
 		String[] expectedLines = IOUtil.readTextLines(EAGER_TEST_MODEL_FILENAME, false);

@@ -62,11 +62,11 @@ import static com.rapiddweller.commons.xml.SimpleXMLWriter.*;
  */
 public class XMLModelExporter implements DBMetaDataExporter {
 	
-	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
-	private File file;
-	private String encoding;
-	private boolean lazy;
+	private final File file;
+	private final String encoding;
+	private final boolean lazy;
 	
 	// constructors ----------------------------------------------------------------------------------------------------
 	
@@ -87,7 +87,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 	// interface -------------------------------------------------------------------------------------------------------
 
 	@Override
-	public void export(Database database) throws IOException, SQLException {
+	public void export(Database database) throws IOException {
 		OutputStream out = new FileOutputStream(file);
 		SimpleXMLWriter writer = null;
 		try {

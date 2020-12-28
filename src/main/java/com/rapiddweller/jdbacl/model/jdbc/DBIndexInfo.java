@@ -36,15 +36,15 @@ import com.rapiddweller.commons.ArrayUtil;
  */
 public class DBIndexInfo {
 	
-    public String name;
-    public String tableName;
-    public boolean unique;
-    public String catalogName;
-    public short type;
-    public Boolean ascending;
-    public int cardinality;
-    public int pages;
-    public String filterCondition;
+    public final String name;
+    public final String tableName;
+    public final boolean unique;
+    public final String catalogName;
+    public final short type;
+    public final Boolean ascending;
+    public final int cardinality;
+    public final int pages;
+    public final String filterCondition;
 
     public String[] columnNames;
 

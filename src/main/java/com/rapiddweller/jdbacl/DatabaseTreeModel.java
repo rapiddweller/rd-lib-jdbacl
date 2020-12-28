@@ -36,7 +36,7 @@ import com.rapiddweller.jdbacl.model.Database;
  */
 public class DatabaseTreeModel implements TreeModel<DBObject> {
 	
-	Database database;
+	final Database database;
 
 	public DatabaseTreeModel(Database database) {
 		this.database = database;

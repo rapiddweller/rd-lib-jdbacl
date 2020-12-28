@@ -60,6 +60,6 @@ public class ModelTestUtil {
 		new DBForeignKeyConstraint("CI_ST_FK", true, city, new String[] { "st_fk1", "st_fk2" }, state, new String[] { "st_id1", "st_id2" });
 		new DBForeignKeyConstraint("CI_CO_FK", true, city, new String[] { "co_fk1", "co_fk2" }, country, new String[] { "co_id1", "co_id2" });
 		
-		return new NameMap<DBTable>(country, state, city);
+		return new NameMap<>(country, state, city);
 	}
 }

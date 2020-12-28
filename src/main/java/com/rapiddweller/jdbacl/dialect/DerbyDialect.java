@@ -43,10 +43,10 @@ public class DerbyDialect extends DatabaseDialect {
 	private static final String TIME_PATTERN = "'TIME('''HH:mm:ss''')'";
 	private static final String DATETIME_PATTERN = "'TIMESTAMP('''yyyy-MM-dd HH:mm:ss''')'";
 
-	Pattern randomPKNamePattern = Pattern.compile("SQL[0-9A-F]{15}");
-	Pattern randomUKNamePattern = Pattern.compile("SQL[0-9A-F]{15}");
-	Pattern randomFKNamePattern = Pattern.compile("FK[0-9A-F]{15,16}");
-	Pattern randomIndexNamePattern = Pattern.compile("SQL\\d+");
+	final Pattern randomPKNamePattern = Pattern.compile("SQL[0-9A-F]{15}");
+	final Pattern randomUKNamePattern = Pattern.compile("SQL[0-9A-F]{15}");
+	final Pattern randomFKNamePattern = Pattern.compile("FK[0-9A-F]{15,16}");
+	final Pattern randomIndexNamePattern = Pattern.compile("SQL\\d+");
 
     public DerbyDialect() {
 	    this(false);

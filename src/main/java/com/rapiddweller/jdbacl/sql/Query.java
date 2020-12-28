@@ -40,28 +40,28 @@ import com.rapiddweller.jdbacl.SQLUtil;
  */
 public class Query {
 	
-	private List<String> selectConditions;
-	private List<String> selections;
-	private List<String> tablesWithAliases;
-	private List<String> joins;
-	private StringBuilder whereClause;
-	private List<String> options;
+	private final List<String> selectConditions;
+	private final List<String> selections;
+	private final List<String> tablesWithAliases;
+	private final List<String> joins;
+	private final StringBuilder whereClause;
+	private final List<String> options;
 	
 	public Query(String selection, String table) {
 		this(selection, table, null);
 	}
 
 	public Query(String selection, String table, String whereClause) {
-		this.selectConditions = new ArrayList<String>();
+		this.selectConditions = new ArrayList<>();
 		this.selections = CollectionUtil.toList(selection);
-		this.tablesWithAliases = new ArrayList<String>();
-		this.joins = new ArrayList<String>();
+		this.tablesWithAliases = new ArrayList<>();
+		this.joins = new ArrayList<>();
 		if (table != null)
 			this.tablesWithAliases.add(table);
 		this.whereClause = new StringBuilder();
 		if (whereClause != null)
 			this.whereClause.append(whereClause);
-		this.options = new ArrayList<String>();
+		this.options = new ArrayList<>();
 	}
 
 	public static Query select(String selection) {
@@ -98,11 +98,10 @@ public class Query {
 		return this;
 	}
 
-	public Query and(String condition) {
+	public void and(String condition) {
 		if (whereClause.length() > 0)
 			whereClause.append(" AND ");
 		whereClause.append(condition);
-		return this;
 	}
 	
 	public void addOption(String option) {

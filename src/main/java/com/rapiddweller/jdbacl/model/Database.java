@@ -50,7 +50,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 	
 	private static final long serialVersionUID = -1975619615948817919L;
 
-	private String environment;
+	private final String environment;
 	
 	private String productName;
 	private VersionNumber productVersion;
@@ -61,9 +61,9 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 	
 	private Set<String> reservedWords;
 	
-	private OrderedNameMap<DBCatalog> catalogs;
+	private final OrderedNameMap<DBCatalog> catalogs;
 	
-	private JDBCDBImporter importer;
+	private final JDBCDBImporter importer;
 	private boolean sequencesImported;
 	private boolean triggersImported;
 	private boolean packagesImported;
@@ -225,8 +225,8 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 	@Override
 	public List<DBTable> getTables(boolean recursive) {
 		if (!recursive)
-			return new ArrayList<DBTable>();
-    	List<DBTable> tables = new ArrayList<DBTable>();
+			return new ArrayList<>();
+    	List<DBTable> tables = new ArrayList<>();
         for (DBCatalog catalog : getCatalogs())
             for (DBTable table : catalog.getTables())
             	tables.add(table);
@@ -267,8 +267,8 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 	public List<DBSequence> getSequences(boolean recursive) {
 		haveSequencesImported();
 		if (!recursive)
-			return new ArrayList<DBSequence>();
-    	List<DBSequence> sequences = new ArrayList<DBSequence>();
+			return new ArrayList<>();
+    	List<DBSequence> sequences = new ArrayList<>();
         for (DBCatalog catalog : getCatalogs())
             for (DBSequence table : catalog.getSequences())
             	sequences.add(table);
@@ -297,7 +297,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 	
 	public List<DBTrigger> getTriggers() {
 		haveTriggersImported();
-    	List<DBTrigger> triggers = new ArrayList<DBTrigger>();
+    	List<DBTrigger> triggers = new ArrayList<>();
         for (DBCatalog catalog : getCatalogs())
             for (DBSchema schema : catalog.getSchemas())
             	triggers.addAll(schema.getTriggers());
@@ -330,7 +330,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 	
 	public List<DBPackage> getPackages() {
 		havePackagesImported();
-    	List<DBPackage> packages = new ArrayList<DBPackage>();
+    	List<DBPackage> packages = new ArrayList<>();
         for (DBCatalog catalog : getCatalogs())
             for (DBSchema schema : catalog.getSchemas())
             	packages.addAll(schema.getPackages());

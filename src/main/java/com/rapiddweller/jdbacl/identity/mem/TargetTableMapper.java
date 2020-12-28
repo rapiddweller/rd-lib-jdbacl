@@ -37,17 +37,17 @@ import com.rapiddweller.jdbacl.model.Database;
  */
 public class TargetTableMapper extends AbstractTableMapper {
 
-	Map<String, Object> nkToPk;
+	final Map<String, Object> nkToPk;
 
 	public TargetTableMapper(KeyMapper root, Connection target, String targetDbId, IdentityModel identity, Database database) {
 		super(root, target, targetDbId, identity, database);
-	    this.nkToPk = new HashMap<String, Object>(1000);
+	    this.nkToPk = new HashMap<>(1000);
     }
 
 	@Override
-	public Object store(Object targetPK, String naturalKey) {
+	public void store(Object targetPK, String naturalKey) {
 	    super.store(targetPK, naturalKey);
-		return nkToPk.put(naturalKey, targetPK);
+		nkToPk.put(naturalKey, targetPK);
 	}
 	
 	public Object getTargetId(String naturalKey) {

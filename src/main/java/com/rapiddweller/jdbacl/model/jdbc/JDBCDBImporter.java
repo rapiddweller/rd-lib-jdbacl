@@ -77,7 +77,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
 	protected final static Logger LOGGER = LogManager.getLogger(JDBCDBImporter.class);
     
-    protected String environment;
+    protected final String environment;
     protected String url;
     protected String driver;
     protected String password;
@@ -92,7 +92,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     String databaseProductName;
 	private VersionNumber databaseProductVersion;
 
-    Escalator escalator = new LoggerEscalator();
+    final Escalator escalator = new LoggerEscalator();
     ErrorHandler errorHandler;
     TableNameFilter tableNameFilter;
 
@@ -398,7 +398,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 	            String defaultValue = columnSet.getString(13);
 
 	            // Bug fix 3075401: boolean value generation problem in postgresql 8.4
-	            if (sqlType == Types.BIT && "bool".equals(columnType.toLowerCase()) && databaseProductName.toLowerCase().startsWith("postgres")) {
+	            if (sqlType == Types.BIT && "bool".equalsIgnoreCase(columnType) && databaseProductName.toLowerCase().startsWith("postgres")) {
 	            	sqlType = Types.BOOLEAN;
 	            }
 	            
@@ -467,7 +467,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         ResultSet pkset = null;
         try {
 	        pkset = metaData.getPrimaryKeys(catalogName, schemaName, table.getName());
-	        TreeMap<Short, String> pkComponents = new TreeMap<Short, String>();
+	        TreeMap<Short, String> pkComponents = new TreeMap<>();
 	        String pkName = null;
 	        while (pkset.next()) {
 	        	String tableName = pkset.getString(3);
@@ -496,7 +496,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     
     // index import ----------------------------------------------------------------------------------------------------
     
-	public ResultSet importIndexesOfTable(DBTable table, boolean uniquesOnly, IndexReceiver receiver) {
+	public void importIndexesOfTable(DBTable table, boolean uniquesOnly, IndexReceiver receiver) {
         StopWatch watch = new StopWatch("importIndexesOfTable");
 		if (table.getTableType() == TableType.TABLE)
 			LOGGER.debug("Importing indexes of table '{}'", table.getName());
@@ -513,12 +513,11 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 			DBUtil.close(indexSet);
 		}
 		watch.stop();
-		return indexSet;
 	}
     
 	public void parseIndexSet(ResultSet indexSet, DBSchema schema, DBTable queriedTable, IndexReceiver receiver) throws SQLException {
         StopWatch watch = new StopWatch("parseIndexSet");
-		OrderedNameMap<DBIndexInfo> indexes = new OrderedNameMap<DBIndexInfo>();
+		OrderedNameMap<DBIndexInfo> indexes = new OrderedNameMap<>();
 		while (indexSet.next()) {
 		    String indexName = null;
 		    try {
@@ -583,7 +582,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         ResultSet resultSet = null;
         try {
 	        resultSet = metaData.getImportedKeys(catalogName, schemaName, tableName);
-	        List<ImportedKey> keyList = new ArrayList<ImportedKey>();
+	        List<ImportedKey> keyList = new ArrayList<>();
 	        Map<String, ImportedKey> keysByName = OrderedNameMap.createCaseIgnorantMap();
 	        ImportedKey recent = null;
 	        while (resultSet.next()) {
@@ -787,16 +786,16 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 	    return getClass().getSimpleName();
 	}
 	
-	public static interface ColumnReceiver {
+	public interface ColumnReceiver {
 		void receiveColumn(String columnName, DBDataType dataType, Integer columnSize, Integer fractionDigits, 
 				boolean nullable, String defaultValue, String comment, DBTable table);
 	}
 	
-	public static interface PKReceiver {
+	public interface PKReceiver {
 		void receivePK(String pkName, boolean deterministicName, String[] columnNames, DBTable table);
 	}
 	
-	public static interface FKReceiver {
+	public interface FKReceiver {
 		void receiveFK(DBForeignKeyConstraint fk, DBTable table);
 	}
 	
@@ -804,7 +803,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 		void receiveReferrer(String fktable_name, DBTable table);
 	}
 
-	public static interface IndexReceiver {
+	public interface IndexReceiver {
 		void receiveIndex(DBIndexInfo indexInfo, boolean deterministicName, DBTable table, DBSchema schema);
 	}
 

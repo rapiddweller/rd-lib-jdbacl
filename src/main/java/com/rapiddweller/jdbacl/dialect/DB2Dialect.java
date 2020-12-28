@@ -43,7 +43,7 @@ public class DB2Dialect extends DatabaseDialect {
 	private static final String TIME_PATTERN = "''HH:mm:ss''";
 	private static final String DATETIME_PATTERN = "''yyyy-MM-dd HH:mm:ss''";
 
-	Pattern randomNamePattern = Pattern.compile("SQL\\d{15}");
+	final Pattern randomNamePattern = Pattern.compile("SQL\\d{15}");
 
     public DB2Dialect() {
 	    super("db2", false, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);

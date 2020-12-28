@@ -72,7 +72,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	private static final String[] EMPTY_ARRAY = new String[0];
     
 	private TableType tableType;
-	private JDBCDBImporter importer;
+	private final JDBCDBImporter importer;
 	
 	private OrderedNameMap<DBColumn> columns;
 	private boolean pkImported;
@@ -109,7 +109,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	
 	@Override
 	public List<DBTableComponent> getComponents() {
-		List<DBTableComponent> result = new ArrayList<DBTableComponent>();
+		List<DBTableComponent> result = new ArrayList<>();
 		result.addAll(getColumns());
 		havePKImported();
 		if (pk != null)
@@ -159,7 +159,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
     public DBColumn[] getColumns(String[] columnNames) {
 		haveColumnsImported();
-        List<DBColumn> list = new ArrayList<DBColumn>(columnNames.length);
+        List<DBColumn> list = new ArrayList<>(columnNames.length);
         for (String columnName : columnNames) {
             DBColumn column = getColumn(columnName);
             if (column == null)
@@ -281,7 +281,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
     public Set<DBUniqueConstraint> getUniqueConstraints(boolean includePK) {
     	haveIndexesImported();
-    	Set<DBUniqueConstraint> result = new HashSet<DBUniqueConstraint>(uniqueConstraints);
+    	Set<DBUniqueConstraint> result = new HashSet<>(uniqueConstraints);
     	if (includePK && pk != null)
     		result.add(pk);
     	return result;
@@ -326,7 +326,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
     public List<DBIndex> getIndexes() {
     	haveIndexesImported();
-        return new ArrayList<DBIndex>(indexes.values());
+        return new ArrayList<>(indexes.values());
     }
 
     public DBIndex getIndex(String indexName) {
@@ -348,7 +348,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	private void haveIndexesImported() {
 		if (!areIndexesImported()) {
 			haveColumnsImported();
-			this.uniqueConstraints = new OrderedSet<DBUniqueConstraint>();
+			this.uniqueConstraints = new OrderedSet<>();
 			this.indexes = OrderedNameMap.createCaseIgnorantMap();
 			JDBCDBImporter.IndexReceiver receiver = new IdxReceiver();
 			if (importer != null)
@@ -362,7 +362,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	
 	public void setIndexesImported(boolean indexesImported) {
 		if (indexesImported) {
-			this.uniqueConstraints = new OrderedSet<DBUniqueConstraint>();
+			this.uniqueConstraints = new OrderedSet<>();
 			this.indexes = OrderedNameMap.createCaseIgnorantMap();
 		} else {
 			this.uniqueConstraints = null;
@@ -397,7 +397,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
     public Set<DBForeignKeyConstraint> getForeignKeyConstraints() {
     	haveFKsImported();
-        return new HashSet<DBForeignKeyConstraint>(foreignKeyConstraints);
+        return new HashSet<>(foreignKeyConstraints);
     }
 
 	public DBForeignKeyConstraint getForeignKeyConstraint(String... columnNames) {
@@ -424,7 +424,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 		if (!areFKsImported()) {
 			haveColumnsImported();
 	    	havePKImported();
-			foreignKeyConstraints = new OrderedSet<DBForeignKeyConstraint>();
+			foreignKeyConstraints = new OrderedSet<>();
 			if (importer != null)
 				importer.importImportedKeys(this, new FKRec());
 		}
@@ -435,7 +435,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	}
 	
 	public void setFKsImported(boolean fksImported) {
-		this.foreignKeyConstraints = (fksImported ? new OrderedSet<DBForeignKeyConstraint>() : null);
+		this.foreignKeyConstraints = (fksImported ? new OrderedSet<>() : null);
 	}
 	
 	class FKRec implements JDBCDBImporter.FKReceiver {
@@ -453,9 +453,9 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	public List<DBCheckConstraint> getCheckConstraints() {
 		haveChecksImported();
 		if (checkConstraints != null)
-			return new ArrayList<DBCheckConstraint>(checkConstraints);
+			return new ArrayList<>(checkConstraints);
 		else
-			return new ArrayList<DBCheckConstraint>();
+			return new ArrayList<>();
 	}
 
 	public void addCheckConstraint(DBCheckConstraint checkConstraint) {
@@ -476,14 +476,14 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	public void setChecksImported(boolean checksImported) {
 		if (checksImported) {
 			if (checkConstraints == null)
-				this.checkConstraints = new ArrayList<DBCheckConstraint>();
+				this.checkConstraints = new ArrayList<>();
 		} else
 			this.checkConstraints = null;
 	}
 	
 	public void receiveCheckConstraint(DBCheckConstraint check) {
 		if (this.checkConstraints == null)
-			this.checkConstraints = new ArrayList<DBCheckConstraint>();
+			this.checkConstraints = new ArrayList<>();
 		this.checkConstraints.add(check);
 	}
 
@@ -493,7 +493,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     
     public Collection<DBTable> getReferrers() {
     	haveReferrersImported();
-    	return new HashSet<DBTable>(referrers);
+    	return new HashSet<>(referrers);
     }
     
 	public void addReferrer(DBTable referrer) {
@@ -503,27 +503,27 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
 	public void receiveReferrer(DBTable referrer) {
 		if (referrers == null)
-			referrers = new OrderedSet<DBTable>();
+			referrers = new OrderedSet<>();
 		referrers.add(referrer);
 	}
     
 	private void haveReferrersImported() {
-		if (!areReferrersImported()) {
+		if (areReferrersImported()) {
 			haveFKsImported();
-			referrers = new OrderedSet<DBTable>();
+			referrers = new OrderedSet<>();
 			if (importer != null)
 				importer.importRefererTables(this, new RefReceiver());
 		}
     }
 
 	public boolean areReferrersImported() {
-		return (referrers != null);
+		return (referrers == null);
 	}
 	
 	public void setReferrersImported(boolean referrersImported) {
 		if (referrersImported) {
 			if (referrers == null)
-				referrers = new OrderedSet<DBTable>();
+				referrers = new OrderedSet<>();
 		} else
 			referrers = null;
 	}
@@ -596,8 +596,8 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 		query.append(ArrayFormat.format(getPKColumnNames()));
 		query.append(" from ").append(name);
     	Iterator<ResultSet> rawIterator = new QueryIterator(query.toString(), connection, 100);
-        ResultSetConverter<Object> converter = new ResultSetConverter<Object>(Object.class, true);
-    	return new ConvertingIterator<ResultSet, Object>(rawIterator, converter);
+        ResultSetConverter<Object> converter = new ResultSetConverter<>(Object.class, true);
+    	return new ConvertingIterator<>(rawIterator, converter);
 	}
 
 	public TabularIterator query(String query, Connection connection) {

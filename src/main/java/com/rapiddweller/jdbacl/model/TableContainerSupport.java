@@ -35,9 +35,9 @@ import com.rapiddweller.commons.collection.OrderedNameMap;
  */
 public class TableContainerSupport implements TableHolder, SequenceHolder {
 
-	private OrderedNameMap<TableContainer> subContainers;
-	private OrderedNameMap<DBTable> tables;
-	private OrderedNameMap<DBSequence> sequences;
+	private final OrderedNameMap<TableContainer> subContainers;
+	private final OrderedNameMap<DBTable> tables;
+	private final OrderedNameMap<DBSequence> sequences;
 	
     public TableContainerSupport() {
     	this.subContainers = OrderedNameMap.createCaseIgnorantMap();
@@ -64,7 +64,7 @@ public class TableContainerSupport implements TableHolder, SequenceHolder {
 
     @Override
 	public List<DBTable> getTables(boolean recursive) {
-		return getTables(recursive, new ArrayList<DBTable>());
+		return getTables(recursive, new ArrayList<>());
     }
 
     public List<DBTable> getTables(boolean recursive, List<DBTable> result) {
@@ -96,7 +96,7 @@ public class TableContainerSupport implements TableHolder, SequenceHolder {
     
 	@Override
 	public List<DBSequence> getSequences(boolean recursive) {
-		return getSequences(recursive, new ArrayList<DBSequence>());
+		return getSequences(recursive, new ArrayList<>());
 	}
 
     public List<DBSequence> getSequences(boolean recursive, List<DBSequence> result) {
@@ -108,7 +108,7 @@ public class TableContainerSupport implements TableHolder, SequenceHolder {
     }
 
 	public List<ContainerComponent> getComponents() {
-		List<ContainerComponent> result = new ArrayList<ContainerComponent>();
+		List<ContainerComponent> result = new ArrayList<>();
 		result.addAll(getTables(false));
 		result.addAll(getSubContainers());
 		result.addAll(getSequences(false));

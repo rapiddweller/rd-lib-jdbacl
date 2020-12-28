@@ -57,8 +57,7 @@ public class DBTrigger extends AbstractDBObject implements ContainerComponent {
 	public DBTrigger(String name, DBSchema owner) {
 		super(name, "trigger", owner);
         if (owner != null) {
-    		DBSchema schema = (DBSchema) owner;
-    		schema.addTrigger(this);
+			owner.addTrigger(this);
         }
 	}
 	

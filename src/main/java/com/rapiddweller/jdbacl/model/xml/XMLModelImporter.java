@@ -44,7 +44,6 @@ import com.rapiddweller.jdbacl.model.DBCatalog;
 import com.rapiddweller.jdbacl.model.DBCheckConstraint;
 import com.rapiddweller.jdbacl.model.DBColumn;
 import com.rapiddweller.jdbacl.model.DBForeignKeyConstraint;
-import com.rapiddweller.jdbacl.model.DBIndex;
 import com.rapiddweller.jdbacl.model.DBMetaDataImporter;
 import com.rapiddweller.jdbacl.model.DBNonUniqueIndex;
 import com.rapiddweller.jdbacl.model.DBPrimaryKeyConstraint;
@@ -71,8 +70,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
 	
 	private static final Logger LOGGER = LogManager.getLogger(XMLModelImporter.class);
 
-	private String uri;
-	private JDBCDBImporter realImporter;
+	private final String uri;
+	private final JDBCDBImporter realImporter;
 	
 	public XMLModelImporter(File file, JDBCDBImporter realImporter) {
 		this(file.getAbsolutePath(), realImporter);
@@ -125,7 +124,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		return db;
 	}
 
-	private DBCatalog parseCatalog(Element e, Database db) {
+	private void parseCatalog(Element e, Database db) {
 		String name = StringUtil.emptyToNull(e.getAttribute("name"));
 		DBCatalog catalog = new DBCatalog(name, db);
 		for (Element child : XMLUtil.getChildElements(e)) {
@@ -135,10 +134,9 @@ public class XMLModelImporter implements DBMetaDataImporter {
 			else
 				throw new UnsupportedOperationException("Not an allowed element within <catalog>: " + childName);
 		}
-		return catalog;
-	}
+    }
 
-	private DBSchema parseSchema(Element e, DBCatalog catalog) {
+	private void parseSchema(Element e, DBCatalog catalog) {
 		String name = e.getAttribute("name");
 		DBSchema schema = new DBSchema(name, catalog);
 		Element[] children = XMLUtil.getChildElements(e);
@@ -166,19 +164,18 @@ public class XMLModelImporter implements DBMetaDataImporter {
 			else
 				throw new UnsupportedOperationException("Not an allowed element within <schema>: " + childName);
 		}
-		return schema;
-	}
+    }
 
-	private static DBTable parseTableName(Element e, DBSchema schema) {
+	private static void parseTableName(Element e, DBSchema schema) {
 		String name = e.getAttribute("name");
 		String typeSpec = e.getAttribute("type");
 		TableType type = (StringUtil.isEmpty(typeSpec) ? TableType.TABLE : TableType.valueOf(typeSpec));
-		return new DBTable(name, type, null, schema, schema.getDatabase().getImporter());
-	}
+        new DBTable(name, type, null, schema, schema.getDatabase().getImporter());
+    }
 
-	private DBTable parseTableStructure(Element e, DBSchema schema) {
+	private void parseTableStructure(Element e, DBSchema schema) {
 		String name = e.getAttribute("name");
-		DBTable table = (DBTable) schema.getTable(name);
+		DBTable table = schema.getTable(name);
 		boolean columnsImported = XMLUtil.getBooleanAttributeWithDefault(e, "columnsImported", true);
 		table.setColumnsImported(columnsImported);
 		boolean pkImported = XMLUtil.getBooleanAttributeWithDefault(e, "pkImported", true);
@@ -206,10 +203,9 @@ public class XMLModelImporter implements DBMetaDataImporter {
 			else
 				throw new SyntaxError("Not an allowed element within <table>", XMLUtil.format(child));
 		}
-		return table;
-	}
+    }
 
-	private static DBColumn parseColumn(Element e, DBTable table) {
+	private static void parseColumn(Element e, DBTable table) {
 		String name = e.getAttribute("name");
 		String typeAndSizeSpec = e.getAttribute("type");
 		int jdbcType = Integer.parseInt(e.getAttribute("jdbcType"));
@@ -218,26 +214,25 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		if (!StringUtil.isEmpty(defaultValue))
 			column.setDefaultValue(defaultValue);
 		String nullableSpec = e.getAttribute("nullable");
-		boolean nullable = (nullableSpec == null || !"false".equals(nullableSpec));
+		boolean nullable = (!"false".equals(nullableSpec));
 		column.setNullable(nullable);
-		return column;
-	}
+    }
 
-	private DBPrimaryKeyConstraint parsePK(Element e, DBTable table) {
+	private void parsePK(Element e, DBTable table) {
 		boolean autoNamed = false;
 		if (e.getAttribute("autoNamed") != null)
-			autoNamed = Boolean.valueOf(e.getAttribute("autoNamed"));
-		return new DBPrimaryKeyConstraint(table, e.getAttribute("name"), autoNamed, parseColumnNames(e));
-	}
+			autoNamed = Boolean.parseBoolean(e.getAttribute("autoNamed"));
+        new DBPrimaryKeyConstraint(table, e.getAttribute("name"), autoNamed, parseColumnNames(e));
+    }
 
-	private DBUniqueConstraint parseUK(Element e, DBTable table) {
+	private void parseUK(Element e, DBTable table) {
 		boolean autoNamed = false;
 		if (e.getAttribute("autoNamed") != null)
-			autoNamed = Boolean.valueOf(e.getAttribute("autoNamed"));
-		return new DBUniqueConstraint(table, e.getAttribute("name"), autoNamed, parseColumnNames(e));
-	}
+			autoNamed = Boolean.parseBoolean(e.getAttribute("autoNamed"));
+        new DBUniqueConstraint(table, e.getAttribute("name"), autoNamed, parseColumnNames(e));
+    }
 
-	private static DBForeignKeyConstraint parseFK(Element e, DBTable owner, DBSchema schema) {
+	private static void parseFK(Element e, DBTable owner, DBSchema schema) {
 		String name = e.getAttribute("name");
 		String refereeTableName = e.getAttribute("refereeTable");
 		DBTable refereeTable = schema.getTable(refereeTableName);
@@ -258,7 +253,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		}
 		boolean autoNamed = false;
 		if (e.getAttribute("autoNamed") != null)
-			autoNamed = Boolean.valueOf(e.getAttribute("autoNamed"));
+			autoNamed = Boolean.parseBoolean(e.getAttribute("autoNamed"));
 		DBForeignKeyConstraint fk = new DBForeignKeyConstraint(name, autoNamed, owner, columnNames, refereeTable, refereeColumnNames);
 		// parse rules
 		String updateRule = XMLUtil.getAttribute(e, "updateRule", false);
@@ -267,33 +262,32 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		String deleteRule = XMLUtil.getAttribute(e, "deleteRule", false);
 		if (!StringUtil.isEmpty(deleteRule))
 			fk.setDeleteRule(FKChangeRule.valueOf(deleteRule));
-		return fk;
-	}
+    }
 
-	private static DBCheckConstraint parseCheck(Element e, DBTable table) {
+	private static void parseCheck(Element e, DBTable table) {
 		try {
 			table.getCatalog().getDatabase().setChecksImported(true);
 			boolean autoNamed = false;
 			if (e.getAttribute("autoNamed") != null)
-				autoNamed = Boolean.valueOf(e.getAttribute("autoNamed"));
-			return new DBCheckConstraint(e.getAttribute("name"), autoNamed, table, e.getAttribute("definition"));
-		} catch (Exception ex) {
+				autoNamed = Boolean.parseBoolean(e.getAttribute("autoNamed"));
+            new DBCheckConstraint(e.getAttribute("name"), autoNamed, table, e.getAttribute("definition"));
+        } catch (Exception ex) {
 			LOGGER.error("Error parsing check constraint", ex);
-			return null;
-		}
+        }
 	}
 
-	private DBIndex parseIndex(Element e, DBTable table) {
+	private void parseIndex(Element e, DBTable table) {
 		String name = e.getAttribute("name");
 		String uniqueSpec = e.getAttribute("unique");
-		boolean unique = (uniqueSpec != null && "true".equals(uniqueSpec));
+		boolean unique = ("true".equals(uniqueSpec));
 		String nameDeterministicSpec = e.getAttribute("nameDeterministic");
 		boolean nameDeterministic = (nameDeterministicSpec == null || "true".equals(nameDeterministicSpec));
 		String[] columnNames = parseColumnNames(e);
-		if (unique)
-			return new DBUniqueIndex(name, nameDeterministic, table.getUniqueConstraint(columnNames));
-		else
-			return new DBNonUniqueIndex(name, nameDeterministic, table, columnNames);
+		if (unique) {
+            new DBUniqueIndex(name, nameDeterministic, table.getUniqueConstraint(columnNames));
+        } else {
+            new DBNonUniqueIndex(name, nameDeterministic, table, columnNames);
+        }
 	}
 
 	public String[] parseColumnNames(Element e) {
@@ -317,12 +311,12 @@ public class XMLModelImporter implements DBMetaDataImporter {
 				fk.getRefereeTable().receiveReferrer(table);
 		}
 		for (DBTable table : database.getTables()) {
-			if (!table.areReferrersImported())
+			if (table.areReferrersImported())
 				table.setReferrersImported(true);
 		}
 	}
 
-	private static DBSequence parseSequence(Element e, DBSchema schema) {
+	private static void parseSequence(Element e, DBSchema schema) {
 		DBSequence sequence = new DBSequence(e.getAttribute("name"), schema);
 		String start = e.getAttribute("start");
 		if (!StringUtil.isEmpty(start))
@@ -345,10 +339,9 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		String order = e.getAttribute("order");
 		if (!StringUtil.isEmpty(order))
 			sequence.setOrder(ParseUtil.parseBoolean(order));
-		return sequence;
-	}
+    }
 
-	private static DBTrigger parseTrigger(Element e, DBSchema schema) {
+	private static void parseTrigger(Element e, DBSchema schema) {
 		DBTrigger trigger = new DBTrigger(e.getAttribute("name"), null);
 		schema.receiveTrigger(trigger);
 		trigger.setOwner(schema);
@@ -388,10 +381,9 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		String triggerBody = e.getAttribute("triggerBody");
 		if (!StringUtil.isEmpty(triggerBody))
 			trigger.setTriggerBody(triggerBody);
-		return trigger;
-	}
+    }
 
-	private static DBPackage parsePackage(Element e, DBSchema schema) {
+	private static void parsePackage(Element e, DBSchema schema) {
 		DBPackage pkg = new DBPackage(e.getAttribute("name"), null);
 		pkg.setSchema(schema);
 		schema.receivePackage(pkg);
@@ -411,8 +403,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		if (!StringUtil.isEmpty(status))
 			pkg.setStatus(status);
 		parsePackageProcedures(e, pkg);
-		return pkg;
-	}
+    }
 
 	private static void parsePackageProcedures(Element pkgElement, DBPackage pkg) {
 		for (Element e : XMLUtil.getChildElements(pkgElement)) {
@@ -434,7 +425,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() {
 		// nothing special to do
 	}
 	

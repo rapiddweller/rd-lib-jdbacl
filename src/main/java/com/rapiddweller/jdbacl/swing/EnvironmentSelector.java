@@ -54,7 +54,7 @@ public class EnvironmentSelector extends JComboBox {
 	public static class EnvironmentModel extends AbstractListModel implements ComboBoxModel {
 
 		private String selectedItem;
-		private String[] environments;
+		private final String[] environments;
 		
 		EnvironmentModel() {
 			environments = DBUtil.getEnvironmentNames(); 

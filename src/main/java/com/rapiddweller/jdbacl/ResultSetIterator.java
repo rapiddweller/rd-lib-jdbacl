@@ -46,11 +46,11 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
 
     private static final Logger LOGGER = LogManager.getLogger(ResultSetIterator.class);
 
-    private ResultSet resultSet;
+    private final ResultSet resultSet;
     private Boolean hasNext;
     private String[] columnLabels;
     private boolean closed;
-    private String query;
+    private final String query;
     
     // constructors ----------------------------------------------------------------------------------------------------
 

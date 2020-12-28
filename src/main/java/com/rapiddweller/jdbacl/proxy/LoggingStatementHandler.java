@@ -60,13 +60,13 @@ public class LoggingStatementHandler implements InvocationHandler {
     private static final Logger sqlLogger = LogManager.getLogger(LogCategories.SQL);
     private static final Logger jdbcLogger = LogManager.getLogger(LogCategories.JDBC);
 
-	private static volatile AtomicInteger openStatementCount;
+	private static final AtomicInteger openStatementCount;
     private static ResourceMonitor openStatementMonitor;
 
     // attributes ------------------------------------------------------------------------------------------------------
 
-	private Statement realStatement;
-	private boolean readOnly;
+	private final Statement realStatement;
+	private final boolean readOnly;
 	private String sql;
 	private boolean closed;
 	

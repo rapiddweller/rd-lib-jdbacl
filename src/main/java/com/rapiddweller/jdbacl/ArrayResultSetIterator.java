@@ -36,7 +36,7 @@ import com.rapiddweller.commons.iterator.TabularIterator;
 public class ArrayResultSetIterator extends ConvertingIterator<ResultSet, Object[]> implements TabularIterator {
 	
 	public ArrayResultSetIterator(Connection connection, String query) {
-	    super(new QueryIterator(query, connection, 500), new ResultSetConverter<Object[]>(Object[].class, false));
+	    super(new QueryIterator(query, connection, 500), new ResultSetConverter<>(Object[].class, false));
     }
 
 	@Override

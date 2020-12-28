@@ -34,7 +34,7 @@ public class TableContainer extends AbstractCompositeDBObject<ContainerComponent
 
     private static final long serialVersionUID = 5890222751656809426L;
     
-    TableContainerSupport support;
+    final TableContainerSupport support;
     
     // constructors ----------------------------------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ public class TableContainer extends AbstractCompositeDBObject<ContainerComponent
 
 	@Override
 	public List<ContainerComponent> getComponents() {
-		List<ContainerComponent> result = new ArrayList<ContainerComponent>();
+		List<ContainerComponent> result = new ArrayList<>();
 		result.addAll(support.getTables());
 		result.addAll(support.getSubContainers());
 		return result;
@@ -86,8 +86,8 @@ public class TableContainer extends AbstractCompositeDBObject<ContainerComponent
 		return support.getTables(recursive);
     }
 
-    public List<DBTable> getTables(boolean recursive, List<DBTable> result) {
-    	return support.getTables(recursive, result);
+    public void getTables(boolean recursive, List<DBTable> result) {
+        support.getTables(recursive, result);
     }
 
     @Override
@@ -110,8 +110,8 @@ public class TableContainer extends AbstractCompositeDBObject<ContainerComponent
 		return support.getSequences(recursive);
 	}
 
-	public List<DBSequence> getSequences(boolean recursive, List<DBSequence> result) {
-		return support.getSequences(recursive, result);
-	}
+	public void getSequences(boolean recursive, List<DBSequence> result) {
+        support.getSequences(recursive, result);
+    }
 
 }

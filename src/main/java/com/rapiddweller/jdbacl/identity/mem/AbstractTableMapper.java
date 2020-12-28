@@ -44,13 +44,13 @@ public abstract class AbstractTableMapper {
 	
 	private static final Logger LOGGER = LogManager.getLogger(AbstractTableMapper.class);
 
-	protected KeyMapper root;
-	protected Connection connection;
-	protected String dbId;
-	protected IdentityModel identity;
-	private   Map<ObjectOrArray, String> pkToNk;
+	protected final KeyMapper root;
+	protected final Connection connection;
+	protected final String dbId;
+	protected final IdentityModel identity;
+	private final Map<ObjectOrArray, String> pkToNk;
 	private   MapperState state;
-	Database database;
+	final Database database;
 
 	public AbstractTableMapper(KeyMapper root, Connection connection, String dbId, IdentityModel identity, Database database) {
 		this.root = root;
@@ -58,17 +58,17 @@ public abstract class AbstractTableMapper {
 		this.dbId = dbId;
 		this.identity = identity;
 	    this.database = database;
-	    this.pkToNk = new HashMap<ObjectOrArray, String>(1000);
+	    this.pkToNk = new HashMap<>(1000);
 	    this.state = MapperState.CREATED;
     }
 	
 	// interface -------------------------------------------------------------------------------------------------------
 
-	public Object store(Object pk, String naturalKey) {
+	public void store(Object pk, String naturalKey) {
 		if (state == MapperState.CREATED)
 			state = MapperState.PASSIVE;
 		ObjectOrArray globalRowId = new ObjectOrArray(pk);
-		return pkToNk.put(globalRowId, naturalKey);
+		pkToNk.put(globalRowId, naturalKey);
 	}
 
 	public String getNaturalKey(Object pk) {

@@ -40,7 +40,7 @@ public abstract class DBConstraint extends AbstractDBTableComponent implements M
 
     private static final long serialVersionUID = 3768329019450975632L;
     
-    private boolean nameDeterministic;
+    private final boolean nameDeterministic;
     
     // interface -------------------------------------------------------------------------------------------------------
 

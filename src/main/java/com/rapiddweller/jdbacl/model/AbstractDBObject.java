@@ -35,7 +35,7 @@ public abstract class AbstractDBObject implements DBObject {
 	private static final long serialVersionUID = -9344600767967258L;
 	
 	protected String name;
-	protected String objectType;
+	protected final String objectType;
 	protected String doc;
 	protected CompositeDBObject<?> owner;
 	

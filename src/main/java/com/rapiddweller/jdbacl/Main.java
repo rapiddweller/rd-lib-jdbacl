@@ -39,29 +39,28 @@ public class Main {
 
 	public static void main(String[] args) throws ConnectFailedException, ImportFailedException {
 		String environment = null;
-		for (int i = 0; i < args.length; i++) {
-			String arg = args[i];
+		for (String arg : args) {
 			if ("-h".equals(arg)) {
-				printHelpAndExit(0);
+				printHelpAndExit();
 			} else {
 				environment = arg;
 			}
 		}
 		if (environment == null)
-			printErrorAndHelpAndExit("No environment specified", -1);
+			printErrorAndHelpAndExit();
 		Database database = JDBCMetaDataUtil.getMetaData(environment, true, true, true, true, ".*", null, false, true);
 		new TreeLogger().log(new DatabaseTreeModel(database));
 	}
 
-	private static void printErrorAndHelpAndExit(String message, int status) {
-		ConsoleInfoPrinter.printHelp("Error: " + message);
+	private static void printErrorAndHelpAndExit() {
+		ConsoleInfoPrinter.printHelp("Error: " + "No environment specified");
 	    printHelp();
-	    System.exit(status);
+	    System.exit(-1);
     }
 
-	private static void printHelpAndExit(int status) {
+	private static void printHelpAndExit() {
 	    printHelp();
-	    System.exit(status);
+	    System.exit(0);
     }
 
 	private static void printHelp() {

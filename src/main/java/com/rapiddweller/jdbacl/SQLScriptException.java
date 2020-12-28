@@ -38,7 +38,7 @@ public class SQLScriptException extends Exception {
 	private static final long serialVersionUID = -6190417735216916815L;
 
 	private String uri;
-	private int lineNo;
+	private final int lineNo;
 
 	// constructors ----------------------------------------------------------------------------------------------------
 

@@ -43,8 +43,8 @@ import java.sql.SQLException;
  */
 public class ResultSetConverter<E> extends UnsafeConverter<ResultSet, E> {
 
-	private Class<E> targetType;
-    private boolean simplifying;
+	private final Class<E> targetType;
+    private final boolean simplifying;
 
     public ResultSetConverter(Class<E> targetType) {
         this(targetType, true);

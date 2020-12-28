@@ -69,8 +69,7 @@ public abstract class AbstractJDBCDBImporterTest {
 
 	protected static DBTable checkTables(DBSchema schema) {
 		assertEquals(1, schema.getTables().size());
-		DBTable table = schema.getTable("T1");
-		return table;
+        return schema.getTable("T1");
 	}
 
 	protected static void checkIndexes(DBTable table) {

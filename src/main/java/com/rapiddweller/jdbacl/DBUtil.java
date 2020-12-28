@@ -102,12 +102,7 @@ public class DBUtil {
     
     public static String[] getEnvironmentNames() {
 		File databeneFolder = new File(SystemInfo.getUserHome(), "databene");
-		String[] fileNames = databeneFolder.list(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return (name.toLowerCase().endsWith(".env.properties"));
-			}
-		});
+		String[] fileNames = databeneFolder.list((dir, name) -> (name.toLowerCase().endsWith(".env.properties")));
 		String[] result = new String[fileNames.length]; 
 		for (int i = 0; i < fileNames.length; i++) {
 			String fileName = fileNames[i];
@@ -351,7 +346,7 @@ public class DBUtil {
     }
     
     public static List<Object[]> parseResultSet(ResultSet resultSet) throws SQLException { 
-        List<Object[]> rows = new ArrayList<Object[]>();
+        List<Object[]> rows = new ArrayList<>();
         while (resultSet.next())
             rows.add(parseResultRow(resultSet));
         return rows;
@@ -533,7 +528,7 @@ public class DBUtil {
     	try {
 	    	statement = connection.createStatement();
 	    	resultSet = statement.executeQuery(query);
-	        ArrayBuilder<T> builder = new ArrayBuilder<T>(componentType);
+	        ArrayBuilder<T> builder = new ArrayBuilder<>(componentType);
 	        while (resultSet.next())
 	        	builder.add(AnyConverter.convert(resultSet.getObject(1), componentType));
 	        return builder.toArray();
@@ -612,11 +607,11 @@ public class DBUtil {
 
     public static HeavyweightIterator<Object[]> iterateQueryResults(String query, Connection connection) throws SQLException {
     	ResultSet resultSet = connection.createStatement().executeQuery(query);
-    	ResultSetConverter<Object[]> converter = new ResultSetConverter<Object[]>(Object[].class);
-		return new ConvertingIterator<ResultSet, Object[]>(new ResultSetIterator(resultSet), converter);
+    	ResultSetConverter<Object[]> converter = new ResultSetConverter<>(Object[].class);
+		return new ConvertingIterator<>(new ResultSetIterator(resultSet), converter);
     }
 
-    public static ResultSet executeQuery(String query, Connection connection) throws SQLException {
+    public static ResultSet executeQuery(String query, Connection connection) {
     	Statement statement = null;
     	try {
 	    	statement = connection.createStatement();
@@ -642,7 +637,7 @@ public class DBUtil {
             String[] columnNames = new String[columnCount];
             for (int i = 1; i <= columnCount; i++)
             	columnNames[i - 1] = metaData.getColumnLabel(i);
-	        List<Object[]> rows = new ArrayList<Object[]>();
+	        List<Object[]> rows = new ArrayList<>();
 	        while (resultSet.next()) {
 	            String[] cells = new String[columnCount];
 	            for (int i = 0; i < columnCount; i++)
@@ -677,7 +672,7 @@ public class DBUtil {
     }
 
     public static List<DBTable> dependencyOrderedTables(TableHolder tableHolder) {
-        DependencyModel<DBTable> model = new DependencyModel<DBTable>();
+        DependencyModel<DBTable> model = new DependencyModel<>();
         for (DBTable table : tableHolder.getTables())
             model.addNode(table);
         return model.dependencyOrderedObjects(true);

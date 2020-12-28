@@ -32,7 +32,7 @@ import com.rapiddweller.script.expression.ConstantExpression;
  */
 public class ColumnExpression extends ConstantExpression<String> {
 
-	protected boolean quoted;
+	protected final boolean quoted;
 	
 	public ColumnExpression(String name, boolean quoted) {
 		super(name);

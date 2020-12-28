@@ -34,7 +34,7 @@ import org.antlr.runtime.CharStream;
  */
 public class ANTLRNoCaseStringStream extends ANTLRStringStream implements TextHolder {
 
-	private String text;
+	private final String text;
 	
 	public ANTLRNoCaseStringStream(String text) {
 		super(text);

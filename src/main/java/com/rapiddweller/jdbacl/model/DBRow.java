@@ -38,7 +38,7 @@ public class DBRow implements Serializable {
 	private static final long serialVersionUID = 644247555736773166L;
 	
 	DBTable table;
-	OrderedNameMap<Object> cells;
+	final OrderedNameMap<Object> cells;
 
 	public DBRow(DBTable table) {
 	    this.table = table;

@@ -56,13 +56,13 @@ public class XMLModelImporterTest extends AbstractModelTest {
 	}
 	
 	@Test
-	public void testOffline() throws Exception {
+	public void testOffline() {
 		XMLModelImporter importer = new XMLModelImporter(EAGER_TEST_MODEL_FILENAME, null);
 		try {
 			Database actual = importer.importDatabase();
 			assertTrue(actual instanceof Database);
 			new TreeLogger().log(new DBTreeModel(actual));
-			Database expected = createTestModel(false);
+			Database expected = createTestModel();
 			assertTrue(expected.isIdentical(actual));
 		} finally {
 			IOUtil.close(importer);
@@ -70,7 +70,7 @@ public class XMLModelImporterTest extends AbstractModelTest {
 	}
 	
 	@Test
-	public void testOnline() throws Exception {
+	public void testOnline() {
 		XMLModelImporter importer = new XMLModelImporter(LAZY_TEST_MODEL_FILENAME, new JDBCDBImporter(ENVIRONMENT));
 		try {
 			Database db = importer.importDatabase();

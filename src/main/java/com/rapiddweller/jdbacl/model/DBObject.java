@@ -35,18 +35,18 @@ import com.rapiddweller.commons.Named;
 public interface DBObject extends Named, Serializable {
 	
 	/** @return the type of the DBObject as used in DDL in lower case letters. */
-    public String getObjectType();
+    String getObjectType();
     
     /** @return documentation of the DBObject if available, otherwise null. */
-    public String getDoc();
+    String getDoc();
     
     /** @return the owner of the DBObject instance or null if no owner has been set. */
-    public CompositeDBObject<?> getOwner();
+    CompositeDBObject<?> getOwner();
     
     /** sets the owner of the DBObject instance. */
-	public void setOwner(CompositeDBObject<?> owner);
+    void setOwner(CompositeDBObject<?> owner);
 	
 	/** tells if an object has the same definition as another one. */
-	public boolean isIdentical(DBObject other);
+    boolean isIdentical(DBObject other);
 	
 }

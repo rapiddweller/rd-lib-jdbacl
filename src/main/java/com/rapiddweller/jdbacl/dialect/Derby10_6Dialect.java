@@ -77,7 +77,7 @@ public class Derby10_6Dialect extends DerbyDialect {
 	public DBSequence[] querySequences(Connection connection) throws SQLException {
     	List<Object[]> rows = DBUtil.query("SELECT SEQUENCENAME, STARTVALUE, INCREMENT, MAXIMUMVALUE, MINIMUMVALUE, " +
     			"CYCLEOPTION, CURRENTVALUE FROM SYS.SYSSEQUENCES", connection);
-    	ArrayBuilder<DBSequence> builder = new ArrayBuilder<DBSequence>(DBSequence.class, rows.size());
+    	ArrayBuilder<DBSequence> builder = new ArrayBuilder<>(DBSequence.class, rows.size());
     	for (Object[] row : rows) {
     		DBSequence sequence = new DBSequence(row[0].toString(), null);
     		sequence.setStart(new BigInteger(row[1].toString()));

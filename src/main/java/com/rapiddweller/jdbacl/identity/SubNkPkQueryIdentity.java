@@ -50,9 +50,9 @@ import com.rapiddweller.jdbacl.model.Database;
  */
 public class SubNkPkQueryIdentity extends IdentityModel {
 
-	private String parentTableNames[]; // TODO v1.0 support multiple 'parent' and 'parentColumns' property
+	private final String[] parentTableNames; // TODO v1.0 support multiple 'parent' and 'parentColumns' property
 	private String subNkPkQuery;
-	private IdentityProvider identityProvider;
+	private final IdentityProvider identityProvider;
 
 	public SubNkPkQueryIdentity(String tableName, String[] parentTableNames, IdentityProvider identityProvider) {
 	    super(tableName);
@@ -83,13 +83,13 @@ public class SubNkPkQueryIdentity extends IdentityModel {
 
     public class RecursiveIterator implements TabularIterator {
     	
-    	Connection connection;
-    	String dbId;
-    	KeyMapper mapper;
-    	HeavyweightIterator<Object> ownerPkIterator;
+    	final Connection connection;
+    	final String dbId;
+    	final KeyMapper mapper;
+    	final HeavyweightIterator<Object> ownerPkIterator;
     	String ownerNK;
     	TabularIterator subNkPkIterator;
-    	DatabaseDialect dialect;
+    	final DatabaseDialect dialect;
 
 	    public RecursiveIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
 	        this.connection = connection;
@@ -107,8 +107,8 @@ public class SubNkPkQueryIdentity extends IdentityModel {
 			query.append(ArrayFormat.format(parentTable.getPKColumnNames()));
 			query.append(" from ").append(parentTable);
 	    	Iterator<ResultSet> rawIterator = new QueryIterator(query.toString(), connection, 100);
-	        ResultSetConverter<Object> converter = new ResultSetConverter<Object>(Object.class, true);
-	    	return new ConvertingIterator<ResultSet, Object>(rawIterator, converter);
+	        ResultSetConverter<Object> converter = new ResultSetConverter<>(Object.class, true);
+	    	return new ConvertingIterator<>(rawIterator, converter);
 		}
 
 		@Override

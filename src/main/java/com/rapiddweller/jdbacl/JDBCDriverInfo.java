@@ -183,7 +183,7 @@ public class JDBCDriverInfo implements Serializable {
 		return (value == null || value.trim().length() == 0 ? "" : value.trim());
 	}
 	
-	private static HashMap<String, JDBCDriverInfo> instances = new HashMap<String, JDBCDriverInfo>();
+	private static final HashMap<String, JDBCDriverInfo> instances = new HashMap<>();
 	
 	static {
 		try {
@@ -202,7 +202,7 @@ public class JDBCDriverInfo implements Serializable {
 	        	driver.setUrlPattern(driverElement.getAttribute("url"));
 	        	driver.setDownloadUrl(driverElement.getAttribute("info"));
 	        	driver.setDefaultUser(driverElement.getAttribute("user"));
-	        	ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class);
+	        	ArrayBuilder<String> builder = new ArrayBuilder<>(String.class);
 	        	for (Element dependencyElement : XMLUtil.getChildElements(driverElement, false, "dependency"))
 	        		builder.add(dependencyElement.getAttribute("lib"));
 	        	driver.setJars(builder.toArray());

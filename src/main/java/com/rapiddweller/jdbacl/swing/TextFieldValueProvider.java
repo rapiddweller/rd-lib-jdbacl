@@ -31,7 +31,7 @@ import javax.swing.JTextField;
  */
 public class TextFieldValueProvider {
 
-	private JTextField field;
+	private final JTextField field;
 	
 	public TextFieldValueProvider(JTextField field) {
 		this.field = field;

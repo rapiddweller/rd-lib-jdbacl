@@ -43,7 +43,7 @@ public class ResultSetDataIterator implements DataIterator<ResultSet> {
     private ResultSet resultSet;
     private String[] columnLabels;
 
-    private String query;
+    private final String query;
     
     // constructors ----------------------------------------------------------------------------------------------------
 

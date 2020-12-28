@@ -46,8 +46,8 @@ public class DBRowIterator implements HeavyweightIterator<DBRow> {
 
     private DBTable table;
     private ResultSet resultSet;
-    private ResultSetMetaData resultSetMetaData;
-    private ResultSetIterator resultSetIterator;
+    private final ResultSetMetaData resultSetMetaData;
+    private final ResultSetIterator resultSetIterator;
     private boolean closed;
 
 	public DBRowIterator(DBTable table, Connection connection, String whereClause) throws SQLException {

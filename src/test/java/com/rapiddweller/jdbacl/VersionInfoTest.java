@@ -23,8 +23,6 @@ package com.rapiddweller.jdbacl;
 
 import static org.junit.Assert.*;
 
-import java.util.Map;
-
 import com.rapiddweller.commons.version.VersionInfo;
 import org.junit.Test;
 
@@ -50,8 +48,7 @@ public class VersionInfoTest {
 	}
 
 	private static VersionInfo getVersionInfo() {
-		VersionInfo version = VersionInfo.getInfo("jdbacl");
-		return version;
+		return VersionInfo.getInfo("jdbacl");
 	}
 
 	private static void checkVersionNumber(String versionNumber) {

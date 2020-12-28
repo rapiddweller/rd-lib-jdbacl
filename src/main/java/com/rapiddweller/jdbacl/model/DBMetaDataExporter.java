@@ -31,5 +31,5 @@ import java.sql.SQLException;
  * @author Volker Bergmann
  */
 public interface DBMetaDataExporter {
-	void export(Database database) throws IOException, SQLException; 
+	void export(Database database) throws IOException;
 }

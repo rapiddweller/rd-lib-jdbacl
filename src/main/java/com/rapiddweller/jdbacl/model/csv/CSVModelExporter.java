@@ -54,14 +54,14 @@ import com.rapiddweller.jdbacl.model.FKChangeRule;
  */
 public class CSVModelExporter implements DBMetaDataExporter {
 	
-	File rootDirectory;
+	final File rootDirectory;
 	
 	public CSVModelExporter(File rootDirectory) {
 		this.rootDirectory = rootDirectory;
 	}
 
 	@Override
-	public void export(Database database) throws IOException, SQLException {
+	public void export(Database database) throws IOException {
 		FileUtil.ensureDirectoryExists(rootDirectory);
 		exportColumns(database);
 		exportPrimaryKeys(database);

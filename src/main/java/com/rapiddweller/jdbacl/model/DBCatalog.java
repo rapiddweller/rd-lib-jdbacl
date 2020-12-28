@@ -43,7 +43,7 @@ public class DBCatalog extends AbstractCompositeDBObject<DBSchema> implements Na
 
     private static final long serialVersionUID = 3956827426638393655L;
     
-    OrderedNameMap<DBSchema> schemas;
+    final OrderedNameMap<DBSchema> schemas;
     
     // constructors ----------------------------------------------------------------------------------------------------
 
@@ -121,7 +121,7 @@ public class DBCatalog extends AbstractCompositeDBObject<DBSchema> implements Na
     // table operations ------------------------------------------------------------------------------------------------
     
     public List<DBTable> getTables() {
-    	List<DBTable> tables = new ArrayList<DBTable>();
+    	List<DBTable> tables = new ArrayList<>();
         for (DBSchema schema : getSchemas())
             for (DBTable table : schema.getTables())
             	tables.add(table);
@@ -149,7 +149,7 @@ public class DBCatalog extends AbstractCompositeDBObject<DBSchema> implements Na
     }
 
 	public List<DBSequence> getSequences() {
-    	List<DBSequence> sequences = new ArrayList<DBSequence>();
+    	List<DBSequence> sequences = new ArrayList<>();
         for (DBSchema schema : getSchemas())
             for (DBSequence table : schema.getSequences(true))
             	sequences.add(table);

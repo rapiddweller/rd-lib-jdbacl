@@ -34,9 +34,9 @@ import com.rapiddweller.commons.bean.ObjectOrArray;
  */
 public class GlobalRowId {
 
-	private String schemaId;
-	private String tableName;
-	private ObjectOrArray pk;
+	private final String schemaId;
+	private final String tableName;
+	private final ObjectOrArray pk;
 
 	public GlobalRowId(String schemaId, String tableName, Object pk) {
 	    this.schemaId = schemaId;

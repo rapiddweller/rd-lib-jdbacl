@@ -33,8 +33,8 @@ import com.rapiddweller.commons.Filter;
  */
 public class TableNameFilter implements Filter<String> {
 	
-	private Pattern tableInclusionPattern;
-	private Pattern tableExclusionPattern;
+	private final Pattern tableInclusionPattern;
+	private final Pattern tableExclusionPattern;
 
 	public TableNameFilter(String tableInclusionPattern, String tableExclusionPattern) {
 		this.tableInclusionPattern = Pattern.compile(tableInclusionPattern != null ? tableInclusionPattern : ".*");

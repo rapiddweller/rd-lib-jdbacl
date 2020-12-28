@@ -41,11 +41,11 @@ public class DBSchema extends AbstractCompositeDBObject<DBObject> implements Tab
 
 	private static final long serialVersionUID = -8481832064630225273L;
 	
-	private List<DBObject> components;
-	private OrderedNameMap<DBTable> tables;
-	private OrderedNameMap<DBSequence> sequences;
-    private OrderedNameMap<DBTrigger> triggers;
-    private OrderedNameMap<DBPackage> packages;
+	private final List<DBObject> components;
+	private final OrderedNameMap<DBTable> tables;
+	private final OrderedNameMap<DBSequence> sequences;
+    private final OrderedNameMap<DBTrigger> triggers;
+    private final OrderedNameMap<DBPackage> packages;
     
     // constructors ----------------------------------------------------------------------------------------------------
 
@@ -57,7 +57,7 @@ public class DBSchema extends AbstractCompositeDBObject<DBObject> implements Tab
     	super(name, "schema");
     	if (catalog != null)
     		catalog.addSchema(this);
-		this.components = new ArrayList<DBObject>();
+		this.components = new ArrayList<>();
 		this.tables = OrderedNameMap.createCaseIgnorantMap();
 		this.sequences = OrderedNameMap.createCaseIgnorantMap();
     	this.triggers = OrderedNameMap.createCaseIgnorantMap();

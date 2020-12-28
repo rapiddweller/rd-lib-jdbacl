@@ -55,7 +55,7 @@ public class JDBCDBImporterTest extends AbstractJDBCDBImporterTest {
 	}
 	
 	@Test
-	public void testImportDatabase_HSQL() throws Exception {
+	public void testImportDatabase_HSQL() {
 		Database db = new Database("hsqlmem", new JDBCDBImporter(connection, "sa", null), true);
 		checkImports(false, false, false, db);
 		DBSchema schema = checkSchema(db);

@@ -49,13 +49,13 @@ public class LoggingResultSetHandler implements InvocationHandler {
 
     private static final Logger JDBC_LOGGER = LogManager.getLogger(LogCategories.JDBC);
     
-    private static volatile AtomicInteger openResultSetCount;
+    private static final AtomicInteger openResultSetCount;
     private static ResourceMonitor openResultSetMonitor;
 
 	// attributes ------------------------------------------------------------------------------------------------------
 
-	private ResultSet realResultSet;
-	private Statement statement;
+	private final ResultSet realResultSet;
+	private final Statement statement;
 	
 	// constructor -----------------------------------------------------------------------------------------------------
 
@@ -81,16 +81,18 @@ public class LoggingResultSetHandler implements InvocationHandler {
 			throws Throwable {
 		try {
 			String methodName = method.getName();
-			if ("close".equals(methodName)) {
-				openResultSetCount.decrementAndGet();
-				if (openResultSetMonitor != null)
-					openResultSetMonitor.unregister(this);
-				JDBC_LOGGER.debug("closing result set {}", this);
-			} else if ("toString".equals(methodName)) {
-				return "ResultSet (" + statement + ")";
-			} else if ("getStatement".equals(methodName)) {
-				return statement;
-			}
+            switch (methodName) {
+                case "close":
+                    openResultSetCount.decrementAndGet();
+                    if (openResultSetMonitor != null)
+                        openResultSetMonitor.unregister(this);
+                    JDBC_LOGGER.debug("closing result set {}", this);
+                    break;
+                case "toString":
+                    return "ResultSet (" + statement + ")";
+                case "getStatement":
+                    return statement;
+            }
 			return BeanUtil.invoke(realResultSet, method, args);
 		} catch (ConfigurationError e) {
 			if (e.getCause() instanceof InvocationTargetException && e.getCause().getCause() instanceof SQLException)

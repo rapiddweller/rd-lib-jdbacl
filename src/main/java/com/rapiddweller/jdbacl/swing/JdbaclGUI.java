@@ -64,12 +64,12 @@ public class JdbaclGUI extends JFrame implements JavaApplication {
 	private static final String GUI_PROPERTIES_FILE_NAME = 
 		DATABENE_DIRECTORY_NAME + File.separator + "JdbaclGUI.properties";
 
-	private EnvironmentSelector environmentSelector;
-	private DatabasePane databasePane;
+	private final EnvironmentSelector environmentSelector;
+	private final DatabasePane databasePane;
 
-	private JTextField exclusionField;
+	private final JTextField exclusionField;
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		ApplicationUtil.prepareNativeLAF("jdbacl");
 		JdbaclGUI appAndFrame = new JdbaclGUI();
 		ApplicationUtil.configureApplication(appAndFrame);
@@ -80,17 +80,14 @@ public class JdbaclGUI extends JFrame implements JavaApplication {
 		this.exclusionField = new JTextField();
 		this.environmentSelector = new EnvironmentSelector();
 		this.databasePane = new DatabasePane(new TextFieldValueProvider(exclusionField));
-		this.environmentSelector.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent evt) {
-				String environment = environmentSelector.getSelectedItem();
-				try {
-					databasePane.setEnvironment(environment);
-				} catch (ConnectFailedException ex) {
-					LOGGER.error("Error importing environment " + environment, ex);
-				} catch (ImportFailedException ex) {
-					LOGGER.error("Error importing environment " + environment, ex);
-				}
+		this.environmentSelector.addActionListener(evt -> {
+			String environment = environmentSelector.getSelectedItem();
+			try {
+				databasePane.setEnvironment(environment);
+			} catch (ConnectFailedException ex) {
+				LOGGER.error("Error importing environment " + environment, ex);
+			} catch (ImportFailedException ex) {
+				LOGGER.error("Error importing environment " + environment, ex);
 			}
 		});
 		createMenuBar();
@@ -164,7 +161,7 @@ public class JdbaclGUI extends JFrame implements JavaApplication {
 	private void saveState() {
 		try {
 			FileUtil.ensureDirectoryExists(new File(DATABENE_DIRECTORY_NAME));
-			Map<String, String> props = new OrderedMap<String, String>();
+			Map<String, String> props = new OrderedMap<>();
 			props.put("exclusionPattern", exclusionField.getText());
 			IOUtil.writeProperties(props, GUI_PROPERTIES_FILE_NAME);
 		} catch (IOException e) {

@@ -38,7 +38,7 @@ public class DBNotNullConstraint extends DBConstraint {
 
     private static final long serialVersionUID = 5087538327994954133L;
     
-	private String columnName;
+	private final String columnName;
 
     public DBNotNullConstraint(DBTable owner, String name, boolean nameDeterministic, String columnName) {
         super(name, nameDeterministic, "not null constraint", owner);

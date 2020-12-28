@@ -564,14 +564,14 @@ public class SQLUtil {
 		if (value > 0)
 			return String.valueOf(value);
 		else
-			return "- " + String.valueOf(Math.abs(value));
+			return "- " + Math.abs(value);
 	}
 
 	private static String renderDouble(double value) {
 		if (value > 0)
 			return String.valueOf(value);
 		else
-			return "- " + String.valueOf(Math.abs(value));
+			return "- " + Math.abs(value);
 	}
 
 	private static String quoteNameIfNecessary(String name) {

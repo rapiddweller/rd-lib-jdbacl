@@ -48,13 +48,11 @@ import com.rapiddweller.commons.ObjectNotFoundException;
 import com.rapiddweller.commons.StringUtil;
 import com.rapiddweller.commons.TimeUtil;
 import com.rapiddweller.commons.converter.TimestampFormatter;
-import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.model.DBCatalog;
 import com.rapiddweller.jdbacl.model.DBPackage;
 import com.rapiddweller.jdbacl.model.DBSchema;
 import com.rapiddweller.jdbacl.model.DBSequence;
 import com.rapiddweller.jdbacl.model.DBTable;
-import com.rapiddweller.jdbacl.model.DBTrigger;
 import com.rapiddweller.jdbacl.sql.Query;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -116,7 +114,7 @@ public abstract class DatabaseDialect {
 	 * @throws SQLException 
 	 */
 	protected void importReservedWords(Connection connection) throws SQLException {
-		this.reservedWords = new HashSet<String>();
+		this.reservedWords = new HashSet<>();
 		parseReservedWordsConfigFile();
 		if (connection != null)
 			importReservedWordsFromDriver(connection);
@@ -255,8 +253,7 @@ public abstract class DatabaseDialect {
         builder.append(") values (");
         if (columnInfos.size() > 0)
             builder.append("?");
-        for (int i = 1; i < columnInfos.size(); i++)
-            builder.append(",?");
+		builder.append(",?".repeat(Math.max(0, columnInfos.size() - 1)));
         builder.append(")");
         String sql = builder.toString();
         logger.debug("built SQL statement: " + sql);
@@ -321,8 +318,8 @@ public abstract class DatabaseDialect {
     	return appendQuoted(table.getName(), builder);
     }
 
-	private StringBuilder appendColumnName(String columnName, StringBuilder builder) {
-    	return appendQuoted(columnName, builder);
+	private void appendColumnName(String columnName, StringBuilder builder) {
+		appendQuoted(columnName, builder);
 	}
 	
     private StringBuilder appendQuoted(String name, StringBuilder builder) {
@@ -412,12 +409,11 @@ public abstract class DatabaseDialect {
 	}
 	*/
 	
-    public List<DBTrigger> queryTriggers(DBSchema schema, Connection connection) throws SQLException {
-		return new ArrayList<DBTrigger>();
+    public void queryTriggers(DBSchema schema, Connection connection) throws SQLException {
 	}
 
     public List<DBPackage> queryPackages(DBSchema schema, Connection connection) throws SQLException {
-		return new ArrayList<DBPackage>();
+		return new ArrayList<>();
 	}
 
 	public abstract void restrictRownums(int rowOffset, int rowCount, Query query);

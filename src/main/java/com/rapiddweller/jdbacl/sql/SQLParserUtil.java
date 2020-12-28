@@ -261,7 +261,7 @@ public class SQLParserUtil {
 	}
 
 	private static Expression<? extends Collection<?>> convertValueList(CommonTree node) {
-		List<Expression<?>> result = new ArrayList<Expression<?>>();
+		List<Expression<?>> result = new ArrayList<>();
 		for (CommonTree child : getChildNodes(node))
 			result.add(convertExpressionNode(child));
 		return ExpressionUtil.constant(result);
@@ -284,7 +284,7 @@ public class SQLParserUtil {
 	@SuppressWarnings("unchecked")
 	private static Expression<?> convertSub(CommonTree node) {
 		if (node.getChildCount() == 1) {
-			return new UnaryMinusExpression<Object>(convertExpressionNode(childAt(0, node)));
+			return new UnaryMinusExpression<>(convertExpressionNode(childAt(0, node)));
 		} else {
 			SubtractionExpression result = new SubtractionExpression();
 			for (CommonTree child : getChildNodes(node))
@@ -329,7 +329,7 @@ public class SQLParserUtil {
 
 	@SuppressWarnings("rawtypes")
 	private static Expression<?>[] convertArguments(CommonTree node) {
-		ArrayBuilder<Expression> result = new ArrayBuilder<Expression>(Expression.class);
+		ArrayBuilder<Expression> result = new ArrayBuilder<>(Expression.class);
 		for (CommonTree child : getChildNodes(node))
 			result.add(convertExpressionNode(child));
 		return result.toArray();
@@ -389,7 +389,7 @@ public class SQLParserUtil {
     }
 
 	private static List<Object> convertNodes(List<CommonTree> nodes, DatabaseDialect dialect) {
-	    List<Object> result = new ArrayList<Object>();
+	    List<Object> result = new ArrayList<>();
 	    for (CommonTree node : nodes)
 	    	result.add(convertNode(node, dialect));
 	    return result;
@@ -482,8 +482,7 @@ public class SQLParserUtil {
 	private static SQLParser parser(CharStream in) {
 		SQLLexer lex = new SQLLexer(in);
 	    CommonTokenStream tokens = new CommonTokenStream(lex);
-	    SQLParser parser = new SQLParser(tokens);
-	    return parser;
+		return new SQLParser(tokens);
     }
 
     private static ParseException mapToParseException(RecognitionException cause, String text) {

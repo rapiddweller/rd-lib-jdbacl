@@ -32,7 +32,7 @@ import com.rapiddweller.commons.TreeModel;
  */
 public class DBTreeModel implements TreeModel<DBObject> {
 
-	CompositeDBObject<?> root;
+	final CompositeDBObject<?> root;
 	
 	public DBTreeModel(CompositeDBObject<?> root) {
 		this.root = root;

@@ -63,26 +63,26 @@ public class SimpleTranscoderTest extends AbstractIdentityTest {
 		
 		// country
 		DBRow country = countryTable.queryByPK("DE", source, dialect);
-		checkCountry("DE", "GERMANY", country);
+		checkCountry("DE", country);
 		SimpleTranscoder.transcode(country, "DE", "DX", "s", identityProvider, mapper);
-		checkCountry("DX", "GERMANY", country);
+		checkCountry("DX", country);
 
 		// state
 		DBRow state = stateTable.queryByPK(1, source, dialect);
-		checkState(1, "DE", "BY", state);
+		checkState(1, "DE", state);
 		SimpleTranscoder.transcode(state, "DE|BY", 1001, "s", identityProvider, mapper);
-		checkState(1001, "DX", "BY", state);
+		checkState(1001, "DX", state);
 	}
 
-	private static void checkCountry(String code, String name, DBRow country) {
+	private static void checkCountry(String code, DBRow country) {
 		assertEquals(code, country.getCellValue("code"));
-		assertEquals(name, country.getCellValue("name"));
+		assertEquals("GERMANY", country.getCellValue("name"));
 	}
 	
-	private static void checkState(int id, String countryCode, String stateCode, DBRow state) {
+	private static void checkState(int id, String countryCode, DBRow state) {
 		assertEquals(id, state.getCellValue("id"));
 		assertEquals(countryCode, state.getCellValue("country"));
-		assertEquals(stateCode, state.getCellValue("code"));
+		assertEquals("BY", state.getCellValue("code"));
 	}
 
 }

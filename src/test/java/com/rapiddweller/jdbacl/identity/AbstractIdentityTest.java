@@ -33,10 +33,6 @@ import com.rapiddweller.commons.ImportFailedException;
 import com.rapiddweller.commons.SystemInfo;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.dialect.HSQLUtil;
-import com.rapiddweller.jdbacl.identity.IdentityModel;
-import com.rapiddweller.jdbacl.identity.IdentityProvider;
-import com.rapiddweller.jdbacl.identity.NkPkQueryIdentity;
-import com.rapiddweller.jdbacl.identity.SubNkPkQueryIdentity;
 import com.rapiddweller.jdbacl.model.Database;
 import com.rapiddweller.jdbacl.model.jdbc.JDBCMetaDataUtil;
 
@@ -123,12 +119,11 @@ public abstract class AbstractIdentityTest {
 		assertEquals(pk, cells[1]);
 	}
 	
-	protected void expectStateNkPk(String nk, int pk,
-			HeavyweightIterator<Object[]> iterator) {
+	protected void expectStateNkPk(HeavyweightIterator<Object[]> iterator) {
 		assertTrue(iterator.hasNext());
 		Object[] cells = iterator.next();
-		assertEquals(nk, cells[0]);
-		assertEquals(pk, cells[1]);
+		assertEquals("DE|BY", cells[0]);
+		assertEquals(1, cells[1]);
 	}
 
 }

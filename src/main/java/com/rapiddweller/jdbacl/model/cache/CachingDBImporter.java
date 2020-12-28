@@ -56,8 +56,8 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 	
 	private static final String CACHE_FILE_SUFFIX = ".meta.xml";
 	
-	protected JDBCDBImporter realImporter;
-	protected String environment;
+	protected final JDBCDBImporter realImporter;
+	protected final String environment;
 	
 	public CachingDBImporter(JDBCDBImporter realImporter, String environment) {
 		this.realImporter = realImporter;

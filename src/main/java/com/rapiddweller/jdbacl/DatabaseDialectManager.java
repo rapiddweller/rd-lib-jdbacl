@@ -40,7 +40,7 @@ public class DatabaseDialectManager {
 
     private static final String FILENAME = "com/rapiddweller/jdbacl/databene.db_dialect.properties";
 
-    private static Map<String, String> mappings;
+    private static final Map<String, String> mappings;
     
     static {
     	try {

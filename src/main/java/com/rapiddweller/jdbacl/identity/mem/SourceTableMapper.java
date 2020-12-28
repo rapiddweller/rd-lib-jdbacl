@@ -37,11 +37,11 @@ import com.rapiddweller.jdbacl.model.Database;
  */
 public class SourceTableMapper extends AbstractTableMapper {
 	
-	Map<Object, Object> sourcePkToTargetPk;
+	final Map<Object, Object> sourcePkToTargetPk;
 	
 	public SourceTableMapper(KeyMapper root, Connection connection, String dbId, IdentityModel table, Database database) {
 		super(root, connection, dbId, table, database);
-	    this.sourcePkToTargetPk = new HashMap<Object, Object>(1000);
+	    this.sourcePkToTargetPk = new HashMap<>(1000);
     }
 	
 	public void store(Object sourcePK, String naturalKey, Object targetPK) {

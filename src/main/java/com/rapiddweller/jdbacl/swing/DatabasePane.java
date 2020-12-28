@@ -51,10 +51,10 @@ public class DatabasePane extends JPanel {
 	
 	private static final Logger LOGGER = LogManager.getLogger(DatabasePane.class);
 	
-	private JScrollPane scrollPane;
+	private final JScrollPane scrollPane;
 	private DatabaseTree tree;
 	private DBMetaDataImporter importer;
-	private TextFieldValueProvider exclusionPatternProvider;
+	private final TextFieldValueProvider exclusionPatternProvider;
 
 	public DatabasePane(TextFieldValueProvider exclusionPatternProvider) {
 		super(new BorderLayout());
@@ -77,7 +77,7 @@ public class DatabasePane extends JPanel {
 	}
 
 	class Importer implements Runnable {
-		String environment;
+		final String environment;
 		public Importer(String environment) {
 			this.environment = environment;
 		}
@@ -87,13 +87,10 @@ public class DatabasePane extends JPanel {
 				Database database = JDBCMetaDataUtil.getMetaData(environment, true, true, true, true, 
 						".*", exclusionPatternProvider.getValue(), true, true);
 				DatabasePane.this.importer = importer;
-				final TreeModel model = new SwingTreeModelAdapter<DBObject>(new DatabaseTreeModel(database));
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						tree = new DatabaseTree(model);
-						scrollPane.setViewportView(tree);
-					}
+				final TreeModel model = new SwingTreeModelAdapter<>(new DatabaseTreeModel(database));
+				SwingUtilities.invokeLater(() -> {
+					tree = new DatabaseTree(model);
+					scrollPane.setViewportView(tree);
 				});
 			} catch (Exception e) {
 				throw new RuntimeException(e);

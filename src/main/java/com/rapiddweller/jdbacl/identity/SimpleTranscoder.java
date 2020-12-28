@@ -35,7 +35,7 @@ import com.rapiddweller.jdbacl.model.DBTable;
  */
 public class SimpleTranscoder {
 
-	public static DBRow transcode(DBRow row, String nk, Object newPK, String sourceDbId, IdentityProvider identityProvider, KeyMapper mapper) {
+	public static void transcode(DBRow row, String nk, Object newPK, String sourceDbId, IdentityProvider identityProvider, KeyMapper mapper) {
 		DBTable table = row.getTable();
 		String tableName = table.getName();
 		IdentityModel identity = identityProvider.getIdentity(tableName);
@@ -63,8 +63,7 @@ public class SimpleTranscoder {
 				row.setFKValue(fk, targetRef);
 			}
 		}
-		
-		return row;
+
     }
 
 	/* TODO v1.0 use this for merging

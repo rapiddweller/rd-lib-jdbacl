@@ -115,8 +115,8 @@ class ImportedKey {
      */
     public short deferrablibity;
 
-    private List<String> foreignKeyColumnNames = new ArrayList<String>();
-    private List<String> refereeColumnNames = new ArrayList<String>();
+    private final List<String> foreignKeyColumnNames = new ArrayList<>();
+    private final List<String> refereeColumnNames = new ArrayList<>();
 
     public void addForeignKeyColumn(String foreignKeyColumnName, String targetColumnName) {
         foreignKeyColumnNames.add(foreignKeyColumnName);

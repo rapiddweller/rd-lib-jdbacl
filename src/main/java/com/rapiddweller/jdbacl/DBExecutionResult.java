@@ -30,8 +30,8 @@ package com.rapiddweller.jdbacl;
  */
 public class DBExecutionResult {
 	
-	public Object result;
-	public Boolean changedStructure;
+	public final Object result;
+	public final Boolean changedStructure;
 	
 	public DBExecutionResult(Object result, Boolean changedStructure) {
 		super();

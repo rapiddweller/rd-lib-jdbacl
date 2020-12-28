@@ -92,8 +92,7 @@ public class IdentityParser extends AbstractXMLElementParser<Object> {
 	private IdentityModel parseUniqueKey(Element element, String tableName) {
 		String[] columnNames = getRequiredAttribute("columns", element).split(",");
 		columnNames = StringUtil.trimAll(columnNames);
-		UniqueKeyIdentity identity = new UniqueKeyIdentity(tableName, columnNames);
-	    return identity;
+		return new UniqueKeyIdentity(tableName, columnNames);
     }
 
 	private IdentityModel parseSubNkPkQuery(Element element, IdentityProvider identityProvider, String tableName) {

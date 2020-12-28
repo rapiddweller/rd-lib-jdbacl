@@ -45,7 +45,7 @@ import static junit.framework.Assert.*;
  */
 public class DBUtilTest {
 
-	String SCRIPT_FILE = "com/rapiddweller/jdbacl/create_tables.hsql.sql";
+	final String SCRIPT_FILE = "com/rapiddweller/jdbacl/create_tables.hsql.sql";
 
 	@Test
 	public void testRunScript() throws Exception {

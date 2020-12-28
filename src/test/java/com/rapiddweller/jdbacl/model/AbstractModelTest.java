@@ -40,14 +40,14 @@ public abstract class AbstractModelTest {
 	protected static final String ENVIRONMENT = "com/rapiddweller/jdbacl/model/hsqlmem";
 	protected static final String CREATE_TABLES_FILE_NAME = "com/rapiddweller/jdbacl/model/xml/create_tables.sql";
 	protected static final String DROP_TABLES_FILE_NAME = "com/rapiddweller/jdbacl/model/xml/drop_tables.sql";
-	protected static String EAGER_TEST_MODEL_FILENAME = "com/rapiddweller/jdbacl/model/xml/testmodel-eager.xml";
-	protected static String LAZY_TEST_MODEL_FILENAME = "com/rapiddweller/jdbacl/model/xml/testmodel-lazy-seq.xml";
+	protected static final String EAGER_TEST_MODEL_FILENAME = "com/rapiddweller/jdbacl/model/xml/testmodel-eager.xml";
+	protected static final String LAZY_TEST_MODEL_FILENAME = "com/rapiddweller/jdbacl/model/xml/testmodel-lazy-seq.xml";
 
 	private Connection connection;
 	
 	@SuppressWarnings("unused")
-	protected static Database createTestModel(boolean online) {
-		Database db = (online ? new Database(ENVIRONMENT) : new Database(ENVIRONMENT, "hsql", "1.5.8", new Date()));
+	protected static Database createTestModel() {
+		Database db = (false ? new Database(ENVIRONMENT) : new Database(ENVIRONMENT, "hsql", "1.5.8", new Date()));
     	db.setImportDate(TimeUtil.date(2011, 9, 21, 16, 50, 38, 0));
     	db.setUser("Alice");
     	db.setTableInclusionPattern("MY_.*");

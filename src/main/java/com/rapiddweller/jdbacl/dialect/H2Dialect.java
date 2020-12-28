@@ -46,10 +46,10 @@ public class H2Dialect extends DatabaseDialect {
 	private static final String TIME_PATTERN = "''HH:mm:ss''";
 	private static final String DATETIME_PATTERN = "''yyyy-MM-dd HH:mm:ss''";
 
-	Pattern randomPKNamePattern = Pattern.compile("CONSTRAINT_\\w+");
-	Pattern randomUKNamePattern = Pattern.compile("CONSTRAINT_INDEX_\\w+");
-	Pattern randomFKNamePattern = Pattern.compile("CONSTRAINT_\\w+");
-	Pattern randomIndexNamePattern = Pattern.compile("CONSTRAINT_INDEX_\\w+|PRIMARY_KEY_\\w+");
+	final Pattern randomPKNamePattern = Pattern.compile("CONSTRAINT_\\w+");
+	final Pattern randomUKNamePattern = Pattern.compile("CONSTRAINT_INDEX_\\w+");
+	final Pattern randomFKNamePattern = Pattern.compile("CONSTRAINT_\\w+");
+	final Pattern randomIndexNamePattern = Pattern.compile("CONSTRAINT_INDEX_\\w+|PRIMARY_KEY_\\w+");
 
     public H2Dialect() {
 	    super("h2", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
@@ -74,7 +74,7 @@ public class H2Dialect extends DatabaseDialect {
     public DBSequence[] querySequences(Connection connection) throws SQLException {
         String query = "select SEQUENCE_CATALOG, SEQUENCE_SCHEMA, SEQUENCE_NAME, CURRENT_VALUE, INCREMENT, CACHE from information_schema.sequences";
         // TODO v0.8.2 restrict to catalog and schema, see http://www.h2database.com/html/grammar.html
-        ArrayBuilder<DBSequence> builder = new ArrayBuilder<DBSequence>(DBSequence.class);
+        ArrayBuilder<DBSequence> builder = new ArrayBuilder<>(DBSequence.class);
         ResultSet resultSet = DBUtil.executeQuery(query, connection);
         while (resultSet.next()) {
         	String name = resultSet.getString("SEQUENCE_NAME");

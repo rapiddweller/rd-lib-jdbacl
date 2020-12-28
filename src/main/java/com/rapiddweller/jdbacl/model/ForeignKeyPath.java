@@ -40,7 +40,7 @@ import com.rapiddweller.jdbacl.SQLUtil;
 public class ForeignKeyPath {
 	
 	private String startTable;
-	private List<DBForeignKeyConstraint> edges;
+	private final List<DBForeignKeyConstraint> edges;
 
 	public ForeignKeyPath(DBForeignKeyConstraint... edges) {
 		this.startTable = (ArrayUtil.isEmpty(edges) ? null : edges[0].getTable().getName());
@@ -49,12 +49,12 @@ public class ForeignKeyPath {
 
 	public ForeignKeyPath(String startTable) {
 		this.startTable = startTable;
-		this.edges = new ArrayList<DBForeignKeyConstraint>();
+		this.edges = new ArrayList<>();
 	}
 
 	public ForeignKeyPath(ForeignKeyPath prototype) {
 		this.startTable = prototype.startTable;
-		this.edges = new ArrayList<DBForeignKeyConstraint>(prototype.edges);
+		this.edges = new ArrayList<>(prototype.edges);
 	}
 
 	public String getStartTable() {
@@ -90,7 +90,7 @@ public class ForeignKeyPath {
 	}
 
 	public List<DBTable> getIntermediates() {
-		List<DBTable> result = new ArrayList<DBTable>(edges.size() - 1);
+		List<DBTable> result = new ArrayList<>(edges.size() - 1);
 		for (int i = 0; i < edges.size() - 1; i++)
 			result.add(edges.get(i).getRefereeTable());
 		return result;

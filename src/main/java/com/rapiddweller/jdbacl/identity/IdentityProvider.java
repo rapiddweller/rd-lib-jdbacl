@@ -32,7 +32,7 @@ import com.rapiddweller.commons.collection.OrderedNameMap;
  */
 public class IdentityProvider {
 
-	private OrderedNameMap<IdentityModel> identities = OrderedNameMap.createCaseIgnorantMap();
+	private final OrderedNameMap<IdentityModel> identities = OrderedNameMap.createCaseIgnorantMap();
 	
 	public IdentityModel getIdentity(String tableName) {
 		return getIdentity(tableName, true);

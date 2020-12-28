@@ -37,18 +37,18 @@ import com.rapiddweller.jdbacl.model.Database;
  */
 public class TargetDatabaseMapper {
 
-	KeyMapper root;
-	Connection target;
-	String targetDbId;
-	Database database;
-	Map<String, TargetTableMapper> tableMappers;
+	final KeyMapper root;
+	final Connection target;
+	final String targetDbId;
+	final Database database;
+	final Map<String, TargetTableMapper> tableMappers;
 	
 	public TargetDatabaseMapper(KeyMapper root, Connection target, String targetDbId, Database database) {
 		this.root = root;
 		this.target = target;
 		this.targetDbId = targetDbId;
 		this.database = database;
-		tableMappers = new HashMap<String, TargetTableMapper>(500);
+		tableMappers = new HashMap<>(500);
     }
 	
 	// interface -------------------------------------------------------------------------------------------------------

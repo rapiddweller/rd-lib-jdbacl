@@ -49,7 +49,7 @@ public class DBColumn extends AbstractDBTableComponent {
     protected String defaultValue;
     protected boolean versionColumn;
 
-    protected List<DBUniqueConstraint> ukConstraints; // constraints may be unnamed, so a Map does not make sense
+    protected final List<DBUniqueConstraint> ukConstraints; // constraints may be unnamed, so a Map does not make sense
     protected DBNotNullConstraint notNullConstraint;
 
     // constructors ----------------------------------------------------------------------------------------------------
@@ -83,7 +83,7 @@ public class DBColumn extends AbstractDBTableComponent {
         this.fractionDigits = fractionDigits;
         this.doc = null;
         this.defaultValue = null;
-        this.ukConstraints = new ArrayList<DBUniqueConstraint>();
+        this.ukConstraints = new ArrayList<>();
         this.notNullConstraint = null;
         this.versionColumn = false;
     }

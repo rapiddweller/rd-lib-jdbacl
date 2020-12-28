@@ -1,46 +1,25 @@
-stages:
-  - setup
-  - build
-  # - quality
-  - distribution
-  - publish
 
 # common vars for multiple stages/jobs
 variables:
   ARTIFACT_ID: "rd-lib-jdbacl"
-  ARTIFACT_VERSION_BASE: "0.8.20" # should be updated with the final release (expected value: next release version)
-  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  ARTIFACT_VERSION_BASE: "1.1.0" # should be updated with the final release (expected value: next release version)
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode"
+  PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/releases/${CI_COMMIT_TAG}"
+  RELEASE_JDK11: "true"
 
+cache:
+  paths:
+    - .m2/repository/
 
-# setup
-# ARTIFACT_VERSION is set to var ARTIFACT_VERSION_BASE
-setup:jdk-8:
-  stage: setup
-  image:
-    name: alpine/git:latest
-    entrypoint: [""]
-  script:
-    - export RD_PROJECT_LATEST_TAG=$(git describe --abbrev=0 --tags)
-    - echo "RD_PROJECT_LATEST_TAG=$RD_PROJECT_LATEST_TAG" >> build.env
-    - export JAVA_JDKVERSION_TAG="jdk-8"
-    - echo "JAVA_JDKVERSION_TAG=$JAVA_JDKVERSION_TAG" >> build.env
-    - |
-      if [ -z "$CI_COMMIT_TAG" ];
-      then
-        export ARTIFACT_VERSION=$ARTIFACT_VERSION_BASE-$CI_PIPELINE_ID+$JAVA_JDKVERSION_TAG
-        echo "ARTIFACT_VERSION=$ARTIFACT_VERSION" >> build.env
-      else
-        export ARTIFACT_VERSION=$CI_COMMIT_TAG+$JAVA_JDKVERSION_TAG
-        echo "ARTIFACT_VERSION=$ARTIFACT_VERSION" >> build.env
-      fi
-    - export ARTIFACT_FULLNAME=$ARTIFACT_ID-$ARTIFACT_VERSION
-    - echo "ARTIFACT_FULLNAME=$ARTIFACT_FULLNAME" >> build.env
-    - export
-  artifacts:
-    reports:
-      dotenv: build.env
-
+stages:
+  - setup
+  - build
+  - distribution
+  - quality
+  - upload
+  - release
+###################### Setup ######################
 
 setup:jdk-11:
   stage: setup
@@ -55,45 +34,24 @@ setup:jdk-11:
     - |
       if [ -z "$CI_COMMIT_TAG" ];
       then
-        export ARTIFACT_VERSION=$ARTIFACT_VERSION_BASE-$CI_PIPELINE_ID+$JAVA_JDKVERSION_TAG
+        export ARTIFACT_VERSION=$ARTIFACT_VERSION_BASE+$JAVA_JDKVERSION_TAG
         echo "ARTIFACT_VERSION=$ARTIFACT_VERSION" >> build.env
       else
         export ARTIFACT_VERSION=$CI_COMMIT_TAG+$JAVA_JDKVERSION_TAG
         echo "ARTIFACT_VERSION=$ARTIFACT_VERSION" >> build.env
       fi
-    - export ARTIFACT_FULLNAME=$ARTIFACT_ID-$ARTIFACT_VERSION
+    - export ARTIFACT_FULLNAME=$ARTIFACT_ID-$ARTIFACT_VERSION+$JAVA_JDKVERSION_TAG
     - echo "ARTIFACT_FULLNAME=$ARTIFACT_FULLNAME" >> build.env
-    - export
   artifacts:
     reports:
       dotenv: build.env
-
 
 ###################### Test / Build ######################
 
 .update-mvn-project: &update-mvn-project
   before_script:
-    - sed -i 's/--project-version--/'$ARTIFACT_VERSION'/g' pom.xml
-    - |
-      if [ $JAVA_JDKVERSION_TAG = "jdk-11" ];
-      then
-        sed -i 's#<java_source_version>1.8</java_source_version>#<java_source_version>11</java_source_version>#' pom.xml
-        sed -i 's#<java_target_version>1.8</java_target_version>#<java_target_version>11</java_target_version>#' pom.xml
-      fi
-
-build:jdk-8:
-  <<: *update-mvn-project
-  image: maven:3-adoptopenjdk-8
-  needs:
-    - job: setup:jdk-8
-      artifacts: true
-  stage: build
-  artifacts:
-    paths:
-      - target/*.jar
-  script:
-    - mvn -version
-    - mvn $MAVEN_CLI_OPTS clean package
+    #    - sed -i 's/--project-version--/'$ARTIFACT_VERSION'/g' pom.xml
+    - mvn versions:set -DnewVersion=$ARTIFACT_VERSION
 
 build:jdk-11:
   <<: *update-mvn-project
@@ -111,24 +69,42 @@ build:jdk-11:
 
 ###################### Sonarqube ######################
 
+.sonar-template: &sonar
+  <<: *update-mvn-project
+  stage: quality
+  when: manual
+  allow_failure: true
+  variables:
+    SONAR_ANALYSIS_MODE: publish
+    GIT_DEPTH: "0"
+  only:
+    - master
+
+quality:sonarqube-jdk-11:
+  <<: *sonar
+  image: maven:3-adoptopenjdk-11
+  needs:
+    - job: setup:jdk-11
+      artifacts: true
+    - job: build:jdk-11
+      artifacts: true
+  script:
+    - mvn $MAVEN_CLI_OPTS verify sonar:sonar
+      -Dsonar.projectKey=$CI_PROJECT_PATH+$JAVA_JDKVERSION_TAG
+      -Dsonar.projectName=$CI_PROJECT_NAMESPACE/$ARTIFACT_ID+$JAVA_JDKVERSION_TAG
+      -Dsonar.projectVersion=$ARTIFACT_VERSION
+      -Dsonar.java.binaries=target
+      -Dsonar.sourceEncoding=UTF-8
+      -Dsonar.sources=src/main/java
+      -Dsonar.tests=src/test/java
+      -Dsonar.junit.reportPaths=target/surefire-reports
+      -Dsonar.language=java
+      -Dsonar.host.url=$SONARQUBE_HOST
+      -Dsonar.login=$SONARQUBE_TOKEN
+      -Dsonar.scm.disabled=true
+      -Dsonar.ws.timeout=120
 
 ###################### Assembly and Deploy ######################
-
-assembly:jdk-8:
-  <<: *update-mvn-project
-  needs:
-    - job: setup:jdk-8
-      artifacts: true
-    - job: build:jdk-8
-      artifacts: true
-  image: maven:3.6.3-adoptopenjdk-8
-  stage: distribution
-  artifacts:
-    paths:
-      - target/*.tar.gz
-      - target/*.zip
-  script:
-    - mvn $MAVEN_CLI_OPTS -Dmaven.test.skip=true clean install site:site assembly:single
 
 assembly:jdk-11:
   <<: *update-mvn-project
@@ -139,23 +115,92 @@ assembly:jdk-11:
       artifacts: true
   image: maven:3-adoptopenjdk-11
   stage: distribution
+  allow_failure: true
   artifacts:
     paths:
       - target/*.tar.gz
       - target/*.zip
       - target/site/
+    reports:
+      dotenv: build.env
   script:
     - mvn $MAVEN_CLI_OPTS -Dmaven.test.skip=true clean install site:site assembly:single
-  allow_failure: true
 
-deploy:jdk-8:
+deploy:jdk-11:
   <<: *update-mvn-project
   needs:
-    - job: setup:jdk-8
+    - job: setup:jdk-11
       artifacts: true
-    - job: build:jdk-8
+    - job: build:jdk-11
       artifacts: true
-  image: maven:3.6.3-adoptopenjdk-8
+  image: maven:3.6.3-adoptopenjdk-11
   stage: distribution
   script:
     - mvn $MAVEN_CLI_OPTS -Dmaven.test.skip=true clean install deploy
+
+###################### Upload Binaries ######################
+
+upload:jdk-11:
+  stage: upload
+  image: curlimages/curl:latest
+  needs:
+    - job: setup:jdk-11
+      artifacts: true
+    - job: assembly:jdk-11
+      artifacts: true
+  allow_failure: true
+  artifacts:
+    reports:
+      dotenv: build.env
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: manual
+  script:
+    - export UPLOAD_DIST_ZIP_JDK11_NAME=$ARTIFACT_FULLNAME-dist.zip
+    - echo "UPLOAD_DIST_ZIP_JDK11_NAME=$UPLOAD_DIST_ZIP_JDK11_NAME" >> build.env
+    - |
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file target/$UPLOAD_DIST_ZIP_JDK11_NAME ${PACKAGE_REGISTRY_URL}/$UPLOAD_DIST_ZIP_JDK11_NAME
+    - export UPLOAD_DIST_TARGZ_JDK11_NAME=$ARTIFACT_FULLNAME-dist.tar.gz
+    - echo "UPLOAD_DIST_TARGZ_JDK11_NAME=$UPLOAD_DIST_TARGZ_JDK11_NAME" >> build.env
+    - |
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file target/$UPLOAD_DIST_TARGZ_JDK11_NAME ${PACKAGE_REGISTRY_URL}/$UPLOAD_DIST_TARGZ_JDK11_NAME
+
+###################### Release ######################
+
+
+release:dist-jdk-11:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  allow_failure: true
+  needs:
+    - job: setup:jdk-11
+      artifacts: true
+    - job: upload:jdk-11
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: manual
+  script:
+    - |
+      release-cli create --name "Release ${ARTIFACT_VERSION}" --tag-name $CI_COMMIT_TAG \
+        --assets-link "{\"name\":\"${UPLOAD_DIST_ZIP_JDK11_NAME}\",\"url\":\"${PACKAGE_REGISTRY_URL}/${UPLOAD_DIST_ZIP_JDK11_NAME}\"}" \
+        --assets-link "{\"name\":\"${UPLOAD_DIST_TARGZ_JDK11_NAME}\",\"url\":\"${PACKAGE_REGISTRY_URL}/${UPLOAD_DIST_TARGZ_JDK11_NAME}\"}"
+
+
+release:mvncentral-jdk-11:
+  <<: *update-mvn-project
+  stage: release
+  image: maven:3-adoptopenjdk-11
+  allow_failure: true
+  needs:
+    - job: setup:jdk-11
+      artifacts: true
+  rules:
+    - if: '$CI_COMMIT_TAG && $CI_SERVER_HOST == "gitlab.com"'
+      when: manual
+  script:
+    - apt update && apt-get -y install gnupg
+    ## Add gpg key to sign
+    - export GPG_TTY=$(tty)
+    - gpg --batch --import <(echo "$GPG_PRIVATE_KEY")
+    - mvn $MAVEN_CLI_OPTS clean deploy -P release

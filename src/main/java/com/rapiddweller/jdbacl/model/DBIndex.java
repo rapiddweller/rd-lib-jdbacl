@@ -41,7 +41,7 @@ public abstract class DBIndex extends AbstractDBTableComponent implements MultiC
 
 	private static final long serialVersionUID = -1656761838194962745L;
 	
-    private boolean nameDeterministic;
+    private final boolean nameDeterministic;
 
     public DBIndex() {
         this(null, false, null);

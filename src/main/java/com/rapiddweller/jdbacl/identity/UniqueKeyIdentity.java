@@ -78,7 +78,7 @@ public class UniqueKeyIdentity extends IdentityModel {
 
 	public class UniqueKeyNkPkIterator extends ConvertingIterator<Object[], Object[]> implements TabularIterator {
 		
-		String[] pkColumnNames;
+		final String[] pkColumnNames;
 
 		public UniqueKeyNkPkIterator(TabularIterator rawIterator, ColumnToNkConverter converter, String[] pkColumnNames) {
 			super(rawIterator, converter);
@@ -98,8 +98,8 @@ public class UniqueKeyIdentity extends IdentityModel {
 	
 	public class ColumnToNkConverter extends ThreadSafeConverter<Object[], Object[]> {
 		
-		String dbId;
-		KeyMapper mapper;
+		final String dbId;
+		final KeyMapper mapper;
 		
 		public ColumnToNkConverter(String dbId, KeyMapper mapper) {
 			super(Object[].class, Object[].class);
@@ -114,7 +114,7 @@ public class UniqueKeyIdentity extends IdentityModel {
 				Object value = raw[i];
 				nkBuilder.addComponent(value);
 			}
-			ArrayBuilder<Object> arrayBuilder = new ArrayBuilder<Object>(Object.class);
+			ArrayBuilder<Object> arrayBuilder = new ArrayBuilder<>(Object.class);
 			arrayBuilder.add(nkBuilder.toString());
 			for (int i = columnNames.length; i < raw.length; i++)
 				arrayBuilder.add(raw[i]);

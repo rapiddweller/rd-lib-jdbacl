@@ -133,8 +133,8 @@ public class DBDataType implements Named, Serializable {
         	"INTERVAL", Types.OTHER // ANSI SQL
 	);
 
-	private static final HashMap<TypeDescriptor, DBDataType> INSTANCES_BY_TYPE_AND_NAME = new HashMap<TypeDescriptor, DBDataType>();
-	private static final HashMap<String, DBDataType> INSTANCES_BY_NAME = new HashMap<String, DBDataType>();
+	private static final HashMap<TypeDescriptor, DBDataType> INSTANCES_BY_TYPE_AND_NAME = new HashMap<>();
+	private static final HashMap<String, DBDataType> INSTANCES_BY_NAME = new HashMap<>();
 
 	public static DBDataType getInstance(String name) {
 		name = name.toUpperCase();
@@ -161,8 +161,8 @@ public class DBDataType implements Named, Serializable {
 		return result;
     }
 
-    private String name;
-    private int jdbcType;
+    private final String name;
+    private final int jdbcType;
 
     // constructors ----------------------------------------------------------------------------------------------------
 

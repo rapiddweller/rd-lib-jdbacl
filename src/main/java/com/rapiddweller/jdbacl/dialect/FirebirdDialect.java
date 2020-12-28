@@ -52,10 +52,10 @@ public class FirebirdDialect extends DatabaseDialect {
 	private static final String TIME_PATTERN = "''HH:mm:ss''";
 	private static final String DATETIME_PATTERN = "''yyyy-MM-dd HH:mm:ss''";
 
-	Pattern randomPKNamePattern = Pattern.compile("INTEG_\\d+");
-	Pattern randomUKNamePattern = Pattern.compile("RDB\\$\\w+");
-	Pattern randomFKNamePattern = Pattern.compile("INTEG_\\d+");
-	Pattern randomIndexNamePattern = Pattern.compile("RDB\\$\\w+");
+	final Pattern randomPKNamePattern = Pattern.compile("INTEG_\\d+");
+	final Pattern randomUKNamePattern = Pattern.compile("RDB\\$\\w+");
+	final Pattern randomFKNamePattern = Pattern.compile("INTEG_\\d+");
+	final Pattern randomIndexNamePattern = Pattern.compile("RDB\\$\\w+");
 
     public FirebirdDialect() {
 	    super("firebird", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
@@ -116,7 +116,7 @@ public class FirebirdDialect extends DatabaseDialect {
         ResultSet resultSet = null;
         try {
         	resultSet = DBUtil.executeQuery(query, connection);
-        	ArrayBuilder<DBSequence> builder = new ArrayBuilder<DBSequence>(DBSequence.class);
+        	ArrayBuilder<DBSequence> builder = new ArrayBuilder<>(DBSequence.class);
         	while (resultSet.next())
         		builder.add(new DBSequence(resultSet.getString(1).trim(), null));
     		return builder.toArray();

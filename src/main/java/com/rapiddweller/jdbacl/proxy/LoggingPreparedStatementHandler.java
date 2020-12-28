@@ -59,7 +59,7 @@ public class LoggingPreparedStatementHandler implements InvocationHandler {
     private static final Logger SQL_LOGGER = LogManager.getLogger(LogCategories.SQL);
     private static final Logger JDBC_LOGGER = LogManager.getLogger(LogCategories.JDBC);
 
-	private static volatile AtomicInteger openStatementCount;
+	private static final AtomicInteger openStatementCount;
     private static ResourceMonitor openStatementMonitor;
     
     private static final Converter<Object[], String[]> toStringArrayConverter;
@@ -72,11 +72,11 @@ public class LoggingPreparedStatementHandler implements InvocationHandler {
     	ToStringConverter toStringConverter = new ToStringConverter("null");
     	toStringConverter.setCharQuote("'");
     	toStringConverter.setStringQuote("'");
-    	toStringArrayConverter = new ArrayConverter<Object, String>(Object.class, String.class, toStringConverter);
+    	toStringArrayConverter = new ArrayConverter<>(Object.class, String.class, toStringConverter);
     }
 
-	private String sql;
-	private PreparedStatement realStatement;
+	private final String sql;
+	private final PreparedStatement realStatement;
 	Object[] params;
 	
 	public LoggingPreparedStatementHandler(PreparedStatement realStatement, String sql) {

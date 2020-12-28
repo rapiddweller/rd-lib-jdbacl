@@ -30,7 +30,7 @@ package com.rapiddweller.jdbacl.identity;
  */
 public class NKBuilder {
 	
-	StringBuilder builder;
+	final StringBuilder builder;
 	boolean empty;
 	
 	public NKBuilder() {

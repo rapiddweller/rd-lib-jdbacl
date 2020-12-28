@@ -40,12 +40,12 @@ import com.rapiddweller.jdbacl.model.Database;
 public class MemKeyMapper extends KeyMapper {
 
 	TargetDatabaseMapper targetDBMapper;
-	private Database database;
-	private Map<String, SourceDatabaseMapper> sourceDBMappers;
+	private final Database database;
+	private final Map<String, SourceDatabaseMapper> sourceDBMappers;
 
 	public MemKeyMapper(Connection source, String sourceDbId, Connection target, String targetDbId, IdentityProvider identityProvider, Database database) {
 		super(identityProvider);
-		sourceDBMappers = new HashMap<String, SourceDatabaseMapper>();
+		sourceDBMappers = new HashMap<>();
 		setTarget(target, targetDbId);
 		createSourceDBMapper(source, sourceDbId);
 		this.database = database;
@@ -105,9 +105,8 @@ public class MemKeyMapper extends KeyMapper {
     }
 
     private void createSourceDBMapper(Connection connection, String sourceDbId) {
-	    String sourceId = sourceDbId;
 		SourceDatabaseMapper mapper = new SourceDatabaseMapper(this, connection, sourceDbId, database);
-    	sourceDBMappers.put(sourceId, mapper);
+    	sourceDBMappers.put(sourceDbId, mapper);
     }
 
     private SourceDatabaseMapper getSourceDBMapper(String sourceId) {

@@ -50,7 +50,7 @@ public class LikeExpressionTest {
 	}
 
 	public void check(String value, String pattern, boolean expected) {
-		LikeExpression expression = new LikeExpression(new ConstantExpression<String>(value), new ConstantExpression<String>(pattern));
+		LikeExpression expression = new LikeExpression(new ConstantExpression<>(value), new ConstantExpression<>(pattern));
 		assertEquals(expected, expression.evaluate(null));
 	}
 	

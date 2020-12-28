@@ -49,9 +49,9 @@ import org.apache.logging.log4j.LogManager;
  */
 public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
 	
-	protected Logger logger;
+	protected final Logger logger;
 
-	protected E dialect;
+	protected final E dialect;
 	
 	protected final static Date DATETIME_19710203131415 = TimeUtil.date(1971, 1, 3, 13, 14, 15, 0);
 	protected final static Date DATE_19710203 = TimeUtil.date(1971, 1, 3);

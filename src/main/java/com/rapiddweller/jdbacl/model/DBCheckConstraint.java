@@ -42,10 +42,10 @@ public class DBCheckConstraint extends DBConstraint {
 	
 	private static final long serialVersionUID = 3766067048212751458L;
 	
-	private String tableName;
-	private String conditionText;
-	private Expression<?> condition;
-	private String[] columnNames;
+	private final String tableName;
+	private final String conditionText;
+	private final Expression<?> condition;
+	private final String[] columnNames;
 
 	public DBCheckConstraint(String name, boolean nameDeterministic, DBTable owner, String conditionText) {
 		this(name, nameDeterministic, owner.getName(), conditionText);
@@ -95,7 +95,7 @@ public class DBCheckConstraint extends DBConstraint {
 	}
 	
 	private String[] getColumnNames(Expression<?> condition) {
-		return CollectionUtil.toArray(scanForColumns(condition, new HashSet<String>()), String.class);
+		return CollectionUtil.toArray(scanForColumns(condition, new HashSet<>()), String.class);
 	}
 
 	private Set<String> scanForColumns(Expression<?> expression, Set<String> result) {

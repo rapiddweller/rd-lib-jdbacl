@@ -58,12 +58,12 @@ public class PooledConnectionHandler implements InvocationHandler {
     
     private static long nextId = 0;
 
-    private static volatile AtomicInteger openConnectionCount;
+    private static final AtomicInteger openConnectionCount;
     private static ResourceMonitor openConnectionMonitor;
 
-    private boolean readOnly;
-    private Connection realConnection;
-    private long id;
+    private final boolean readOnly;
+    private final Connection realConnection;
+    private final long id;
     private boolean closed;
     
     // construction ----------------------------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ public class PooledConnectionHandler implements InvocationHandler {
     	this.readOnly = readOnly;
         this.id = nextId();
         this.realConnection = realConnection;
-        this.listeners = new ArrayList<ConnectionEventListener>();
+        this.listeners = new ArrayList<>();
         this.closed = false;
         if (jdbcLogger.isDebugEnabled())
             jdbcLogger.debug("Created connection #" + id + ": " + realConnection);
@@ -151,7 +151,7 @@ public class PooledConnectionHandler implements InvocationHandler {
         return realConnection;
     }
 
-    private List<ConnectionEventListener> listeners;
+    private final List<ConnectionEventListener> listeners;
     
     public void addConnectionEventListener(ConnectionEventListener listener) {
         listeners.add(listener);

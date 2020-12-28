@@ -49,15 +49,15 @@ public abstract class IdentityModel implements Named {
 	
 	protected final Logger logger = LogManager.getLogger(this.getClass());
 
-	ErrorHandler errorHandler = new ErrorHandler("DBMerger", Level.warn);
+	final ErrorHandler errorHandler = new ErrorHandler("DBMerger", Level.warn);
 	
-	String tableName;
-	private Set<String> unimportantColumns;
+	final String tableName;
+	private final Set<String> unimportantColumns;
 
 	public IdentityModel(String tableName) {
 		Assert.notNull(tableName, "tableName");
 		this.tableName = tableName;
-	    this.unimportantColumns = new HashSet<String>();
+	    this.unimportantColumns = new HashSet<>();
     }
 	
 	// properties ------------------------------------------------------------------------------------------------------

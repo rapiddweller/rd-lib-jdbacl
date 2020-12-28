@@ -72,7 +72,7 @@ public class OracleDialect extends DatabaseDialect {
     private static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
     private static final Pattern SIMPLE_NOT_NULL_CHECK = Pattern.compile("\"[A-Z0-9_]+\" IS NOT NULL");
     
-	Pattern randomNamePattern = Pattern.compile("SYS_C\\d{8}");
+	final Pattern randomNamePattern = Pattern.compile("SYS_C\\d{8}");
 
 	public OracleDialect() {
 	    super("oracle", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
@@ -135,7 +135,7 @@ public class OracleDialect extends DatabaseDialect {
 		ResultSet resultSet = statement.executeQuery("select sequence_name, min_value, max_value, increment_by, " +
 				"cycle_flag, order_flag, cache_size, last_number from user_sequences");
 		try {
-			ArrayBuilder<DBSequence> builder = new ArrayBuilder<DBSequence>(DBSequence.class);
+			ArrayBuilder<DBSequence> builder = new ArrayBuilder<>(DBSequence.class);
 			while (resultSet.next()) {
 				DBSequence sequence = new DBSequence(resultSet.getString(1), null);
 				sequence.setMinValue(new BigInteger(resultSet.getString(2)));
@@ -162,7 +162,7 @@ public class OracleDialect extends DatabaseDialect {
 		if (schemaName != null)
 			query += " and owner = '" + schemaName.toUpperCase() + "'";
 		ResultSet resultSet = statement.executeQuery(query);
-		ArrayBuilder<DBCheckConstraint> builder = new ArrayBuilder<DBCheckConstraint>(DBCheckConstraint.class);
+		ArrayBuilder<DBCheckConstraint> builder = new ArrayBuilder<>(DBCheckConstraint.class);
 		try {
 			while (resultSet.next()) {
 				String ownerName = resultSet.getString("owner");
@@ -270,14 +270,14 @@ public class OracleDialect extends DatabaseDialect {
 	*/
 	
 	@Override
-	public List<DBTrigger> queryTriggers(DBSchema schema, Connection connection) throws SQLException {
+	public void queryTriggers(DBSchema schema, Connection connection) throws SQLException {
 		String query = "SELECT OWNER, TRIGGER_NAME, TRIGGER_TYPE, TRIGGERING_EVENT, TABLE_OWNER, BASE_OBJECT_TYPE, " +
 			"TABLE_NAME, COLUMN_NAME, REFERENCING_NAMES, WHEN_CLAUSE, STATUS, DESCRIPTION, ACTION_TYPE, " +
 			"TRIGGER_BODY FROM SYS.ALL_TRIGGERS";
 		if (schema != null)
 			query += " WHERE OWNER = '" + schema.getName().toUpperCase() + "'";
 		ResultSet resultSet = DBUtil.executeQuery(query, connection);
-		List<DBTrigger> triggers = new ArrayList<DBTrigger>();
+		List<DBTrigger> triggers = new ArrayList<>();
 		try {
 			while (resultSet.next()) {
 				DBTrigger trigger = new DBTrigger(resultSet.getString(2), null);
@@ -301,7 +301,6 @@ public class OracleDialect extends DatabaseDialect {
 		} finally {
 			DBUtil.closeResultSetAndStatement(resultSet);
 		}
-		return triggers;
 	}
 	
 	@Override
@@ -317,9 +316,8 @@ public class OracleDialect extends DatabaseDialect {
 		String query = "SELECT USER, OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, OBJECT_TYPE, STATUS" +
 			" FROM USER_OBJECTS WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'";
 		List<Object[]> pkgInfos = DBUtil.query(query, connection);
-		OrderedMap<String, DBPackage> packages = new OrderedMap<String, DBPackage>();
-		for (int i = 0; i < pkgInfos.size(); i++) {
-			Object[] pkgInfo = pkgInfos.get(i);
+		OrderedMap<String, DBPackage> packages = new OrderedMap<>();
+		for (Object[] pkgInfo : pkgInfos) {
 			String ownerName = (String) pkgInfo[0];
 			if (schema == null || schema.getName().equals(ownerName)) {
 				String name = (String) pkgInfo[1];
@@ -341,15 +339,14 @@ public class OracleDialect extends DatabaseDialect {
 			" AND PROCEDURE_NAME IS NOT NULL AND OBJECT_NAME IN (" + 
 			CollectionUtil.formatCommaSeparatedList(NameUtil.getNames(packages.values()), '\'') + ")";
 		List<Object[]> procInfos = DBUtil.query(query, connection);
-		for (int i = 0; i < procInfos.size(); i++) {
-			Object[] procInfo = procInfos.get(i);
+		for (Object[] procInfo : procInfos) {
 			DBPackage owner = packages.get((String) procInfo[0]);
 			String name = (String) procInfo[1];
 			DBProcedure proc = new DBProcedure(name, owner);
 			proc.setObjectId(procInfo[2].toString());
 			proc.setSubProgramId(procInfo[3].toString());
 			proc.setOverload((String) procInfo[4]);
-			LOGGER.debug("Imported package procedure {}.{}", owner.getName(),  proc.getName());
+			LOGGER.debug("Imported package procedure {}.{}", owner.getName(), proc.getName());
 		}		
 		return packages.values();
 	}

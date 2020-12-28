@@ -67,7 +67,7 @@ public class CubridDialect extends DatabaseDialect {
 		String query = "select name, owner, current_val, increment_val, max_val, min_val, cyclic, " +
 				"class_name, att_name, cached_num from db_serial";
 		ResultSet resultSet = DBUtil.executeQuery(query, connection);
-		ArrayBuilder<DBSequence> builder = new ArrayBuilder<DBSequence>(DBSequence.class);
+		ArrayBuilder<DBSequence> builder = new ArrayBuilder<>(DBSequence.class);
 		while (resultSet.next()) {
 			DBSequence sequence = new DBSequence(resultSet.getString(1), null);
 			sequence.setLastNumber(new BigInteger(resultSet.getString(3)));
@@ -138,14 +138,14 @@ public class CubridDialect extends DatabaseDialect {
 	// querying triggers -----------------------------------------------------------------------------------------------
 	
 	@Override
-	public List<DBTrigger> queryTriggers(DBSchema schema, Connection connection) throws SQLException {
+	public void queryTriggers(DBSchema schema, Connection connection) throws SQLException {
 		String query = "SELECT t.owner, t.name, t.status, t.priority, t.event, " +
 			"c.class_name as table_name, t.target_attribute, t.target_class_attribute, " +
 			"t.condition_type, t.condition, t.condition_time, " +
 			"t.action_type, t.action_definition, t.action_time FROM db_trigger as t " +
 			"join _db_class as c on t.target_class = c.class_of";
 		ResultSet resultSet = DBUtil.executeQuery(query, connection);
-		List<DBTrigger> triggers = new ArrayList<DBTrigger>();
+		List<DBTrigger> triggers = new ArrayList<>();
 		try {
 			while (resultSet.next()) {
 				String triggerName = resultSet.getString("name");
@@ -241,7 +241,6 @@ public class CubridDialect extends DatabaseDialect {
 		} finally {
 			DBUtil.closeResultSetAndStatement(resultSet);
 		}
-		return triggers;
 	}
 	
 	// recognition of generated names ----------------------------------------------------------------------------------

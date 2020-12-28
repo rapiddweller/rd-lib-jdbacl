@@ -50,7 +50,7 @@ public class UniqueKeyIdentityTest extends AbstractIdentityTest {
 		IdentityProvider identityProvider = createIdentities(database);
 		DBTable countryDbTable = database.getTable("country");
 		UniqueKeyIdentity countryIdentity = new UniqueKeyIdentity(
-				countryDbTable.getName(), new String[] { "CODE" });
+				countryDbTable.getName(), "CODE");
 		identityProvider.registerIdentity(countryIdentity, "country");
 
 		MemKeyMapper mapper = new MemKeyMapper(connection, "db", null, null, identityProvider, database);

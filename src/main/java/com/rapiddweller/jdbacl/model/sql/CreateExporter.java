@@ -48,7 +48,7 @@ import com.rapiddweller.jdbacl.model.Database;
  */
 public class CreateExporter implements DBMetaDataExporter {
 
-	File file;
+	final File file;
 	
 	public CreateExporter(File file) {
 		this.file = file;

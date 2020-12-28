@@ -36,8 +36,8 @@ package com.rapiddweller.jdbacl;
 
 public class ResultsWithMetadata {
 
-	private String[] columnNames;
-	private String[][] results;
+	private final String[] columnNames;
+	private final String[][] results;
 	
 	public ResultsWithMetadata(String[] columnNames, String[][] results) {
 		this.columnNames = columnNames;

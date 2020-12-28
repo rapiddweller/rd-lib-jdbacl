@@ -33,14 +33,14 @@ import com.rapiddweller.jdbacl.identity.IdentityProvider;
  */
 public class IdentityParseContext extends ParseContext<Object> {
 	
-	protected IdentityProvider identityProvider;
+	protected final IdentityProvider identityProvider;
 
 	public IdentityParseContext() {
 		this(new IdentityProvider());
 	}
 
 	public IdentityParseContext(IdentityProvider identityProvider) {
-		super(Object.class, new XMLElementParserFactory<Object>());
+		super(Object.class, new XMLElementParserFactory<>());
 		this.identityProvider = identityProvider;
 		createParsers();
 	}

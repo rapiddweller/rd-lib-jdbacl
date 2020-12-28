@@ -59,17 +59,14 @@ public class HSQLUtil {
 		try {
 			Class.forName(driver);
         	String url = getInMemoryURL(dbName);
-        	String user = DEFAULT_USER;
-        	String password = DEFAULT_PASSWORD;
-			return DBUtil.connect(url, DRIVER, user, password, false);
+            return DBUtil.connect(url, DRIVER, DEFAULT_USER, DEFAULT_PASSWORD, false);
         } catch (ClassNotFoundException e) {
             throw new ConfigurationError("JDBC driver not found: " + driver, e);
         }
 	}
 
 	public static String getInMemoryURL(String dbName) {
-	    String url = IN_MEMORY_URL_PREFIX + dbName;
-	    return url;
+        return IN_MEMORY_URL_PREFIX + dbName;
     }
 	
 	public static Statement shutdown(String url, String user, String password) 

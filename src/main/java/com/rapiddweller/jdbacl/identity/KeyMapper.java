@@ -32,7 +32,7 @@ import java.sql.Connection;
  */
 public abstract class KeyMapper {
 	
-	IdentityProvider identityProvider;
+	final IdentityProvider identityProvider;
 	
 	public KeyMapper(IdentityProvider identityProvider) {
 		this.identityProvider = identityProvider;

@@ -33,7 +33,7 @@ import com.rapiddweller.script.expression.CompositeExpression;
  */
 public class FunctionInvocation extends CompositeExpression<Object,Object> {
 
-	String name;
+	final String name;
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public FunctionInvocation(String name, Expression... arguments) {
