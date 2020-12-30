@@ -27,7 +27,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import com.rapiddweller.commons.TimeUtil;
+import com.rapiddweller.common.TimeUtil;
 import com.rapiddweller.jdbacl.model.DBSequence;
 import com.rapiddweller.jdbacl.sql.Query;
 import org.junit.Test;

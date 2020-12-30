@@ -23,7 +23,7 @@ package com.rapiddweller.jdbacl.dialect;
 
 import java.util.regex.Pattern;
 
-import com.rapiddweller.commons.StringUtil;
+import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.sql.Query;
 

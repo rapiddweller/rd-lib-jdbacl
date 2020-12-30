@@ -25,7 +25,7 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.rapiddweller.commons.ConfigurationError;
+import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.jdbacl.identity.IdentityModel;
 import com.rapiddweller.jdbacl.identity.IdentityProvider;
 import com.rapiddweller.jdbacl.identity.KeyMapper;

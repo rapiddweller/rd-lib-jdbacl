@@ -23,7 +23,7 @@ package com.rapiddweller.jdbacl;
 
 import java.util.List;
 
-import com.rapiddweller.commons.TreeModel;
+import com.rapiddweller.common.TreeModel;
 import com.rapiddweller.jdbacl.model.CompositeDBObject;
 import com.rapiddweller.jdbacl.model.DBObject;
 import com.rapiddweller.jdbacl.model.Database;

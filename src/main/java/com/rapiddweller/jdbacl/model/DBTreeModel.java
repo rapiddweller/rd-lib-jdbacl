@@ -21,7 +21,7 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import com.rapiddweller.commons.TreeModel;
+import com.rapiddweller.common.TreeModel;
 
 /**
  * {@link TreeModel} adapter for the hierarchy formed by the Composite pattern of

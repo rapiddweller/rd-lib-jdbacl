@@ -25,8 +25,8 @@ import java.sql.Connection;
 import java.sql.Types;
 import java.util.Date;
 
-import com.rapiddweller.commons.Encodings;
-import com.rapiddweller.commons.TimeUtil;
+import com.rapiddweller.common.Encodings;
+import com.rapiddweller.common.TimeUtil;
 import com.rapiddweller.jdbacl.DBUtil;
 
 /**

@@ -26,9 +26,9 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import com.rapiddweller.commons.Named;
-import com.rapiddweller.commons.ObjectNotFoundException;
-import com.rapiddweller.commons.collection.OrderedNameMap;
+import com.rapiddweller.common.Named;
+import com.rapiddweller.common.ObjectNotFoundException;
+import com.rapiddweller.common.collection.OrderedNameMap;
 
 import java.io.Serializable;
 import java.util.ArrayList;

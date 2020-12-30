@@ -25,7 +25,7 @@ import static org.junit.Assert.assertFalse;
 
 import java.sql.Connection;
 
-import com.rapiddweller.commons.HeavyweightIterator;
+import com.rapiddweller.common.HeavyweightIterator;
 import com.rapiddweller.jdbacl.dialect.HSQLUtil;
 import com.rapiddweller.jdbacl.identity.mem.MemKeyMapper;
 import com.rapiddweller.jdbacl.model.DBTable;

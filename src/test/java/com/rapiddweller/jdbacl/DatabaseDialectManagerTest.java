@@ -23,7 +23,7 @@ package com.rapiddweller.jdbacl;
 
 import static org.junit.Assert.*;
 
-import com.rapiddweller.commons.version.VersionNumber;
+import com.rapiddweller.common.version.VersionNumber;
 import com.rapiddweller.jdbacl.dialect.HSQL2Dialect;
 import com.rapiddweller.jdbacl.dialect.HSQLDialect;
 import com.rapiddweller.jdbacl.dialect.OracleDialect;

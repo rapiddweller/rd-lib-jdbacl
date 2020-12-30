@@ -25,8 +25,8 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.rapiddweller.commons.HeavyweightIterator;
-import com.rapiddweller.commons.bean.ObjectOrArray;
+import com.rapiddweller.common.HeavyweightIterator;
+import com.rapiddweller.common.bean.ObjectOrArray;
 import com.rapiddweller.jdbacl.identity.IdentityModel;
 import com.rapiddweller.jdbacl.identity.KeyMapper;
 import com.rapiddweller.jdbacl.model.Database;

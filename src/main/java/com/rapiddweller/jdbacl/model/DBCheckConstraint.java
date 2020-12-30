@@ -24,8 +24,8 @@ package com.rapiddweller.jdbacl.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.rapiddweller.commons.CollectionUtil;
-import com.rapiddweller.commons.StringUtil;
+import com.rapiddweller.common.CollectionUtil;
+import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.jdbacl.sql.ColumnExpression;
 import com.rapiddweller.jdbacl.sql.SQLParserUtil;
 import com.rapiddweller.jdbacl.sql.parser.ANTLRNoCaseStringStream;

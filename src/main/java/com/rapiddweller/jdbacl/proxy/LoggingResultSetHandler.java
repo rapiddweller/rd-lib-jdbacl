@@ -29,11 +29,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.rapiddweller.commons.BeanUtil;
-import com.rapiddweller.commons.ConfigurationError;
-import com.rapiddweller.commons.LogCategories;
-import com.rapiddweller.commons.debug.Debug;
-import com.rapiddweller.commons.debug.ResourceMonitor;
+import com.rapiddweller.common.BeanUtil;
+import com.rapiddweller.common.ConfigurationError;
+import com.rapiddweller.common.LogCategories;
+import com.rapiddweller.common.debug.Debug;
+import com.rapiddweller.common.debug.ResourceMonitor;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 

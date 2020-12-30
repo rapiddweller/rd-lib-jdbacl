@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
 
 import java.util.Set;
 
-import com.rapiddweller.commons.CollectionUtil;
+import com.rapiddweller.common.CollectionUtil;
 import org.junit.Test;
 
 /**

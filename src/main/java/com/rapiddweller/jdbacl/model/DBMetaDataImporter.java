@@ -28,8 +28,8 @@ package com.rapiddweller.jdbacl.model;
 
 import java.io.Closeable;
 
-import com.rapiddweller.commons.ConnectFailedException;
-import com.rapiddweller.commons.ImportFailedException;
+import com.rapiddweller.common.ConnectFailedException;
+import com.rapiddweller.common.ImportFailedException;
 
 /**
  * Interface for classes that can import a database.<br/><br/>

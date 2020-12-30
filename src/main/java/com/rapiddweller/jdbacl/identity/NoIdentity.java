@@ -23,7 +23,7 @@ package com.rapiddweller.jdbacl.identity;
 
 import java.sql.Connection;
 
-import com.rapiddweller.commons.iterator.TabularIterator;
+import com.rapiddweller.common.iterator.TabularIterator;
 import com.rapiddweller.jdbacl.model.Database;
 
 /**

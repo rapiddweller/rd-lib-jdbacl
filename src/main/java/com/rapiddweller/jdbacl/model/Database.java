@@ -33,10 +33,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import com.rapiddweller.commons.ObjectNotFoundException;
-import com.rapiddweller.commons.StringUtil;
-import com.rapiddweller.commons.collection.OrderedNameMap;
-import com.rapiddweller.commons.version.VersionNumber;
+import com.rapiddweller.common.ObjectNotFoundException;
+import com.rapiddweller.common.StringUtil;
+import com.rapiddweller.common.collection.OrderedNameMap;
+import com.rapiddweller.common.version.VersionNumber;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.DatabaseDialectManager;
 import com.rapiddweller.jdbacl.model.jdbc.JDBCDBImporter;

@@ -38,10 +38,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.ConnectionEventListener;
 
-import com.rapiddweller.commons.BeanUtil;
-import com.rapiddweller.commons.LogCategories;
-import com.rapiddweller.commons.debug.Debug;
-import com.rapiddweller.commons.debug.ResourceMonitor;
+import com.rapiddweller.common.BeanUtil;
+import com.rapiddweller.common.LogCategories;
+import com.rapiddweller.common.debug.Debug;
+import com.rapiddweller.common.debug.ResourceMonitor;
 import com.rapiddweller.jdbacl.DBUtil;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;

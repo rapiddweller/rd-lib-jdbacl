@@ -24,7 +24,7 @@ package com.rapiddweller.jdbacl.sql;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rapiddweller.commons.CollectionUtil;
+import com.rapiddweller.common.CollectionUtil;
 import com.rapiddweller.jdbacl.SQLUtil;
 
 /**

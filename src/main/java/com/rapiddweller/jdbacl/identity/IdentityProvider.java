@@ -21,8 +21,8 @@
 
 package com.rapiddweller.jdbacl.identity;
 
-import com.rapiddweller.commons.ObjectNotFoundException;
-import com.rapiddweller.commons.collection.OrderedNameMap;
+import com.rapiddweller.common.ObjectNotFoundException;
+import com.rapiddweller.common.collection.OrderedNameMap;
 
 /**
  * Manages {@link IdentityModel}s.<br/><br/>

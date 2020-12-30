@@ -26,9 +26,9 @@
 
 package com.rapiddweller.jdbacl;
 
-import com.rapiddweller.commons.ArrayFormat;
-import com.rapiddweller.commons.ConversionException;
-import com.rapiddweller.commons.converter.UnsafeConverter;
+import com.rapiddweller.common.ArrayFormat;
+import com.rapiddweller.common.ConversionException;
+import com.rapiddweller.common.converter.UnsafeConverter;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 

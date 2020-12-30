@@ -28,11 +28,11 @@ package com.rapiddweller.jdbacl.model;
 
 import java.util.Arrays;
 
-import com.rapiddweller.commons.ArrayUtil;
-import com.rapiddweller.commons.Assert;
-import com.rapiddweller.commons.NullSafeComparator;
-import com.rapiddweller.commons.ObjectNotFoundException;
-import com.rapiddweller.commons.bean.HashCodeBuilder;
+import com.rapiddweller.common.ArrayUtil;
+import com.rapiddweller.common.Assert;
+import com.rapiddweller.common.NullSafeComparator;
+import com.rapiddweller.common.ObjectNotFoundException;
+import com.rapiddweller.common.bean.HashCodeBuilder;
 import com.rapiddweller.jdbacl.NameSpec;
 import com.rapiddweller.jdbacl.SQLUtil;
 

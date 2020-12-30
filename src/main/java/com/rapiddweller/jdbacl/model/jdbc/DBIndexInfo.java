@@ -26,8 +26,8 @@
 
 package com.rapiddweller.jdbacl.model.jdbc;
 
-import com.rapiddweller.commons.ArrayFormat;
-import com.rapiddweller.commons.ArrayUtil;
+import com.rapiddweller.common.ArrayFormat;
+import com.rapiddweller.common.ArrayUtil;
 
 /**
  * Represents a database index.<br/><br/>

@@ -23,7 +23,7 @@ package com.rapiddweller.jdbacl.model;
 
 import java.math.BigInteger;
 
-import com.rapiddweller.commons.NullSafeComparator;
+import com.rapiddweller.common.NullSafeComparator;
 
 /**
  * Represents a database sequence.<br/><br/>

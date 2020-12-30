@@ -37,12 +37,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.rapiddweller.commons.ArrayBuilder;
-import com.rapiddweller.commons.CollectionUtil;
-import com.rapiddweller.commons.NameUtil;
-import com.rapiddweller.commons.OrderedMap;
-import com.rapiddweller.commons.StringUtil;
-import com.rapiddweller.commons.converter.TimestampFormatter;
+import com.rapiddweller.common.ArrayBuilder;
+import com.rapiddweller.common.CollectionUtil;
+import com.rapiddweller.common.NameUtil;
+import com.rapiddweller.common.OrderedMap;
+import com.rapiddweller.common.StringUtil;
+import com.rapiddweller.common.converter.TimestampFormatter;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.model.DBCheckConstraint;

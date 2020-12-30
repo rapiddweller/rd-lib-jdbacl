@@ -23,8 +23,8 @@ package com.rapiddweller.jdbacl.sql;
 
 import java.util.regex.Pattern;
 
-import com.rapiddweller.commons.Context;
-import com.rapiddweller.commons.converter.ToStringConverter;
+import com.rapiddweller.common.Context;
+import com.rapiddweller.common.converter.ToStringConverter;
 import com.rapiddweller.script.Expression;
 import com.rapiddweller.script.expression.BinaryExpression;
 

@@ -29,9 +29,9 @@ package com.rapiddweller.jdbacl;
 import java.sql.Connection;
 import java.util.Arrays;
 
-import com.rapiddweller.commons.ArrayUtil;
-import com.rapiddweller.commons.Encodings;
-import com.rapiddweller.commons.ErrorHandler;
+import com.rapiddweller.common.ArrayUtil;
+import com.rapiddweller.common.Encodings;
+import com.rapiddweller.common.ErrorHandler;
 import com.rapiddweller.jdbacl.dialect.HSQLUtil;
 
 import org.junit.Test;

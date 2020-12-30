@@ -31,8 +31,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.rapiddweller.commons.ConnectFailedException;
-import com.rapiddweller.commons.ErrorHandler;
+import com.rapiddweller.common.ConnectFailedException;
+import com.rapiddweller.common.ErrorHandler;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.dialect.HSQLUtil;
 import com.rapiddweller.jdbacl.model.DBIndex;

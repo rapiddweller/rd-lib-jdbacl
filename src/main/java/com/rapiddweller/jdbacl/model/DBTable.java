@@ -26,20 +26,20 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import com.rapiddweller.commons.ArrayFormat;
-import com.rapiddweller.commons.Assert;
-import com.rapiddweller.commons.CollectionUtil;
-import com.rapiddweller.commons.HeavyweightIterator;
-import com.rapiddweller.commons.NameUtil;
-import com.rapiddweller.commons.NullSafeComparator;
-import com.rapiddweller.commons.ObjectNotFoundException;
-import com.rapiddweller.commons.OrderedSet;
-import com.rapiddweller.commons.StringUtil;
-import com.rapiddweller.commons.bean.HashCodeBuilder;
-import com.rapiddweller.commons.collection.OrderedNameMap;
-import com.rapiddweller.commons.depend.Dependent;
-import com.rapiddweller.commons.iterator.ConvertingIterator;
-import com.rapiddweller.commons.iterator.TabularIterator;
+import com.rapiddweller.common.ArrayFormat;
+import com.rapiddweller.common.Assert;
+import com.rapiddweller.common.CollectionUtil;
+import com.rapiddweller.common.HeavyweightIterator;
+import com.rapiddweller.common.NameUtil;
+import com.rapiddweller.common.NullSafeComparator;
+import com.rapiddweller.common.ObjectNotFoundException;
+import com.rapiddweller.common.OrderedSet;
+import com.rapiddweller.common.StringUtil;
+import com.rapiddweller.common.bean.HashCodeBuilder;
+import com.rapiddweller.common.collection.OrderedNameMap;
+import com.rapiddweller.common.depend.Dependent;
+import com.rapiddweller.common.iterator.ConvertingIterator;
+import com.rapiddweller.common.iterator.TabularIterator;
 import com.rapiddweller.jdbacl.ArrayResultSetIterator;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.DatabaseDialect;

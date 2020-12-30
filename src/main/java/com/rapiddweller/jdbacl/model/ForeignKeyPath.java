@@ -24,11 +24,11 @@ package com.rapiddweller.jdbacl.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rapiddweller.commons.ArrayFormat;
-import com.rapiddweller.commons.ArrayUtil;
-import com.rapiddweller.commons.CollectionUtil;
-import com.rapiddweller.commons.ObjectNotFoundException;
-import com.rapiddweller.commons.StringUtil;
+import com.rapiddweller.common.ArrayFormat;
+import com.rapiddweller.common.ArrayUtil;
+import com.rapiddweller.common.CollectionUtil;
+import com.rapiddweller.common.ObjectNotFoundException;
+import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.jdbacl.SQLUtil;
 
 /**

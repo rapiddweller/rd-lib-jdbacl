@@ -30,9 +30,9 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Set;
 
-import com.rapiddweller.commons.Encodings;
-import com.rapiddweller.commons.IOUtil;
-import com.rapiddweller.commons.xml.SimpleXMLWriter;
+import com.rapiddweller.common.Encodings;
+import com.rapiddweller.common.IOUtil;
+import com.rapiddweller.common.xml.SimpleXMLWriter;
 import com.rapiddweller.jdbacl.SQLUtil;
 import com.rapiddweller.jdbacl.model.DBPackage;
 import com.rapiddweller.jdbacl.model.DBProcedure;
@@ -52,7 +52,7 @@ import com.rapiddweller.jdbacl.model.DBUniqueConstraint;
 import com.rapiddweller.jdbacl.model.Database;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
-import static com.rapiddweller.commons.xml.SimpleXMLWriter.*;
+import static com.rapiddweller.common.xml.SimpleXMLWriter.*;
 
 /**
  * Saves a database meta data model as XML file.<br/><br/>

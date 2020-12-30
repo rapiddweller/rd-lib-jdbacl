@@ -25,12 +25,12 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.Iterator;
 
-import com.rapiddweller.commons.ArrayFormat;
-import com.rapiddweller.commons.HeavyweightIterator;
-import com.rapiddweller.commons.IOUtil;
-import com.rapiddweller.commons.SystemInfo;
-import com.rapiddweller.commons.iterator.ConvertingIterator;
-import com.rapiddweller.commons.iterator.TabularIterator;
+import com.rapiddweller.common.ArrayFormat;
+import com.rapiddweller.common.HeavyweightIterator;
+import com.rapiddweller.common.IOUtil;
+import com.rapiddweller.common.SystemInfo;
+import com.rapiddweller.common.iterator.ConvertingIterator;
+import com.rapiddweller.common.iterator.TabularIterator;
 import com.rapiddweller.jdbacl.ArrayResultSetIterator;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.DatabaseDialectManager;

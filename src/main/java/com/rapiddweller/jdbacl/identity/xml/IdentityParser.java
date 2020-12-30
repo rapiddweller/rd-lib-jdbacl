@@ -23,12 +23,12 @@ package com.rapiddweller.jdbacl.identity.xml;
 
 import java.util.Set;
 
-import com.rapiddweller.commons.CollectionUtil;
-import com.rapiddweller.commons.ConfigurationError;
-import com.rapiddweller.commons.StringUtil;
-import com.rapiddweller.commons.xml.XMLUtil;
-import com.rapiddweller.formats.xml.AbstractXMLElementParser;
-import com.rapiddweller.formats.xml.ParseContext;
+import com.rapiddweller.common.CollectionUtil;
+import com.rapiddweller.common.ConfigurationError;
+import com.rapiddweller.common.StringUtil;
+import com.rapiddweller.common.xml.XMLUtil;
+import com.rapiddweller.format.xml.AbstractXMLElementParser;
+import com.rapiddweller.format.xml.ParseContext;
 import com.rapiddweller.jdbacl.identity.IdentityModel;
 import com.rapiddweller.jdbacl.identity.IdentityProvider;
 import com.rapiddweller.jdbacl.identity.NaturalPkIdentity;

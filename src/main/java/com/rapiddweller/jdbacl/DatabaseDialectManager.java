@@ -24,10 +24,10 @@ package com.rapiddweller.jdbacl;
 import java.io.IOException;
 import java.util.Map;
 
-import com.rapiddweller.commons.BeanUtil;
-import com.rapiddweller.commons.DeploymentError;
-import com.rapiddweller.commons.IOUtil;
-import com.rapiddweller.commons.version.VersionNumber;
+import com.rapiddweller.common.BeanUtil;
+import com.rapiddweller.common.DeploymentError;
+import com.rapiddweller.common.IOUtil;
+import com.rapiddweller.common.version.VersionNumber;
 import com.rapiddweller.jdbacl.dialect.UnknownDialect;
 
 /**

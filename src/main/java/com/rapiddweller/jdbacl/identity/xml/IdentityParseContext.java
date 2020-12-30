@@ -21,8 +21,8 @@
 
 package com.rapiddweller.jdbacl.identity.xml;
 
-import com.rapiddweller.formats.xml.ParseContext;
-import com.rapiddweller.formats.xml.XMLElementParserFactory;
+import com.rapiddweller.format.xml.ParseContext;
+import com.rapiddweller.format.xml.XMLElementParserFactory;
 import com.rapiddweller.jdbacl.identity.IdentityProvider;
 
 /**

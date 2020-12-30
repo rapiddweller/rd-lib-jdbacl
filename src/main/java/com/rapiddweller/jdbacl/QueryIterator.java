@@ -27,7 +27,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
 
-import com.rapiddweller.commons.iterator.IteratorProxy;
+import com.rapiddweller.common.iterator.IteratorProxy;
 
 /**
  * Performs a query and wraps the result set with an {@link Iterator} interface.<br/><br/>

@@ -23,7 +23,7 @@ package com.rapiddweller.jdbacl.model.jdbc;
 
 import java.util.regex.Pattern;
 
-import com.rapiddweller.commons.Filter;
+import com.rapiddweller.common.Filter;
 
 /**
  * Filters.<br/><br/>

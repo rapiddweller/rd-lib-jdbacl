@@ -23,9 +23,9 @@ package com.rapiddweller.jdbacl.model;
 
 import java.util.List;
 
-import com.rapiddweller.commons.NullSafeComparator;
-import com.rapiddweller.commons.anno.Nullable;
-import com.rapiddweller.commons.collection.OrderedNameMap;
+import com.rapiddweller.common.NullSafeComparator;
+import com.rapiddweller.common.anno.Nullable;
+import com.rapiddweller.common.collection.OrderedNameMap;
 
 /**
  * Represents a database packet which can hold {@link DBProcedure}s.<br/><br/>

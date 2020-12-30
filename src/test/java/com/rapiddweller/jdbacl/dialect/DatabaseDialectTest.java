@@ -29,9 +29,9 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import com.rapiddweller.commons.NameUtil;
-import com.rapiddweller.commons.StringUtil;
-import com.rapiddweller.commons.TimeUtil;
+import com.rapiddweller.common.NameUtil;
+import com.rapiddweller.common.StringUtil;
+import com.rapiddweller.common.TimeUtil;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.DatabaseTestUtil;

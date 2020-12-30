@@ -29,10 +29,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import com.rapiddweller.commons.ArrayFormat;
-import com.rapiddweller.commons.CollectionUtil;
-import com.rapiddweller.commons.StringUtil;
-import com.rapiddweller.commons.SystemInfo;
+import com.rapiddweller.common.ArrayFormat;
+import com.rapiddweller.common.CollectionUtil;
+import com.rapiddweller.common.StringUtil;
+import com.rapiddweller.common.SystemInfo;
 import com.rapiddweller.jdbacl.model.DBCheckConstraint;
 import com.rapiddweller.jdbacl.model.DBColumn;
 import com.rapiddweller.jdbacl.model.DBConstraint;

@@ -21,7 +21,7 @@
 
 package com.rapiddweller.jdbacl.identity;
 
-import com.rapiddweller.commons.ConfigurationError;
+import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.jdbacl.SQLUtil;
 import com.rapiddweller.jdbacl.model.DBForeignKeyConstraint;
 import com.rapiddweller.jdbacl.model.DBRow;

@@ -26,8 +26,8 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.sql.Connection;
 
-import com.rapiddweller.commons.FileUtil;
-import com.rapiddweller.commons.IOUtil;
+import com.rapiddweller.common.FileUtil;
+import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.model.DBTable;
 import com.rapiddweller.jdbacl.model.Database;

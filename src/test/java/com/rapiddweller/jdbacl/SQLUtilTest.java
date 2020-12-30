@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
-import com.rapiddweller.commons.ArrayFormat;
+import com.rapiddweller.common.ArrayFormat;
 import com.rapiddweller.jdbacl.model.DBColumn;
 import com.rapiddweller.jdbacl.model.DBDataType;
 import com.rapiddweller.jdbacl.model.DBForeignKeyConstraint;

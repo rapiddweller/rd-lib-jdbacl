@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.rapiddweller.commons.collection.OrderedNameMap;
+import com.rapiddweller.common.collection.OrderedNameMap;
 
 /**
  * Helper implementation for {@link TableHolder} and {@link SequenceHolder}.<br/><br/>

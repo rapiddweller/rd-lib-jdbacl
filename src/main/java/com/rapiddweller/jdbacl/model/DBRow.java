@@ -24,8 +24,8 @@ package com.rapiddweller.jdbacl.model;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.rapiddweller.commons.Assert;
-import com.rapiddweller.commons.collection.OrderedNameMap;
+import com.rapiddweller.common.Assert;
+import com.rapiddweller.common.collection.OrderedNameMap;
 
 /**
  * Represents a row in a database table.<br/><br/>

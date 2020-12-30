@@ -29,9 +29,9 @@ package com.rapiddweller.jdbacl.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rapiddweller.commons.ArrayUtil;
-import com.rapiddweller.commons.NullSafeComparator;
-import com.rapiddweller.commons.bean.HashCodeBuilder;
+import com.rapiddweller.common.ArrayUtil;
+import com.rapiddweller.common.NullSafeComparator;
+import com.rapiddweller.common.bean.HashCodeBuilder;
 import com.rapiddweller.jdbacl.SQLUtil;
 
 /**

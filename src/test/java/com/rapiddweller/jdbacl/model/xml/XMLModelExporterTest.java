@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.util.Arrays;
 
-import com.rapiddweller.commons.IOUtil;
+import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.jdbacl.model.AbstractModelTest;
 import com.rapiddweller.jdbacl.model.Database;
 import org.junit.Test;

@@ -21,11 +21,11 @@
 
 package com.rapiddweller.jdbacl;
 
-import com.rapiddweller.commons.ConnectFailedException;
-import com.rapiddweller.commons.ImportFailedException;
-import com.rapiddweller.commons.tree.TreeLogger;
-import com.rapiddweller.commons.ui.ConsoleInfoPrinter;
-import com.rapiddweller.commons.version.VersionInfo;
+import com.rapiddweller.common.ConnectFailedException;
+import com.rapiddweller.common.ImportFailedException;
+import com.rapiddweller.common.tree.TreeLogger;
+import com.rapiddweller.common.ui.ConsoleInfoPrinter;
+import com.rapiddweller.common.version.VersionInfo;
 import com.rapiddweller.jdbacl.model.Database;
 import com.rapiddweller.jdbacl.model.jdbc.JDBCMetaDataUtil;
 

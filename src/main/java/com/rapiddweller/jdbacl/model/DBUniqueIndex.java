@@ -28,7 +28,7 @@ package com.rapiddweller.jdbacl.model;
 
 import java.util.Arrays;
 
-import com.rapiddweller.commons.NullSafeComparator;
+import com.rapiddweller.common.NullSafeComparator;
 
 /**
  * Represents a unique database index.<br/><br/>

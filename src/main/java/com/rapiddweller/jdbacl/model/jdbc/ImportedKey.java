@@ -26,7 +26,7 @@
 
 package com.rapiddweller.jdbacl.model.jdbc;
 
-import com.rapiddweller.commons.ObjectNotFoundException;
+import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.jdbacl.model.DBCatalog;
 import com.rapiddweller.jdbacl.model.DBSchema;
 import com.rapiddweller.jdbacl.model.DBTable;

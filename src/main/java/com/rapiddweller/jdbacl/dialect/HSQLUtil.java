@@ -31,8 +31,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.rapiddweller.commons.ConfigurationError;
-import com.rapiddweller.commons.ConnectFailedException;
+import com.rapiddweller.common.ConfigurationError;
+import com.rapiddweller.common.ConnectFailedException;
 import com.rapiddweller.jdbacl.DBUtil;
 
 /**

@@ -23,7 +23,7 @@ package com.rapiddweller.jdbacl.test;
 
 import java.util.Map;
 
-import com.rapiddweller.commons.collection.NameMap;
+import com.rapiddweller.common.collection.NameMap;
 import com.rapiddweller.jdbacl.model.DBColumn;
 import com.rapiddweller.jdbacl.model.DBDataType;
 import com.rapiddweller.jdbacl.model.DBForeignKeyConstraint;

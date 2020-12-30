@@ -27,8 +27,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.rapiddweller.commons.HeavyweightIterator;
-import com.rapiddweller.commons.LogCategories;
+import com.rapiddweller.common.HeavyweightIterator;
+import com.rapiddweller.common.LogCategories;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.ResultSetIterator;
 import org.apache.logging.log4j.Logger;

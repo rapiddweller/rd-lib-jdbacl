@@ -26,8 +26,8 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import com.rapiddweller.commons.Assert;
-import com.rapiddweller.commons.NullSafeComparator;
+import com.rapiddweller.common.Assert;
+import com.rapiddweller.common.NullSafeComparator;
 
 /**
  * Represents a database not-null constraint.<br/><br/>

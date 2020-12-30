@@ -32,9 +32,9 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashMap;
 
-import com.rapiddweller.commons.ArrayBuilder;
-import com.rapiddweller.commons.ConfigurationError;
-import com.rapiddweller.commons.xml.XMLUtil;
+import com.rapiddweller.common.ArrayBuilder;
+import com.rapiddweller.common.ConfigurationError;
+import com.rapiddweller.common.xml.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

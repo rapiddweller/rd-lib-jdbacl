@@ -27,10 +27,10 @@ import static org.junit.Assert.assertTrue;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import com.rapiddweller.commons.ConnectFailedException;
-import com.rapiddweller.commons.HeavyweightIterator;
-import com.rapiddweller.commons.ImportFailedException;
-import com.rapiddweller.commons.SystemInfo;
+import com.rapiddweller.common.ConnectFailedException;
+import com.rapiddweller.common.HeavyweightIterator;
+import com.rapiddweller.common.ImportFailedException;
+import com.rapiddweller.common.SystemInfo;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.dialect.HSQLUtil;
 import com.rapiddweller.jdbacl.model.Database;

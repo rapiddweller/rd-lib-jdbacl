@@ -28,9 +28,9 @@ package com.rapiddweller.jdbacl.model;
 
 import java.util.Arrays;
 
-import com.rapiddweller.commons.ArrayFormat;
-import com.rapiddweller.commons.NullSafeComparator;
-import com.rapiddweller.commons.bean.HashCodeBuilder;
+import com.rapiddweller.common.ArrayFormat;
+import com.rapiddweller.common.NullSafeComparator;
+import com.rapiddweller.common.bean.HashCodeBuilder;
 
 /**
  * Represents a database index.<br/><br/>

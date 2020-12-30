@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import com.rapiddweller.commons.ConnectFailedException;
+import com.rapiddweller.common.ConnectFailedException;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.model.DBSequence;
 import com.rapiddweller.jdbacl.sql.Query;

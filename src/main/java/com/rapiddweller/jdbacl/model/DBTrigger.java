@@ -21,7 +21,7 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import com.rapiddweller.commons.NullSafeComparator;
+import com.rapiddweller.common.NullSafeComparator;
 
 /**
  * Represents a database trigger.<br/><br/>

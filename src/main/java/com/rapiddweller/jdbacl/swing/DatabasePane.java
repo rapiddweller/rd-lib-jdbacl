@@ -29,9 +29,9 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeModel;
 
-import com.rapiddweller.commons.ConnectFailedException;
-import com.rapiddweller.commons.ImportFailedException;
-import com.rapiddweller.commons.ui.swing.SwingTreeModelAdapter;
+import com.rapiddweller.common.ConnectFailedException;
+import com.rapiddweller.common.ImportFailedException;
+import com.rapiddweller.common.ui.swing.SwingTreeModelAdapter;
 import com.rapiddweller.jdbacl.DatabaseTreeModel;
 import com.rapiddweller.jdbacl.model.DBMetaDataImporter;
 import com.rapiddweller.jdbacl.model.DBObject;

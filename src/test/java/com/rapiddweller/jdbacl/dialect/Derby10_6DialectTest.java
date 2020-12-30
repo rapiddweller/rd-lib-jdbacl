@@ -25,8 +25,8 @@ import static org.junit.Assert.*;
 
 import java.sql.Connection;
 
-import com.rapiddweller.commons.NameUtil;
-import com.rapiddweller.commons.StringUtil;
+import com.rapiddweller.common.NameUtil;
+import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.model.DBSequence;
 import org.junit.Test;

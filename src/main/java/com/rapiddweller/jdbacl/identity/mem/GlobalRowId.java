@@ -21,9 +21,9 @@
 
 package com.rapiddweller.jdbacl.identity.mem;
 
-import com.rapiddweller.commons.ArrayFormat;
-import com.rapiddweller.commons.bean.HashCodeBuilder;
-import com.rapiddweller.commons.bean.ObjectOrArray;
+import com.rapiddweller.common.ArrayFormat;
+import com.rapiddweller.common.bean.HashCodeBuilder;
+import com.rapiddweller.common.bean.ObjectOrArray;
 
 /**
  * Global technical identifier for a database table rows 

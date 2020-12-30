@@ -23,9 +23,9 @@ package com.rapiddweller.jdbacl.identity;
 
 import java.sql.Connection;
 
-import com.rapiddweller.commons.ArrayUtil;
-import com.rapiddweller.commons.ConfigurationError;
-import com.rapiddweller.commons.iterator.TabularIterator;
+import com.rapiddweller.common.ArrayUtil;
+import com.rapiddweller.common.ConfigurationError;
+import com.rapiddweller.common.iterator.TabularIterator;
 import com.rapiddweller.jdbacl.model.Database;
 
 /**

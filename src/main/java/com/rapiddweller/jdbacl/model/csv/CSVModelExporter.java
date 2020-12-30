@@ -28,9 +28,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 
-import com.rapiddweller.commons.FileUtil;
-import com.rapiddweller.commons.IOUtil;
-import com.rapiddweller.formats.csv.CSVUtil;
+import com.rapiddweller.common.FileUtil;
+import com.rapiddweller.common.IOUtil;
+import com.rapiddweller.format.csv.CSVUtil;
 import com.rapiddweller.jdbacl.SQLUtil;
 import com.rapiddweller.jdbacl.model.DBCheckConstraint;
 import com.rapiddweller.jdbacl.model.DBColumn;

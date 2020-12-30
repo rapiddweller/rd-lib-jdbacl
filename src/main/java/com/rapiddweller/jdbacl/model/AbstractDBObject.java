@@ -21,7 +21,7 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import com.rapiddweller.commons.NullSafeComparator;
+import com.rapiddweller.common.NullSafeComparator;
 
 /**
  * Abstract implementation of the {@link DBObject} interface which serves as 

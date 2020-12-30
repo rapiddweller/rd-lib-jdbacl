@@ -25,12 +25,12 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
-import com.rapiddweller.commons.ConnectFailedException;
-import com.rapiddweller.commons.FileUtil;
-import com.rapiddweller.commons.ImportFailedException;
-import com.rapiddweller.commons.Period;
-import com.rapiddweller.commons.StringUtil;
-import com.rapiddweller.commons.SystemInfo;
+import com.rapiddweller.common.ConnectFailedException;
+import com.rapiddweller.common.FileUtil;
+import com.rapiddweller.common.ImportFailedException;
+import com.rapiddweller.common.Period;
+import com.rapiddweller.common.StringUtil;
+import com.rapiddweller.common.SystemInfo;
 import com.rapiddweller.jdbacl.model.DBMetaDataImporter;
 import com.rapiddweller.jdbacl.model.Database;
 import com.rapiddweller.jdbacl.model.jdbc.JDBCDBImporter;

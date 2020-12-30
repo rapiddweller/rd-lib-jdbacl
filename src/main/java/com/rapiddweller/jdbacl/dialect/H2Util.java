@@ -23,8 +23,8 @@ package com.rapiddweller.jdbacl.dialect;
 
 import java.sql.Connection;
 
-import com.rapiddweller.commons.ConfigurationError;
-import com.rapiddweller.commons.ConnectFailedException;
+import com.rapiddweller.common.ConfigurationError;
+import com.rapiddweller.common.ConnectFailedException;
 import com.rapiddweller.jdbacl.DBUtil;
 
 /**

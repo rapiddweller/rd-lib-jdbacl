@@ -26,8 +26,8 @@ import static org.junit.Assert.*;
 import java.math.BigInteger;
 import java.util.List;
 
-import com.rapiddweller.commons.IOUtil;
-import com.rapiddweller.commons.tree.TreeLogger;
+import com.rapiddweller.common.IOUtil;
+import com.rapiddweller.common.tree.TreeLogger;
 import com.rapiddweller.jdbacl.model.AbstractModelTest;
 import com.rapiddweller.jdbacl.model.DBSequence;
 import com.rapiddweller.jdbacl.model.DBTreeModel;

@@ -26,8 +26,8 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import com.rapiddweller.commons.ArrayFormat;
-import com.rapiddweller.commons.bean.HashCodeBuilder;
+import com.rapiddweller.common.ArrayFormat;
+import com.rapiddweller.common.bean.HashCodeBuilder;
 
 import java.util.Arrays;
 

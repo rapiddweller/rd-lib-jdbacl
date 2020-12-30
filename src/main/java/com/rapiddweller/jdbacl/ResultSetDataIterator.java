@@ -25,10 +25,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
-import com.rapiddweller.commons.IOUtil;
-import com.rapiddweller.commons.StringUtil;
-import com.rapiddweller.formats.DataContainer;
-import com.rapiddweller.formats.DataIterator;
+import com.rapiddweller.common.IOUtil;
+import com.rapiddweller.common.StringUtil;
+import com.rapiddweller.format.DataContainer;
+import com.rapiddweller.format.DataIterator;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 

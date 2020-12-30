@@ -23,13 +23,13 @@ package com.rapiddweller.jdbacl.identity;
 
 import java.sql.Connection;
 
-import com.rapiddweller.commons.ArrayBuilder;
-import com.rapiddweller.commons.ArrayFormat;
-import com.rapiddweller.commons.ArrayUtil;
-import com.rapiddweller.commons.ConfigurationError;
-import com.rapiddweller.commons.converter.ThreadSafeConverter;
-import com.rapiddweller.commons.iterator.ConvertingIterator;
-import com.rapiddweller.commons.iterator.TabularIterator;
+import com.rapiddweller.common.ArrayBuilder;
+import com.rapiddweller.common.ArrayFormat;
+import com.rapiddweller.common.ArrayUtil;
+import com.rapiddweller.common.ConfigurationError;
+import com.rapiddweller.common.converter.ThreadSafeConverter;
+import com.rapiddweller.common.iterator.ConvertingIterator;
+import com.rapiddweller.common.iterator.TabularIterator;
 import com.rapiddweller.jdbacl.model.Database;
 
 /**

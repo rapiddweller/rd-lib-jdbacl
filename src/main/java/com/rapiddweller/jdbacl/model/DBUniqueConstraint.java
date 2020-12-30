@@ -28,8 +28,8 @@ package com.rapiddweller.jdbacl.model;
 
 import java.util.Arrays;
 
-import com.rapiddweller.commons.ArrayUtil;
-import com.rapiddweller.commons.NullSafeComparator;
+import com.rapiddweller.common.ArrayUtil;
+import com.rapiddweller.common.NullSafeComparator;
 import com.rapiddweller.jdbacl.NameSpec;
 import com.rapiddweller.jdbacl.SQLUtil;
 

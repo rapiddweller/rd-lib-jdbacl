@@ -23,7 +23,7 @@ package com.rapiddweller.jdbacl;
 
 import static org.junit.Assert.*;
 
-import com.rapiddweller.commons.version.VersionInfo;
+import com.rapiddweller.common.version.VersionInfo;
 import org.junit.Test;
 
 /**

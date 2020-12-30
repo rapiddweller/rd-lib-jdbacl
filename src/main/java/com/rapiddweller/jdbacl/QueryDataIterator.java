@@ -26,8 +26,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.rapiddweller.formats.DataIterator;
-import com.rapiddweller.formats.util.DataIteratorProxy;
+import com.rapiddweller.format.DataIterator;
+import com.rapiddweller.format.util.DataIteratorProxy;
 
 /**
  * {@link DataIterator} which provides the results of a SQL query.<br/><br/>
