@@ -172,13 +172,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>net.sf.squirrel-sql.thirdparty-non-maven</groupId>
-            <artifactId>jaybird</artifactId>
-            <version>2.1.6</version>
-            <scope>test</scope>
-        </dependency>
-
         <dependency> <!-- needed for firebird -->
             <groupId>javax.resource</groupId>
             <artifactId>connector-api</artifactId>
@@ -431,10 +424,6 @@
         <repository>
             <id>gitlab-maven</id>
             <url>${env.CI_SERVER_URL}/api/v4/groups/${env.CI_PROJECT_GROUP_ID}/-/packages/maven</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
         </repository>
     </repositories>
     <distributionManagement>
