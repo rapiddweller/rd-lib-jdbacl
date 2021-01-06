@@ -29,20 +29,33 @@ import org.junit.Test;
 /**
  * Tests the {@link HSQL2Dialect}.<br/><br/>
  * Created: 20.10.2011 21:01:00
- * @since 0.6.12
+ *
  * @author Volker Bergmann
+ * @since 0.6.12
  */
 public class HSQL2DialectTest extends DatabaseDialectTest<HSQL2Dialect> {
 
-	public HSQL2DialectTest() {
-	    super(new HSQL2Dialect());
+    @Test
+    public void testSupportsRegex() {
+        assertTrue((new HSQL2Dialect()).supportsRegex());
     }
-	
-	@Test
-	public void testRegex() {
-		assertTrue(dialect.supportsRegex());
-		assertEquals("REGEXP_MATCHES(code, '[A-Z]{5}')", dialect.regexQuery("code", false, "[A-Z]{5}"));
-		assertEquals("NOT REGEXP_MATCHES(code, '[A-Z]{5}')", dialect.regexQuery("code", true, "[A-Z]{5}"));
-	}
-	
+
+    public HSQL2DialectTest() {
+        super(new HSQL2Dialect());
+    }
+
+    @Test
+    public void testRegexQuery() {
+        assertEquals("NOT REGEXP_MATCHES(Expression, 'Regex')",
+                (new HSQL2Dialect()).regexQuery("Expression", true, "Regex"));
+        assertEquals("REGEXP_MATCHES(Expression, 'Regex')", (new HSQL2Dialect()).regexQuery("Expression", false, "Regex"));
+    }
+
+    @Test
+    public void testRegex() {
+        assertTrue(dialect.supportsRegex());
+        assertEquals("REGEXP_MATCHES(code, '[A-Z]{5}')", dialect.regexQuery("code", false, "[A-Z]{5}"));
+        assertEquals("NOT REGEXP_MATCHES(code, '[A-Z]{5}')", dialect.regexQuery("code", true, "[A-Z]{5}"));
+    }
+
 }

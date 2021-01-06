@@ -22,70 +22,110 @@
 package com.rapiddweller.jdbacl.dialect;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * Tests the {@link SqlServerDialect}.<br/><br/>
  * Created: 09.04.2010 07:51:17
- * @since 0.6.0
+ *
  * @author Volker Bergmann
+ * @since 0.6.0
  */
 public class SqlServerDialectTest extends DatabaseDialectTest<SqlServerDialect> {
 
-	public SqlServerDialectTest() {
-	    super(new SqlServerDialect());
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+    @Test
+    public void testConstructor() {
+        SqlServerDialect actualSqlServerDialect = new SqlServerDialect();
+        assertEquals("sql_server", actualSqlServerDialect.getSystem());
+        assertFalse(actualSqlServerDialect.quoteTableNames);
+        assertFalse(actualSqlServerDialect.isSequenceSupported());
     }
 
-	@Test
-	public void testSequenceSupported() {
-		assertFalse(dialect.isSequenceSupported());
-	}
-	
-	@Test
-	public void testFormatDate() {
-		assertEquals("'1971-02-03T13:14:15'", dialect.formatValue(DATETIME_19710203131415));
-	}
-	
-	@Test
-	public void testFormatTime() {
-		assertEquals("'13:14:15'", dialect.formatValue(TIME_131415));
-	}
-	
-	@Test
-	public void testIsDeterministicPKName() {
-		assertFalse(dialect.isDeterministicPKName("SYS_XYZ"));
-		assertTrue(dialect.isDeterministicPKName("USER_PK"));
-	}
-	
-	@Test
-	public void testIsDeterministicUKName() {
-		assertFalse(dialect.isDeterministicUKName("SYS_XYZ"));
-		assertTrue(dialect.isDeterministicUKName("USER_NAME_UK"));
-	}
-	
-	@Test
-	public void testIsDeterministicFKName() {
-		assertFalse(dialect.isDeterministicFKName("SYS_XYZ"));
-		assertTrue(dialect.isDeterministicFKName("USER_ROLE_FK"));
-	}
-	
-	@Test
-	public void testIsDeterministicIndexName() {
-		assertFalse(dialect.isDeterministicIndexName("SYS_XYZ"));
-		assertTrue(dialect.isDeterministicIndexName("USER_NAME_IDX"));
-	}
-	
-	@Test(expected = UnsupportedOperationException.class)
-	public void testRegex() {
-		assertFalse(dialect.supportsRegex());
-		dialect.regexQuery("code", false, "[A-Z]{4}");
-	}
-	
-	@Test
-	public void testRenderCase() {
-		assertEquals("col = CASE WHEN condition1 THEN result1 WHEN condition2 THEN result2 ELSE result4 END", 
-				dialect.renderCase("col", "result4", "condition1", "result1", "condition2", "result2"));
-	}
-	
+    @Test
+    public void testIsDefaultSchema() {
+        assertFalse((new SqlServerDialect()).isDefaultSchema("Schema", "User"));
+        assertTrue((new SqlServerDialect()).isDefaultSchema("DBO", "User"));
+    }
+
+    public SqlServerDialectTest() {
+        super(new SqlServerDialect());
+    }
+
+    @Test
+    public void testSequenceSupported() {
+        assertFalse(dialect.isSequenceSupported());
+    }
+
+    @Test
+    public void testFormatDate() {
+        assertEquals("'1971-02-03T13:14:15'", dialect.formatValue(DATETIME_19710203131415));
+    }
+
+    @Test
+    public void testFormatTime() {
+        assertEquals("'13:14:15'", dialect.formatValue(TIME_131415));
+    }
+
+    @Test
+    public void testIsDeterministicPKName() {
+        assertFalse(dialect.isDeterministicPKName("SYS_XYZ"));
+        assertTrue(dialect.isDeterministicPKName("USER_PK"));
+        assertTrue((new SqlServerDialect()).isDeterministicPKName("Pk Name"));
+        assertFalse((new SqlServerDialect()).isDeterministicPKName("SYS_U"));
+    }
+
+    @Test
+    public void testIsDeterministicUKName() {
+        assertFalse(dialect.isDeterministicUKName("SYS_XYZ"));
+        assertTrue(dialect.isDeterministicUKName("USER_NAME_UK"));
+        assertTrue((new SqlServerDialect()).isDeterministicUKName("Pk Name"));
+        assertFalse((new SqlServerDialect()).isDeterministicUKName("SYS_U"));
+    }
+
+    @Test
+    public void testIsDeterministicFKName() {
+        assertFalse(dialect.isDeterministicFKName("SYS_XYZ"));
+        assertTrue(dialect.isDeterministicFKName("USER_ROLE_FK"));
+        assertTrue((new SqlServerDialect()).isDeterministicFKName("Pk Name"));
+        assertFalse((new SqlServerDialect()).isDeterministicFKName("SYS_U"));
+    }
+
+    @Test
+    public void testIsDeterministicIndexName() {
+        assertFalse(dialect.isDeterministicIndexName("SYS_XYZ"));
+        assertTrue(dialect.isDeterministicIndexName("USER_NAME_IDX"));
+        assertTrue((new SqlServerDialect()).isDeterministicIndexName("Index Name"));
+        assertFalse((new SqlServerDialect()).isDeterministicIndexName("SYS_U"));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testRegex() {
+        assertFalse(dialect.supportsRegex());
+        dialect.regexQuery("code", false, "[A-Z]{4}");
+    }
+
+    @Test
+    public void testRenderCase() {
+        assertEquals("col = CASE WHEN condition1 THEN result1 WHEN condition2 THEN result2 ELSE result4 END",
+                dialect.renderCase("col", "result4", "condition1", "result1", "condition2", "result2"));
+        assertEquals("Column Name = CASE ELSE Else Expression END",
+                (new SqlServerDialect()).renderCase("Column Name", "Else Expression"));
+        assertEquals("Column Name = CASE END", (new SqlServerDialect()).renderCase("Column Name", ""));
+    }
+
+    @Test
+    public void testRenderCase2() {
+        thrown.expect(ArrayIndexOutOfBoundsException.class);
+        (new SqlServerDialect()).renderCase("Column Name", "Else Expression", "foo", "foo", "foo");
+    }
+
 }

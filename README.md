@@ -11,7 +11,7 @@ This library is mandatory for [rapiddweller 'Benerator'](https://www.benerator.d
 
 ## Prerequisites
 
-- Java 1.8 or Java 11 JDK (we recommend [adoptopenjdk](https://adoptopenjdk.net/))
+- Java 11 JDK (we recommend [adoptopenjdk](https://adoptopenjdk.net/))
 - [Maven](https://maven.apache.org/)
 
 ## Docs

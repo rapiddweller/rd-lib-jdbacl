@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ -z "$JDBACL_HOME" ]; then
   echo "Error: JDBACL_HOME is not set. Please set the JDBACL_HOME environment variable"
@@ -6,7 +6,7 @@ if [ -z "$JDBACL_HOME" ]; then
   exit 1
 fi
 
-#!/bin/sh
+#!/bin/bash
 
 # OS specific support.  $var _must_ be set to either true or false.
 cygwin=false;

@@ -22,6 +22,9 @@
 package com.rapiddweller.jdbacl.model;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.Types;
 
@@ -30,31 +33,86 @@ import org.junit.Test;
 /**
  * Tests the {@link DBDataType}.<br/><br/>
  * Created: 14.06.2011 16:40:11
- * @since 0.6.8
+ *
  * @author Volker Bergmann
+ * @since 0.6.8
  */
 public class DBDataTypeTest {
 
-	@Test
-	public void testGetInstanceByDescriptor() {
-		DBDataType type1 = DBDataType.getInstance(Types.INTEGER, "INTEGER");
-		DBDataType type2 = DBDataType.getInstance(Types.INTEGER, "INTEGER");
-		assertTrue(type1 == type2);
-	}
-	
-	@Test
-	public void testGetInstanceByName() {
-		DBDataType type1 = DBDataType.getInstance("INTEGER");
-		DBDataType type2 = DBDataType.getInstance("INTEGER");
-		assertTrue(type1 == type2);
-	}
-	
-	@Test
-	public void testJdbcTypeFor() {
-		assertEquals(Types.INTEGER, DBDataType.jdbcTypeFor("INTEGER"));
-		assertEquals(Types.VARCHAR, DBDataType.jdbcTypeFor("VARCHAR"));
-		assertEquals(Types.VARCHAR, DBDataType.jdbcTypeFor("VARCHAR2"));
-		assertEquals(Types.NVARCHAR, DBDataType.jdbcTypeFor("NVARCHAR"));
-	}
-	
+    @Test
+    public void testGetInstanceByDescriptor() {
+        DBDataType type1 = DBDataType.getInstance(Types.INTEGER, "INTEGER");
+        DBDataType type2 = DBDataType.getInstance(Types.INTEGER, "INTEGER");
+        assertTrue(type1 == type2);
+    }
+
+    @Test
+    public void testGetInstanceByName() {
+        DBDataType type1 = DBDataType.getInstance("INTEGER");
+        DBDataType type2 = DBDataType.getInstance("INTEGER");
+        assertTrue(type1 == type2);
+    }
+
+    @Test
+    public void testJdbcTypeFor() {
+        assertEquals(Types.INTEGER, DBDataType.jdbcTypeFor("INTEGER"));
+        assertEquals(Types.VARCHAR, DBDataType.jdbcTypeFor("VARCHAR"));
+        assertEquals(Types.VARCHAR, DBDataType.jdbcTypeFor("VARCHAR2"));
+        assertEquals(Types.NVARCHAR, DBDataType.jdbcTypeFor("NVARCHAR"));
+        assertEquals(2004, DBDataType.jdbcTypeFor("BLOB"));
+    }
+
+    @Test
+    public void testIsLOB() {
+        assertTrue(DBDataType.getInstance("BLOB").isLOB());
+        assertTrue(DBDataType.getInstance("CLOB").isLOB());
+        assertFalse(DBDataType.getInstance("DATE").isLOB());
+        assertTrue(DBDataType.getInstance("NCLOB").isLOB());
+    }
+
+    @Test
+    public void testIsVarChar() {
+        assertFalse(DBDataType.getInstance("BLOB").isVarChar());
+        assertTrue(DBDataType.getInstance("VARCHAR2").isVarChar());
+    }
+
+    @Test
+    public void testIsAlpha() {
+        assertFalse(DBDataType.getInstance("BLOB").isAlpha());
+        assertTrue(DBDataType.getInstance("CLOB").isAlpha());
+    }
+
+    @Test
+    public void testIsNumber() {
+        assertFalse(DBDataType.getInstance("BLOB").isNumber());
+    }
+
+    @Test
+    public void testIsInteger() {
+        assertFalse(DBDataType.getInstance("BLOB").isInteger());
+    }
+
+    @Test
+    public void testIsDecimal() {
+        assertFalse(DBDataType.getInstance("BLOB").isDecimal());
+    }
+
+    @Test
+    public void testIsTemporal() {
+        assertFalse(DBDataType.getInstance("BLOB").isTemporal());
+        assertTrue(DBDataType.getInstance("DATE").isTemporal());
+        assertTrue(DBDataType.getInstance("TIME").isTemporal());
+    }
+
+    @Test
+    public void testEquals() {
+        assertFalse(DBDataType.getInstance("BLOB").equals("o"));
+        assertFalse(DBDataType.getInstance("BLOB").equals(null));
+    }
+
+    @Test
+    public void testHashCode() {
+        assertEquals(2041757, DBDataType.getInstance("BLOB").hashCode());
+    }
+
 }
