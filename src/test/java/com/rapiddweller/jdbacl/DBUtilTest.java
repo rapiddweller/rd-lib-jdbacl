@@ -70,10 +70,6 @@ public class DBUtilTest {
 
     final String SCRIPT_FILE = "com/rapiddweller/jdbacl/create_tables.hsql.sql";
 
-    @Test
-    public void testGetEnvironmentNames() {
-        assertEquals(0, DBUtil.getEnvironmentNames().length);
-    }
 
     @Test
     public void testExistsEnvironment() {
