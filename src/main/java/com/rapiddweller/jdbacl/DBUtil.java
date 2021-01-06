@@ -74,10 +74,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.*;
 
 import javax.sql.PooledConnection;
 
@@ -101,9 +98,9 @@ public class DBUtil {
     // connection handling ---------------------------------------------------------------------------------------------
     
     public static String[] getEnvironmentNames() {
-		File databeneFolder = new File(SystemInfo.getUserHome(), "databene");
+		File databeneFolder = new File(SystemInfo.getUserHome(), "rapiddweller");
 		String[] fileNames = databeneFolder.list((dir, name) -> (name.toLowerCase().endsWith(".env.properties")));
-		String[] result = new String[fileNames.length]; 
+		String[] result = new String[Objects.requireNonNull(fileNames).length];
 		for (int i = 0; i < fileNames.length; i++) {
 			String fileName = fileNames[i];
 			result[i] = fileName.substring(0, fileName.length() - ".env.properties".length());
@@ -137,7 +134,7 @@ public class DBUtil {
 		String filename = environment + ".env.properties";
 		File file = FileUtil.getFileIgnoreCase(new File(filename), false);
 		if (!file.exists()) {
-			File defaultUserHomeFile = new File(SystemInfo.getUserHome() + SystemInfo.getFileSeparator() + "databene", filename);
+			File defaultUserHomeFile = new File(SystemInfo.getUserHome() + SystemInfo.getFileSeparator() + "rapiddweller", filename);
 			file = FileUtil.getFileIgnoreCase(defaultUserHomeFile, false);
 		}
 		String path;

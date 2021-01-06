@@ -1,12 +1,8 @@
-
 # common vars for multiple stages/jobs
 variables:
-  ARTIFACT_ID: "rd-lib-jdbacl"
-  ARTIFACT_VERSION_BASE: "1.1.0" # should be updated with the final release (expected value: next release version)
-  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository/"
   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode"
   PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/releases/${CI_COMMIT_TAG}"
-  RELEASE_JDK11: "true"
 
 cache:
   paths:
@@ -15,18 +11,19 @@ cache:
 stages:
   - setup
   - build
-  - distribution
   - quality
+  - distribution
   - upload
   - release
+
 ###################### Setup ######################
 
 setup:jdk-11:
   stage: setup
-  image:
-    name: alpine/git:latest
-    entrypoint: [""]
+  image: maven:3.6-adoptopenjdk-11
   script:
+    - export ARTIFACT_ID=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.artifactId}' --non-recursive exec:exec)
+    - echo "ARTIFACT_ID=$ARTIFACT_ID" >> build.env
     - export RD_PROJECT_LATEST_TAG=$(git describe --abbrev=0 --tags)
     - echo "RD_PROJECT_LATEST_TAG=$RD_PROJECT_LATEST_TAG" >> build.env
     - export JAVA_JDKVERSION_TAG="jdk-11"
@@ -37,25 +34,26 @@ setup:jdk-11:
         export ARTIFACT_VERSION=$ARTIFACT_VERSION_BASE+$JAVA_JDKVERSION_TAG-SNAPSHOT
         echo "ARTIFACT_VERSION=$ARTIFACT_VERSION" >> build.env
       else
-        export ARTIFACT_VERSION=$CI_COMMIT_TAG+$JAVA_JDKVERSION_TAG
+        export ARTIFACT_VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
         echo "ARTIFACT_VERSION=$ARTIFACT_VERSION" >> build.env
       fi
     - export ARTIFACT_FULLNAME=$ARTIFACT_ID-$ARTIFACT_VERSION+$JAVA_JDKVERSION_TAG
     - echo "ARTIFACT_FULLNAME=$ARTIFACT_FULLNAME" >> build.env
+    - export
   artifacts:
     reports:
       dotenv: build.env
 
 ###################### Test / Build ######################
 
-.update-mvn-project: &update-mvn-project
+.prepare-mvn-project: &prepare-mvn-project
+  image: maven:3.6-adoptopenjdk-11
   before_script:
-    #    - sed -i 's/--project-version--/'$ARTIFACT_VERSION'/g' pom.xml
+    - export
     - mvn versions:set -DnewVersion=$ARTIFACT_VERSION
 
 build:jdk-11:
-  <<: *update-mvn-project
-  image: maven:3-openjdk-11
+  <<: *prepare-mvn-project
   needs:
     - job: setup:jdk-11
       artifacts: true
@@ -64,57 +62,52 @@ build:jdk-11:
     paths:
       - target/*.jar
   script:
+    - mvn -v
     - mvn $MAVEN_CLI_OPTS clean package
 
-###################### Sonarqube ######################
-
-.sonar-template: &sonar
-  <<: *update-mvn-project
-  stage: quality
-  when: manual
-  allow_failure: true
-  variables:
-    SONAR_ANALYSIS_MODE: publish
-    GIT_DEPTH: "0"
-  only:
-    - master
-
-quality:sonarqube-jdk-11:
-  <<: *sonar
-  image: maven:3-openjdk-11
+test:jdk-11:
+  stage: build
+  <<: *prepare-mvn-project
   needs:
     - job: setup:jdk-11
       artifacts: true
-    - job: build:jdk-11
-      artifacts: true
   script:
-    - mvn $MAVEN_CLI_OPTS verify sonar:sonar
-      -Dsonar.projectKey=$CI_PROJECT_PATH+$JAVA_JDKVERSION_TAG
-      -Dsonar.projectName=$CI_PROJECT_NAMESPACE/$ARTIFACT_ID+$JAVA_JDKVERSION_TAG
-      -Dsonar.projectVersion=$ARTIFACT_VERSION
-      -Dsonar.java.binaries=target
-      -Dsonar.sourceEncoding=UTF-8
-      -Dsonar.sources=src/main/java
-      -Dsonar.tests=src/test/java
-      -Dsonar.junit.reportPaths=target/surefire-reports
-      -Dsonar.language=java
-      -Dsonar.host.url=$SONARQUBE_HOST
-      -Dsonar.login=$SONARQUBE_TOKEN
-      -Dsonar.scm.disabled=true
-      -Dsonar.ws.timeout=120
+    - mvn $MAVEN_CLI_OPTS clean org.jacoco:jacoco-maven-plugin:prepare-agent test jacoco:report
+    - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, " instructions covered"; print 100*covered/instructions, "% covered" }' target/site/jacoco/jacoco.csv
+  artifacts:
+    paths:
+      - target/site/jacoco/jacoco.xml
+
+###################### Quality ######################
+
+coverage:jdk-11:
+  # Must be in a stage later than test:jdk11:'s stage.
+  # The `visualize` stage does not exist by default.
+  # Please define it first, or chose an existing stage like `deploy`.
+  stage: quality
+  image: haynes/jacoco2cobertura:1.0.4
+  script:
+    # convert report from jacoco to cobertura
+    - 'python /opt/cover2cover.py target/site/jacoco/jacoco.xml src/main/java > target/site/cobertura.xml'
+    # read the <source></source> tag and prepend the path to every filename attribute
+    - 'python /opt/source2filename.py target/site/cobertura.xml'
+  needs:
+    - job: test:jdk-11
+      artifacts: true
+  artifacts:
+    reports:
+      cobertura: target/site/cobertura.xml
 
 ###################### Assembly and Deploy ######################
 
 assembly:jdk-11:
-  <<: *update-mvn-project
+  <<: *prepare-mvn-project
   needs:
     - job: setup:jdk-11
       artifacts: true
     - job: build:jdk-11
       artifacts: true
-  image: maven:3-openjdk-11
   stage: distribution
-  allow_failure: true
   artifacts:
     paths:
       - target/*.tar.gz
@@ -126,13 +119,12 @@ assembly:jdk-11:
     - mvn $MAVEN_CLI_OPTS -Dmaven.test.skip=true clean install site:site assembly:single
 
 deploy:jdk-11:
-  <<: *update-mvn-project
+  <<: *prepare-mvn-project
   needs:
     - job: setup:jdk-11
       artifacts: true
     - job: build:jdk-11
       artifacts: true
-  image: maven:3-openjdk-11
   stage: distribution
   script:
     - mvn $MAVEN_CLI_OPTS -Dmaven.test.skip=true clean install deploy
@@ -147,7 +139,6 @@ upload:jdk-11:
       artifacts: true
     - job: assembly:jdk-11
       artifacts: true
-  allow_failure: true
   artifacts:
     reports:
       dotenv: build.env
@@ -170,7 +161,6 @@ upload:jdk-11:
 release:dist-jdk-11:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
-  allow_failure: true
   needs:
     - job: setup:jdk-11
       artifacts: true
@@ -187,10 +177,8 @@ release:dist-jdk-11:
 
 
 release:mvncentral-jdk-11:
-  <<: *update-mvn-project
+  <<: *prepare-mvn-project
   stage: release
-  image: maven:3-openjdk-11
-  allow_failure: true
   needs:
     - job: setup:jdk-11
       artifacts: true
@@ -201,5 +189,5 @@ release:mvncentral-jdk-11:
     - apt update && apt-get -y install gnupg
     ## Add gpg key to sign
     - export GPG_TTY=$(tty)
-    - gpg --batch --import <(echo "$GPG_PRIVATE_KEY")
+    - gpg --batch --import <(echo "$GPG_PRIVATE_KEY_ENCODED" | base64 -d)
     - mvn $MAVEN_CLI_OPTS clean deploy -P release

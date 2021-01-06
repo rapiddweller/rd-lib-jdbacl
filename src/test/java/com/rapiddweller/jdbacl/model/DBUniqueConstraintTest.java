@@ -29,37 +29,103 @@ package com.rapiddweller.jdbacl.model;
 import com.rapiddweller.jdbacl.model.DBTable;
 import com.rapiddweller.jdbacl.model.DBUniqueConstraint;
 import org.junit.Test;
+
 import static junit.framework.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests the DBUniqueConstraint<br/>
  * <br/>
  * Created: 31.08.2007 09:22:25
+ *
  * @author Volker Bergmann
  */
 public class DBUniqueConstraintTest {
 
-	@Test
+    @Test
+    public void testConstructor() {
+        DBUniqueConstraint actualDbUniqueConstraint = new DBUniqueConstraint(new DBTable("Name"), "Name", true, "foo",
+                "foo", "foo");
+        assertEquals("unique constraint", actualDbUniqueConstraint.getObjectType());
+        assertTrue(actualDbUniqueConstraint.isNameDeterministic());
+        assertEquals(3, actualDbUniqueConstraint.getColumnNames().length);
+        CompositeDBObject<?> expectedTable = actualDbUniqueConstraint.owner;
+        DBTable table = actualDbUniqueConstraint.getTable();
+        assertSame(expectedTable, table);
+        assertEquals("Name", actualDbUniqueConstraint.getName());
+        assertEquals(0, table.getColumnNames().length);
+    }
+
+    @Test
+    public void testConstructor2() {
+        DBUniqueConstraint actualDbUniqueConstraint = new DBUniqueConstraint(new DBTable("Name"), "unique constraint", true,
+                "foo", "foo", "foo");
+        assertEquals("unique constraint", actualDbUniqueConstraint.getObjectType());
+        assertTrue(actualDbUniqueConstraint.isNameDeterministic());
+        assertEquals(3, actualDbUniqueConstraint.getColumnNames().length);
+        CompositeDBObject<?> expectedTable = actualDbUniqueConstraint.owner;
+        DBTable table = actualDbUniqueConstraint.getTable();
+        assertSame(expectedTable, table);
+        assertEquals("unique constraint", actualDbUniqueConstraint.getName());
+        assertEquals(0, table.getColumnNames().length);
+    }
+
+    @Test
+    public void testGetColumnNames() {
+        assertEquals(3,
+                (new DBUniqueConstraint(new DBTable("Name"), "Name", true, "foo", "foo", "foo")).getColumnNames().length);
+    }
+
+    @Test
+    public void testAddColumnName() {
+        DBUniqueConstraint dbUniqueConstraint = new DBUniqueConstraint(new DBTable("Name"), "Name", true, "foo", "foo",
+                "foo");
+        dbUniqueConstraint.addColumnName("Column Name");
+        assertEquals(4, dbUniqueConstraint.getColumnNames().length);
+    }
+
+    @Test
+    public void testIsIdentical() {
+        DBUniqueConstraint dbUniqueConstraint = new DBUniqueConstraint(new DBTable("Name"), "Name", true, "foo", "foo",
+                "foo");
+        assertFalse(dbUniqueConstraint.isIdentical(new DBCatalog()));
+    }
+
+    @Test
+    public void testIsIdentical2() {
+        assertFalse((new DBUniqueConstraint(new DBTable("Name"), "Name", true, "foo", "foo", "foo")).isIdentical(null));
+    }
+
+    @Test
     public void testToString() {
         DBTable table = new DBTable("tablename");
         DBUniqueConstraint constraint = new DBUniqueConstraint(table, "constraintname", false, "column1", "column2");
         assertEquals("CONSTRAINT constraintname UNIQUE (column1, column2)", constraint.toString());
     }
-    
-	@Test
+
+    @Test
+    public void testToString2() {
+        assertEquals("CONSTRAINT Name UNIQUE (foo, foo, foo)",
+                (new DBUniqueConstraint(new DBTable("Name"), "Name", true, "foo", "foo", "foo")).toString());
+    }
+
+    @Test
     public void testEquals() {
         DBTable table = new DBTable("tablename");
-    	// simple checks
-    	DBUniqueConstraint uc1 = new DBUniqueConstraint(table, "uc1", false, "col1");
-    	assertFalse(uc1.equals(null));
-    	assertFalse(uc1.equals(""));
-    	assertTrue(uc1.equals(uc1));
-    	// real comparisons
-    	DBUniqueConstraint uc2 = new DBUniqueConstraint(table, "uc2", false, "col2");
-    	DBUniqueConstraint uc3 = new DBUniqueConstraint(table, "uc3", false, "col1", "col2");
-    	assertFalse(uc1.equals(uc2));
-    	assertFalse(uc1.equals(uc3));
-    	assertFalse(uc3.equals(uc1));
+        // simple checks
+        DBUniqueConstraint uc1 = new DBUniqueConstraint(table, "uc1", false, "col1");
+        assertFalse(uc1.equals(null));
+        assertFalse(uc1.equals(""));
+        assertTrue(uc1.equals(uc1));
+        // real comparisons
+        DBUniqueConstraint uc2 = new DBUniqueConstraint(table, "uc2", false, "col2");
+        DBUniqueConstraint uc3 = new DBUniqueConstraint(table, "uc3", false, "col1", "col2");
+        assertFalse(uc1.equals(uc2));
+        assertFalse(uc1.equals(uc3));
+        assertFalse(uc3.equals(uc1));
     }
-	
+
 }

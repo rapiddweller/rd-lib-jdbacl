@@ -22,26 +22,41 @@
 package com.rapiddweller.jdbacl.dialect;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 /**
  * Tests the {@link Firebird2_5Dialect}.<br/><br/>
  * Created: 20.10.2011 19:54:11
- * @since 0.6.12
+ *
  * @author Volker Bergmann
+ * @since 0.6.12
  */
 public class Firebird2_5DialectTest extends DatabaseDialectTest<Firebird2_5Dialect> {
 
-	public Firebird2_5DialectTest() {
-	    super(new Firebird2_5Dialect());
+    @Test
+    public void testSupportsRegex() {
+        assertTrue((new Firebird2_5Dialect()).supportsRegex());
     }
-	
-	@Test
-	public void testRegex() {
-		assertTrue(dialect.supportsRegex());
-		assertEquals("code SIMILAR TO '[A-Z]{5}'", dialect.regexQuery("code", false, "[A-Z]{5}"));
-		assertEquals("code NOT SIMILAR TO '[A-Z]{5}'", dialect.regexQuery("code", true, "[A-Z]{5}"));
-	}
-	
+
+    public Firebird2_5DialectTest() {
+        super(new Firebird2_5Dialect());
+    }
+
+    @Test
+    public void testRegexQuery() {
+        assertEquals("Expression NOT SIMILAR TO 'Regex'",
+                (new Firebird2_5Dialect()).regexQuery("Expression", true, "Regex"));
+        assertEquals("Expression SIMILAR TO 'Regex'", (new Firebird2_5Dialect()).regexQuery("Expression", false, "Regex"));
+    }
+
+    @Test
+    public void testRegex() {
+        assertTrue(dialect.supportsRegex());
+        assertEquals("code SIMILAR TO '[A-Z]{5}'", dialect.regexQuery("code", false, "[A-Z]{5}"));
+        assertEquals("code NOT SIMILAR TO '[A-Z]{5}'", dialect.regexQuery("code", true, "[A-Z]{5}"));
+    }
+
 }

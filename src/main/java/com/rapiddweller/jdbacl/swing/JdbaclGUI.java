@@ -60,7 +60,7 @@ public class JdbaclGUI extends JFrame implements JavaApplication {
 
 	private static final Logger LOGGER = LogManager.getLogger(JdbaclGUI.class);
 	
-	private static final String DATABENE_DIRECTORY_NAME = SystemInfo.getUserHome() + File.separator + "databene";
+	private static final String DATABENE_DIRECTORY_NAME = SystemInfo.getUserHome() + File.separator + "rapiddweller";
 	private static final String GUI_PROPERTIES_FILE_NAME = 
 		DATABENE_DIRECTORY_NAME + File.separator + "JdbaclGUI.properties";
 
