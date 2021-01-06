@@ -1,5 +1,6 @@
 # common vars for multiple stages/jobs
 variables:
+  MAVEN_IMAGE: maven:3.6-adoptopenjdk-11
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository/"
   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode"
   PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/releases/${CI_COMMIT_TAG}"
@@ -20,7 +21,7 @@ stages:
 
 setup:jdk-11:
   stage: setup
-  image: maven:3.6-adoptopenjdk-11
+  image: $MAVEN_IMAGE
   script:
     - export ARTIFACT_ID=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.artifactId}' --non-recursive exec:exec)
     - echo "ARTIFACT_ID=$ARTIFACT_ID" >> build.env
@@ -31,10 +32,10 @@ setup:jdk-11:
     - |
       if [ -z "$CI_COMMIT_TAG" ];
       then
-        export ARTIFACT_VERSION=$ARTIFACT_VERSION_BASE+$JAVA_JDKVERSION_TAG-SNAPSHOT
+        export ARTIFACT_VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
         echo "ARTIFACT_VERSION=$ARTIFACT_VERSION" >> build.env
       else
-        export ARTIFACT_VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+        export ARTIFACT_VERSION=$CI_COMMIT_TAG+$JAVA_JDKVERSION_TAG
         echo "ARTIFACT_VERSION=$ARTIFACT_VERSION" >> build.env
       fi
     - export ARTIFACT_FULLNAME=$ARTIFACT_ID-$ARTIFACT_VERSION+$JAVA_JDKVERSION_TAG
@@ -47,7 +48,7 @@ setup:jdk-11:
 ###################### Test / Build ######################
 
 .prepare-mvn-project: &prepare-mvn-project
-  image: maven:3.6-adoptopenjdk-11
+  image: $MAVEN_IMAGE
   before_script:
     - export
     - mvn versions:set -DnewVersion=$ARTIFACT_VERSION
