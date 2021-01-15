@@ -81,7 +81,7 @@ public class CubridDialect extends DatabaseDialect {
 	}
 	
 	@Override
-	public void createSequence(String name, long initialValue, Connection connection) throws SQLException {
+	public void createSequence(String name, long initialValue, Connection connection) {
 		DBUtil.executeQuery("create serial " + name + " start with " + initialValue, connection);
 	}
 	

@@ -34,7 +34,6 @@ import com.rapiddweller.common.ImportFailedException;
 import com.rapiddweller.common.ui.swing.SwingTreeModelAdapter;
 import com.rapiddweller.jdbacl.DatabaseTreeModel;
 import com.rapiddweller.jdbacl.model.DBMetaDataImporter;
-import com.rapiddweller.jdbacl.model.DBObject;
 import com.rapiddweller.jdbacl.model.Database;
 import com.rapiddweller.jdbacl.model.jdbc.JDBCMetaDataUtil;
 import org.apache.logging.log4j.Logger;

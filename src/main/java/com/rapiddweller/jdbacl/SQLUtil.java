@@ -244,9 +244,8 @@ public class SQLUtil {
 	public static Boolean mutatesStructure(String sql) {
 	    if (isDDL(sql))
 	   		return true;
-	    if (isProcedureCall(sql))
-    		return false;
-	    return false;
+		isProcedureCall(sql);
+		return false;
     }
 	
 	public static boolean isDDL(String sql) {
@@ -433,7 +432,7 @@ public class SQLUtil {
 
 	public static StringBuilder appendConstraintName(DBConstraint constraint, StringBuilder builder, NameSpec nameSpec) {
 		if (constraint.getName() != null && (nameSpec == NameSpec.ALWAYS || (nameSpec == NameSpec.IF_REPRODUCIBLE && constraint.isNameDeterministic())))
-			builder.append("CONSTRAINT " + quoteNameIfNecessary(constraint.getName()) + ' ');
+			builder.append("CONSTRAINT ").append(quoteNameIfNecessary(constraint.getName())).append(' ');
 		return builder;
 	}
 	

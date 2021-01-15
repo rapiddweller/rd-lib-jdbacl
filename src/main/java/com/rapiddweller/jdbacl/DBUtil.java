@@ -60,7 +60,6 @@ import org.apache.logging.log4j.LogManager;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -170,7 +169,7 @@ public class DBUtil {
 			
 			// Instantiate driver
             Class<Driver> driverClass = BeanUtil.forName(driverClassName);
-            Driver driver = driverClass.newInstance();
+            Driver driver = driverClass.getDeclaredConstructor().newInstance();
             
             // Wrap connection properties
 	        java.util.Properties info = new java.util.Properties();

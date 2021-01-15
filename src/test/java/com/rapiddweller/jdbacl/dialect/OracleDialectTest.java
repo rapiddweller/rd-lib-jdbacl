@@ -22,9 +22,6 @@
 package com.rapiddweller.jdbacl.dialect;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -48,7 +45,6 @@ public class OracleDialectTest extends DatabaseDialectTest<OracleDialect> {
     public void testConstructor() {
         OracleDialect actualOracleDialect = new OracleDialect();
         assertEquals("oracle", actualOracleDialect.getSystem());
-        assertTrue(actualOracleDialect.quoteTableNames);
         assertTrue(actualOracleDialect.isSequenceSupported());
     }
 

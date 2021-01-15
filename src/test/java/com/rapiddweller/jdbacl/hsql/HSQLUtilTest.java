@@ -47,7 +47,7 @@ public class HSQLUtilTest {
 		Connection connection = null;
 		try {
 			connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
-			assertTrue(connection != null);
+            assertNotNull(connection);
 		} finally {
 			DBUtil.close(connection);
 		}

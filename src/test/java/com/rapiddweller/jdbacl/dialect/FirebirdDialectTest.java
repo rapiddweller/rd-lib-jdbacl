@@ -22,9 +22,6 @@
 package com.rapiddweller.jdbacl.dialect;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
 import java.sql.Connection;
@@ -48,7 +45,6 @@ public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
         FirebirdDialect actualFirebirdDialect = new FirebirdDialect();
         assertEquals("firebird", actualFirebirdDialect.getSystem());
         assertTrue(actualFirebirdDialect.isSequenceSupported());
-        assertTrue(actualFirebirdDialect.quoteTableNames);
     }
 
     public FirebirdDialectTest() {

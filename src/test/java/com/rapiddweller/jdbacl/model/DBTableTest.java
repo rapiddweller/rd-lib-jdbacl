@@ -1,11 +1,5 @@
 package com.rapiddweller.jdbacl.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
 import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.jdbacl.model.jdbc.DBIndexInfo;
 
@@ -14,6 +8,8 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.junit.Assert.*;
 
 public class DBTableTest {
     @Rule
@@ -77,7 +73,7 @@ public class DBTableTest {
 
     @Test
     public void testIdxReceiverReceiveIndex() {
-        DBTable.IdxReceiver idxReceiver = (new DBTable("Name")).new IdxReceiver();
+        DBTable.IdxReceiver idxReceiver = new DBTable.IdxReceiver();
         DBIndexInfo indexInfo = new DBIndexInfo("Name", "Table Name", (short) 1, "Catalog Name", true, (short) 1,
                 "Column Name", true, 1, 1, "Filter Condition");
         DBTable dbTable = new DBTable("Name");
@@ -102,7 +98,7 @@ public class DBTableTest {
 
     @Test
     public void testIdxReceiverReceiveIndex2() {
-        DBTable.IdxReceiver idxReceiver = (new DBTable("Name")).new IdxReceiver();
+        DBTable.IdxReceiver idxReceiver = new DBTable.IdxReceiver();
         DBIndexInfo indexInfo = new DBIndexInfo("Name", "Table Name", (short) 1, "Catalog Name", false, (short) 1,
                 "Column Name", true, 1, 1, "Filter Condition");
         DBTable dbTable = new DBTable("Name");
@@ -119,7 +115,7 @@ public class DBTableTest {
 
     @Test
     public void testIdxReceiverReceiveIndex3() {
-        DBTable.IdxReceiver idxReceiver = (new DBTable("Name")).new IdxReceiver();
+        DBTable.IdxReceiver idxReceiver = new DBTable.IdxReceiver();
         DBIndexInfo indexInfo = new DBIndexInfo("Name", "Table Name", (short) 1, "Catalog Name", true, (short) 1,
                 "Column Name", true, 1, 1, "Filter Condition");
         DBTable dbTable = new DBTable("Name", TableType.TABLE, new DBSchema("Name"));
@@ -141,7 +137,7 @@ public class DBTableTest {
 
     @Test
     public void testIdxReceiverReceiveIndex4() {
-        DBTable.IdxReceiver idxReceiver = (new DBTable("Name")).new IdxReceiver();
+        DBTable.IdxReceiver idxReceiver = new DBTable.IdxReceiver();
         DBIndexInfo indexInfo = new DBIndexInfo("Name", "Table Name", (short) 1, "Catalog Name", true, (short) 1,
                 "Column Name", true, 1, 1, "Filter Condition");
         DBTable dbTable = new DBTable("Name");
@@ -165,7 +161,7 @@ public class DBTableTest {
 
     @Test
     public void testIdxReceiverReceiveIndex5() {
-        DBTable.IdxReceiver idxReceiver = (new DBTable("Name")).new IdxReceiver();
+        DBTable.IdxReceiver idxReceiver = new DBTable.IdxReceiver();
         DBIndexInfo indexInfo = new DBIndexInfo("Name", "Table Name", (short) 1, "Catalog Name", false, (short) 1,
                 "Column Name", true, 1, 1, "Filter Condition");
         DBTable dbTable = new DBTable("Name");
@@ -803,20 +799,20 @@ public class DBTableTest {
 
     @Test
     public void testEquals() {
-        assertFalse((new DBTable("Name")).equals("other"));
-        assertFalse((new DBTable("Name")).equals(null));
+        assertNotEquals("other", (new DBTable("Name")));
+        assertNotEquals(null, (new DBTable("Name")));
     }
 
     @Test
     public void testEquals2() {
         DBTable dbTable = new DBTable("Name");
-        assertTrue(dbTable.equals(new DBTable("Name")));
+        assertEquals(dbTable, new DBTable("Name"));
     }
 
     @Test
     public void testEquals3() {
         DBTable dbTable = new DBTable("Name");
-        assertFalse(dbTable.equals(new DBTable("Name", TableType.TABLE, new DBSchema("Name"))));
+        assertNotEquals(dbTable, new DBTable("Name", TableType.TABLE, new DBSchema("Name")));
     }
 }
 

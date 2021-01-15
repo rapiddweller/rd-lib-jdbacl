@@ -22,7 +22,6 @@
 package com.rapiddweller.jdbacl.sql;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 import com.rapiddweller.script.expression.BitwiseOrExpression;
 import com.rapiddweller.script.expression.ConstantExpression;

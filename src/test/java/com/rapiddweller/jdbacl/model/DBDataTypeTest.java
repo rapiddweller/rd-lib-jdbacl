@@ -22,9 +22,6 @@
 package com.rapiddweller.jdbacl.model;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.sql.Types;
 
@@ -43,14 +40,14 @@ public class DBDataTypeTest {
     public void testGetInstanceByDescriptor() {
         DBDataType type1 = DBDataType.getInstance(Types.INTEGER, "INTEGER");
         DBDataType type2 = DBDataType.getInstance(Types.INTEGER, "INTEGER");
-        assertTrue(type1 == type2);
+        assertSame(type1, type2);
     }
 
     @Test
     public void testGetInstanceByName() {
         DBDataType type1 = DBDataType.getInstance("INTEGER");
         DBDataType type2 = DBDataType.getInstance("INTEGER");
-        assertTrue(type1 == type2);
+        assertSame(type1, type2);
     }
 
     @Test
@@ -106,8 +103,8 @@ public class DBDataTypeTest {
 
     @Test
     public void testEquals() {
-        assertFalse(DBDataType.getInstance("BLOB").equals("o"));
-        assertFalse(DBDataType.getInstance("BLOB").equals(null));
+        assertNotEquals("o", DBDataType.getInstance("BLOB"));
+        assertNotEquals(null, DBDataType.getInstance("BLOB"));
     }
 
     @Test

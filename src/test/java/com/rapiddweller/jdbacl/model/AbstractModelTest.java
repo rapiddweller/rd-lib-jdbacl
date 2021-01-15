@@ -47,7 +47,7 @@ public abstract class AbstractModelTest {
 	
 	@SuppressWarnings("unused")
 	protected static Database createTestModel() {
-		Database db = (false ? new Database(ENVIRONMENT) : new Database(ENVIRONMENT, "hsql", "1.5.8", new Date()));
+		Database db = new Database(ENVIRONMENT, "hsql", "1.5.8", new Date());
     	db.setImportDate(TimeUtil.date(2011, 9, 21, 16, 50, 38, 0));
     	db.setUser("Alice");
     	db.setTableInclusionPattern("MY_.*");
