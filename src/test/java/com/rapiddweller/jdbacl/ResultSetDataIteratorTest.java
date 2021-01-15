@@ -47,14 +47,14 @@ public class ResultSetDataIteratorTest {
     public void testNext() {
         ResultSetDataIterator resultSetDataIterator = new ResultSetDataIterator(new ErrorLogReader(), "Query");
         thrown.expect(RuntimeException.class);
-        resultSetDataIterator.next(new DataContainer<ResultSet>());
+        resultSetDataIterator.next(new DataContainer<>());
     }
 
     @Test
     public void testNext2() throws IOException {
         ErrorMessages errorMessages = new ErrorMessages();
         ResultSetDataIterator resultSetDataIterator = new ResultSetDataIterator(errorMessages, "Query");
-        DataContainer<ResultSet> dataContainer = new DataContainer<ResultSet>();
+        DataContainer<ResultSet> dataContainer = new DataContainer<>();
         DataContainer<ResultSet> actualNextResult = resultSetDataIterator.next(dataContainer);
         assertSame(dataContainer, actualNextResult);
         assertSame(errorMessages, actualNextResult.getData());
