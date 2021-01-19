@@ -46,7 +46,7 @@ public class PostgreSQLDialectTest extends DatabaseDialectTest<PostgreSQLDialect
     public void testConstructor() {
         PostgreSQLDialect actualPostgreSQLDialect = new PostgreSQLDialect();
         assertEquals("postgres", actualPostgreSQLDialect.getSystem());
-        assertFalse(actualPostgreSQLDialect.quoteTableNames);
+        assertTrue(actualPostgreSQLDialect.quoteTableNames);
         assertTrue(actualPostgreSQLDialect.isSequenceBoundarySupported());
     }
 

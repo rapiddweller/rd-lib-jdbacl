@@ -43,7 +43,7 @@ public class SqlServerDialectTest extends DatabaseDialectTest<SqlServerDialect> 
     public void testConstructor() {
         SqlServerDialect actualSqlServerDialect = new SqlServerDialect();
         assertEquals("sql_server", actualSqlServerDialect.getSystem());
-        assertFalse(actualSqlServerDialect.quoteTableNames);
+        assertTrue(actualSqlServerDialect.quoteTableNames);
         assertFalse(actualSqlServerDialect.isSequenceSupported());
     }
 
