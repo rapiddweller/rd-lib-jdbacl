@@ -22,8 +22,6 @@
 package com.rapiddweller.jdbacl.dialect;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;
 
@@ -49,7 +47,6 @@ public class Derby10_6DialectTest extends DatabaseDialectTest<Derby10_6Dialect> 
         Derby10_6Dialect actualDerby10_6Dialect = new Derby10_6Dialect();
         assertEquals("derby", actualDerby10_6Dialect.getSystem());
         assertTrue(actualDerby10_6Dialect.isSequenceSupported());
-        assertTrue(actualDerby10_6Dialect.quoteTableNames);
     }
 
     public Derby10_6DialectTest() {

@@ -30,11 +30,7 @@ import com.rapiddweller.jdbacl.model.DBTable;
 import com.rapiddweller.jdbacl.model.DBUniqueConstraint;
 import org.junit.Test;
 
-import static junit.framework.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests the DBUniqueConstraint<br/>
@@ -125,7 +121,7 @@ public class DBUniqueConstraintTest {
         DBUniqueConstraint uc3 = new DBUniqueConstraint(table, "uc3", false, "col1", "col2");
         assertFalse(uc1.equals(uc2));
         assertFalse(uc1.equals(uc3));
-        assertFalse(uc3.equals(uc1));
+        assertNotEquals(uc3, uc1);
     }
 
 }

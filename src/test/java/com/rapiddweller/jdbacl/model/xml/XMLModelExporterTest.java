@@ -46,7 +46,7 @@ public class XMLModelExporterTest extends AbstractModelTest {
 		new XMLModelExporter(file).export(db);
 		String[] expectedLines = IOUtil.readTextLines(LAZY_TEST_MODEL_FILENAME, false);
 		String[] actualLines = IOUtil.readTextLines(file.getCanonicalPath(), false);
-		assertTrue(Arrays.equals(expectedLines, actualLines));
+        assertArrayEquals(expectedLines, actualLines);
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class XMLModelExporterTest extends AbstractModelTest {
 		new XMLModelExporter(file, false).export(db);
 		String[] expectedLines = IOUtil.readTextLines(EAGER_TEST_MODEL_FILENAME, false);
 		String[] actualLines = IOUtil.readTextLines(file.getCanonicalPath(), false);
-		assertTrue(Arrays.equals(expectedLines, actualLines));
+        assertArrayEquals(expectedLines, actualLines);
 	}
 
 }

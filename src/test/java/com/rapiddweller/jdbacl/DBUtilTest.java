@@ -50,11 +50,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static junit.framework.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests the {@link DBUtil} class.<br/><br/>
@@ -362,7 +358,7 @@ public class DBUtilTest {
         assertTrue(result.changedStructure);
         Object[][] rows = (Object[][]) DBUtil.queryAndSimplify("select * from T1", connection);
         assertEquals(1, rows.length);
-        assertTrue(Arrays.equals(ArrayUtil.buildObjectArrayOfType(Object.class, 1, "R&B"), rows[0]));
+        assertArrayEquals(ArrayUtil.buildObjectArrayOfType(Object.class, 1, "R&B"), rows[0]);
         int count = (Integer) DBUtil.queryAndSimplify("select count(*) from T1", connection);
         assertEquals(1, count);
     }

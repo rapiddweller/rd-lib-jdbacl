@@ -23,7 +23,6 @@ package com.rapiddweller.jdbacl.swing;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -84,9 +83,7 @@ public class JdbaclGUI extends JFrame implements JavaApplication {
 			String environment = environmentSelector.getSelectedItem();
 			try {
 				databasePane.setEnvironment(environment);
-			} catch (ConnectFailedException ex) {
-				LOGGER.error("Error importing environment " + environment, ex);
-			} catch (ImportFailedException ex) {
+			} catch (ConnectFailedException | ImportFailedException ex) {
 				LOGGER.error("Error importing environment " + environment, ex);
 			}
 		});

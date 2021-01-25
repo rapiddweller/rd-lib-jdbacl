@@ -33,6 +33,7 @@ import com.rapiddweller.common.ArrayFormat;
 import com.rapiddweller.common.CollectionUtil;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.SystemInfo;
+import com.rapiddweller.format.script.ScriptUtil;
 import com.rapiddweller.jdbacl.model.DBCheckConstraint;
 import com.rapiddweller.jdbacl.model.DBColumn;
 import com.rapiddweller.jdbacl.model.DBConstraint;
@@ -52,7 +53,7 @@ import com.rapiddweller.jdbacl.model.ForeignKeyPath;
  * @author Volker Bergmann
  */
 public class SQLUtil {
-	
+
 	private static final Set<String> NO_SIZE_TYPES = CollectionUtil.toSet(
 			"DATE", "BLOB", "CLOB", "NCLOB");
 
@@ -60,15 +61,15 @@ public class SQLUtil {
 			"create table", "alter table", "drop table",
 			"create unique index", "drop index", "alter index",
 			"rename",
-			"create materialized view", "alter materialized view", "drop materialized view" 
+			"create materialized view", "alter materialized view", "drop materialized view"
 			);
-	
+
 	private static final Set<String> DML_STATEMENTS = CollectionUtil.toSet(
 			"insert", "update", "delete", "truncate", "select into");
-	
+
 	private static final Set<String> PROCEDURE_CALLS = CollectionUtil.toSet(
 			"execute", "exec", "call");
-	
+
 	public static Object[] parseColumnTypeAndSize(String spec) {
 		int lparen = spec.indexOf('(');
 		if (lparen < 0)
@@ -80,12 +81,12 @@ public class SQLUtil {
 		String[] sizeAndFractionDigits = spec.substring(lparen + 1, rparen).split(",");
 		if (sizeAndFractionDigits.length == 1)
 			return new Object[] { type, Integer.parseInt(sizeAndFractionDigits[0].trim()) };
-		else 
-			return new Object[] { type, Integer.parseInt(sizeAndFractionDigits[0].trim()), 
+		else
+			return new Object[] { type, Integer.parseInt(sizeAndFractionDigits[0].trim()),
 				Integer.parseInt(sizeAndFractionDigits[1].trim()) };
 	}
-	
-	public static void renderCreateTable(DBTable table, 
+
+	public static void renderCreateTable(DBTable table,
 			boolean includeForeignKeys, NameSpec nameSpec, PrintWriter out) {
 		// create table <name> (
 		out.print("create table ");
@@ -133,7 +134,7 @@ public class SQLUtil {
 		out.println();
 		out.print(")");
 	}
-	
+
 	public static void renderAddForeignKey(DBForeignKeyConstraint fk, NameSpec nameSpec, PrintWriter printer) {
 		printer.println("ALTER TABLE " + fk.getTable().getName() + " ADD ");
 		printer.print('\t');
@@ -146,7 +147,7 @@ public class SQLUtil {
 				columnNames[i] = tableAlias + '.' + columnNames[i];
 		return columnNames;
 	}
-	
+
     public static String renderColumnNames(DBColumn[] columns) {
         StringBuilder builder = new StringBuilder(columns[0].getName());
         for (int i = 1; i < columns.length; i++)
@@ -167,23 +168,23 @@ public class SQLUtil {
 
 	public static String renderColumn(DBColumn column) {
 		StringBuilder builder = new StringBuilder();
-		
+
 	    // column name
 	    builder.append(column.getName());
-	    
+
 	    // column type & size
 		builder.append(' ');
 		renderColumnTypeWithSize(column, builder);
-	    
+
 	    // default
 	    if (column.getDefaultValue() != null)
 	    	builder.append(" DEFAULT " + column.getDefaultValue());
-	    
+
 	    // nullability
 	    if (!column.isNullable())
 	    	builder.append(" NOT");
     	builder.append(" NULL");
-	    
+
 	    return builder.toString();
     }
 
@@ -192,7 +193,7 @@ public class SQLUtil {
 		renderColumnTypeWithSize(column, builder);
 		return builder.toString();
     }
-	
+
 	public static void renderColumnTypeWithSize(DBColumn column, StringBuilder builder) {
 	    DBDataType columnType = column.getType();
 		String typeName = (columnType != null ? columnType.getName() : null);
@@ -204,17 +205,47 @@ public class SQLUtil {
 	    	builder.append(")");
 	    }
     }
-	
+
 	public static String substituteMarkers(String sql, String marker, Object substitution, DatabaseDialect dialect) {
 		return sql.replace(marker, dialect.formatValue(substitution));
     }
 
-    public static String renderQuery(DBTable table, String[] columnNames, Object[] values, DatabaseDialect dialect) {
-		StringBuilder builder = new StringBuilder("SELECT * FROM ").append(table.getName());
-		builder.append(" WHERE ").append(renderWhereClause(columnNames, values, dialect));
+	public static String renderSimpleSelectAllQuery(DBTable table, DatabaseDialect dialect) {
+		StringBuilder builder = new StringBuilder("SELECT * FROM ");
+		appendCatSchTabToBuilder(table.getCatalog().getName(), table.getSchema().getName(), table.getName(), builder, dialect);
+		return builder.toString();
+	}
+
+
+
+    public static String renderQuery(String catalog ,String schema, String table, String[] columnNames, DatabaseDialect dialect) {
+		StringBuilder builder = new StringBuilder("SELECT ");
+		for (int i = 0; i < columnNames.length; i++) {
+			if (i > 0)
+				builder.append(" ,");
+			builder.append(quoteIfNecessary(columnNames[i], dialect.quoteTableNames));
+		}
+		builder.append(" FROM ");
+		appendCatSchTabToBuilder(catalog, schema, table, builder, dialect);
 		return builder.toString();
     }
-    
+
+    public static String renderQuery(String catalog ,String schema, String table, String columnName, String selector, DatabaseDialect dialect) {
+        StringBuilder builder = new StringBuilder("SELECT ");
+		if (columnName != null) {
+			builder.append(columnName);
+		} else {
+			builder.append(" * ");
+		}
+		builder.append(" FROM ");
+        appendCatSchTabToBuilder(catalog, schema, table, builder, dialect);
+        if (selector != null) {
+            return ScriptUtil.combineScriptableParts(builder.toString(), " WHERE ", selector);
+        } else {
+            return builder.toString();
+        }
+    }
+
     public static String renderWhereClause(String[] columnNames, Object[] values, DatabaseDialect dialect) {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < columnNames.length; i++) {
@@ -224,7 +255,7 @@ public class SQLUtil {
 		}
 		return builder.toString();
     }
-    
+
 	public static Boolean mutatesDataOrStructure(String sql) {
 		sql = normalizeSQL(sql);
 		// ALTER SESSION does not change data or structure
@@ -244,11 +275,10 @@ public class SQLUtil {
 	public static Boolean mutatesStructure(String sql) {
 	    if (isDDL(sql))
 	   		return true;
-	    if (isProcedureCall(sql))
-    		return false;
-	    return false;
+		isProcedureCall(sql);
+		return false;
     }
-	
+
 	public static boolean isDDL(String sql) {
 		sql = normalizeSQL(sql);
 	    for (String ddl : DDL_STATEMENTS)
@@ -256,7 +286,7 @@ public class SQLUtil {
 	    		return true;
 	    return false;
 	}
-	
+
 	public static boolean isDML(String sql) {
 		sql = normalizeSQL(sql);
 	    for (String ddl : DML_STATEMENTS)
@@ -264,7 +294,7 @@ public class SQLUtil {
 	    		return true;
 	    return false;
 	}
-	
+
 	public static boolean isProcedureCall(String sql) {
 		sql = normalizeSQL(sql);
 	    for (String call : PROCEDURE_CALLS)
@@ -306,10 +336,10 @@ public class SQLUtil {
 		else if (constraint instanceof DBCheckConstraint)
 			return checkSpec((DBCheckConstraint) constraint, nameSpec);
 		else
-			throw new UnsupportedOperationException("Unknown constraint type: " + 
+			throw new UnsupportedOperationException("Unknown constraint type: " +
 					constraint.getClass());
 	}
-	
+
 	private static String checkSpec(DBCheckConstraint check, NameSpec nameSpec) {
 		StringBuilder builder = createConstraintSpecBuilder(check, nameSpec);
 		builder.append("CHECK ").append(check.getConditionText());
@@ -325,7 +355,7 @@ public class SQLUtil {
 		builder.append("PRIMARY KEY ").append(renderColumnNames(pk.getColumnNames()));
 		return builder.toString();
 	}
-	
+
 	public static String ukSpec(DBUniqueConstraint uk, NameSpec nameSpec) {
 		StringBuilder builder = createConstraintSpecBuilder(uk, nameSpec);
 		builder.append("UNIQUE ").append(renderColumnNames(uk.getColumnNames()));
@@ -343,9 +373,11 @@ public class SQLUtil {
 		StringBuilder builder = new StringBuilder();
 		return appendConstraintName(constraint, builder, nameSpec);
 	}
-	
-	public static String insert(String table, DatabaseDialect dialect, Object... values) {
-		StringBuilder builder = new StringBuilder("insert into ").append(table).append(" values (");
+
+	public static String insert(String catalog, String schema, String table, DatabaseDialect dialect, Object... values) {
+		StringBuilder builder = new StringBuilder("insert into ");
+		appendCatSchTabToBuilder(catalog, schema, table, builder, dialect);
+		builder.append(" values (");
 		for (int i = 0; i < values.length; i++) {
 			if (i > 0)
 				builder.append(", ");
@@ -353,13 +385,13 @@ public class SQLUtil {
 		}
 		return builder.append(")").toString();
 	}
-	
-	public static String joinFKPath(ForeignKeyPath route, String join_Type, 
+
+	public static String joinFKPath(ForeignKeyPath route, String join_Type,
 			String startAlias, String endAlias, String intermediateAliasBase) {
 		return joinFKPath(route, join_Type, startAlias, endAlias, intermediateAliasBase, null);
 	}
-	
-	public static String joinFKPath(ForeignKeyPath route, String join_Type, 
+
+	public static String joinFKPath(ForeignKeyPath route, String join_Type,
 			String startAlias, String endAlias, String intermediateAliasBase, String indent) {
 		StringBuilder builder = new StringBuilder();
 		List<DBForeignKeyConstraint> edges = route.getEdges();
@@ -380,32 +412,32 @@ public class SQLUtil {
 		// done, return result as string
 		return builder.toString();
 	}
-	
+
 	public static String joinFK(DBForeignKeyConstraint fk, String joinType, String refererAlias, String refereeAlias) {
-		return join(joinType, refererAlias, fk.getColumnNames(), 
+		return join(joinType, refererAlias, fk.getColumnNames(),
 				fk.getRefereeTable().getName(), refereeAlias, fk.getRefereeColumnNames());
 	}
 
-	public static String leftJoin(String leftAlias, String[] leftColumns, 
+	public static String leftJoin(String leftAlias, String[] leftColumns,
 			String rightTable, String rightAlias, String[] rightColumns) {
 		return join("LEFT", leftAlias, leftColumns, rightTable, rightAlias, rightColumns);
 	}
 
-	public static String innerJoin(String leftAlias, String[] leftColumns, 
+	public static String innerJoin(String leftAlias, String[] leftColumns,
 			String rightTable, String rightAlias, String[] rightColumns) {
 		return join("INNER", leftAlias, leftColumns, rightTable, rightAlias, rightColumns);
 	}
 
-	public static String join(String type, String leftAlias, String[] leftColumns, 
+	public static String join(String type, String leftAlias, String[] leftColumns,
 			String rightTable, String rightAlias, String[] rightColumns) {
 		if (leftColumns.length != rightColumns.length)
-			throw new IllegalArgumentException("The join partners' column count does not match: " + 
+			throw new IllegalArgumentException("The join partners' column count does not match: " +
 					leftColumns.length + " vs. " + rightColumns.length);
 		StringBuilder builder = new StringBuilder();
 		if (!StringUtil.isEmpty(type) && !"INNER".equalsIgnoreCase(type))
 			builder.append(type).append(' ');
 		builder.append("JOIN ");
-		builder.append(rightTable).append(" ").append(rightAlias).append(" ON "); 
+		builder.append(rightTable).append(" ").append(rightAlias).append(" ON ");
 		for (int i = 0; i < leftColumns.length; i++) {
 			if (i > 0)
 				builder.append(" AND ");
@@ -433,21 +465,21 @@ public class SQLUtil {
 
 	public static StringBuilder appendConstraintName(DBConstraint constraint, StringBuilder builder, NameSpec nameSpec) {
 		if (constraint.getName() != null && (nameSpec == NameSpec.ALWAYS || (nameSpec == NameSpec.IF_REPRODUCIBLE && constraint.isNameDeterministic())))
-			builder.append("CONSTRAINT " + quoteNameIfNecessary(constraint.getName()) + ' ');
+			builder.append("CONSTRAINT ").append(quoteNameIfNullOrSpaces(constraint.getName())).append(' ');
 		return builder;
 	}
-	
+
 	public static void appendConstraintName(DBConstraint constraint, StringBuilder builder) {
 		if (constraint.getName() != null)
-			builder.append("CONSTRAINT " + quoteNameIfNecessary(constraint.getName()) + ' ');
+			builder.append("CONSTRAINT " + quoteNameIfNullOrSpaces(constraint.getName()) + ' ');
 	}
-	
+
 	public static String constraintName(DBConstraint constraint) {
-		return (constraint.getName() != null ? 
-				"CONSTRAINT " + quoteNameIfNecessary(constraint.getName()) + ' ' : 
+		return (constraint.getName() != null ?
+				"CONSTRAINT " + quoteNameIfNullOrSpaces(constraint.getName()) + ' ' :
 				"");
 	}
-	
+
 	public static String typeAndName(DBObject dbObject) {
 		if (dbObject == null)
 			return null;
@@ -491,10 +523,10 @@ public class SQLUtil {
 		try {
 			while (tokenizer.nextToken() != StreamTokenizer.TT_EOF) {
 				int ttype = tokenizer.ttype;
-				if (builder.length() > 0 // insert space if this is not the beginning of the string 
+				if (builder.length() > 0 // insert space if this is not the beginning of the string
 						&& ttype != ')' && ttype != ',' && lastTtype != '(' // no space for brackets and lists
-						&& lastTtype != '.' && ttype != '.' // no space around '.' 
-						&& !(lastTtype == '/' && ttype =='*') // preserve /* if it has not been filtered out 
+						&& lastTtype != '.' && ttype != '.' // no space around '.'
+						&& !(lastTtype == '/' && ttype =='*') // preserve /* if it has not been filtered out
 						&& !(lastTtype == '-' && ttype =='-') // preserve -- if it has not been filtered out
 						&& !(lastTtype == '*' && ttype =='/')) // preserve */ if it has not been filtered out
 					builder.append(' ');
@@ -504,7 +536,7 @@ public class SQLUtil {
 					case '"': builder.append('"').append(tokenizer.sval).append('"'); break;
 					case '\'': builder.append('\'').append(tokenizer.sval).append('\''); break;
 					default: builder.append((char) ttype);
-				}				
+				}
 				lastTtype = ttype;
 			}
 		} catch (IOException e) {
@@ -559,7 +591,7 @@ public class SQLUtil {
 	}
 
 	// private helpers -------------------------------------------------------------------------------------------------
-	
+
 	private static String renderLong(long value) {
 		if (value > 0)
 			return String.valueOf(value);
@@ -574,9 +606,40 @@ public class SQLUtil {
 			return "- " + Math.abs(value);
 	}
 
-	private static String quoteNameIfNecessary(String name) {
+	private static String quoteNameIfNullOrSpaces(String name) {
 		return (name != null && name.indexOf(' ') >= 0 ? '"' + name + '"' : name);
     }
+
+
+	private static String quoteIfNecessary(String name, Boolean quoteTableNames) {
+		return (quoteTableNames ? '"' + name + '"' : name);
+	}
+
+	public static void appendCatSchTabToBuilder(String catalog, String schema, String table, StringBuilder builder, DatabaseDialect dialect) {
+		if (catalog != null) {
+			builder.append(quoteIfNecessary(catalog, dialect.quoteTableNames)).append('.').
+					append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.').
+					append(quoteIfNecessary(table,dialect.quoteTableNames));
+		} else if (schema != null) {
+			builder.append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.').append(quoteIfNecessary(table, dialect.quoteTableNames));
+		} else {
+			builder.append(quoteIfNecessary(table, dialect.quoteTableNames));
+		}
+	}
+
+	public static String createCatSchTabString(String catalog, String schema, String table, DatabaseDialect dialect) {
+		StringBuilder builder = new StringBuilder();
+		if (catalog != null) {
+			builder.append(quoteIfNecessary(catalog, dialect.quoteTableNames)).append('.').
+					append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.').
+					append(quoteIfNecessary(table,dialect.quoteTableNames));
+		} else if (schema != null) {
+			builder.append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.').append(quoteIfNecessary(table, dialect.quoteTableNames));
+		} else {
+			builder.append(quoteIfNecessary(table, dialect.quoteTableNames));
+		}
+		return builder.toString();
+	}
 
 	public static String formatValueList(List<String> values, DatabaseDialect dialect) {
         StringBuilder builder = new StringBuilder();

@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 
 import com.rapiddweller.common.FileUtil;
 import com.rapiddweller.common.IOUtil;

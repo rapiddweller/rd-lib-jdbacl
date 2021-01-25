@@ -35,12 +35,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import static junit.framework.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests the {@link DBColumn}.<br/><br/>
@@ -406,7 +401,7 @@ public class DBColumnTest {
     @Test
     public void testEquals2() {
         DBTable table = new DBTable("Name");
-        assertFalse((new DBColumn("Name", table, DBDataType.getInstance("BLOB"))).equals(null));
+        assertNotEquals(null, (new DBColumn("Name", table, DBDataType.getInstance("BLOB"))));
     }
 
     @Test

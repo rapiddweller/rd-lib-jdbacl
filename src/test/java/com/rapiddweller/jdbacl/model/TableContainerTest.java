@@ -52,7 +52,7 @@ public class TableContainerTest {
     @Test
     public void testGetTables2() {
         TableContainer tableContainer = new TableContainer("Name");
-        ArrayList<DBTable> dbTableList = new ArrayList<DBTable>();
+        ArrayList<DBTable> dbTableList = new ArrayList<>();
         tableContainer.getTables(true, dbTableList);
         assertTrue(dbTableList.isEmpty());
     }
@@ -70,7 +70,7 @@ public class TableContainerTest {
     @Test
     public void testGetSequences2() {
         TableContainer tableContainer = new TableContainer("Name");
-        ArrayList<DBSequence> dbSequenceList = new ArrayList<DBSequence>();
+        ArrayList<DBSequence> dbSequenceList = new ArrayList<>();
         tableContainer.getSequences(true, dbSequenceList);
         assertTrue(dbSequenceList.isEmpty());
     }

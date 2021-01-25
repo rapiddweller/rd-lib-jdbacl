@@ -228,8 +228,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 			return new ArrayList<>();
     	List<DBTable> tables = new ArrayList<>();
         for (DBCatalog catalog : getCatalogs())
-            for (DBTable table : catalog.getTables())
-            	tables.add(table);
+            tables.addAll(catalog.getTables());
         return tables;
     }
 
@@ -270,8 +269,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 			return new ArrayList<>();
     	List<DBSequence> sequences = new ArrayList<>();
         for (DBCatalog catalog : getCatalogs())
-            for (DBSequence table : catalog.getSequences())
-            	sequences.add(table);
+            sequences.addAll(catalog.getSequences());
         return sequences;
 	}
 	

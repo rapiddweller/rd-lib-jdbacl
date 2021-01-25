@@ -370,10 +370,10 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 		}
 	}
 
-	class IdxReceiver implements JDBCDBImporter.IndexReceiver {
+	static class IdxReceiver implements JDBCDBImporter.IndexReceiver {
 		@Override
 		public void receiveIndex(DBIndexInfo indexInfo, boolean deterministicName, DBTable table, DBSchema schema) {
-			DBIndex index = null;
+			DBIndex index;
 		    if (indexInfo.unique) {
 		    	DBPrimaryKeyConstraint pk = table.getPrimaryKeyConstraint();
 		    	boolean isPK = (pk != null && StringUtil.equalsIgnoreCase(indexInfo.columnNames, pk.getColumnNames()));
@@ -385,11 +385,10 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 		    		table.addUniqueConstraint(constraint);
 		    	}
 				index = new DBUniqueIndex(indexInfo.name, deterministicName, constraint);
-				table.addIndex(index);
-		    } else {
+			} else {
 		        index = new DBNonUniqueIndex(indexInfo.name, deterministicName, table, indexInfo.columnNames);
-		        table.addIndex(index);
-		    }
+			}
+			table.addIndex(index);
 		}
 	}
 	

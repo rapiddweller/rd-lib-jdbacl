@@ -30,11 +30,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import static junit.framework.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 
 /**
  * Tests the {@link JDBCDriverInfo} class.<br/>
@@ -276,7 +272,7 @@ public class JDBCDriverInfoTest {
     @Test
     public void testEquals() {
         assertFalse((new JDBCDriverInfo()).equals("obj"));
-        assertFalse((new JDBCDriverInfo()).equals(null));
+        assertNotEquals(null, (new JDBCDriverInfo()));
     }
 
     @Test
@@ -302,7 +298,7 @@ public class JDBCDriverInfoTest {
         assertEquals("PUBLIC", hsql.getDefaultSchema());
         assertEquals("sa", hsql.getDefaultUser());
         assertEquals("http://hsqldb.sourceforge.net/", hsql.getDownloadUrl());
-        assertTrue(Arrays.equals(new String[]{"hsqldb.jar"}, hsql.getJars()));
+        assertArrayEquals(new String[]{"hsqldb.jar"}, hsql.getJars());
         assertNull(hsql.getDefaultDatabase());
         assertEquals("jdbc:hsqldb:hsql://myhost:myport/mydb", hsql.jdbcURL("myhost", "myport", "mydb"));
     }

@@ -15,28 +15,28 @@ public class ResultSetConverterTest {
 
     @Test
     public void testConvert() throws ConversionException {
-        ResultSetConverter<Object> resultSetConverter = new ResultSetConverter<Object>(Object.class);
+        ResultSetConverter<Object> resultSetConverter = new ResultSetConverter<>(Object.class);
         thrown.expect(ConversionException.class);
         resultSetConverter.convert(new ErrorLogReader());
     }
 
     @Test
     public void testConvert2() throws ConversionException {
-        ResultSetConverter<Object> resultSetConverter = new ResultSetConverter<Object>(Object.class);
+        ResultSetConverter<Object> resultSetConverter = new ResultSetConverter<>(Object.class);
         thrown.expect(ArrayIndexOutOfBoundsException.class);
         resultSetConverter.convert(new SimpleResultSet());
     }
 
     @Test
     public void testConvert3() throws ConversionException {
-        ResultSetConverter<Object> resultSetConverter = new ResultSetConverter<Object>(Object.class, true);
+        ResultSetConverter<Object> resultSetConverter = new ResultSetConverter<>(Object.class, true);
         thrown.expect(ArrayIndexOutOfBoundsException.class);
         resultSetConverter.convert(new SimpleResultSet());
     }
 
     @Test
     public void testConvert4() throws ConversionException {
-        ResultSetConverter<Object> resultSetConverter = new ResultSetConverter<Object>(Object.class, false);
+        ResultSetConverter<Object> resultSetConverter = new ResultSetConverter<>(Object.class, false);
         assertEquals(0, ((Object[]) resultSetConverter.convert(new SimpleResultSet())).length);
     }
 
@@ -59,7 +59,7 @@ public class ResultSetConverterTest {
 
     @Test
     public void testToString() {
-        assertEquals("ResultSetConverter", (new ResultSetConverter<Object>(Object.class)).toString());
+        assertEquals("ResultSetConverter", (new ResultSetConverter<>(Object.class)).toString());
     }
 }
 

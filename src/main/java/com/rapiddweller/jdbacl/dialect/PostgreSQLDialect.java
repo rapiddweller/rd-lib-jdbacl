@@ -51,7 +51,7 @@ public class PostgreSQLDialect extends DatabaseDialect {
 	private static final String DATETIME_PATTERN = "'timestamp '''yyyy-MM-dd HH:mm:ss''";
 
     public PostgreSQLDialect() {
-	    super("postgres", false, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
+	    super("postgres", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
     }
 
     @Override

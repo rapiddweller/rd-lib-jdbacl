@@ -48,7 +48,7 @@ public class TableContainerSupportTest {
     @Test
     public void testGetTables3() {
         TableContainerSupport tableContainerSupport = new TableContainerSupport();
-        ArrayList<DBTable> dbTableList = new ArrayList<DBTable>();
+        ArrayList<DBTable> dbTableList = new ArrayList<>();
         List<DBTable> actualTables = tableContainerSupport.getTables(true, dbTableList);
         assertSame(dbTableList, actualTables);
         assertTrue(actualTables.isEmpty());
@@ -57,7 +57,7 @@ public class TableContainerSupportTest {
     @Test
     public void testGetTables4() {
         TableContainerSupport tableContainerSupport = new TableContainerSupport();
-        ArrayList<DBTable> dbTableList = new ArrayList<DBTable>();
+        ArrayList<DBTable> dbTableList = new ArrayList<>();
         List<DBTable> actualTables = tableContainerSupport.getTables(false, dbTableList);
         assertSame(dbTableList, actualTables);
         assertTrue(actualTables.isEmpty());
@@ -68,7 +68,7 @@ public class TableContainerSupportTest {
         TableContainer subContainer = new TableContainer("Name");
         TableContainerSupport tableContainerSupport = new TableContainerSupport();
         tableContainerSupport.addSubContainer(subContainer);
-        ArrayList<DBTable> dbTableList = new ArrayList<DBTable>();
+        ArrayList<DBTable> dbTableList = new ArrayList<>();
         List<DBTable> actualTables = tableContainerSupport.getTables(true, dbTableList);
         assertSame(dbTableList, actualTables);
         assertTrue(actualTables.isEmpty());
@@ -96,7 +96,7 @@ public class TableContainerSupportTest {
     @Test
     public void testGetSequences3() {
         TableContainerSupport tableContainerSupport = new TableContainerSupport();
-        ArrayList<DBSequence> dbSequenceList = new ArrayList<DBSequence>();
+        ArrayList<DBSequence> dbSequenceList = new ArrayList<>();
         List<DBSequence> actualSequences = tableContainerSupport.getSequences(true, dbSequenceList);
         assertSame(dbSequenceList, actualSequences);
         assertTrue(actualSequences.isEmpty());
@@ -105,7 +105,7 @@ public class TableContainerSupportTest {
     @Test
     public void testGetSequences4() {
         TableContainerSupport tableContainerSupport = new TableContainerSupport();
-        ArrayList<DBSequence> dbSequenceList = new ArrayList<DBSequence>();
+        ArrayList<DBSequence> dbSequenceList = new ArrayList<>();
         List<DBSequence> actualSequences = tableContainerSupport.getSequences(false, dbSequenceList);
         assertSame(dbSequenceList, actualSequences);
         assertTrue(actualSequences.isEmpty());
@@ -116,7 +116,7 @@ public class TableContainerSupportTest {
         TableContainer subContainer = new TableContainer("Name");
         TableContainerSupport tableContainerSupport = new TableContainerSupport();
         tableContainerSupport.addSubContainer(subContainer);
-        ArrayList<DBSequence> dbSequenceList = new ArrayList<DBSequence>();
+        ArrayList<DBSequence> dbSequenceList = new ArrayList<>();
         List<DBSequence> actualSequences = tableContainerSupport.getSequences(true, dbSequenceList);
         assertSame(dbSequenceList, actualSequences);
         assertTrue(actualSequences.isEmpty());

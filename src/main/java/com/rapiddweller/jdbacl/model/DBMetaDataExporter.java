@@ -22,7 +22,6 @@
 package com.rapiddweller.jdbacl.model;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 /**
  * Interface for classes that can export a meta data model.<br/><br/>

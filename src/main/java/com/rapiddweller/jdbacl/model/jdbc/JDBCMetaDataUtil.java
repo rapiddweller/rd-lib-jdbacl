@@ -46,7 +46,7 @@ public class JDBCMetaDataUtil {
 				throws ConnectFailedException, ImportFailedException {
 		final DBMetaDataImporter importer = getJDBCDBImporter(environment, importUKs, importIndexes, importSequences, 
 				importChecks, tableInclusionPattern, tableExclusionPattern, cached);
-		Callable<Database> callable = () -> importer.importDatabase();
+		Callable<Database> callable = importer::importDatabase;
 		return Executors.newSingleThreadExecutor().submit(callable);
 	}
 

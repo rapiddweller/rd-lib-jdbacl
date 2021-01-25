@@ -21,10 +21,7 @@
 
 package com.rapiddweller.jdbacl.model.jdbc;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -41,6 +38,8 @@ import com.rapiddweller.jdbacl.model.DBSchema;
 import com.rapiddweller.jdbacl.model.DBTable;
 import com.rapiddweller.jdbacl.model.DBUniqueIndex;
 import com.rapiddweller.jdbacl.model.Database;
+
+import static org.junit.Assert.*;
 
 /**
  * Abstract parent class for tests that relate to child classes of {@link JDBCDBImporter}.<br/><br/>
