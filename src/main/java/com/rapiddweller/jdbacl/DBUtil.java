@@ -723,7 +723,7 @@ public class DBUtil {
 	}
 
 	public static void insert(String table, Connection connection, DatabaseDialect dialect, Object... values) throws SQLException {
-		DBUtil.executeUpdate(SQLUtil.insert(table, dialect, values), connection);
+		DBUtil.executeUpdate(SQLUtil.insert(connection.getCatalog(), connection.getSchema(), table, dialect, values), connection);
 	}
 
 }
