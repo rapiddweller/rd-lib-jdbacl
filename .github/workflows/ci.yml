@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-    - '**'
+      - '**'
 
 env:
   MAVEN_CLI_OPTS: "--batch-mode --update-snapshots"
