@@ -16,10 +16,10 @@
     <inceptionYear>2006</inceptionYear>
 
     <properties>
-        <_rd_common_version>1.1.0+jdk-11-SNAPSHOT</_rd_common_version>
-        <_rd_contiperf_version>2.4.0+jdk-11-SNAPSHOT</_rd_contiperf_version>
-        <_rd_format_version>1.1.0+jdk-11-SNAPSHOT</_rd_format_version>
-        <_rd_script_version>1.1.0+jdk-11-SNAPSHOT</_rd_script_version>
+        <_rd_common_version>1.1.0-jdk-11-SNAPSHOT</_rd_common_version>
+        <_rd_contiperf_version>2.4.0-jdk-11-SNAPSHOT</_rd_contiperf_version>
+        <_rd_format_version>1.1.0-jdk-11-SNAPSHOT</_rd_format_version>
+        <_rd_script_version>1.1.0-jdk-11-SNAPSHOT</_rd_script_version>
         <dependency_antlr-runtime.version>3.3</dependency_antlr-runtime.version>
         <dependency_connector-api.version>1.5</dependency_connector-api.version>
         <dependency_derby.version>10.7.1.1</dependency_derby.version>
@@ -490,25 +490,27 @@
 
     <repositories>
         <repository>
-            <id>gitlab-maven</id>
-            <url>${env.CI_SERVER_URL}/api/v4/groups/${env.CI_PROJECT_GROUP_ID}/-/packages/maven</url>
+            <id>rdd-nexus</id>
+            <url>https://nexus.dwellerlab.com/repository/maven-rdd</url>
         </repository>
     </repositories>
 
     <distributionManagement>
         <repository>
-            <id>gitlab-maven</id>
-            <url>${env.CI_SERVER_URL}/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven/</url>
+            <id>rdd-nexus</id>
+            <name>Releases</name>
+            <url>https://nexus.dwellerlab.com/repository/releases</url>
         </repository>
         <snapshotRepository>
-            <id>gitlab-maven</id>
-            <url>${env.CI_SERVER_URL}/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven/</url>
+            <id>rdd-nexus</id>
+            <name>Snapshot</name>
+            <url>https://nexus.dwellerlab.com/repository/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 
     <scm>
-        <url>${env.CI_PROJECT_URL}</url>
-        <connection>scm:git:${env.CI_REPOSITORY_URL}</connection>
-        <developerConnection>scm:git:${env.CI_REPOSITORY_URL}</developerConnection>
+        <url>https://github.com/rapiddweller/rd-lib-jdbacl</url>
+        <connection>scm:git:github.com/rapiddweller/rd-lib-jdbacl</connection>
+        <developerConnection>scm:git:github.com/rapiddweller/rd-lib-jdbacl</developerConnection>
     </scm>
 </project>
