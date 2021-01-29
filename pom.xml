@@ -122,20 +122,7 @@
     </developers>
 
     <dependencies>
-        <dependency>
-            <!-- needed for firebird -->
-            <groupId>javax.resource</groupId>
-            <artifactId>connector-api</artifactId>
-            <version>${dependency_connector-api.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>${dependency_h2.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Databene dependencies -->
+        <!-- rapiddweller dependencies -->
         <dependency>
             <groupId>com.rapiddweller</groupId>
             <artifactId>rd-lib-common</artifactId>
@@ -165,22 +152,44 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${dependency_junit.version}</version>
+            <!-- needed for firebird -->
+            <groupId>javax.resource</groupId>
+            <artifactId>connector-api</artifactId>
+            <version>${dependency_connector-api.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- Parsing -->
         <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr-runtime</artifactId>
-            <version>${dependency_antlr-runtime.version}</version>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${dependency_h2.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
             <version>${dependency_derby.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${dependency_postgresql.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- test framework -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${dependency_junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!--  ANTLR (ANother Tool for Language Recognition) is a powerful parser generator for reading, processing,
+         executing, or translating structured text or binary files. It's widely used to build languages, tools, and
+          frameworks. From a grammar, ANTLR generates a parser that can build and walk parse trees. -->
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>${dependency_antlr-runtime.version}</version>
         </dependency>
         <!-- Logging dependencies -->
         <dependency>
@@ -192,12 +201,6 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>${dependency_log4j-core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${dependency_postgresql.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
