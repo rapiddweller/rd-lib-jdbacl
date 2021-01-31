@@ -21,6 +21,13 @@
 
 package com.rapiddweller.jdbacl;
 
+import com.rapiddweller.common.ArrayFormat;
+import com.rapiddweller.common.CollectionUtil;
+import com.rapiddweller.common.StringUtil;
+import com.rapiddweller.common.SystemInfo;
+import com.rapiddweller.format.script.ScriptUtil;
+import com.rapiddweller.jdbacl.model.*;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StreamTokenizer;
@@ -28,23 +35,6 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
-
-import com.rapiddweller.common.ArrayFormat;
-import com.rapiddweller.common.CollectionUtil;
-import com.rapiddweller.common.StringUtil;
-import com.rapiddweller.common.SystemInfo;
-import com.rapiddweller.format.script.ScriptUtil;
-import com.rapiddweller.jdbacl.model.DBCheckConstraint;
-import com.rapiddweller.jdbacl.model.DBColumn;
-import com.rapiddweller.jdbacl.model.DBConstraint;
-import com.rapiddweller.jdbacl.model.DBDataType;
-import com.rapiddweller.jdbacl.model.DBForeignKeyConstraint;
-import com.rapiddweller.jdbacl.model.DBNotNullConstraint;
-import com.rapiddweller.jdbacl.model.DBObject;
-import com.rapiddweller.jdbacl.model.DBPrimaryKeyConstraint;
-import com.rapiddweller.jdbacl.model.DBTable;
-import com.rapiddweller.jdbacl.model.DBUniqueConstraint;
-import com.rapiddweller.jdbacl.model.ForeignKeyPath;
 
 /**
  * Provides utility methods for creating SQL queries and commands.<br/><br/>

@@ -21,14 +21,14 @@
 
 package com.rapiddweller.jdbacl;
 
-import java.io.IOException;
-import java.util.Map;
-
 import com.rapiddweller.common.BeanUtil;
 import com.rapiddweller.common.DeploymentError;
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.common.version.VersionNumber;
 import com.rapiddweller.jdbacl.dialect.UnknownDialect;
+
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * Manages {@link DatabaseDialect}s.<br/><br/>

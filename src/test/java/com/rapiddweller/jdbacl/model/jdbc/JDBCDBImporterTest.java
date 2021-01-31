@@ -21,11 +21,6 @@
 
 package com.rapiddweller.jdbacl.model.jdbc;
 
-import static org.junit.Assert.*;
-
-import java.sql.Connection;
-import java.util.List;
-
 import com.rapiddweller.jdbacl.model.DBSchema;
 import com.rapiddweller.jdbacl.model.DBSequence;
 import com.rapiddweller.jdbacl.model.DBTable;
@@ -33,6 +28,11 @@ import com.rapiddweller.jdbacl.model.Database;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.sql.Connection;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests the {@link JDBCDBImporter}.<br/><br/>

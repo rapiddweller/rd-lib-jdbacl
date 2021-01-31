@@ -26,13 +26,13 @@
 
 package com.rapiddweller.jdbacl.model;
 
+import com.rapiddweller.common.CollectionUtil;
+import com.rapiddweller.common.Named;
+
 import java.io.Serializable;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Set;
-
-import com.rapiddweller.common.CollectionUtil;
-import com.rapiddweller.common.Named;
 
 /**
  * Represents a database column type.<br/><br/>

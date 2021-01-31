@@ -2,12 +2,11 @@ package com.rapiddweller.jdbacl.model;
 
 import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.jdbacl.model.jdbc.DBIndexInfo;
-
-import java.util.List;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 

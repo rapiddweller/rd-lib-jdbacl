@@ -21,18 +21,14 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import com.rapiddweller.common.HeavyweightIterator;
 import com.rapiddweller.common.LogCategoriesConstants;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.ResultSetIterator;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.sql.*;
 
 /**
  * Iterates through the rows of a database.<br/><br/>

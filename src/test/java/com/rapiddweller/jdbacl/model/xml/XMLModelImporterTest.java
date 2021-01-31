@@ -21,11 +21,6 @@
 
 package com.rapiddweller.jdbacl.model.xml;
 
-import static org.junit.Assert.*;
-
-import java.math.BigInteger;
-import java.util.List;
-
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.common.tree.TreeLogger;
 import com.rapiddweller.jdbacl.model.AbstractModelTest;
@@ -36,6 +31,11 @@ import com.rapiddweller.jdbacl.model.jdbc.JDBCDBImporter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.math.BigInteger;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests the {@link XMLModelImporter}.<br/><br/>

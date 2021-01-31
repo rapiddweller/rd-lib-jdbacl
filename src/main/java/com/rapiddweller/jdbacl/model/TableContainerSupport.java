@@ -21,11 +21,11 @@
 
 package com.rapiddweller.jdbacl.model;
 
+import com.rapiddweller.common.collection.OrderedNameMap;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import com.rapiddweller.common.collection.OrderedNameMap;
 
 /**
  * Helper implementation for {@link TableHolder} and {@link SequenceHolder}.<br/><br/>

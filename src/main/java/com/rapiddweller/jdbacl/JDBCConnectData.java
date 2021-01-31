@@ -21,12 +21,12 @@
 
 package com.rapiddweller.jdbacl;
 
-import java.io.IOException;
-import java.util.Map;
-
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.common.ParseUtil;
 import com.rapiddweller.common.StringUtil;
+
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * Data Object that contains the typical data required for a JDBC database login.<br/><br/>

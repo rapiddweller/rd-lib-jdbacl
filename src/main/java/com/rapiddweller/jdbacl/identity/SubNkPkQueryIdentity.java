@@ -21,24 +21,19 @@
 
 package com.rapiddweller.jdbacl.identity;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.util.Iterator;
-
 import com.rapiddweller.common.ArrayFormat;
 import com.rapiddweller.common.HeavyweightIterator;
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.common.SystemInfo;
 import com.rapiddweller.common.iterator.ConvertingIterator;
 import com.rapiddweller.common.iterator.TabularIterator;
-import com.rapiddweller.jdbacl.ArrayResultSetIterator;
-import com.rapiddweller.jdbacl.DatabaseDialect;
-import com.rapiddweller.jdbacl.DatabaseDialectManager;
-import com.rapiddweller.jdbacl.QueryIterator;
-import com.rapiddweller.jdbacl.ResultSetConverter;
-import com.rapiddweller.jdbacl.SQLUtil;
+import com.rapiddweller.jdbacl.*;
 import com.rapiddweller.jdbacl.model.DBTable;
 import com.rapiddweller.jdbacl.model.Database;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.util.Iterator;
 
 /**
  * {@link IdentityModel} for tables which are owned by another table but have a sub identity 

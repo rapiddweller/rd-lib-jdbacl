@@ -21,22 +21,18 @@
 
 package com.rapiddweller.jdbacl.identity;
 
-import java.sql.Connection;
-import java.util.HashSet;
-import java.util.Set;
-
-import com.rapiddweller.common.ArrayFormat;
-import com.rapiddweller.common.Assert;
-import com.rapiddweller.common.ErrorHandler;
-import com.rapiddweller.common.Level;
-import com.rapiddweller.common.Named;
+import com.rapiddweller.common.*;
 import com.rapiddweller.common.bean.HashCodeBuilder;
 import com.rapiddweller.common.iterator.TabularIterator;
 import com.rapiddweller.jdbacl.ArrayResultSetIterator;
 import com.rapiddweller.jdbacl.model.DBRow;
 import com.rapiddweller.jdbacl.model.Database;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.sql.Connection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Abstract parent for classes which provide information about tables

@@ -21,17 +21,17 @@
 
 package com.rapiddweller.jdbacl.identity.mem;
 
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.rapiddweller.common.HeavyweightIterator;
 import com.rapiddweller.common.bean.ObjectOrArray;
 import com.rapiddweller.jdbacl.identity.IdentityModel;
 import com.rapiddweller.jdbacl.identity.KeyMapper;
 import com.rapiddweller.jdbacl.model.Database;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Parent for classes that map the primary key values of the rows of one table in one database 

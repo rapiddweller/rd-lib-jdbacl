@@ -21,15 +21,14 @@
 
 package com.rapiddweller.jdbacl.model.xml;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.util.Arrays;
-
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.jdbacl.model.AbstractModelTest;
 import com.rapiddweller.jdbacl.model.Database;
 import org.junit.Test;
+
+import java.io.File;
+
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Tests the {@link XMLModelExporter}.<br/><br/>

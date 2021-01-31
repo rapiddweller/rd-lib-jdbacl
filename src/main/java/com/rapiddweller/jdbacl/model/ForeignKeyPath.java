@@ -21,15 +21,11 @@
 
 package com.rapiddweller.jdbacl.model;
 
+import com.rapiddweller.common.*;
+import com.rapiddweller.jdbacl.SQLUtil;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.rapiddweller.common.ArrayFormat;
-import com.rapiddweller.common.ArrayUtil;
-import com.rapiddweller.common.CollectionUtil;
-import com.rapiddweller.common.ObjectNotFoundException;
-import com.rapiddweller.common.StringUtil;
-import com.rapiddweller.jdbacl.SQLUtil;
 
 /**
  * Represents a sequence of consecutively navigable foreign key references.<br/><br/>

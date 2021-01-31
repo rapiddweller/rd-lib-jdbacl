@@ -26,13 +26,6 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.collection.OrderedNameMap;
@@ -40,6 +33,13 @@ import com.rapiddweller.common.version.VersionNumber;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.DatabaseDialectManager;
 import com.rapiddweller.jdbacl.model.jdbc.JDBCDBImporter;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a database.<br/><br/>

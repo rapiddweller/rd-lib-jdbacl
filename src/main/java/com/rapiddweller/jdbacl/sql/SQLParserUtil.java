@@ -21,52 +21,29 @@
 
 package com.rapiddweller.jdbacl.sql;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.CommonToken;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.ParserRuleReturnScope;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.tree.CommonTree;
 import com.rapiddweller.common.ArrayBuilder;
 import com.rapiddweller.common.ParseException;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.SyntaxError;
 import com.rapiddweller.jdbacl.DatabaseDialect;
+import com.rapiddweller.jdbacl.model.DBColumn;
 import com.rapiddweller.jdbacl.model.DBDataType;
 import com.rapiddweller.jdbacl.model.DBPrimaryKeyConstraint;
 import com.rapiddweller.jdbacl.model.DBTable;
-import com.rapiddweller.jdbacl.model.DBColumn;
 import com.rapiddweller.jdbacl.sql.parser.SQLLexer;
 import com.rapiddweller.jdbacl.sql.parser.SQLParser;
 import com.rapiddweller.jdbacl.sql.parser.TextHolder;
 import com.rapiddweller.script.Expression;
-import com.rapiddweller.script.expression.ConcatExpression;
-import com.rapiddweller.script.expression.ConditionalAndExpression;
-import com.rapiddweller.script.expression.ConditionalOrExpression;
-import com.rapiddweller.script.expression.DivisionExpression;
-import com.rapiddweller.script.expression.EqualsExpression;
-import com.rapiddweller.script.expression.ExclusiveOrExpression;
-import com.rapiddweller.script.expression.ExpressionUtil;
-import com.rapiddweller.script.expression.GreaterExpression;
-import com.rapiddweller.script.expression.GreaterOrEqualsExpression;
-import com.rapiddweller.script.expression.LessExpression;
-import com.rapiddweller.script.expression.LessOrEqualsExpression;
-import com.rapiddweller.script.expression.LogicalComplementExpression;
-import com.rapiddweller.script.expression.ModuloExpression;
-import com.rapiddweller.script.expression.MultiplicationExpression;
-import com.rapiddweller.script.expression.NotEqualsExpression;
-import com.rapiddweller.script.expression.NullExpression;
-import com.rapiddweller.script.expression.SubtractionExpression;
-import com.rapiddweller.script.expression.SumExpression;
-import com.rapiddweller.script.expression.UnaryMinusExpression;
-import com.rapiddweller.script.expression.ValueCollectionContainsExpression;
-import org.apache.logging.log4j.Logger;
+import com.rapiddweller.script.expression.*;
+import org.antlr.runtime.*;
+import org.antlr.runtime.tree.CommonTree;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Provides SQL parsing functionality.<br/><br/>

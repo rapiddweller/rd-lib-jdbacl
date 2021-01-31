@@ -26,6 +26,15 @@
 
 package com.rapiddweller.jdbacl.proxy;
 
+import com.rapiddweller.common.*;
+import com.rapiddweller.common.converter.ArrayConverter;
+import com.rapiddweller.common.converter.ToStringConverter;
+import com.rapiddweller.common.debug.Debug;
+import com.rapiddweller.common.debug.ResourceMonitor;
+import com.rapiddweller.jdbacl.DBUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,19 +42,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import com.rapiddweller.common.BeanUtil;
-import com.rapiddweller.common.ConfigurationError;
-import com.rapiddweller.common.Converter;
-import com.rapiddweller.common.LogCategoriesConstants;
-import com.rapiddweller.common.StringUtil;
-import com.rapiddweller.common.converter.ArrayConverter;
-import com.rapiddweller.common.converter.ToStringConverter;
-import com.rapiddweller.common.debug.Debug;
-import com.rapiddweller.common.debug.ResourceMonitor;
-import com.rapiddweller.jdbacl.DBUtil;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 /**
  * Provides database related utility methods.<br/>

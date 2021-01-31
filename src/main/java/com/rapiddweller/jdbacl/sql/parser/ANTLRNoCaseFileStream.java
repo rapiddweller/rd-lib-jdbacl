@@ -21,12 +21,12 @@
 
 package com.rapiddweller.jdbacl.sql.parser;
 
-import java.io.IOException;
-
+import com.rapiddweller.common.IOUtil;
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CharStream;
-import com.rapiddweller.common.IOUtil;
+
+import java.io.IOException;
 
 /**
  * Helper class which provides the content of a file as {@link ANTLRInputStream} 

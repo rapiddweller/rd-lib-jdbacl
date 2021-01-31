@@ -26,14 +26,6 @@
 
 package com.rapiddweller.jdbacl.proxy;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.rapiddweller.common.BeanUtil;
 import com.rapiddweller.common.CollectionUtil;
 import com.rapiddweller.common.ConfigurationError;
@@ -42,8 +34,16 @@ import com.rapiddweller.common.debug.Debug;
 import com.rapiddweller.common.debug.ResourceMonitor;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.profile.Profiler;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * {@link InvocationHandler} implementation for a proxy to the {@link Statement} interface

@@ -21,15 +21,15 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
-import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-
 import com.rapiddweller.common.ArrayBuilder;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.model.DBSequence;
+
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * {@link DatabaseDialect} for Derby 10.6+ which supports sequences.<br/><br/>

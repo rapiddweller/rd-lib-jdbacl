@@ -21,9 +21,9 @@
 
 package com.rapiddweller.jdbacl;
 
-import java.util.Map;
-
 import com.rapiddweller.common.DatabeneTestUtil;
+
+import java.util.Map;
 
 /**
  * Reads a configuration file to check which databases are enabled or disabled for testing.<br/><br/>

@@ -26,14 +26,10 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import java.sql.Types;
-
-import com.rapiddweller.jdbacl.model.DBColumn;
-import com.rapiddweller.jdbacl.model.DBDataType;
-
-import java.util.List;
-
 import org.junit.Test;
+
+import java.sql.Types;
+import java.util.List;
 
 import static org.junit.Assert.*;
 

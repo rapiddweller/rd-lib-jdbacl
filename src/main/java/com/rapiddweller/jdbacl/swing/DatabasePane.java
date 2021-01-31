@@ -21,14 +21,6 @@
 
 package com.rapiddweller.jdbacl.swing;
 
-import java.awt.BorderLayout;
-import java.io.IOException;
-
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
-import javax.swing.tree.TreeModel;
-
 import com.rapiddweller.common.ConnectFailedException;
 import com.rapiddweller.common.ImportFailedException;
 import com.rapiddweller.common.ui.swing.SwingTreeModelAdapter;
@@ -36,8 +28,13 @@ import com.rapiddweller.jdbacl.DatabaseTreeModel;
 import com.rapiddweller.jdbacl.model.DBMetaDataImporter;
 import com.rapiddweller.jdbacl.model.Database;
 import com.rapiddweller.jdbacl.model.jdbc.JDBCMetaDataUtil;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.swing.*;
+import javax.swing.tree.TreeModel;
+import java.awt.*;
+import java.io.IOException;
 
 /**
  * {@link JPanel} which displays database information and the hierarchy tree.<br/><br/>

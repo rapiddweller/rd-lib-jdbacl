@@ -21,20 +21,21 @@
 
 package com.rapiddweller.jdbacl.model.cache;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.sql.Connection;
-
 import com.rapiddweller.common.FileUtil;
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.model.DBTable;
 import com.rapiddweller.jdbacl.model.Database;
 import com.rapiddweller.jdbacl.model.jdbc.JDBCDBImporter;
-import org.junit.Test;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.Test;
+
+import java.io.File;
+import java.sql.Connection;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Tests the {@link CachingDBImporter}.<br/><br/>

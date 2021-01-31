@@ -21,8 +21,6 @@
 
 package com.rapiddweller.jdbacl.identity;
 
-import java.sql.Connection;
-
 import com.rapiddweller.common.ArrayBuilder;
 import com.rapiddweller.common.ArrayFormat;
 import com.rapiddweller.common.ArrayUtil;
@@ -31,6 +29,8 @@ import com.rapiddweller.common.converter.ThreadSafeConverter;
 import com.rapiddweller.common.iterator.ConvertingIterator;
 import com.rapiddweller.common.iterator.TabularIterator;
 import com.rapiddweller.jdbacl.model.Database;
+
+import java.sql.Connection;
 
 /**
  * {@link IdentityModel} implementation based on a unique-key-constraint.<br/><br/>

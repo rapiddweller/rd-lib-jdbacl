@@ -26,34 +26,21 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
+import com.rapiddweller.common.*;
+import com.rapiddweller.common.converter.TimestampFormatter;
+import com.rapiddweller.jdbacl.DBUtil;
+import com.rapiddweller.jdbacl.DatabaseDialect;
+import com.rapiddweller.jdbacl.model.*;
+import com.rapiddweller.jdbacl.sql.Query;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import com.rapiddweller.common.ArrayBuilder;
-import com.rapiddweller.common.CollectionUtil;
-import com.rapiddweller.common.NameUtil;
-import com.rapiddweller.common.OrderedMap;
-import com.rapiddweller.common.StringUtil;
-import com.rapiddweller.common.converter.TimestampFormatter;
-import com.rapiddweller.jdbacl.DBUtil;
-import com.rapiddweller.jdbacl.DatabaseDialect;
-import com.rapiddweller.jdbacl.model.DBCheckConstraint;
-import com.rapiddweller.jdbacl.model.DBPackage;
-import com.rapiddweller.jdbacl.model.DBProcedure;
-import com.rapiddweller.jdbacl.model.DBSchema;
-import com.rapiddweller.jdbacl.model.DBSequence;
-import com.rapiddweller.jdbacl.model.DBTrigger;
-import com.rapiddweller.jdbacl.sql.Query;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 /**
  * Implements generic database concepts for Oracle.<br/><br/>
