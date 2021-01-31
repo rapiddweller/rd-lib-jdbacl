@@ -49,7 +49,6 @@ public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
     public void testConstructor() {
         CubridDialect actualCubridDialect = new CubridDialect();
         assertEquals("cubrid", actualCubridDialect.getSystem());
-        assertTrue(actualCubridDialect.quoteTableNames);
         assertTrue(actualCubridDialect.isSequenceBoundarySupported());
     }
 

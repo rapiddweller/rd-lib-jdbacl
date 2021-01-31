@@ -21,24 +21,16 @@
 
 package com.rapiddweller.jdbacl.model.sql;
 
+import com.rapiddweller.common.IOUtil;
+import com.rapiddweller.jdbacl.*;
+import com.rapiddweller.jdbacl.model.*;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
-
-import com.rapiddweller.common.IOUtil;
-import com.rapiddweller.jdbacl.DBUtil;
-import com.rapiddweller.jdbacl.DatabaseDialect;
-import com.rapiddweller.jdbacl.DatabaseDialectManager;
-import com.rapiddweller.jdbacl.NameSpec;
-import com.rapiddweller.jdbacl.SQLUtil;
-import com.rapiddweller.jdbacl.model.DBMetaDataExporter;
-import com.rapiddweller.jdbacl.model.DBForeignKeyConstraint;
-import com.rapiddweller.jdbacl.model.DBSequence;
-import com.rapiddweller.jdbacl.model.DBTable;
-import com.rapiddweller.jdbacl.model.Database;
 
 /**
  * Exports database meta data to a DDL file with CREATE TABLE commands.<br/><br/>

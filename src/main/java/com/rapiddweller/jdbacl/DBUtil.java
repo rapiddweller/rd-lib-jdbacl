@@ -26,57 +26,27 @@
 
 package com.rapiddweller.jdbacl;
 
-import com.rapiddweller.common.ArrayBuilder;
-import com.rapiddweller.common.ArrayFormat;
-import com.rapiddweller.common.ArrayUtil;
-import com.rapiddweller.common.BeanUtil;
-import com.rapiddweller.common.ConfigurationError;
-import com.rapiddweller.common.ConnectFailedException;
-import com.rapiddweller.common.ErrorHandler;
-import com.rapiddweller.common.FileUtil;
-import com.rapiddweller.common.HeavyweightIterator;
-import com.rapiddweller.common.IOUtil;
-import com.rapiddweller.common.LogCategories;
-import com.rapiddweller.common.ObjectNotFoundException;
-import com.rapiddweller.common.ReaderLineIterator;
-import com.rapiddweller.common.StringUtil;
-import com.rapiddweller.common.SystemInfo;
+import com.rapiddweller.common.*;
 import com.rapiddweller.common.converter.AnyConverter;
 import com.rapiddweller.common.converter.ToStringConverter;
 import com.rapiddweller.common.debug.Debug;
 import com.rapiddweller.common.depend.DependencyModel;
 import com.rapiddweller.common.iterator.ConvertingIterator;
-import com.rapiddweller.jdbacl.model.DBConstraint;
-import com.rapiddweller.jdbacl.model.DBPrimaryKeyConstraint;
-import com.rapiddweller.jdbacl.model.DBTable;
-import com.rapiddweller.jdbacl.model.DBUniqueConstraint;
-import com.rapiddweller.jdbacl.model.TableHolder;
+import com.rapiddweller.jdbacl.model.*;
 import com.rapiddweller.jdbacl.proxy.LoggingPreparedStatementHandler;
 import com.rapiddweller.jdbacl.proxy.LoggingResultSetHandler;
 import com.rapiddweller.jdbacl.proxy.LoggingStatementHandler;
 import com.rapiddweller.jdbacl.proxy.PooledConnectionHandler;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.lang.reflect.Array;
-import java.lang.reflect.Proxy;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.Driver;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.*;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.PooledConnection;
+import java.io.*;
+import java.lang.reflect.Array;
+import java.lang.reflect.Proxy;
+import java.sql.*;
+import java.util.*;
+import java.lang.AssertionError;
 
 /**
  * Provides database related utility methods.<br/>
@@ -88,8 +58,8 @@ public class DBUtil {
 
     private static final Logger LOGGER = LogManager.getLogger(DBUtil.class);
 
-    private static final Logger JDBC_LOGGER = LogManager.getLogger(LogCategories.JDBC);
-    private static final Logger SQL_LOGGER = LogManager.getLogger(LogCategories.SQL);
+    private static final Logger JDBC_LOGGER = LogManager.getLogger(LogCategoriesConstants.JDBC);
+    private static final Logger SQL_LOGGER = LogManager.getLogger(LogCategoriesConstants.SQL);
     
     /** private constructor for preventing instantiation. */
     private DBUtil() {}
@@ -170,7 +140,7 @@ public class DBUtil {
 			
 			// Instantiate driver
             Class<Driver> driverClass = BeanUtil.forName(driverClassName);
-            Driver driver = driverClass.newInstance();
+            Driver driver = driverClass.getDeclaredConstructor().newInstance();
             
             // Wrap connection properties
 	        java.util.Properties info = new java.util.Properties();
@@ -724,7 +694,7 @@ public class DBUtil {
 	}
 
 	public static void insert(String table, Connection connection, DatabaseDialect dialect, Object... values) throws SQLException {
-		DBUtil.executeUpdate(SQLUtil.insert(table, dialect, values), connection);
+		DBUtil.executeUpdate(SQLUtil.insert(connection.getCatalog(), connection.getSchema(), table, dialect, values), connection);
 	}
 
 }

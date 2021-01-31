@@ -21,12 +21,6 @@
 
 package com.rapiddweller.jdbacl;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-
 import com.rapiddweller.jdbacl.model.DBCatalog;
 import com.rapiddweller.jdbacl.model.DBPrimaryKeyConstraint;
 import com.rapiddweller.jdbacl.model.DBSchema;
@@ -47,7 +41,8 @@ import com.rapiddweller.jdbacl.model.DBTable;
 import com.rapiddweller.jdbacl.model.ForeignKeyPath;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests the {@link SQLUtil} class.<br/><br/>
@@ -57,9 +52,6 @@ import org.junit.rules.ExpectedException;
  * @since 0.6.4
  */
 public class SQLUtilTest {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     private static final String CALL = "call myprocedure";
 
@@ -93,7 +85,7 @@ public class SQLUtilTest {
     public void testRenderColumnNames() {
         DBTable table = new DBTable("Name");
         DBColumn e = new DBColumn("Name", table, DBDataType.getInstance("BLOB"));
-        ArrayList<DBColumn> dbColumnList = new ArrayList<DBColumn>();
+        ArrayList<DBColumn> dbColumnList = new ArrayList<>();
         dbColumnList.add(e);
         assertEquals("Name", SQLUtil.renderColumnNames(dbColumnList));
     }
@@ -102,7 +94,7 @@ public class SQLUtilTest {
     public void testRenderColumnNames2() {
         DBTable table = new DBTable("Name");
         DBColumn e = new DBColumn("Name", table, DBDataType.getInstance("BLOB"));
-        ArrayList<DBColumn> dbColumnList = new ArrayList<DBColumn>();
+        ArrayList<DBColumn> dbColumnList = new ArrayList<>();
         dbColumnList.add(e);
         DBTable table1 = new DBTable("Name");
         dbColumnList.add(new DBColumn("Name", table1, DBDataType.getInstance("BLOB")));
@@ -116,9 +108,8 @@ public class SQLUtilTest {
                 SQLUtil.renderColumnNames(new DBColumn[]{new DBColumn("Name", table, DBDataType.getInstance("BLOB"))}));
     }
 
-    @Test
+    @Test(expected = ArrayIndexOutOfBoundsException.class)
     public void testRenderColumnNames4() {
-        thrown.expect(ArrayIndexOutOfBoundsException.class);
         SQLUtil.renderColumnNames(new DBColumn[]{});
     }
 
@@ -767,9 +758,8 @@ public class SQLUtilTest {
                 SQLUtil.equals("Table Alias1", new String[]{"Col Names1"}, null, new String[]{"Col Names2"}));
     }
 
-    @Test
+    @Test(expected = ArrayIndexOutOfBoundsException.class)
     public void testEquals2() {
-        thrown.expect(ArrayIndexOutOfBoundsException.class);
         SQLUtil.equals("Table Alias1", new String[]{" = ", " = "}, "Table Alias2", new String[]{"Col Names2"});
     }
 
@@ -822,10 +812,9 @@ public class SQLUtilTest {
                         "Referee Column Name"), "", "Referer Alias", "Referee Alias"));
     }
 
-    @Test
-    public void testJoinFK6() {
+    @Test(expected =IllegalArgumentException.class)
+            public void testJoinFK6() {
         DBTable owner = new DBTable("Name");
-        thrown.expect(IllegalArgumentException.class);
         SQLUtil.joinFK(new DBForeignKeyConstraint("Name", true, owner, new String[]{"INNER"}, new DBTable("Name"),
                 new String[]{"foo", "foo", "foo"}), "Join Type", "Referer Alias", "Referee Alias");
     }
@@ -837,9 +826,8 @@ public class SQLUtilTest {
                         new String[]{"Right Columns"}));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testLeftJoin2() {
-        thrown.expect(IllegalArgumentException.class);
         SQLUtil.leftJoin("Left Alias", new String[]{}, "Right Table", "Right Alias", new String[]{"Right Columns"});
     }
 
@@ -850,9 +838,8 @@ public class SQLUtilTest {
                         new String[]{"Right Columns"}));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testInnerJoin2() {
-        thrown.expect(IllegalArgumentException.class);
         SQLUtil.innerJoin("Left Alias", new String[]{}, "Right Table", "Right Alias", new String[]{"Right Columns"});
     }
 
@@ -868,9 +855,8 @@ public class SQLUtilTest {
                 "Left Alias", new String[]{"Left Columns"}, "Right Table", "Right Alias", new String[]{"Right Columns"}));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testJoin2() {
-        thrown.expect(IllegalArgumentException.class);
         SQLUtil.join("Type", "Left Alias", new String[]{}, "Right Table", "Right Alias", new String[]{"Right Columns"});
     }
 

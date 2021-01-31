@@ -1,18 +1,13 @@
 package com.rapiddweller.jdbacl.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
 import com.rapiddweller.common.ObjectNotFoundException;
-
-import java.util.Date;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import java.util.Date;
+
+import static org.junit.Assert.*;
 
 public class DatabaseTest {
     @Rule

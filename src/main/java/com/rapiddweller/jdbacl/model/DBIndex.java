@@ -26,11 +26,11 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import java.util.Arrays;
-
 import com.rapiddweller.common.ArrayFormat;
 import com.rapiddweller.common.NullSafeComparator;
 import com.rapiddweller.common.bean.HashCodeBuilder;
+
+import java.util.Arrays;
 
 /**
  * Represents a database index.<br/><br/>

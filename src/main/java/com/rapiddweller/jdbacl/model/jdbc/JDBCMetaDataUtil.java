@@ -21,16 +21,16 @@
 
 package com.rapiddweller.jdbacl.model.jdbc;
 
-import java.sql.Connection;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import com.rapiddweller.common.ConnectFailedException;
 import com.rapiddweller.common.ImportFailedException;
 import com.rapiddweller.jdbacl.model.DBMetaDataImporter;
 import com.rapiddweller.jdbacl.model.Database;
 import com.rapiddweller.jdbacl.model.cache.CachingDBImporter;
+
+import java.sql.Connection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Utility class for JDBC meta data retrieval.<br/><br/>
@@ -46,7 +46,7 @@ public class JDBCMetaDataUtil {
 				throws ConnectFailedException, ImportFailedException {
 		final DBMetaDataImporter importer = getJDBCDBImporter(environment, importUKs, importIndexes, importSequences, 
 				importChecks, tableInclusionPattern, tableExclusionPattern, cached);
-		Callable<Database> callable = () -> importer.importDatabase();
+		Callable<Database> callable = importer::importDatabase;
 		return Executors.newSingleThreadExecutor().submit(callable);
 	}
 

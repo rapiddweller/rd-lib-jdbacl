@@ -21,28 +21,13 @@
 
 package com.rapiddweller.jdbacl.model.csv;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.SQLException;
-
 import com.rapiddweller.common.FileUtil;
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.format.csv.CSVUtil;
 import com.rapiddweller.jdbacl.SQLUtil;
-import com.rapiddweller.jdbacl.model.DBCheckConstraint;
-import com.rapiddweller.jdbacl.model.DBColumn;
-import com.rapiddweller.jdbacl.model.DBForeignKeyConstraint;
-import com.rapiddweller.jdbacl.model.DBIndex;
-import com.rapiddweller.jdbacl.model.DBMetaDataExporter;
-import com.rapiddweller.jdbacl.model.DBPrimaryKeyConstraint;
-import com.rapiddweller.jdbacl.model.DBSequence;
-import com.rapiddweller.jdbacl.model.DBTable;
-import com.rapiddweller.jdbacl.model.DBUniqueConstraint;
-import com.rapiddweller.jdbacl.model.Database;
-import com.rapiddweller.jdbacl.model.FKChangeRule;
+import com.rapiddweller.jdbacl.model.*;
+
+import java.io.*;
 
 /**
  * Exports a {@link Database} meta data structure into a group of CSV files:

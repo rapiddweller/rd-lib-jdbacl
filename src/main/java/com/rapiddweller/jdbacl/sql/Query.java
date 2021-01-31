@@ -21,11 +21,11 @@
 
 package com.rapiddweller.jdbacl.sql;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.rapiddweller.common.CollectionUtil;
 import com.rapiddweller.jdbacl.SQLUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Helper class for constructing SQL queries.

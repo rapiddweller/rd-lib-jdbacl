@@ -26,17 +26,17 @@
 
 package com.rapiddweller.jdbacl;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.HashMap;
-
 import com.rapiddweller.common.ArrayBuilder;
 import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.xml.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * Represents a JDBC driver and related information.<br/>

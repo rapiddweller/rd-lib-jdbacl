@@ -26,13 +26,6 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.collection.OrderedNameMap;
@@ -40,6 +33,13 @@ import com.rapiddweller.common.version.VersionNumber;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.DatabaseDialectManager;
 import com.rapiddweller.jdbacl.model.jdbc.JDBCDBImporter;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a database.<br/><br/>
@@ -228,8 +228,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 			return new ArrayList<>();
     	List<DBTable> tables = new ArrayList<>();
         for (DBCatalog catalog : getCatalogs())
-            for (DBTable table : catalog.getTables())
-            	tables.add(table);
+            tables.addAll(catalog.getTables());
         return tables;
     }
 
@@ -270,8 +269,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 			return new ArrayList<>();
     	List<DBSequence> sequences = new ArrayList<>();
         for (DBCatalog catalog : getCatalogs())
-            for (DBSequence table : catalog.getSequences())
-            	sequences.add(table);
+            sequences.addAll(catalog.getSequences());
         return sequences;
 	}
 	

@@ -21,10 +21,10 @@
 
 package com.rapiddweller.jdbacl.identity;
 
-import java.sql.Connection;
-
 import com.rapiddweller.common.iterator.TabularIterator;
 import com.rapiddweller.jdbacl.model.Database;
+
+import java.sql.Connection;
 
 /**
  * {@link IdentityModel} implementation that represents a missing identity definition.<br/><br/>

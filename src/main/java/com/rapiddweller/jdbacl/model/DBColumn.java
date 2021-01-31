@@ -26,13 +26,13 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.rapiddweller.common.ArrayUtil;
 import com.rapiddweller.common.NullSafeComparator;
 import com.rapiddweller.common.bean.HashCodeBuilder;
 import com.rapiddweller.jdbacl.SQLUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a database column.<br/><br/>

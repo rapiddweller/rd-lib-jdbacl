@@ -21,13 +21,6 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
-import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.rapiddweller.common.ArrayBuilder;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.DatabaseDialect;
@@ -35,6 +28,13 @@ import com.rapiddweller.jdbacl.model.DBSchema;
 import com.rapiddweller.jdbacl.model.DBSequence;
 import com.rapiddweller.jdbacl.model.DBTrigger;
 import com.rapiddweller.jdbacl.sql.Query;
+
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * {@link DatabaseDialect} implementation for the CUBRID database.<br/><br/>

@@ -26,17 +26,17 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
-import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.List;
-
 import com.rapiddweller.common.ArrayBuilder;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.model.DBSequence;
 import com.rapiddweller.jdbacl.sql.Query;
+
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * Implements generic database concepts for PostgreSQL.<br/><br/>
@@ -51,7 +51,7 @@ public class PostgreSQLDialect extends DatabaseDialect {
 	private static final String DATETIME_PATTERN = "'timestamp '''yyyy-MM-dd HH:mm:ss''";
 
     public PostgreSQLDialect() {
-	    super("postgres", false, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
+	    super("postgres", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
     }
 
     @Override

@@ -21,7 +21,7 @@
 
 package com.rapiddweller.jdbacl.swing;
 
-import javax.swing.JTextField;
+import javax.swing.*;
 
 /**
  * Provides the content of a {@link JTextField}.<br/><br/>

@@ -1,22 +1,13 @@
 package com.rapiddweller.jdbacl.model;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
 import com.rapiddweller.common.ObjectNotFoundException;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 import org.junit.Rule;
 
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.junit.Assert.*;
 
 public class DBForeignKeyConstraintTest {
     @Rule
@@ -210,17 +201,13 @@ public class DBForeignKeyConstraintTest {
     @Test
     public void testEquals() {
         DBTable owner = new DBTable("Name");
-        assertFalse(
-                (new DBForeignKeyConstraint("Name", true, owner, "Fk Column Name", new DBTable("Name"), "Referee Column Name"))
-                        .equals("other"));
+        assertNotEquals("other", (new DBForeignKeyConstraint("Name", true, owner, "Fk Column Name", new DBTable("Name"), "Referee Column Name")));
     }
 
     @Test
     public void testEquals2() {
         DBTable owner = new DBTable("Name");
-        assertFalse(
-                (new DBForeignKeyConstraint("Name", true, owner, "Fk Column Name", new DBTable("Name"), "Referee Column Name"))
-                        .equals(null));
+        assertNotEquals(null, (new DBForeignKeyConstraint("Name", true, owner, "Fk Column Name", new DBTable("Name"), "Referee Column Name")));
     }
 
     @Test

@@ -21,15 +21,15 @@
 
 package com.rapiddweller.jdbacl.identity.mem;
 
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.jdbacl.identity.IdentityModel;
 import com.rapiddweller.jdbacl.identity.IdentityProvider;
 import com.rapiddweller.jdbacl.identity.KeyMapper;
 import com.rapiddweller.jdbacl.model.Database;
+
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * In-memory implementation of a {@link KeyMapper}.<br/><br/>

@@ -26,36 +26,20 @@
 
 package com.rapiddweller.jdbacl;
 
+import com.rapiddweller.common.*;
+import com.rapiddweller.common.converter.TimestampFormatter;
+import com.rapiddweller.jdbacl.model.*;
+import com.rapiddweller.jdbacl.sql.Query;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import com.rapiddweller.common.ArrayUtil;
-import com.rapiddweller.common.ConfigurationError;
-import com.rapiddweller.common.IOUtil;
-import com.rapiddweller.common.ObjectNotFoundException;
-import com.rapiddweller.common.StringUtil;
-import com.rapiddweller.common.TimeUtil;
-import com.rapiddweller.common.converter.TimestampFormatter;
-import com.rapiddweller.jdbacl.model.DBCatalog;
-import com.rapiddweller.jdbacl.model.DBPackage;
-import com.rapiddweller.jdbacl.model.DBSchema;
-import com.rapiddweller.jdbacl.model.DBSequence;
-import com.rapiddweller.jdbacl.model.DBTable;
-import com.rapiddweller.jdbacl.sql.Query;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import java.util.*;
 
 /**
  * Provides abstractions of concepts that are implemented differently 

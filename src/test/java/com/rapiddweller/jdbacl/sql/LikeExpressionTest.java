@@ -21,14 +21,13 @@
 
 package com.rapiddweller.jdbacl.sql;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-
 import com.rapiddweller.script.expression.BitwiseOrExpression;
 import com.rapiddweller.script.expression.ConstantExpression;
 import com.rapiddweller.script.expression.DivisionExpression;
 import com.rapiddweller.script.expression.NullExpression;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests the {@link LikeExpression}.<br/><br/>

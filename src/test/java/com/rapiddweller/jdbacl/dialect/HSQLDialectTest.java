@@ -49,7 +49,6 @@ public class HSQLDialectTest extends DatabaseDialectTest<HSQLDialect> {
         HSQLDialect actualHsqlDialect = new HSQLDialect();
         assertEquals("hsql", actualHsqlDialect.getSystem());
         assertTrue(actualHsqlDialect.isSequenceSupported());
-        assertTrue(actualHsqlDialect.quoteTableNames);
     }
 
     @Test

@@ -21,12 +21,11 @@
 
 package com.rapiddweller.jdbacl.sql;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests the {@link Query} class.<br/><br/>

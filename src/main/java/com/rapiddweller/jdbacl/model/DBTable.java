@@ -26,38 +26,20 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import com.rapiddweller.common.ArrayFormat;
-import com.rapiddweller.common.Assert;
-import com.rapiddweller.common.CollectionUtil;
-import com.rapiddweller.common.HeavyweightIterator;
-import com.rapiddweller.common.NameUtil;
-import com.rapiddweller.common.NullSafeComparator;
-import com.rapiddweller.common.ObjectNotFoundException;
-import com.rapiddweller.common.OrderedSet;
-import com.rapiddweller.common.StringUtil;
+import com.rapiddweller.common.*;
 import com.rapiddweller.common.bean.HashCodeBuilder;
 import com.rapiddweller.common.collection.OrderedNameMap;
 import com.rapiddweller.common.depend.Dependent;
 import com.rapiddweller.common.iterator.ConvertingIterator;
 import com.rapiddweller.common.iterator.TabularIterator;
-import com.rapiddweller.jdbacl.ArrayResultSetIterator;
-import com.rapiddweller.jdbacl.DBUtil;
-import com.rapiddweller.jdbacl.DatabaseDialect;
-import com.rapiddweller.jdbacl.QueryIterator;
-import com.rapiddweller.jdbacl.ResultSetConverter;
-import com.rapiddweller.jdbacl.SQLUtil;
+import com.rapiddweller.jdbacl.*;
 import com.rapiddweller.jdbacl.model.jdbc.DBIndexInfo;
 import com.rapiddweller.jdbacl.model.jdbc.JDBCDBImporter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents a database table.<br/><br/>
@@ -370,10 +352,10 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 		}
 	}
 
-	class IdxReceiver implements JDBCDBImporter.IndexReceiver {
+	static class IdxReceiver implements JDBCDBImporter.IndexReceiver {
 		@Override
 		public void receiveIndex(DBIndexInfo indexInfo, boolean deterministicName, DBTable table, DBSchema schema) {
-			DBIndex index = null;
+			DBIndex index;
 		    if (indexInfo.unique) {
 		    	DBPrimaryKeyConstraint pk = table.getPrimaryKeyConstraint();
 		    	boolean isPK = (pk != null && StringUtil.equalsIgnoreCase(indexInfo.columnNames, pk.getColumnNames()));
@@ -385,11 +367,10 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 		    		table.addUniqueConstraint(constraint);
 		    	}
 				index = new DBUniqueIndex(indexInfo.name, deterministicName, constraint);
-				table.addIndex(index);
-		    } else {
+			} else {
 		        index = new DBNonUniqueIndex(indexInfo.name, deterministicName, table, indexInfo.columnNames);
-		        table.addIndex(index);
-		    }
+			}
+			table.addIndex(index);
 		}
 	}
 	

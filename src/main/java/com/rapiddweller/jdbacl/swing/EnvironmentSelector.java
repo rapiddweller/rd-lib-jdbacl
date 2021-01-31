@@ -21,11 +21,9 @@
 
 package com.rapiddweller.jdbacl.swing;
 
-import javax.swing.AbstractListModel;
-import javax.swing.ComboBoxModel;
-import javax.swing.JComboBox;
-
 import com.rapiddweller.jdbacl.DBUtil;
+
+import javax.swing.*;
 
 /**
  * {@link JComboBox} which recognizes the configured environments and lets the user choose one.<br/><br/>

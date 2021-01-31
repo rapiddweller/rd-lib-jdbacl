@@ -21,9 +21,9 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import java.io.Serializable;
-
 import com.rapiddweller.common.Named;
+
+import java.io.Serializable;
 
 /**
  * Abstract parent interface for assembling database objects in a tree using the Composite design pattern. 

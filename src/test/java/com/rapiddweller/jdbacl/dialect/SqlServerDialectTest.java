@@ -22,9 +22,6 @@
 package com.rapiddweller.jdbacl.dialect;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,7 +43,7 @@ public class SqlServerDialectTest extends DatabaseDialectTest<SqlServerDialect> 
     public void testConstructor() {
         SqlServerDialect actualSqlServerDialect = new SqlServerDialect();
         assertEquals("sql_server", actualSqlServerDialect.getSystem());
-        assertFalse(actualSqlServerDialect.quoteTableNames);
+        assertTrue(actualSqlServerDialect.quoteTableNames);
         assertFalse(actualSqlServerDialect.isSequenceSupported());
     }
 

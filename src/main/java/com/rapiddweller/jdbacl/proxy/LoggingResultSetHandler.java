@@ -21,6 +21,14 @@
 
 package com.rapiddweller.jdbacl.proxy;
 
+import com.rapiddweller.common.BeanUtil;
+import com.rapiddweller.common.ConfigurationError;
+import com.rapiddweller.common.LogCategoriesConstants;
+import com.rapiddweller.common.debug.Debug;
+import com.rapiddweller.common.debug.ResourceMonitor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -29,17 +37,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.rapiddweller.common.BeanUtil;
-import com.rapiddweller.common.ConfigurationError;
-import com.rapiddweller.common.LogCategories;
-import com.rapiddweller.common.debug.Debug;
-import com.rapiddweller.common.debug.ResourceMonitor;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 /**
  * {@link InvocationHandler} for the {@link ResultSet} interface 
- * that logs certain calls to the category {@link LogCategories#JDBC}.<br/>
+ * that logs certain calls to the category {@link LogCategoriesConstants#JDBC}.<br/>
  * <br/>
  * Created: 12.04.2011 14:02:38
  * @since 0.6.8
@@ -47,7 +47,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class LoggingResultSetHandler implements InvocationHandler {
 
-    private static final Logger JDBC_LOGGER = LogManager.getLogger(LogCategories.JDBC);
+    private static final Logger JDBC_LOGGER = LogManager.getLogger(LogCategoriesConstants.JDBC);
     
     private static final AtomicInteger openResultSetCount;
     private static ResourceMonitor openResultSetMonitor;

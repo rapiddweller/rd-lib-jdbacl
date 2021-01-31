@@ -21,11 +21,11 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
-import java.util.regex.Pattern;
-
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.sql.Query;
+
+import java.util.regex.Pattern;
 
 /**
  * Implements generic database concepts for SQL Server.<br/><br/>
@@ -42,7 +42,7 @@ public class SqlServerDialect extends DatabaseDialect {
 	final Pattern randomNamePattern = Pattern.compile("SYS_\\w*");
 
 	public SqlServerDialect() {
-	    super("sql_server", false, false, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
+	    super("sql_server", true, false, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
     }
 
 	@Override

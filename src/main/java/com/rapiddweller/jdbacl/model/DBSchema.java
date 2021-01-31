@@ -26,11 +26,11 @@
 
 package com.rapiddweller.jdbacl.model;
 
+import com.rapiddweller.common.collection.OrderedNameMap;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.rapiddweller.common.collection.OrderedNameMap;
 
 /**
  * Represents a JDBC database schema.<br/><br/>

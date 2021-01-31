@@ -21,12 +21,12 @@
 
 package com.rapiddweller.jdbacl.sql;
 
-import java.util.regex.Pattern;
-
 import com.rapiddweller.common.Context;
 import com.rapiddweller.common.converter.ToStringConverter;
 import com.rapiddweller.script.Expression;
 import com.rapiddweller.script.expression.BinaryExpression;
+
+import java.util.regex.Pattern;
 
 /**
  * {@link Expression} which evaluates a SQL 'LIKE' operation.<br/><br/>

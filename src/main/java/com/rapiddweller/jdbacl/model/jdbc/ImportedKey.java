@@ -30,13 +30,13 @@ import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.jdbacl.model.DBCatalog;
 import com.rapiddweller.jdbacl.model.DBSchema;
 import com.rapiddweller.jdbacl.model.DBTable;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created: 13.01.2007 23:22:55

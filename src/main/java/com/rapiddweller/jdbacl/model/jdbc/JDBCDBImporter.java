@@ -21,27 +21,7 @@
 
 package com.rapiddweller.jdbacl.model.jdbc;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import com.rapiddweller.common.ConnectFailedException;
-import com.rapiddweller.common.ErrorHandler;
-import com.rapiddweller.common.Escalator;
-import com.rapiddweller.common.Filter;
-import com.rapiddweller.common.ImportFailedException;
-import com.rapiddweller.common.Level;
-import com.rapiddweller.common.LoggerEscalator;
-import com.rapiddweller.common.ObjectNotFoundException;
-import com.rapiddweller.common.ProgrammerError;
-import com.rapiddweller.common.StringUtil;
+import com.rapiddweller.common.*;
 import com.rapiddweller.common.collection.OrderedNameMap;
 import com.rapiddweller.common.version.VersionNumber;
 import com.rapiddweller.contiperf.StopWatch;
@@ -50,20 +30,12 @@ import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.DatabaseDialectManager;
 import com.rapiddweller.jdbacl.JDBCConnectData;
 import com.rapiddweller.jdbacl.dialect.OracleDialect;
-import com.rapiddweller.jdbacl.model.DBCatalog;
-import com.rapiddweller.jdbacl.model.DBCheckConstraint;
-import com.rapiddweller.jdbacl.model.DBDataType;
-import com.rapiddweller.jdbacl.model.DBForeignKeyConstraint;
-import com.rapiddweller.jdbacl.model.DBMetaDataImporter;
-import com.rapiddweller.jdbacl.model.DBPackage;
-import com.rapiddweller.jdbacl.model.DBSchema;
-import com.rapiddweller.jdbacl.model.DBSequence;
-import com.rapiddweller.jdbacl.model.DBTable;
-import com.rapiddweller.jdbacl.model.Database;
-import com.rapiddweller.jdbacl.model.FKChangeRule;
-import com.rapiddweller.jdbacl.model.TableType;
-import org.apache.logging.log4j.Logger;
+import com.rapiddweller.jdbacl.model.*;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.sql.*;
+import java.util.*;
 
 /**
  * Abstract parent class for JDBC meta data importers.<br/><br/>
@@ -262,22 +234,22 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         int schemaCount = 0;
         ResultSet schemaSet = metaData.getSchemas();
         while (schemaSet.next()) {
-            String schemaName = schemaSet.getString(1);
-            String catalogName = null;
-            int columnCount = schemaSet.getMetaData().getColumnCount();
+			String schemaName = schemaSet.getString(1);
+			String catalogName = null;
+			int columnCount = schemaSet.getMetaData().getColumnCount();
 			if (columnCount >= 2)
-            	catalogName = schemaSet.getString(2);
-            if (schemaName.equalsIgnoreCase(this.schemaName) 
-            		|| (this.schemaName == null && dialect.isDefaultSchema(schemaName, user))) {
-	            LOGGER.debug("importing schema {}", StringUtil.quoteIfNotNull(schemaName));
-	        	this.schemaName = schemaName; // take over capitalization used in the DB
-	            String catalogNameOfSchema = (columnCount >= 2 && catalogName != null ? catalogName : this.catalogName); // PostgreSQL and SQL Server do not necessarily tell you the catalog name
-	        	DBCatalog catalogOfSchema = database.getCatalog(catalogNameOfSchema);
-	        	if (catalogOfSchema == null)
-	        		throw new ObjectNotFoundException("Catalog not found: " + catalogOfSchema);
-	        	new DBSchema(schemaName, catalogOfSchema);
-	            schemaCount++;
-            } else
+				catalogName = schemaSet.getString(2);
+			if (schemaName.equalsIgnoreCase(this.schemaName)
+					|| (this.schemaName == null && dialect.isDefaultSchema(schemaName, user)) || Objects.equals(this.tableInclusionPattern, "#all")) {
+				LOGGER.debug("importing schema {}", StringUtil.quoteIfNotNull(schemaName));
+				this.schemaName = schemaName; // take over capitalization used in the DB
+				String catalogNameOfSchema = (columnCount >= 2 && catalogName != null ? catalogName : this.catalogName); // PostgreSQL and SQL Server do not necessarily tell you the catalog name
+				DBCatalog catalogOfSchema = database.getCatalog(catalogNameOfSchema);
+				if (catalogOfSchema == null)
+					throw new ObjectNotFoundException("Catalog not found: " + catalogOfSchema);
+				new DBSchema(schemaName, catalogOfSchema);
+				schemaCount++;
+			} else
                 LOGGER.debug("ignoring schema {}", StringUtil.quoteIfNotNull(schemaName));
         }
         if (schemaCount == 0) {
@@ -301,8 +273,15 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         	LOGGER.debug("excluding tables: {}", tableExclusionPattern);
         if (tableInclusionPattern != null && !".*".equals(tableInclusionPattern))
         	LOGGER.debug("including tables: {}", tableInclusionPattern);
-        StopWatch watch = new StopWatch("importAllTables");
-        ResultSet tableSet = metaData.getTables(catalogName, schemaName, null, new String[] { "TABLE", "VIEW" });
+		StopWatch watch = new StopWatch("importAllTables");
+		ResultSet tableSet;
+		if(this.dialect.getSystem().equals("postgres") && Objects.equals(this.tableInclusionPattern, "#all")) {
+			tableSet = metaData.getTables(null, null, null, new String[]{"TABLE", "VIEW"});
+		}
+		else {
+			tableSet = metaData.getTables(catalogName, schemaName, null, new String[]{"TABLE", "VIEW"});
+		}
+
         while (tableSet.next()) {
 
             // parsing ResultSet line

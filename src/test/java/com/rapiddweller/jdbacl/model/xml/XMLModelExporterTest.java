@@ -21,15 +21,14 @@
 
 package com.rapiddweller.jdbacl.model.xml;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.util.Arrays;
-
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.jdbacl.model.AbstractModelTest;
 import com.rapiddweller.jdbacl.model.Database;
 import org.junit.Test;
+
+import java.io.File;
+
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Tests the {@link XMLModelExporter}.<br/><br/>
@@ -46,7 +45,7 @@ public class XMLModelExporterTest extends AbstractModelTest {
 		new XMLModelExporter(file).export(db);
 		String[] expectedLines = IOUtil.readTextLines(LAZY_TEST_MODEL_FILENAME, false);
 		String[] actualLines = IOUtil.readTextLines(file.getCanonicalPath(), false);
-		assertTrue(Arrays.equals(expectedLines, actualLines));
+        assertArrayEquals(expectedLines, actualLines);
 	}
 
 	@Test
@@ -56,7 +55,7 @@ public class XMLModelExporterTest extends AbstractModelTest {
 		new XMLModelExporter(file, false).export(db);
 		String[] expectedLines = IOUtil.readTextLines(EAGER_TEST_MODEL_FILENAME, false);
 		String[] actualLines = IOUtil.readTextLines(file.getCanonicalPath(), false);
-		assertTrue(Arrays.equals(expectedLines, actualLines));
+        assertArrayEquals(expectedLines, actualLines);
 	}
 
 }

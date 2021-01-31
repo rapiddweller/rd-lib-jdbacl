@@ -21,38 +21,24 @@
 
 package com.rapiddweller.jdbacl.model.xml;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Set;
-
 import com.rapiddweller.common.Encodings;
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.common.xml.SimpleXMLWriter;
 import com.rapiddweller.jdbacl.SQLUtil;
-import com.rapiddweller.jdbacl.model.DBPackage;
-import com.rapiddweller.jdbacl.model.DBProcedure;
-import com.rapiddweller.jdbacl.model.DBTrigger;
-import com.rapiddweller.jdbacl.model.FKChangeRule;
-import com.rapiddweller.jdbacl.model.DBCatalog;
-import com.rapiddweller.jdbacl.model.DBCheckConstraint;
-import com.rapiddweller.jdbacl.model.DBColumn;
-import com.rapiddweller.jdbacl.model.DBForeignKeyConstraint;
-import com.rapiddweller.jdbacl.model.DBIndex;
-import com.rapiddweller.jdbacl.model.DBMetaDataExporter;
-import com.rapiddweller.jdbacl.model.DBPrimaryKeyConstraint;
-import com.rapiddweller.jdbacl.model.DBSchema;
-import com.rapiddweller.jdbacl.model.DBSequence;
-import com.rapiddweller.jdbacl.model.DBTable;
-import com.rapiddweller.jdbacl.model.DBUniqueConstraint;
-import com.rapiddweller.jdbacl.model.Database;
+import com.rapiddweller.jdbacl.model.*;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
-import static com.rapiddweller.common.xml.SimpleXMLWriter.*;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Set;
+
+import static com.rapiddweller.common.xml.SimpleXMLWriter.addAttribute;
+import static com.rapiddweller.common.xml.SimpleXMLWriter.createAttributes;
 
 /**
  * Saves a database meta data model as XML file.<br/><br/>
