@@ -21,13 +21,13 @@
 
 package com.rapiddweller.jdbacl;
 
+import com.rapiddweller.common.iterator.IteratorProxy;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
-
-import com.rapiddweller.common.iterator.IteratorProxy;
 
 /**
  * Performs a query and wraps the result set with an {@link Iterator} interface.<br/><br/>

@@ -21,14 +21,10 @@
 
 package com.rapiddweller.jdbacl.test;
 
-import java.util.Map;
-
 import com.rapiddweller.common.collection.NameMap;
-import com.rapiddweller.jdbacl.model.DBColumn;
-import com.rapiddweller.jdbacl.model.DBDataType;
-import com.rapiddweller.jdbacl.model.DBForeignKeyConstraint;
-import com.rapiddweller.jdbacl.model.DBPrimaryKeyConstraint;
-import com.rapiddweller.jdbacl.model.DBTable;
+import com.rapiddweller.jdbacl.model.*;
+
+import java.util.Map;
 
 /**
  * Helper class which provides typical models for testing.<br/><br/>

@@ -21,9 +21,6 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.rapiddweller.common.CollectionUtil;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.jdbacl.sql.ColumnExpression;
@@ -31,6 +28,9 @@ import com.rapiddweller.jdbacl.sql.SQLParserUtil;
 import com.rapiddweller.jdbacl.sql.parser.ANTLRNoCaseStringStream;
 import com.rapiddweller.script.Expression;
 import com.rapiddweller.script.expression.WrapperExpression;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represents a database check constraint.<br/><br/>

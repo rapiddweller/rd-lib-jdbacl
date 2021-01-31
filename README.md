@@ -1,4 +1,6 @@
 # rd-lib-jdbacl
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/e021ff7717d14dd08e5f103b7b504ef0)](https://www.codacy.com/gh/rapiddweller/rd-lib-jdbacl/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rapiddweller/rd-lib-jdbacl&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/e021ff7717d14dd08e5f103b7b504ef0)](https://www.codacy.com/gh/rapiddweller/rd-lib-jdbacl/dashboard?utm_source=github.com&utm_medium=referral&utm_content=rapiddweller/rd-lib-jdbacl&utm_campaign=Badge_Coverage)
 
 'rapiddweller Jdbacl' is an open source Java library forked from Databene Jdbacl by Volker Bergmann.
 

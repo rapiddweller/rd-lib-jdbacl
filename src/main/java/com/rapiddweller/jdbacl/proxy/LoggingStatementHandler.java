@@ -26,6 +26,17 @@
 
 package com.rapiddweller.jdbacl.proxy;
 
+import com.rapiddweller.common.BeanUtil;
+import com.rapiddweller.common.CollectionUtil;
+import com.rapiddweller.common.ConfigurationError;
+import com.rapiddweller.common.LogCategoriesConstants;
+import com.rapiddweller.common.debug.Debug;
+import com.rapiddweller.common.debug.ResourceMonitor;
+import com.rapiddweller.jdbacl.DBUtil;
+import com.rapiddweller.profile.Profiler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,17 +44,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import com.rapiddweller.common.BeanUtil;
-import com.rapiddweller.common.CollectionUtil;
-import com.rapiddweller.common.ConfigurationError;
-import com.rapiddweller.common.LogCategories;
-import com.rapiddweller.common.debug.Debug;
-import com.rapiddweller.common.debug.ResourceMonitor;
-import com.rapiddweller.jdbacl.DBUtil;
-import com.rapiddweller.profile.Profiler;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 /**
  * {@link InvocationHandler} implementation for a proxy to the {@link Statement} interface
@@ -57,8 +57,8 @@ import org.apache.logging.log4j.LogManager;
 
 public class LoggingStatementHandler implements InvocationHandler {
 
-    private static final Logger sqlLogger = LogManager.getLogger(LogCategories.SQL);
-    private static final Logger jdbcLogger = LogManager.getLogger(LogCategories.JDBC);
+    private static final Logger sqlLogger = LogManager.getLogger(LogCategoriesConstants.SQL);
+    private static final Logger jdbcLogger = LogManager.getLogger(LogCategoriesConstants.JDBC);
 
 	private static final AtomicInteger openStatementCount;
     private static ResourceMonitor openStatementMonitor;

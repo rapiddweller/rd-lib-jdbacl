@@ -26,6 +26,15 @@
 
 package com.rapiddweller.jdbacl.proxy;
 
+import com.rapiddweller.common.*;
+import com.rapiddweller.common.converter.ArrayConverter;
+import com.rapiddweller.common.converter.ToStringConverter;
+import com.rapiddweller.common.debug.Debug;
+import com.rapiddweller.common.debug.ResourceMonitor;
+import com.rapiddweller.jdbacl.DBUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,19 +42,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import com.rapiddweller.common.BeanUtil;
-import com.rapiddweller.common.ConfigurationError;
-import com.rapiddweller.common.Converter;
-import com.rapiddweller.common.LogCategories;
-import com.rapiddweller.common.StringUtil;
-import com.rapiddweller.common.converter.ArrayConverter;
-import com.rapiddweller.common.converter.ToStringConverter;
-import com.rapiddweller.common.debug.Debug;
-import com.rapiddweller.common.debug.ResourceMonitor;
-import com.rapiddweller.jdbacl.DBUtil;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 /**
  * Provides database related utility methods.<br/>
@@ -56,8 +52,8 @@ import org.apache.logging.log4j.LogManager;
 @SuppressWarnings("unchecked")
 public class LoggingPreparedStatementHandler implements InvocationHandler {
 	
-    private static final Logger SQL_LOGGER = LogManager.getLogger(LogCategories.SQL);
-    private static final Logger JDBC_LOGGER = LogManager.getLogger(LogCategories.JDBC);
+    private static final Logger SQL_LOGGER = LogManager.getLogger(LogCategoriesConstants.SQL);
+    private static final Logger JDBC_LOGGER = LogManager.getLogger(LogCategoriesConstants.JDBC);
 
 	private static final AtomicInteger openStatementCount;
     private static ResourceMonitor openStatementMonitor;

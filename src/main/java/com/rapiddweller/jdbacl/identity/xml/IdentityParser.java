@@ -21,21 +21,16 @@
 
 package com.rapiddweller.jdbacl.identity.xml;
 
-import java.util.Set;
-
 import com.rapiddweller.common.CollectionUtil;
 import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.xml.XMLUtil;
 import com.rapiddweller.format.xml.AbstractXMLElementParser;
 import com.rapiddweller.format.xml.ParseContext;
-import com.rapiddweller.jdbacl.identity.IdentityModel;
-import com.rapiddweller.jdbacl.identity.IdentityProvider;
-import com.rapiddweller.jdbacl.identity.NaturalPkIdentity;
-import com.rapiddweller.jdbacl.identity.NkPkQueryIdentity;
-import com.rapiddweller.jdbacl.identity.SubNkPkQueryIdentity;
-import com.rapiddweller.jdbacl.identity.UniqueKeyIdentity;
+import com.rapiddweller.jdbacl.identity.*;
 import org.w3c.dom.Element;
+
+import java.util.Set;
 
 /**
  * Parses an &lt;identity&gt; element in a DB Sanity XML file.<br/><br/>

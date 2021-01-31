@@ -21,9 +21,9 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import java.math.BigInteger;
-
 import com.rapiddweller.common.NullSafeComparator;
+
+import java.math.BigInteger;
 
 /**
  * Represents a database sequence.<br/><br/>

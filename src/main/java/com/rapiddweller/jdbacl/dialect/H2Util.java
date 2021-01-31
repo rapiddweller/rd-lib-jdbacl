@@ -21,11 +21,11 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
-import java.sql.Connection;
-
 import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.ConnectFailedException;
 import com.rapiddweller.jdbacl.DBUtil;
+
+import java.sql.Connection;
 
 /**
  * Provides utility methods for the H2 database.<br/><br/>

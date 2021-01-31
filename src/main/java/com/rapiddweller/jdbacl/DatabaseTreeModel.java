@@ -21,12 +21,12 @@
 
 package com.rapiddweller.jdbacl;
 
-import java.util.List;
-
 import com.rapiddweller.common.TreeModel;
 import com.rapiddweller.jdbacl.model.CompositeDBObject;
 import com.rapiddweller.jdbacl.model.DBObject;
 import com.rapiddweller.jdbacl.model.Database;
+
+import java.util.List;
 
 /**
  * {@link TreeModel} adapter for DBObject hierarchies.<br/><br/>

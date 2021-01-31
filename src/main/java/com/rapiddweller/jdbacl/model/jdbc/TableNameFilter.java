@@ -21,9 +21,9 @@
 
 package com.rapiddweller.jdbacl.model.jdbc;
 
-import java.util.regex.Pattern;
-
 import com.rapiddweller.common.Filter;
+
+import java.util.regex.Pattern;
 
 /**
  * Filters.<br/><br/>

@@ -21,11 +21,11 @@
 
 package com.rapiddweller.jdbacl;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-
 import com.rapiddweller.common.iterator.ConvertingIterator;
 import com.rapiddweller.common.iterator.TabularIterator;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
 
 /**
  * Provides a {@link ResultSet}'s rows as {@link Object} arrays.<br/><br/>

@@ -26,10 +26,10 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import java.util.Arrays;
-
 import com.rapiddweller.common.ArrayUtil;
 import com.rapiddweller.common.NullSafeComparator;
+
+import java.util.Arrays;
 
 /**
  * Represents a non-unique database index.<br/><br/>

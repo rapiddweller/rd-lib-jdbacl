@@ -21,11 +21,11 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
-import java.util.regex.Pattern;
-
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.sql.Query;
+
+import java.util.regex.Pattern;
 
 /**
  * Implements generic database concepts for SQL Server.<br/><br/>

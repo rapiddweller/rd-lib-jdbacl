@@ -21,24 +21,7 @@
 
 package com.rapiddweller.jdbacl.model.jdbc;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.*;
-
-import com.rapiddweller.common.ConnectFailedException;
-import com.rapiddweller.common.ErrorHandler;
-import com.rapiddweller.common.Escalator;
-import com.rapiddweller.common.Filter;
-import com.rapiddweller.common.ImportFailedException;
-import com.rapiddweller.common.Level;
-import com.rapiddweller.common.LoggerEscalator;
-import com.rapiddweller.common.ObjectNotFoundException;
-import com.rapiddweller.common.ProgrammerError;
-import com.rapiddweller.common.StringUtil;
+import com.rapiddweller.common.*;
 import com.rapiddweller.common.collection.OrderedNameMap;
 import com.rapiddweller.common.version.VersionNumber;
 import com.rapiddweller.contiperf.StopWatch;
@@ -47,20 +30,12 @@ import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.DatabaseDialectManager;
 import com.rapiddweller.jdbacl.JDBCConnectData;
 import com.rapiddweller.jdbacl.dialect.OracleDialect;
-import com.rapiddweller.jdbacl.model.DBCatalog;
-import com.rapiddweller.jdbacl.model.DBCheckConstraint;
-import com.rapiddweller.jdbacl.model.DBDataType;
-import com.rapiddweller.jdbacl.model.DBForeignKeyConstraint;
-import com.rapiddweller.jdbacl.model.DBMetaDataImporter;
-import com.rapiddweller.jdbacl.model.DBPackage;
-import com.rapiddweller.jdbacl.model.DBSchema;
-import com.rapiddweller.jdbacl.model.DBSequence;
-import com.rapiddweller.jdbacl.model.DBTable;
-import com.rapiddweller.jdbacl.model.Database;
-import com.rapiddweller.jdbacl.model.FKChangeRule;
-import com.rapiddweller.jdbacl.model.TableType;
-import org.apache.logging.log4j.Logger;
+import com.rapiddweller.jdbacl.model.*;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.sql.*;
+import java.util.*;
 
 /**
  * Abstract parent class for JDBC meta data importers.<br/><br/>

@@ -21,14 +21,13 @@
 
 package com.rapiddweller.jdbacl.sql;
 
-import static org.junit.Assert.*;
-
-import com.rapiddweller.jdbacl.sql.SQLParserUtil;
 import com.rapiddweller.jdbacl.sql.parser.ANTLRNoCaseStringStream;
 import com.rapiddweller.script.Expression;
 import com.rapiddweller.script.expression.EqualsExpression;
 import com.rapiddweller.script.expression.LogicalComplementExpression;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests the {@link SQLParserUtil}.<br/><br/>

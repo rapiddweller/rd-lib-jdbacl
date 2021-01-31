@@ -26,6 +26,15 @@
 
 package com.rapiddweller.jdbacl.proxy;
 
+import com.rapiddweller.common.BeanUtil;
+import com.rapiddweller.common.LogCategoriesConstants;
+import com.rapiddweller.common.debug.Debug;
+import com.rapiddweller.common.debug.ResourceMonitor;
+import com.rapiddweller.jdbacl.DBUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.sql.ConnectionEventListener;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -36,16 +45,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.sql.ConnectionEventListener;
-
-import com.rapiddweller.common.BeanUtil;
-import com.rapiddweller.common.LogCategories;
-import com.rapiddweller.common.debug.Debug;
-import com.rapiddweller.common.debug.ResourceMonitor;
-import com.rapiddweller.jdbacl.DBUtil;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 /**
  * Wraps a connection for logging of JDBC connection handling.<br/>
  * Created: 24.08.2008 18:47:44<br/>
@@ -54,7 +53,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class PooledConnectionHandler implements InvocationHandler {
     
-    private static final Logger jdbcLogger = LogManager.getLogger(LogCategories.JDBC);
+    private static final Logger jdbcLogger = LogManager.getLogger(LogCategoriesConstants.JDBC);
     
     private static long nextId = 0;
 

@@ -21,32 +21,18 @@
 
 package com.rapiddweller.jdbacl.swing;
 
-import java.awt.BorderLayout;
+import com.rapiddweller.common.*;
+import com.rapiddweller.common.ui.ApplicationUtil;
+import com.rapiddweller.common.ui.JavaApplication;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-
-import javax.swing.AbstractAction;
-import javax.swing.Box;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.JToolBar;
-
-import com.rapiddweller.common.ConnectFailedException;
-import com.rapiddweller.common.FileUtil;
-import com.rapiddweller.common.IOUtil;
-import com.rapiddweller.common.ImportFailedException;
-import com.rapiddweller.common.OrderedMap;
-import com.rapiddweller.common.SystemInfo;
-import com.rapiddweller.common.ui.ApplicationUtil;
-import com.rapiddweller.common.ui.JavaApplication;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 /**
  * Simple GUI for database browsing.<br/><br/>

@@ -26,17 +26,17 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
-import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.regex.Pattern;
-
 import com.rapiddweller.common.ArrayBuilder;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.model.DBSequence;
 import com.rapiddweller.jdbacl.sql.Query;
+
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.regex.Pattern;
 
 /**
  * Implements generic database concepts for HSQL<br/><br/>

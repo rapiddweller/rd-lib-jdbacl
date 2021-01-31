@@ -21,44 +21,20 @@
 
 package com.rapiddweller.jdbacl.model.xml;
 
+import com.rapiddweller.common.*;
+import com.rapiddweller.common.xml.XMLUtil;
+import com.rapiddweller.jdbacl.model.*;
+import com.rapiddweller.jdbacl.model.jdbc.JDBCDBImporter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.Set;
-
-import com.rapiddweller.common.ArrayUtil;
-import com.rapiddweller.common.Assert;
-import com.rapiddweller.common.ConfigurationError;
-import com.rapiddweller.common.IOUtil;
-import com.rapiddweller.common.ImportFailedException;
-import com.rapiddweller.common.ParseUtil;
-import com.rapiddweller.common.StringUtil;
-import com.rapiddweller.common.SyntaxError;
-import com.rapiddweller.common.xml.XMLUtil;
-import com.rapiddweller.jdbacl.model.DBPackage;
-import com.rapiddweller.jdbacl.model.DBProcedure;
-import com.rapiddweller.jdbacl.model.DBTrigger;
-import com.rapiddweller.jdbacl.model.FKChangeRule;
-import com.rapiddweller.jdbacl.model.DBCatalog;
-import com.rapiddweller.jdbacl.model.DBCheckConstraint;
-import com.rapiddweller.jdbacl.model.DBColumn;
-import com.rapiddweller.jdbacl.model.DBForeignKeyConstraint;
-import com.rapiddweller.jdbacl.model.DBMetaDataImporter;
-import com.rapiddweller.jdbacl.model.DBNonUniqueIndex;
-import com.rapiddweller.jdbacl.model.DBPrimaryKeyConstraint;
-import com.rapiddweller.jdbacl.model.DBSchema;
-import com.rapiddweller.jdbacl.model.DBSequence;
-import com.rapiddweller.jdbacl.model.DBTable;
-import com.rapiddweller.jdbacl.model.DBUniqueConstraint;
-import com.rapiddweller.jdbacl.model.DBUniqueIndex;
-import com.rapiddweller.jdbacl.model.Database;
-import com.rapiddweller.jdbacl.model.TableType;
-import com.rapiddweller.jdbacl.model.jdbc.JDBCDBImporter;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 /**
  * Imports a meta data model from an XML file.<br/><br/>

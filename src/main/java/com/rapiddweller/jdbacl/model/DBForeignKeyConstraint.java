@@ -26,8 +26,6 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import java.util.Arrays;
-
 import com.rapiddweller.common.ArrayUtil;
 import com.rapiddweller.common.Assert;
 import com.rapiddweller.common.NullSafeComparator;
@@ -35,6 +33,8 @@ import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.common.bean.HashCodeBuilder;
 import com.rapiddweller.jdbacl.NameSpec;
 import com.rapiddweller.jdbacl.SQLUtil;
+
+import java.util.Arrays;
 
 /**
  * Represents a foreign key constraint.<br/><br/>

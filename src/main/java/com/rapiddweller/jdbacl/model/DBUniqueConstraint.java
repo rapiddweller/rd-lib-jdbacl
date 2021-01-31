@@ -26,12 +26,12 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import java.util.Arrays;
-
 import com.rapiddweller.common.ArrayUtil;
 import com.rapiddweller.common.NullSafeComparator;
 import com.rapiddweller.jdbacl.NameSpec;
 import com.rapiddweller.jdbacl.SQLUtil;
+
+import java.util.Arrays;
 
 /**
  * Represents a unique constraint on one or the combination of several columns of one table.<br/>
