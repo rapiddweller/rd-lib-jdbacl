@@ -28,7 +28,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import com.rapiddweller.common.HeavyweightIterator;
-import com.rapiddweller.common.LogCategories;
+import com.rapiddweller.common.LogCategoriesConstants;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.ResultSetIterator;
 import org.apache.logging.log4j.Logger;
@@ -42,7 +42,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class DBRowIterator implements HeavyweightIterator<DBRow> {
 	
-    private static final Logger SQL_LOGGER = LogManager.getLogger(LogCategories.SQL);
+    private static final Logger SQL_LOGGER = LogManager.getLogger(LogCategoriesConstants.SQL);
 
     private DBTable table;
     private ResultSet resultSet;

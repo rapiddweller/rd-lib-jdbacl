@@ -36,7 +36,7 @@ import com.rapiddweller.common.ErrorHandler;
 import com.rapiddweller.common.FileUtil;
 import com.rapiddweller.common.HeavyweightIterator;
 import com.rapiddweller.common.IOUtil;
-import com.rapiddweller.common.LogCategories;
+import com.rapiddweller.common.LogCategoriesConstants;
 import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.common.ReaderLineIterator;
 import com.rapiddweller.common.StringUtil;
@@ -87,8 +87,8 @@ public class DBUtil {
 
     private static final Logger LOGGER = LogManager.getLogger(DBUtil.class);
 
-    private static final Logger JDBC_LOGGER = LogManager.getLogger(LogCategories.JDBC);
-    private static final Logger SQL_LOGGER = LogManager.getLogger(LogCategories.SQL);
+    private static final Logger JDBC_LOGGER = LogManager.getLogger(LogCategoriesConstants.JDBC);
+    private static final Logger SQL_LOGGER = LogManager.getLogger(LogCategoriesConstants.SQL);
     
     /** private constructor for preventing instantiation. */
     private DBUtil() {}
