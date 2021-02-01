@@ -275,7 +275,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         	LOGGER.debug("including tables: {}", tableInclusionPattern);
 		StopWatch watch = new StopWatch("importAllTables");
 		ResultSet tableSet;
-		if(this.dialect.getSystem().equals("postgres") && Objects.equals(this.tableInclusionPattern, "#all")) {
+		if(Objects.equals(this.tableInclusionPattern, "#all")) {
 			tableSet = metaData.getTables(null, null, null, new String[]{"TABLE", "VIEW"});
 		}
 		else {
