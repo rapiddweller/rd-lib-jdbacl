@@ -493,23 +493,12 @@
 
     <repositories>
         <repository>
-            <id>rdd-nexus</id>
-            <url>https://nexus.dwellerlab.com/repository/maven-rdd</url>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
         </repository>
     </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>rdd-nexus</id>
-            <name>Releases</name>
-            <url>https://nexus.dwellerlab.com/repository/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>rdd-nexus</id>
-            <name>Snapshot</name>
-            <url>https://nexus.dwellerlab.com/repository/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <scm>
         <url>https://github.com/rapiddweller/rd-lib-jdbacl</url>

@@ -155,11 +155,18 @@ jobs:
         with:
           name: setup
       - run: bash dot.env
-      - name: Publish package
-        run: mvn --batch-mode deploy --settings .m2/settings.xml -Dmaven.test.skip=true -Dmaven.install.skip=true
+      - run: apt update && apt -y install gnupg
+      - name: generate key
+        run: gpg --batch --import <(echo "$GPG_PRIVATE_KEY_ENCODED" | base64 -d)
+        shell: bash
         env:
-          NEXUS_USER: ${{ secrets.NEXUS_USER }}
-          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          GPG_PRIVATE_KEY_ENCODED: ${{ secrets.GPG_PRIVATE_KEY_ENCODED }}
+      - name: Publish package
+        run: mvn -s .m2/settings.xml  clean deploy -P release -Dmaven.test.skip=true -Dmaven.install.skip=true
+        env:
+          OSSRH_USERTOKEN: ${{ secrets.OSSRH_USERTOKEN }}
+          OSSRH_USERTOKEN_KEY: ${{ secrets.OSSRH_USERTOKEN_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
   ###################### Release ######################
 
