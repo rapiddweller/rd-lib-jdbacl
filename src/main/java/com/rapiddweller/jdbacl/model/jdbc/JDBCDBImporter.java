@@ -445,7 +445,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         StopWatch watch = new StopWatch("importPrimaryKeyOfTable");
         ResultSet pkset = null;
         try {
-			if (this.tableInclusionPattern.contains("#all")) {
+			if (this.tableInclusionPattern != null && this.tableInclusionPattern.contains("#all")) {
 				// removed filter catalog and schema to get all primary keys for matching tables
 				pkset = metaData.getPrimaryKeys(null, null, table.getName());
 			} else {
