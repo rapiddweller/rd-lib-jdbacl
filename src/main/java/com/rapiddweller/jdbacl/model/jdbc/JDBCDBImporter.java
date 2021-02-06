@@ -371,30 +371,30 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 	            Integer columnSize = columnSet.getInt(7);
 	            if (columnSize == 0) // happens with INTEGER values on HSQLDB
 	            	columnSize = null;
-	            int decimalDigits = columnSet.getInt(9);
-	            boolean nullable = columnSet.getBoolean(11);
-	            String comment = columnSet.getString(12);
-	            String defaultValue = columnSet.getString(13);
+				int decimalDigits = columnSet.getInt(9);
+				boolean nullable = columnSet.getBoolean(11);
+				String comment = columnSet.getString(12);
+				String defaultValue = columnSet.getString(13);
 
-	            // Bug fix 3075401: boolean value generation problem in postgresql 8.4
-	            if (sqlType == Types.BIT && "bool".equalsIgnoreCase(columnType) && databaseProductName.toLowerCase().startsWith("postgres")) {
-	            	sqlType = Types.BOOLEAN;
-	            }
-	            
-            	LOGGER.debug("found column: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}", 
-	                    new Object[] { catalogName, colSchemaName, tableName, 
-	        			columnName, sqlType, columnType, columnSize, decimalDigits, 
-	        			nullable, comment, defaultValue });
-            	// determine table
-	        	DBTable table = catalog.getTable(tableName, false);
-	            if (table == null) {
-	            	LOGGER.debug("Ignoring column {}.{}", tableName, columnName);
-	            	continue; // PostgreSQL returns the columns of indexes, too
-	            }
-	            DBSchema schema = catalog.getSchema(schemaName);
-	            if (schema != null)
-	                table = schema.getTable(tableName);
-	            // create column
+				// Bug fix 3075401: boolean value generation problem in postgresql 8.4
+				if (sqlType == Types.BIT && "bool".equalsIgnoreCase(columnType) && databaseProductName.toLowerCase().startsWith("postgres")) {
+					sqlType = Types.BOOLEAN;
+				}
+
+				LOGGER.debug("found column: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}",
+						catalogName, colSchemaName, tableName,
+						columnName, sqlType, columnType, columnSize, decimalDigits,
+						nullable, comment, defaultValue);
+				// determine table
+				DBTable table = catalog.getTable(tableName, false);
+				if (table == null) {
+					LOGGER.debug("Ignoring column {}.{}", tableName, columnName);
+					continue; // PostgreSQL returns the columns of indexes, too
+				}
+				DBSchema schema = catalog.getSchema(schemaName);
+				if (schema != null)
+					table = schema.getTable(tableName);
+				// create column
                 Integer fractionDigits = (decimalDigits > 0 ? decimalDigits : null);
                 DBDataType dataType = DBDataType.getInstance(sqlType, columnType);
                 if (!StringUtil.isEmpty(defaultValue)) {
@@ -445,17 +445,22 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         StopWatch watch = new StopWatch("importPrimaryKeyOfTable");
         ResultSet pkset = null;
         try {
-	        pkset = metaData.getPrimaryKeys(catalogName, schemaName, table.getName());
-	        TreeMap<Short, String> pkComponents = new TreeMap<>();
-	        String pkName = null;
-	        while (pkset.next()) {
-	        	String tableName = pkset.getString(3);
-	            if (!tableName.equals(table.getName())) // Bug fix for Firebird: 
-	            	continue;							// When querying X, it returns the pks of XY too
-	
-	            String columnName = pkset.getString(4);
-	            short keySeq = pkset.getShort(5);
-	            pkComponents.put(keySeq, columnName);
+			if (this.tableInclusionPattern != null && this.tableInclusionPattern.contains("#all")) {
+				// removed filter catalog and schema to get all primary keys for matching tables
+				pkset = metaData.getPrimaryKeys(null, null, table.getName());
+			} else {
+				pkset = metaData.getPrimaryKeys(catalogName, schemaName, table.getName());
+			}
+			TreeMap<Short, String> pkComponents = new TreeMap<>();
+			String pkName = null;
+			while (pkset.next()) {
+				String tableName = pkset.getString(3);
+				if (!tableName.equals(table.getName())) // Bug fix for Firebird:
+					continue;                            // When querying X, it returns the pks of XY too
+
+				String columnName = pkset.getString(4);
+				short keySeq = pkset.getShort(5);
+				pkComponents.put(keySeq, columnName);
 	            pkName = pkset.getString(6);
                 LOGGER.debug("found pk column {}, {}, {}", new Object[] { columnName, keySeq, pkName });
 	        }
