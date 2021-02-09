@@ -1,3 +1,19 @@
+# Release 1.1.1-jdk-11
+
+## Release Highlights
+
+N/A
+
+## Important Notes
+
+* HotFix: there were foreign schema index and keys missing in multiSchema object structure
+
+## Breaking Changes
+
+N/A
+
+---
+
 # Release 1.1.0-jdk-11
 
 ## Release Highlights
