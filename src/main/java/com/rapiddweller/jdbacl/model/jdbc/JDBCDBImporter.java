@@ -406,12 +406,16 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     while (schemaSet.next()) {
       String schemaName = schemaSet.getString(1);
       String catalogName = null;
-      int columnCount = schemaSet.getMetaData().getColumnCount();
-      if (columnCount >= 2) {
-        catalogName = schemaSet.getString(2);
-      }
-      if (schemaName.equalsIgnoreCase(this.schemaName)
-          || (this.schemaName == null && dialect.isDefaultSchema(schemaName, user))) {
+      if (
+          !schemaName.equalsIgnoreCase("pg_catalog")
+              ||
+              !schemaName.equalsIgnoreCase("information_schema")
+      ) {
+        int columnCount = schemaSet.getMetaData().getColumnCount();
+        if (columnCount >= 2) {
+          catalogName = schemaSet.getString(2);
+        }
+
         LOGGER.debug("importing schema {}", StringUtil.quoteIfNotNull(schemaName));
         this.schemaName = schemaName; // take over capitalization used in the DB
         String catalogNameOfSchema = (columnCount >= 2 && catalogName != null ? catalogName :
@@ -422,8 +426,6 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         }
         new DBSchema(schemaName, catalogOfSchema);
         schemaCount++;
-      } else {
-        LOGGER.debug("ignoring schema {}", StringUtil.quoteIfNotNull(schemaName));
       }
     }
     if (schemaCount == 0) {
@@ -457,7 +459,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     }
     StopWatch watch = new StopWatch("importAllTables");
     ResultSet tableSet;
-    tableSet = metaData.getTables(catalogName, schemaName, null, new String[] {"TABLE", "VIEW"});
+    tableSet = metaData.getTables(null, null, null, new String[] {"TABLE", "VIEW"});
 
     while (tableSet.next()) {
 
@@ -652,7 +654,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     StopWatch watch = new StopWatch("importPrimaryKeyOfTable");
     ResultSet pkset = null;
     try {
-      pkset = metaData.getPrimaryKeys(catalogName, schemaName, table.getName());
+      pkset = metaData.getPrimaryKeys(catalogName, table.getSchema().getName(), table.getName());
       TreeMap<Short, String> pkComponents = new TreeMap<>();
       String pkName = null;
       while (pkset.next()) {
@@ -811,9 +813,9 @@ public class JDBCDBImporter implements DBMetaDataImporter {
           // additional column for a composite FK with columns defined before
           if (cursor.fk_name != null) {
             keysByName.get(cursor.fk_name).addForeignKeyColumn(cursor.fkcolumn_name, cursor.pkcolumn_name);
-          } else // some systems may not report an fk constraint name
-          {
-            recent.addForeignKeyColumn(cursor.fkcolumn_name, cursor.pkcolumn_name);
+          } else { // some systems may not report an fk constraint name
+            recent.addForeignKeyColumn(cursor.fkcolumn_name,
+                cursor.pkcolumn_name);
           }
         }
         recent = cursor;
@@ -821,6 +823,10 @@ public class JDBCDBImporter implements DBMetaDataImporter {
       // build DBForeignKeyConstraint objects from the gathered information
       for (ImportedKey key : keyList) {
         int n = key.getForeignKeyColumnNames().size();
+        DBTable pkTable = key.getPkTable();
+        if (pkTable == null && catalog != null) {
+          pkTable = catalog.getSchema(key.getPkSchemaName()).getTable(key.getPkTableName());
+        }
         String[] columnNames = new String[n];
         String[] refereeColumnNames = new String[n];
         for (int i = 0; i < n; i++) {
@@ -831,7 +837,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
             key.fk_name, dialect.isDeterministicFKName(key.fk_name),
             table,
             columnNames,
-            key.getPkTable(),
+            pkTable,
             refereeColumnNames);
         foreignKeyConstraint.setUpdateRule(parseRule(key.update_rule));
         foreignKeyConstraint.setDeleteRule(parseRule(key.delete_rule));

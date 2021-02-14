@@ -235,6 +235,24 @@ class ImportedKey {
     return pkTable;
   }
 
+  /**
+   * Gets pk schema name.
+   *
+   * @return the pk schema name
+   */
+  public String getPkSchemaName() {
+    return pktable_schem;
+  }
+
+  /**
+   * Gets pk table name.
+   *
+   * @return the pk table name
+   */
+  public String getPkTableName() {
+    return pktable_name;
+  }
+
   @Override
   public String toString() {
     return fktable_cat + "." + fktable_schem + "." + fktable_name + "." + fkcolumn_name +
