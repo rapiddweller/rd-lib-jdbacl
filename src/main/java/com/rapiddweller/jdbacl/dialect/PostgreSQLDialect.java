@@ -41,26 +41,30 @@ import java.util.List;
 /**
  * Implements generic database concepts for PostgreSQL.<br/><br/>
  * Created: 26.01.2008 07:11:06
- * @since 0.4.0
+ *
  * @author Volker Bergmann
+ * @since 0.4.0
  */
 public class PostgreSQLDialect extends DatabaseDialect {
-    
-	private static final String DATE_PATTERN = "'date '''yyyy-MM-dd''";
-	private static final String TIME_PATTERN = "'time '''HH:mm:ss''";
-	private static final String DATETIME_PATTERN = "'timestamp '''yyyy-MM-dd HH:mm:ss''";
 
-    public PostgreSQLDialect() {
-	    super("postgres", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
-    }
+  private static final String DATE_PATTERN = "'date '''yyyy-MM-dd''";
+  private static final String TIME_PATTERN = "'time '''HH:mm:ss''";
+  private static final String DATETIME_PATTERN = "'timestamp '''yyyy-MM-dd HH:mm:ss''";
 
-    @Override
-    protected String sequenceNoCycle() {
-    	return "NO CYCLE";
-    }
-    
-    @Override
-    public String renderCreateSequence(DBSequence sequence) {
+  /**
+   * Instantiates a new Postgre sql dialect.
+   */
+  public PostgreSQLDialect() {
+    super("postgres", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
+  }
+
+  @Override
+  protected String sequenceNoCycle() {
+    return "NO CYCLE";
+  }
+
+  @Override
+  public String renderCreateSequence(DBSequence sequence) {
     	/* PostgreSQL syntax:
 			create sequence xyz 
 			start [with] 1
@@ -70,92 +74,94 @@ public class PostgreSQLDialect extends DatabaseDialect {
 			CACHE 1
 			[NO] CYCLE
     	 */
-    	String result = super.renderCreateSequence(sequence);
-    	Long cache = sequence.getCache();
-    	if (cache != null)
-    		result += " CACHE " + cache;
-    	return result;
+    String result = super.renderCreateSequence(sequence);
+    Long cache = sequence.getCache();
+    if (cache != null) {
+      result += " CACHE " + cache;
     }
-    
-    @Override
-	public DBSequence[] querySequences(Connection connection) throws SQLException {
-    	// query sequence names
-    	List<Object[]> rows = DBUtil.query("select relname from pg_class where relkind = 'S'", connection);
-    	ArrayBuilder<DBSequence> builder = new ArrayBuilder<>(DBSequence.class, rows.size());
-    	for (Object[] row : rows) {
-    		String name = (String) row[0];
-    		// query sequence details
-    		Object[] details = DBUtil.querySingleRow("select sequence_name, start_value, increment_by, " +
-    				"max_value, min_value, is_cycled, cache_value, last_value from " + name, connection);
-    		DBSequence sequence = new DBSequence(name, null);
-    		sequence.setStart(new BigInteger(details[1].toString()));
-    		sequence.setIncrement(new BigInteger(details[2].toString()));
-    		sequence.setMaxValue(new BigInteger(details[3].toString()));
-    		sequence.setMinValue(new BigInteger(details[4].toString()));
-    		sequence.setCycle(Boolean.valueOf(details[5].toString()));
-    		sequence.setCache(Long.parseLong(details[6].toString()));
-    		sequence.setLastNumber(new BigInteger(details[7].toString()));
-    		builder.add(sequence);
-    	}
-    	return builder.toArray();
-	}
+    return result;
+  }
 
-    @Override
-    public boolean isDefaultCatalog(String catalog, String user) {
-        return "".equals(catalog) || user.equalsIgnoreCase(catalog);
+  @Override
+  public DBSequence[] querySequences(Connection connection) throws SQLException {
+    // query sequence names
+    List<Object[]> rows = DBUtil.query("select relname from pg_class where relkind = 'S'", connection);
+    ArrayBuilder<DBSequence> builder = new ArrayBuilder<>(DBSequence.class, rows.size());
+    for (Object[] row : rows) {
+      String name = (String) row[0];
+      // query sequence details
+      Object[] details = DBUtil.querySingleRow("select sequence_name, start_value, increment_by, " +
+          "max_value, min_value, is_cycled, cache_value, last_value from " + name, connection);
+      DBSequence sequence = new DBSequence(name, null);
+      sequence.setStart(new BigInteger(details[1].toString()));
+      sequence.setIncrement(new BigInteger(details[2].toString()));
+      sequence.setMaxValue(new BigInteger(details[3].toString()));
+      sequence.setMinValue(new BigInteger(details[4].toString()));
+      sequence.setCycle(Boolean.valueOf(details[5].toString()));
+      sequence.setCache(Long.parseLong(details[6].toString()));
+      sequence.setLastNumber(new BigInteger(details[7].toString()));
+      builder.add(sequence);
     }
-    
-    @Override
-    public boolean isDefaultSchema(String schema, String user) {
-        return "public".equalsIgnoreCase(schema);
-    }
-    
-	@Override
-    public String renderFetchSequenceValue(String sequenceName) {
-        return "select nextval('" + sequenceName + "')";
-    }
+    return builder.toArray();
+  }
 
-	@Override
-	public String formatTimestamp(Timestamp timestamp) {
-	    return "timestamp " + super.formatTimestamp(timestamp);
-	}
+  @Override
+  public boolean isDefaultCatalog(String catalog, String user) {
+    return "".equals(catalog) || user.equalsIgnoreCase(catalog);
+  }
 
-	@Override
-	public boolean isDeterministicPKName(String pkName) {
-		return true; // PostgreSQL generates deterministic names 
-	}
+  @Override
+  public boolean isDefaultSchema(String schema, String user) {
+    return "public".equalsIgnoreCase(schema);
+  }
 
-	@Override
-	public boolean isDeterministicUKName(String ukName) {
-		return true; // PostgreSQL generates deterministic names
-	}
+  @Override
+  public String renderFetchSequenceValue(String sequenceName) {
+    return "select nextval('" + sequenceName + "')";
+  }
 
-	@Override
-	public boolean isDeterministicFKName(String fkName) {
-		return true; // PostgreSQL generates deterministic names
-	}
+  @Override
+  public String formatTimestamp(Timestamp timestamp) {
+    return "timestamp " + super.formatTimestamp(timestamp);
+  }
 
-	@Override
-	public boolean isDeterministicIndexName(String indexName) {
-		return true; // PostgreSQL generates deterministic names
-	}
+  @Override
+  public boolean isDeterministicPKName(String pkName) {
+    return true; // PostgreSQL generates deterministic names
+  }
 
-	@Override
-	public boolean supportsRegex() {
-		return true;
-	}
-	
-	@Override
-	public String regexQuery(String expression, boolean not, String regex) {
-		return (not ? "NOT " : "") + expression + " ~ '" + regex + "'";
-	}
+  @Override
+  public boolean isDeterministicUKName(String ukName) {
+    return true; // PostgreSQL generates deterministic names
+  }
 
-	@Override
-	public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
+  @Override
+  public boolean isDeterministicFKName(String fkName) {
+    return true; // PostgreSQL generates deterministic names
+  }
+
+  @Override
+  public boolean isDeterministicIndexName(String indexName) {
+    return true; // PostgreSQL generates deterministic names
+  }
+
+  @Override
+  public boolean supportsRegex() {
+    return true;
+  }
+
+  @Override
+  public String regexQuery(String expression, boolean not, String regex) {
+    return (not ? "NOT " : "") + expression + " ~ '" + regex + "'";
+  }
+
+  @Override
+  public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
 	    /* TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
 			MySQL, PostgreSQL, H2: SELECT * FROM T LIMIT 10 OFFSET 20
 	     */
-		throw new UnsupportedOperationException("PostgreSQLDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
-	}
-	
+    throw new UnsupportedOperationException(
+        "PostgreSQLDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+  }
+
 }

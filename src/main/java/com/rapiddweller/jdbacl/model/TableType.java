@@ -24,20 +24,47 @@ package com.rapiddweller.jdbacl.model;
 /**
  * Enumeration of the table types defined in the JDBC spec.<br/><br/>
  * Created: 28.01.2012 07:44:07
- * @since 0.8.0
+ *
  * @author Volker Bergmann
+ * @since 0.8.0
  */
 public enum TableType {
-	TABLE, 
-	VIEW, 
-	SYSTEM_TABLE, 
-	GLOBAL_TEMPORARY, 
-	LOCAL_TEMPORARY, 
-	ALIAS, 
-	SYNONYM;
-	
-	public String descriptiveName() {
-		return name().replace('_', ' ').toLowerCase();
-	}
-	
+  /**
+   * Table table type.
+   */
+  TABLE,
+  /**
+   * View table type.
+   */
+  VIEW,
+  /**
+   * System table table type.
+   */
+  SYSTEM_TABLE,
+  /**
+   * Global temporary table type.
+   */
+  GLOBAL_TEMPORARY,
+  /**
+   * Local temporary table type.
+   */
+  LOCAL_TEMPORARY,
+  /**
+   * Alias table type.
+   */
+  ALIAS,
+  /**
+   * Synonym table type.
+   */
+  SYNONYM;
+
+  /**
+   * Descriptive name string.
+   *
+   * @return the string
+   */
+  public String descriptiveName() {
+    return name().replace('_', ' ').toLowerCase();
+  }
+
 }

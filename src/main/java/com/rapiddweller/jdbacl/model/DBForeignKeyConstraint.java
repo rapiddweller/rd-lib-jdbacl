@@ -39,125 +39,199 @@ import java.util.Arrays;
 /**
  * Represents a foreign key constraint.<br/><br/>
  * Created: 06.01.2007 09:00:59
+ *
  * @author Volker Bergmann
  */
 public class DBForeignKeyConstraint extends DBConstraint implements MultiColumnObject {
 
-    private static final long serialVersionUID = -7488054587082654132L;
-    
-    private final String[] fkColumnNames;
-    
-    private final DBTable refereeTable;
-    private final String[] refereeColumnNames;
-    private FKChangeRule updateRule;
-    private FKChangeRule deleteRule;
-    
-    public DBForeignKeyConstraint(String name, boolean nameDeterministic, DBTable owner, String fkColumnName, 
-    		DBTable refereeTable, String refereeColumnName) {
-        this(name, nameDeterministic, owner, new String[] { fkColumnName }, 
-        		refereeTable, new String[] { refereeColumnName });
+  private static final long serialVersionUID = -7488054587082654132L;
+
+  private final String[] fkColumnNames;
+
+  private final DBTable refereeTable;
+  private final String[] refereeColumnNames;
+  private FKChangeRule updateRule;
+  private FKChangeRule deleteRule;
+
+  /**
+   * Instantiates a new Db foreign key constraint.
+   *
+   * @param name              the name
+   * @param nameDeterministic the name deterministic
+   * @param owner             the owner
+   * @param fkColumnName      the fk column name
+   * @param refereeTable      the referee table
+   * @param refereeColumnName the referee column name
+   */
+  public DBForeignKeyConstraint(String name, boolean nameDeterministic, DBTable owner, String fkColumnName,
+                                DBTable refereeTable, String refereeColumnName) {
+    this(name, nameDeterministic, owner, new String[] {fkColumnName},
+        refereeTable, new String[] {refereeColumnName});
+  }
+
+  /**
+   * Instantiates a new Db foreign key constraint.
+   *
+   * @param name               the name
+   * @param nameDeterministic  the name deterministic
+   * @param owner              the owner
+   * @param fkColumnNames      the fk column names
+   * @param refereeTable       the referee table
+   * @param refereeColumnNames the referee column names
+   */
+  public DBForeignKeyConstraint(String name, boolean nameDeterministic, DBTable owner, String[] fkColumnNames,
+                                DBTable refereeTable, String[] refereeColumnNames) {
+    super(name, nameDeterministic, "foreign key constraint", owner);
+    Assert.notNull(refereeTable, "refereeTable");
+    this.fkColumnNames = fkColumnNames;
+    this.refereeTable = refereeTable;
+    this.refereeColumnNames = refereeColumnNames;
+    this.updateRule = FKChangeRule.NO_ACTION;
+    this.deleteRule = FKChangeRule.NO_ACTION;
+    if (owner != null) {
+      owner.addForeignKey(this);
     }
+  }
 
-    public DBForeignKeyConstraint(String name, boolean nameDeterministic, DBTable owner, String[] fkColumnNames, 
-    		DBTable refereeTable, String[] refereeColumnNames) {
-        super(name, nameDeterministic, "foreign key constraint", owner);
-        Assert.notNull(refereeTable, "refereeTable");
-        this.fkColumnNames = fkColumnNames;
-        this.refereeTable = refereeTable;
-        this.refereeColumnNames = refereeColumnNames;
-        this.updateRule = FKChangeRule.NO_ACTION;
-        this.deleteRule = FKChangeRule.NO_ACTION;
-        if (owner != null)
-        	owner.addForeignKey(this);
+  /**
+   * Get foreign key column names string [ ].
+   *
+   * @return the string [ ]
+   */
+  public String[] getForeignKeyColumnNames() {
+    return fkColumnNames;
+  }
+
+  /**
+   * Column referenced by string.
+   *
+   * @param fkColumnName the fk column name
+   * @return the string
+   */
+  public String columnReferencedBy(String fkColumnName) {
+    return columnReferencedBy(fkColumnName, true);
+  }
+
+  /**
+   * Column referenced by string.
+   *
+   * @param fkColumnName the fk column name
+   * @param required     the required
+   * @return the string
+   */
+  public String columnReferencedBy(String fkColumnName, boolean required) {
+    int index = ArrayUtil.indexOf(fkColumnName, fkColumnNames);
+    if (index < 0) {
+      if (required) {
+        throw new ObjectNotFoundException("foreign key '" + name + "' does not have a column '" + fkColumnName + "'");
+      } else {
+        return null;
+      }
     }
+    return refereeColumnNames[index];
+  }
 
-    public String[] getForeignKeyColumnNames() {
-        return fkColumnNames;
+  /**
+   * Gets referee table.
+   *
+   * @return the referee table
+   */
+  public DBTable getRefereeTable() {
+    return refereeTable;
+  }
+
+  @Override
+  public String[] getColumnNames() {
+    return fkColumnNames;
+  }
+
+  /**
+   * Get referee column names string [ ].
+   *
+   * @return the string [ ]
+   */
+  public String[] getRefereeColumnNames() {
+    return refereeColumnNames;
+  }
+
+  @Override
+  public boolean isIdentical(DBObject other) {
+    if (this == other) {
+      return true;
     }
-
-    public String columnReferencedBy(String fkColumnName) {
-    	return columnReferencedBy(fkColumnName, true);
+    if (other == null || !(other instanceof DBForeignKeyConstraint)) {
+      return false;
     }
+    DBForeignKeyConstraint that = (DBForeignKeyConstraint) other;
+    return NullSafeComparator.equals(this.name, that.name)
+        && Arrays.equals(fkColumnNames, that.fkColumnNames)
+        && Arrays.equals(refereeColumnNames, that.refereeColumnNames)
+        && NullSafeComparator.equals(refereeTable.getName(), that.refereeTable.getName());
+  }
 
-    public String columnReferencedBy(String fkColumnName, boolean required) {
-    	int index = ArrayUtil.indexOf(fkColumnName, fkColumnNames);
-    	if (index < 0) {
-    		if (required)
-    			throw new ObjectNotFoundException("foreign key '" + name + "' does not have a column '" + fkColumnName + "'");
-    		else
-    			return null;
-    	}
-    	return refereeColumnNames[index];
+  /**
+   * Gets update rule.
+   *
+   * @return the update rule
+   */
+  public FKChangeRule getUpdateRule() {
+    return updateRule;
+  }
+
+  /**
+   * Sets update rule.
+   *
+   * @param updateRule the update rule
+   */
+  public void setUpdateRule(FKChangeRule updateRule) {
+    this.updateRule = updateRule;
+  }
+
+  /**
+   * Gets delete rule.
+   *
+   * @return the delete rule
+   */
+  public FKChangeRule getDeleteRule() {
+    return deleteRule;
+  }
+
+  /**
+   * Sets delete rule.
+   *
+   * @param deleteRule the delete rule
+   */
+  public void setDeleteRule(FKChangeRule deleteRule) {
+    this.deleteRule = deleteRule;
+  }
+
+
+  // java.lang.Object overrides --------------------------------------------------------------------------------------
+
+  @Override
+  public boolean equals(Object other) {
+    if (this == other) {
+      return true;
     }
-
-    public DBTable getRefereeTable() {
-        return refereeTable;
+    if (other == null || getClass() != other.getClass()) {
+      return false;
     }
+    DBForeignKeyConstraint that = (DBForeignKeyConstraint) other;
+    return this.isIdentical(that) && NullSafeComparator.equals(refereeTable, that.refereeTable);
+  }
 
-    @Override
-    public String[] getColumnNames() {
-    	return fkColumnNames;
-    }
+  @Override
+  public int hashCode() {
+    return HashCodeBuilder.hashCode(
+        super.hashCode(),
+        Arrays.hashCode(fkColumnNames),
+        Arrays.hashCode(refereeColumnNames),
+        refereeTable.hashCode());
+  }
 
-	public String[] getRefereeColumnNames() {
-		return refereeColumnNames;
-    }
-    
-	@Override
-	public boolean isIdentical(DBObject other) {
-		if (this == other)
-			return true;
-		if (other == null || !(other instanceof DBForeignKeyConstraint))
-			return false;
-		DBForeignKeyConstraint that = (DBForeignKeyConstraint) other;
-		return NullSafeComparator.equals(this.name, that.name)
-			&& Arrays.equals(fkColumnNames, that.fkColumnNames)
-			&& Arrays.equals(refereeColumnNames, that.refereeColumnNames)
-			&& NullSafeComparator.equals(refereeTable.getName(), that.refereeTable.getName());
-	}
-
-	public FKChangeRule getUpdateRule() {
-		return updateRule;
-	}
-	
-	public void setUpdateRule(FKChangeRule updateRule) {
-		this.updateRule = updateRule;
-	}
-	
-	public FKChangeRule getDeleteRule() {
-		return deleteRule;
-	}
-	
-	public void setDeleteRule(FKChangeRule deleteRule) {
-		this.deleteRule = deleteRule;
-	}
-	
-	
-	
-	// java.lang.Object overrides --------------------------------------------------------------------------------------
-	
-	@Override
-	public boolean equals(Object other) {
-		if (this == other)
-			return true;
-		if (other == null || getClass() != other.getClass())
-			return false;
-		DBForeignKeyConstraint that = (DBForeignKeyConstraint) other;
-		return this.isIdentical(that) && NullSafeComparator.equals(refereeTable, that.refereeTable);
-	}
-
-    @Override
-	public int hashCode() {
-		return HashCodeBuilder.hashCode(
-				super.hashCode(), 
-				Arrays.hashCode(fkColumnNames), 
-				Arrays.hashCode(refereeColumnNames), 
-				refereeTable.hashCode());
-	}
-
-	@Override
-    public String toString() {
-		return SQLUtil.fkSpec(this, NameSpec.ALWAYS);
-    }
+  @Override
+  public String toString() {
+    return SQLUtil.fkSpec(this, NameSpec.ALWAYS);
+  }
 
 }

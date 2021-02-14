@@ -32,51 +32,106 @@ import com.rapiddweller.common.ArrayUtil;
 /**
  * Represents a database index.<br/><br/>
  * Created: 13.01.2007 23:40:52
+ *
  * @author Volker Bergmann
  */
 public class DBIndexInfo {
-	
-    public final String name;
-    public final String tableName;
-    public final boolean unique;
-    public final String catalogName;
-    public final short type;
-    public final Boolean ascending;
-    public final int cardinality;
-    public final int pages;
-    public final String filterCondition;
 
-    public String[] columnNames;
+  /**
+   * The Name.
+   */
+  public final String name;
+  /**
+   * The Table name.
+   */
+  public final String tableName;
+  /**
+   * The Unique.
+   */
+  public final boolean unique;
+  /**
+   * The Catalog name.
+   */
+  public final String catalogName;
+  /**
+   * The Type.
+   */
+  public final short type;
+  /**
+   * The Ascending.
+   */
+  public final Boolean ascending;
+  /**
+   * The Cardinality.
+   */
+  public final int cardinality;
+  /**
+   * The Pages.
+   */
+  public final int pages;
+  /**
+   * The Filter condition.
+   */
+  public final String filterCondition;
 
-    public DBIndexInfo(String name, String tableName, short type, String catalogName, boolean unique, short ordinalPosition, String columnName, Boolean ascending, int cardinality, int pages, String filterCondition) {
-        this.name = name;
-        this.tableName = tableName;
-        this.unique = unique;
-        this.catalogName = catalogName;
-        this.type = type;
-        this.ascending = ascending;
-        this.cardinality = cardinality;
-        this.pages = pages;
-        this.filterCondition = filterCondition;
-        this.columnNames = new String[] { columnName };
-        if (ordinalPosition != 1)
-            throw new IllegalArgumentException("ordinalPosition is expected to be 1, found: " + ordinalPosition);
-    }
+  /**
+   * The Column names.
+   */
+  public String[] columnNames;
 
-    public void addColumn(short ordinalPosition, String columnName) {
-        int expectedPosition = columnNames.length + 1;
-        if (ordinalPosition == expectedPosition)
-        	columnNames = ArrayUtil.append(columnName, columnNames);
-        else {
-        	if (ordinalPosition > expectedPosition || !columnNames[ordinalPosition - 1].equals(columnName))
-        		throw new IllegalArgumentException("ordinalPosition is expected to be " + expectedPosition + ", " +
-                    "found: " + ordinalPosition);
-        }
+  /**
+   * Instantiates a new Db index info.
+   *
+   * @param name            the name
+   * @param tableName       the table name
+   * @param type            the type
+   * @param catalogName     the catalog name
+   * @param unique          the unique
+   * @param ordinalPosition the ordinal position
+   * @param columnName      the column name
+   * @param ascending       the ascending
+   * @param cardinality     the cardinality
+   * @param pages           the pages
+   * @param filterCondition the filter condition
+   */
+  public DBIndexInfo(String name, String tableName, short type, String catalogName, boolean unique, short ordinalPosition, String columnName,
+                     Boolean ascending, int cardinality, int pages, String filterCondition) {
+    this.name = name;
+    this.tableName = tableName;
+    this.unique = unique;
+    this.catalogName = catalogName;
+    this.type = type;
+    this.ascending = ascending;
+    this.cardinality = cardinality;
+    this.pages = pages;
+    this.filterCondition = filterCondition;
+    this.columnNames = new String[] {columnName};
+    if (ordinalPosition != 1) {
+      throw new IllegalArgumentException("ordinalPosition is expected to be 1, found: " + ordinalPosition);
     }
-    
-    @Override
-    public String toString() {
-    	return "[" + ArrayFormat.format(columnNames) + "]";
+  }
+
+  /**
+   * Add column.
+   *
+   * @param ordinalPosition the ordinal position
+   * @param columnName      the column name
+   */
+  public void addColumn(short ordinalPosition, String columnName) {
+    int expectedPosition = columnNames.length + 1;
+    if (ordinalPosition == expectedPosition) {
+      columnNames = ArrayUtil.append(columnName, columnNames);
+    } else {
+      if (ordinalPosition > expectedPosition || !columnNames[ordinalPosition - 1].equals(columnName)) {
+        throw new IllegalArgumentException("ordinalPosition is expected to be " + expectedPosition + ", " +
+            "found: " + ordinalPosition);
+      }
     }
-    
+  }
+
+  @Override
+  public String toString() {
+    return "[" + ArrayFormat.format(columnNames) + "]";
+  }
+
 }

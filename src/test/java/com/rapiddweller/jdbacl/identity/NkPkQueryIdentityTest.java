@@ -21,42 +21,48 @@
 
 package com.rapiddweller.jdbacl.identity;
 
-import static org.junit.Assert.*;
-
-import java.sql.Connection;
-
 import com.rapiddweller.common.HeavyweightIterator;
 import com.rapiddweller.jdbacl.dialect.HSQLUtil;
 import com.rapiddweller.jdbacl.identity.mem.MemKeyMapper;
 import com.rapiddweller.jdbacl.model.Database;
 import org.junit.Test;
 
+import java.sql.Connection;
+
+import static org.junit.Assert.assertFalse;
+
 /**
  * Tests the {@link NkPkQueryIdentity}.<br/><br/>
  * Created: 06.12.2010 06:59:50
- * @since 0.4
+ *
  * @author Volker Bergmann
+ * @since 0.4
  */
 public class NkPkQueryIdentityTest extends AbstractIdentityTest {
 
-	@Test
-	public void test() throws Exception {
-		Connection connection = connectDB("db", HSQLUtil.DEFAULT_PORT + 1);
-		createTables(connection);
-		insertData(connection);
-		
-		Database database = importDatabase(connection);
-		IdentityProvider identityProvider = createIdentities(database);
-		IdentityModel countryIdentity = identityProvider.getIdentity("country");
+  /**
+   * Test.
+   *
+   * @throws Exception the exception
+   */
+  @Test
+  public void test() throws Exception {
+    Connection connection = connectDB("db", HSQLUtil.DEFAULT_PORT + 1);
+    createTables(connection);
+    insertData(connection);
 
-		MemKeyMapper mapper = new MemKeyMapper(connection, "db", null, null, identityProvider, database);
-		HeavyweightIterator<Object[]> iterator = countryIdentity.createNkPkIterator(connection, "db", mapper, database);
-		expectCountryNkPk("DE", "DE", iterator);
-		expectCountryNkPk("FR", "FR", iterator);
-		expectCountryNkPk("UK", "UK", iterator);
-		assertFalse(iterator.hasNext());
+    Database database = importDatabase(connection);
+    IdentityProvider identityProvider = createIdentities(database);
+    IdentityModel countryIdentity = identityProvider.getIdentity("country");
 
-		dropTables(connection);
-	}
+    MemKeyMapper mapper = new MemKeyMapper(connection, "db", null, null, identityProvider, database);
+    HeavyweightIterator<Object[]> iterator = countryIdentity.createNkPkIterator(connection, "db", mapper, database);
+    expectCountryNkPk("DE", "DE", iterator);
+    expectCountryNkPk("FR", "FR", iterator);
+    expectCountryNkPk("UK", "UK", iterator);
+    assertFalse(iterator.hasNext());
+
+    dropTables(connection);
+  }
 
 }

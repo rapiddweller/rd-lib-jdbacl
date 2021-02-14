@@ -26,19 +26,20 @@ import com.rapiddweller.jdbacl.DatabaseDialect;
 /**
  * {@link DatabaseDialect} for versions since 2.5.<br/><br/>
  * Created: 20.10.2011 19:47:51
- * @since 0.6.12
+ *
  * @author Volker Bergmann
+ * @since 0.6.12
  */
 public class Firebird2_5Dialect extends FirebirdDialect {
 
-	@Override
-	public boolean supportsRegex() {
-		return true;
-	}
-	
-	@Override
-	public String regexQuery(String expression, boolean not, String regex) {
-		return expression + (not ? " NOT " : " ") + "SIMILAR TO '" + regex + "'";
-	}
-	
+  @Override
+  public boolean supportsRegex() {
+    return true;
+  }
+
+  @Override
+  public String regexQuery(String expression, boolean not, String regex) {
+    return expression + (not ? " NOT " : " ") + "SIMILAR TO '" + regex + "'";
+  }
+
 }

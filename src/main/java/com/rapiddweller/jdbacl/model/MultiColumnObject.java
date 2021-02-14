@@ -24,9 +24,15 @@ package com.rapiddweller.jdbacl.model;
 /**
  * Interface for database objects that have multiple columns..<br/><br/>
  * Created: 25.05.2011 05:36:05
- * @since 0.6.8
+ *
  * @author Volker Bergmann
+ * @since 0.6.8
  */
 public interface MultiColumnObject extends DBObject {
-	String[] getColumnNames();
+  /**
+   * Get column names string [ ].
+   *
+   * @return the string [ ]
+   */
+  String[] getColumnNames();
 }

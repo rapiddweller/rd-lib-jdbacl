@@ -30,107 +30,189 @@ import java.util.List;
 /**
  * Represents a database packet which can hold {@link DBProcedure}s.<br/><br/>
  * Created: 07.11.2011 15:42:47
- * @since 0.7.0
+ *
  * @author Volker Bergmann
+ * @since 0.7.0
  */
 public class DBPackage extends AbstractCompositeDBObject<DBProcedure> {
-	
-	private static final long serialVersionUID = 5001335810310474145L;
-	
-	private @Nullable String subObjectName;
-	private String objectId;
-	private @Nullable String dataObjectId;
-	private String objectType;
-	private String status;
-	
-	private OrderedNameMap<DBProcedure> procedures;
 
-	public DBPackage(String name, DBSchema owner) {
-		super(name, "package", owner);
-		this.procedures = OrderedNameMap.createCaseIgnorantMap();
-		if (owner != null)
-			owner.addPackage(this);
-	}
-	
-	public DBSchema getSchema() {
-		return (DBSchema) getOwner();
-	}
-	
-	public void setSchema(DBSchema schema) {
-		setOwner(schema);
-	}
-	
-	public String getSubObjectName() {
-		return subObjectName;
-	}
+  private static final long serialVersionUID = 5001335810310474145L;
 
-	public void setSubObjectName(String subObjectName) {
-		this.subObjectName = subObjectName;
-	}
+  private @Nullable
+  String subObjectName;
+  private String objectId;
+  private @Nullable
+  String dataObjectId;
+  private String objectType;
+  private String status;
 
-	public String getObjectId() {
-		return objectId;
-	}
+  private OrderedNameMap<DBProcedure> procedures;
 
-	public void setObjectId(String objectId) {
-		this.objectId = objectId;
-	}
+  /**
+   * Instantiates a new Db package.
+   *
+   * @param name  the name
+   * @param owner the owner
+   */
+  public DBPackage(String name, DBSchema owner) {
+    super(name, "package", owner);
+    this.procedures = OrderedNameMap.createCaseIgnorantMap();
+    if (owner != null) {
+      owner.addPackage(this);
+    }
+  }
 
-	public String getDataObjectId() {
-		return dataObjectId;
-	}
+  /**
+   * Gets schema.
+   *
+   * @return the schema
+   */
+  public DBSchema getSchema() {
+    return (DBSchema) getOwner();
+  }
 
-	public void setDataObjectId(String dataObjectId) {
-		this.dataObjectId = dataObjectId;
-	}
+  /**
+   * Sets schema.
+   *
+   * @param schema the schema
+   */
+  public void setSchema(DBSchema schema) {
+    setOwner(schema);
+  }
 
-	@Override
-	public String getObjectType() {
-		return objectType;
-	}
+  /**
+   * Gets sub object name.
+   *
+   * @return the sub object name
+   */
+  public String getSubObjectName() {
+    return subObjectName;
+  }
 
-	public void setObjectType(String objectType) {
-		this.objectType = objectType;
-	}
+  /**
+   * Sets sub object name.
+   *
+   * @param subObjectName the sub object name
+   */
+  public void setSubObjectName(String subObjectName) {
+    this.subObjectName = subObjectName;
+  }
 
-	public String getStatus() {
-		return status;
-	}
+  /**
+   * Gets object id.
+   *
+   * @return the object id
+   */
+  public String getObjectId() {
+    return objectId;
+  }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+  /**
+   * Sets object id.
+   *
+   * @param objectId the object id
+   */
+  public void setObjectId(String objectId) {
+    this.objectId = objectId;
+  }
 
-	public List<DBProcedure> getProcedures() {
-		return procedures.values();
-	}
+  /**
+   * Gets data object id.
+   *
+   * @return the data object id
+   */
+  public String getDataObjectId() {
+    return dataObjectId;
+  }
 
-	public void setProcedures(OrderedNameMap<DBProcedure> procedures) {
-		this.procedures = procedures;
-	}
+  /**
+   * Sets data object id.
+   *
+   * @param dataObjectId the data object id
+   */
+  public void setDataObjectId(String dataObjectId) {
+    this.dataObjectId = dataObjectId;
+  }
 
-	@Override
-	public List<DBProcedure> getComponents() {
-		return procedures.values();
-	}
+  @Override
+  public String getObjectType() {
+    return objectType;
+  }
 
-	public void addProcedure(DBProcedure procedure) {
-		this.procedures.put(procedure.getName(), procedure);
-		procedure.setOwner(this);
-	}
+  /**
+   * Sets object type.
+   *
+   * @param objectType the object type
+   */
+  public void setObjectType(String objectType) {
+    this.objectType = objectType;
+  }
 
-	@Override
-	public boolean isIdentical(DBObject other) {
-		if (this == other)
-			return true;
-		if (other == null || other.getClass() != this.getClass())
-			return false;
-		DBPackage that = (DBPackage) other;
-		return NullSafeComparator.equals(this.subObjectName, that.subObjectName)
-			&& this.objectId.equals(that.objectId)
-			&& NullSafeComparator.equals(this.dataObjectId, that.dataObjectId)
-			&& this.objectType.equals(that.objectType)
-			&& this.status.equals(that.status);
-	}
-	
+  /**
+   * Gets status.
+   *
+   * @return the status
+   */
+  public String getStatus() {
+    return status;
+  }
+
+  /**
+   * Sets status.
+   *
+   * @param status the status
+   */
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  /**
+   * Gets procedures.
+   *
+   * @return the procedures
+   */
+  public List<DBProcedure> getProcedures() {
+    return procedures.values();
+  }
+
+  /**
+   * Sets procedures.
+   *
+   * @param procedures the procedures
+   */
+  public void setProcedures(OrderedNameMap<DBProcedure> procedures) {
+    this.procedures = procedures;
+  }
+
+  @Override
+  public List<DBProcedure> getComponents() {
+    return procedures.values();
+  }
+
+  /**
+   * Add procedure.
+   *
+   * @param procedure the procedure
+   */
+  public void addProcedure(DBProcedure procedure) {
+    this.procedures.put(procedure.getName(), procedure);
+    procedure.setOwner(this);
+  }
+
+  @Override
+  public boolean isIdentical(DBObject other) {
+    if (this == other) {
+      return true;
+    }
+    if (other == null || other.getClass() != this.getClass()) {
+      return false;
+    }
+    DBPackage that = (DBPackage) other;
+    return NullSafeComparator.equals(this.subObjectName, that.subObjectName)
+        && this.objectId.equals(that.objectId)
+        && NullSafeComparator.equals(this.dataObjectId, that.dataObjectId)
+        && this.objectType.equals(that.objectType)
+        && this.status.equals(that.status);
+  }
+
 }

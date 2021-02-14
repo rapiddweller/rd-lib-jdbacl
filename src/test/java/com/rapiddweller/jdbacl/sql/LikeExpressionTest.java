@@ -38,84 +38,106 @@ import static org.junit.Assert.assertEquals;
  */
 public class LikeExpressionTest {
 
-    @Test
-    public void testValid() {
-        check("Alpha", "Al%", true);
-        check("Alpha", "%pha", true);
-        check("Alpha", "%", true);
-        check("Alpha", "Alpha", true);
-    }
+  /**
+   * Test valid.
+   */
+  @Test
+  public void testValid() {
+    check("Alpha", "Al%", true);
+    check("Alpha", "%pha", true);
+    check("Alpha", "%", true);
+    check("Alpha", "Alpha", true);
+  }
 
-    @Test
-    public void testInvalid() {
-        check("Alpha", "Be%", false);
-        check("Alpha", "%ta", false);
-        check("Alpha", "Beta", false);
-    }
+  /**
+   * Test invalid.
+   */
+  @Test
+  public void testInvalid() {
+    check("Alpha", "Be%", false);
+    check("Alpha", "%ta", false);
+    check("Alpha", "Beta", false);
+  }
 
-    @Test
-    public void testToString() {
-        BitwiseOrExpression term1 = new BitwiseOrExpression(null, null);
-        BitwiseOrExpression term11 = new BitwiseOrExpression(term1, new BitwiseOrExpression(null, null));
-        BitwiseOrExpression term12 = new BitwiseOrExpression(null, null);
-        BitwiseOrExpression value = new BitwiseOrExpression(term11,
-                new BitwiseOrExpression(term12, new BitwiseOrExpression(null, null)));
-        BitwiseOrExpression term13 = new BitwiseOrExpression(null, null);
-        BitwiseOrExpression term14 = new BitwiseOrExpression(term13, new BitwiseOrExpression(null, null));
-        BitwiseOrExpression term15 = new BitwiseOrExpression(null, null);
-        assertEquals(
-                "((((null | null) | (null | null)) | ((null | null) | (null | null))) LIKE '(((null | null) | (null |"
-                        + " null)) | ((null | null) | (null | null)))')",
-                (new LikeExpression(value,
-                        new BitwiseOrExpression(term14, new BitwiseOrExpression(term15, new BitwiseOrExpression(null, null)))))
-                        .toString());
-    }
+  /**
+   * Test to string.
+   */
+  @Test
+  public void testToString() {
+    BitwiseOrExpression term1 = new BitwiseOrExpression(null, null);
+    BitwiseOrExpression term11 = new BitwiseOrExpression(term1, new BitwiseOrExpression(null, null));
+    BitwiseOrExpression term12 = new BitwiseOrExpression(null, null);
+    BitwiseOrExpression value = new BitwiseOrExpression(term11,
+        new BitwiseOrExpression(term12, new BitwiseOrExpression(null, null)));
+    BitwiseOrExpression term13 = new BitwiseOrExpression(null, null);
+    BitwiseOrExpression term14 = new BitwiseOrExpression(term13, new BitwiseOrExpression(null, null));
+    BitwiseOrExpression term15 = new BitwiseOrExpression(null, null);
+    assertEquals(
+        "((((null | null) | (null | null)) | ((null | null) | (null | null))) LIKE '(((null | null) | (null |"
+            + " null)) | ((null | null) | (null | null)))')",
+        (new LikeExpression(value,
+            new BitwiseOrExpression(term14, new BitwiseOrExpression(term15, new BitwiseOrExpression(null, null)))))
+            .toString());
+  }
 
-    @Test
-    public void testToString2() {
-        DivisionExpression divisionExpression = new DivisionExpression();
-        DivisionExpression divisionExpression1 = new DivisionExpression();
-        BitwiseOrExpression term1 = new BitwiseOrExpression(
-                new FunctionInvocation("Name", divisionExpression, divisionExpression1, new DivisionExpression()), null);
-        BitwiseOrExpression term11 = new BitwiseOrExpression(term1, new BitwiseOrExpression(null, null));
-        BitwiseOrExpression term12 = new BitwiseOrExpression(null, null);
-        BitwiseOrExpression value = new BitwiseOrExpression(term11,
-                new BitwiseOrExpression(term12, new BitwiseOrExpression(null, null)));
-        BitwiseOrExpression term13 = new BitwiseOrExpression(null, null);
-        BitwiseOrExpression term14 = new BitwiseOrExpression(term13, new BitwiseOrExpression(null, null));
-        BitwiseOrExpression term15 = new BitwiseOrExpression(null, null);
-        assertEquals(
-                "(((((() null () null ()) | null) | (null | null)) | ((null | null) | (null | null))) LIKE '(((null |"
-                        + " null) | (null | null)) | ((null | null) | (null | null)))')",
-                (new LikeExpression(value,
-                        new BitwiseOrExpression(term14, new BitwiseOrExpression(term15, new BitwiseOrExpression(null, null)))))
-                        .toString());
-    }
+  /**
+   * Test to string 2.
+   */
+  @Test
+  public void testToString2() {
+    DivisionExpression divisionExpression = new DivisionExpression();
+    DivisionExpression divisionExpression1 = new DivisionExpression();
+    BitwiseOrExpression term1 = new BitwiseOrExpression(
+        new FunctionInvocation("Name", divisionExpression, divisionExpression1, new DivisionExpression()), null);
+    BitwiseOrExpression term11 = new BitwiseOrExpression(term1, new BitwiseOrExpression(null, null));
+    BitwiseOrExpression term12 = new BitwiseOrExpression(null, null);
+    BitwiseOrExpression value = new BitwiseOrExpression(term11,
+        new BitwiseOrExpression(term12, new BitwiseOrExpression(null, null)));
+    BitwiseOrExpression term13 = new BitwiseOrExpression(null, null);
+    BitwiseOrExpression term14 = new BitwiseOrExpression(term13, new BitwiseOrExpression(null, null));
+    BitwiseOrExpression term15 = new BitwiseOrExpression(null, null);
+    assertEquals(
+        "(((((() null () null ()) | null) | (null | null)) | ((null | null) | (null | null))) LIKE '(((null |"
+            + " null) | (null | null)) | ((null | null) | (null | null)))')",
+        (new LikeExpression(value,
+            new BitwiseOrExpression(term14, new BitwiseOrExpression(term15, new BitwiseOrExpression(null, null)))))
+            .toString());
+  }
 
-    @Test
-    public void testToString3() {
-        NullExpression nullExpression = new NullExpression();
-        DivisionExpression divisionExpression = new DivisionExpression();
-        BitwiseOrExpression term1 = new BitwiseOrExpression(
-                new FunctionInvocation("Name", nullExpression, divisionExpression, new DivisionExpression()), null);
-        BitwiseOrExpression term11 = new BitwiseOrExpression(term1, new BitwiseOrExpression(null, null));
-        BitwiseOrExpression term12 = new BitwiseOrExpression(null, null);
-        BitwiseOrExpression value = new BitwiseOrExpression(term11,
-                new BitwiseOrExpression(term12, new BitwiseOrExpression(null, null)));
-        BitwiseOrExpression term13 = new BitwiseOrExpression(null, null);
-        BitwiseOrExpression term14 = new BitwiseOrExpression(term13, new BitwiseOrExpression(null, null));
-        BitwiseOrExpression term15 = new BitwiseOrExpression(null, null);
-        assertEquals(
-                "(((((null null () null ()) | null) | (null | null)) | ((null | null) | (null | null))) LIKE '(((null"
-                        + " | null) | (null | null)) | ((null | null) | (null | null)))')",
-                (new LikeExpression(value,
-                        new BitwiseOrExpression(term14, new BitwiseOrExpression(term15, new BitwiseOrExpression(null, null)))))
-                        .toString());
-    }
+  /**
+   * Test to string 3.
+   */
+  @Test
+  public void testToString3() {
+    NullExpression nullExpression = new NullExpression();
+    DivisionExpression divisionExpression = new DivisionExpression();
+    BitwiseOrExpression term1 = new BitwiseOrExpression(
+        new FunctionInvocation("Name", nullExpression, divisionExpression, new DivisionExpression()), null);
+    BitwiseOrExpression term11 = new BitwiseOrExpression(term1, new BitwiseOrExpression(null, null));
+    BitwiseOrExpression term12 = new BitwiseOrExpression(null, null);
+    BitwiseOrExpression value = new BitwiseOrExpression(term11,
+        new BitwiseOrExpression(term12, new BitwiseOrExpression(null, null)));
+    BitwiseOrExpression term13 = new BitwiseOrExpression(null, null);
+    BitwiseOrExpression term14 = new BitwiseOrExpression(term13, new BitwiseOrExpression(null, null));
+    BitwiseOrExpression term15 = new BitwiseOrExpression(null, null);
+    assertEquals(
+        "(((((null null () null ()) | null) | (null | null)) | ((null | null) | (null | null))) LIKE '(((null"
+            + " | null) | (null | null)) | ((null | null) | (null | null)))')",
+        (new LikeExpression(value,
+            new BitwiseOrExpression(term14, new BitwiseOrExpression(term15, new BitwiseOrExpression(null, null)))))
+            .toString());
+  }
 
-    public void check(String value, String pattern, boolean expected) {
-        LikeExpression expression = new LikeExpression(new ConstantExpression<>(value), new ConstantExpression<>(pattern));
-        assertEquals(expected, expression.evaluate(null));
-    }
+  /**
+   * Check.
+   *
+   * @param value    the value
+   * @param pattern  the pattern
+   * @param expected the expected
+   */
+  public void check(String value, String pattern, boolean expected) {
+    LikeExpression expression = new LikeExpression(new ConstantExpression<>(value), new ConstantExpression<>(pattern));
+    assertEquals(expected, expression.evaluate(null));
+  }
 
 }

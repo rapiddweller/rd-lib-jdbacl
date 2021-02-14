@@ -35,76 +35,113 @@ import java.util.Set;
 /**
  * Represents a database check constraint.<br/><br/>
  * Created: 01.06.2011 12:40:30
- * @since 0.6.8
+ *
  * @author Volker Bergmann
+ * @since 0.6.8
  */
 public class DBCheckConstraint extends DBConstraint {
-	
-	private static final long serialVersionUID = 3766067048212751458L;
-	
-	private final String tableName;
-	private final String conditionText;
-	private final Expression<?> condition;
-	private final String[] columnNames;
 
-	public DBCheckConstraint(String name, boolean nameDeterministic, DBTable owner, String conditionText) {
-		this(name, nameDeterministic, owner.getName(), conditionText);
-		owner.addCheckConstraint(this);
-	}
-	
-	public DBCheckConstraint(String name, boolean nameDeterministic, String tableName, String conditionText) {
-		super(name, nameDeterministic, "check constraint", null);
-		this.tableName = tableName;
-		this.conditionText = conditionText;
-		this.condition = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(conditionText));
-		this.columnNames = getColumnNames(condition);
-	}
+  private static final long serialVersionUID = 3766067048212751458L;
 
-	public String getTableName() {
-		return tableName;
-	}
-	
-	@Override
-	public boolean isIdentical(DBObject other) {
-		if (this == other)
-			return true;
-		if (other == null || !(other instanceof DBCheckConstraint))
-			return false;
-		DBCheckConstraint that = (DBCheckConstraint) other;
-		return this.name.equals(that.getName()) 
-			&& this.conditionText.equals(that.getConditionText());
-	}
+  private final String tableName;
+  private final String conditionText;
+  private final Expression<?> condition;
+  private final String[] columnNames;
 
-	public boolean isEquivalent(DBCheckConstraint that) {
-		return this.tableName.equals(that.tableName) 
-			&& StringUtil.normalizeSpace(this.conditionText).equals(StringUtil.normalizeSpace(that.getConditionText()));
-	}
+  /**
+   * Instantiates a new Db check constraint.
+   *
+   * @param name              the name
+   * @param nameDeterministic the name deterministic
+   * @param owner             the owner
+   * @param conditionText     the condition text
+   */
+  public DBCheckConstraint(String name, boolean nameDeterministic, DBTable owner, String conditionText) {
+    this(name, nameDeterministic, owner.getName(), conditionText);
+    owner.addCheckConstraint(this);
+  }
 
-	public String getConditionText() {
-		return conditionText;
-	}
+  /**
+   * Instantiates a new Db check constraint.
+   *
+   * @param name              the name
+   * @param nameDeterministic the name deterministic
+   * @param tableName         the table name
+   * @param conditionText     the condition text
+   */
+  public DBCheckConstraint(String name, boolean nameDeterministic, String tableName, String conditionText) {
+    super(name, nameDeterministic, "check constraint", null);
+    this.tableName = tableName;
+    this.conditionText = conditionText;
+    this.condition = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(conditionText));
+    this.columnNames = getColumnNames(condition);
+  }
 
-	@Override
-	public String[] getColumnNames() {
-		return columnNames;
-	}
+  /**
+   * Gets table name.
+   *
+   * @return the table name
+   */
+  public String getTableName() {
+    return tableName;
+  }
 
-	@Override
-	public String toString() {
-		return (name != null ? "CONSTRAINT " + name : "") + "CHECK " + conditionText;
-	}
-	
-	private String[] getColumnNames(Expression<?> condition) {
-		return CollectionUtil.toArray(scanForColumns(condition, new HashSet<>()), String.class);
-	}
+  @Override
+  public boolean isIdentical(DBObject other) {
+    if (this == other) {
+      return true;
+    }
+    if (other == null || !(other instanceof DBCheckConstraint)) {
+      return false;
+    }
+    DBCheckConstraint that = (DBCheckConstraint) other;
+    return this.name.equals(that.getName())
+        && this.conditionText.equals(that.getConditionText());
+  }
 
-	private Set<String> scanForColumns(Expression<?> expression, Set<String> result) {
-		if (expression instanceof ColumnExpression)
-			result.add(((ColumnExpression) expression).getColumnName());
-		else if (expression instanceof WrapperExpression)
-			for (Expression<?> sourceExpression : ((WrapperExpression<?>) expression).getSourceExpressions())
-				scanForColumns(sourceExpression, result);
-		return result;
-	}
+  /**
+   * Is equivalent boolean.
+   *
+   * @param that the that
+   * @return the boolean
+   */
+  public boolean isEquivalent(DBCheckConstraint that) {
+    return this.tableName.equals(that.tableName)
+        && StringUtil.normalizeSpace(this.conditionText).equals(StringUtil.normalizeSpace(that.getConditionText()));
+  }
+
+  /**
+   * Gets condition text.
+   *
+   * @return the condition text
+   */
+  public String getConditionText() {
+    return conditionText;
+  }
+
+  @Override
+  public String[] getColumnNames() {
+    return columnNames;
+  }
+
+  @Override
+  public String toString() {
+    return (name != null ? "CONSTRAINT " + name : "") + "CHECK " + conditionText;
+  }
+
+  private String[] getColumnNames(Expression<?> condition) {
+    return CollectionUtil.toArray(scanForColumns(condition, new HashSet<>()), String.class);
+  }
+
+  private Set<String> scanForColumns(Expression<?> expression, Set<String> result) {
+    if (expression instanceof ColumnExpression) {
+      result.add(((ColumnExpression) expression).getColumnName());
+    } else if (expression instanceof WrapperExpression) {
+      for (Expression<?> sourceExpression : ((WrapperExpression<?>) expression).getSourceExpressions()) {
+        scanForColumns(sourceExpression, result);
+      }
+    }
+    return result;
+  }
 
 }

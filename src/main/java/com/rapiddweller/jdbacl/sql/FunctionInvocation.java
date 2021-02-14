@@ -28,26 +28,41 @@ import com.rapiddweller.script.expression.CompositeExpression;
 /**
  * Represents the invocation of a function.<br/><br/>
  * Created: 08.06.2011 11:58:37
- * @since 0.1
+ *
  * @author Volker Bergmann
+ * @since 0.1
  */
-public class FunctionInvocation extends CompositeExpression<Object,Object> {
+public class FunctionInvocation extends CompositeExpression<Object, Object> {
 
-	final String name;
-	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public FunctionInvocation(String name, Expression... arguments) {
-		super(arguments);
-		this.name = name;
-	}
+  /**
+   * The Name.
+   */
+  final String name;
 
-	public String getFunctionName() {
-		return name;
-	}
+  /**
+   * Instantiates a new Function invocation.
+   *
+   * @param name      the name
+   * @param arguments the arguments
+   */
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public FunctionInvocation(String name, Expression... arguments) {
+    super(arguments);
+    this.name = name;
+  }
 
-	@Override
-	public Object evaluate(Context context) {
-		return null; // the class is just a space holder
-	}
-	
+  /**
+   * Gets function name.
+   *
+   * @return the function name
+   */
+  public String getFunctionName() {
+    return name;
+  }
+
+  @Override
+  public Object evaluate(Context context) {
+    return null; // the class is just a space holder
+  }
+
 }

@@ -29,43 +29,63 @@ import org.antlr.runtime.CharStream;
 import java.io.IOException;
 
 /**
- * Helper class which provides the content of a file as {@link ANTLRInputStream} 
+ * Helper class which provides the content of a file as {@link ANTLRInputStream}
  * while transforming token characters to upper case.<br/><br/>
  * Created: 10.08.2010 15:44:57
- * @since 0.1
+ *
  * @author Volker Bergmann
+ * @since 0.1
  */
 public class ANTLRNoCaseFileStream extends ANTLRFileStream implements TextHolder {
-	
-	String fileName;
-	
-    public ANTLRNoCaseFileStream(String fileName) throws IOException {
-        this(fileName, null);
-    }
 
-    public ANTLRNoCaseFileStream(String fileName, String encoding) throws IOException {
-        super(fileName, encoding);
-        this.fileName = fileName;
-    }
+  /**
+   * The File name.
+   */
+  String fileName;
 
-    @Override
-    public int LA(int i) {
-        if (i == 0)
-            return 0; // undefined
-        if (i < 0)
-            i++; // e.g., translate LA(-1) to use offset 0
-        if ((p + i - 1) >= n)
-            return CharStream.EOF;
-        return Character.toUpperCase(data[p + i - 1]);
-    }
+  /**
+   * Instantiates a new Antlr no case file stream.
+   *
+   * @param fileName the file name
+   * @throws IOException the io exception
+   */
+  public ANTLRNoCaseFileStream(String fileName) throws IOException {
+    this(fileName, null);
+  }
 
-    @Override
-	public String getText() {
-    	try {
-			return IOUtil.getContentOfURI(fileName);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+  /**
+   * Instantiates a new Antlr no case file stream.
+   *
+   * @param fileName the file name
+   * @param encoding the encoding
+   * @throws IOException the io exception
+   */
+  public ANTLRNoCaseFileStream(String fileName, String encoding) throws IOException {
+    super(fileName, encoding);
+    this.fileName = fileName;
+  }
+
+  @Override
+  public int LA(int i) {
+    if (i == 0) {
+      return 0; // undefined
     }
-    
+    if (i < 0) {
+      i++; // e.g., translate LA(-1) to use offset 0
+    }
+    if ((p + i - 1) >= n) {
+      return CharStream.EOF;
+    }
+    return Character.toUpperCase(data[p + i - 1]);
+  }
+
+  @Override
+  public String getText() {
+    try {
+      return IOUtil.getContentOfURI(fileName);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
 }

@@ -24,32 +24,84 @@ package com.rapiddweller.jdbacl.identity;
 import java.sql.Connection;
 
 /**
- * Parent for classes that map between primary key and natural keys 
+ * Parent for classes that map between primary key and natural keys
  * of table rows in different tables in one or more source databases and one target database.<br/><br/>
  * Created: 23.08.2010 16:48:21
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public abstract class KeyMapper {
-	
-	final IdentityProvider identityProvider;
-	
-	public KeyMapper(IdentityProvider identityProvider) {
-		this.identityProvider = identityProvider;
-    }
 
-	public IdentityProvider getIdentityProvider() {
-		return identityProvider;
-	}
-	
-	public abstract void registerSource(String dbId, Connection connection);
-	
-	public abstract void store(String sourceDbId, IdentityModel identity, String naturalKey, Object sourcePK, Object targetPK);
-	
-	public abstract Object getTargetPK(String sourceDbId, IdentityModel identity, Object sourcePK);
-	
-	public abstract Object getTargetPK(IdentityModel identity, String naturalKey);
-	
-	public abstract String getNaturalKey(String dbId, IdentityModel identity, Object sourcePK);
+  /**
+   * The Identity provider.
+   */
+  final IdentityProvider identityProvider;
+
+  /**
+   * Instantiates a new Key mapper.
+   *
+   * @param identityProvider the identity provider
+   */
+  public KeyMapper(IdentityProvider identityProvider) {
+    this.identityProvider = identityProvider;
+  }
+
+  /**
+   * Gets identity provider.
+   *
+   * @return the identity provider
+   */
+  public IdentityProvider getIdentityProvider() {
+    return identityProvider;
+  }
+
+  /**
+   * Register source.
+   *
+   * @param dbId       the db id
+   * @param connection the connection
+   */
+  public abstract void registerSource(String dbId, Connection connection);
+
+  /**
+   * Store.
+   *
+   * @param sourceDbId the source db id
+   * @param identity   the identity
+   * @param naturalKey the natural key
+   * @param sourcePK   the source pk
+   * @param targetPK   the target pk
+   */
+  public abstract void store(String sourceDbId, IdentityModel identity, String naturalKey, Object sourcePK, Object targetPK);
+
+  /**
+   * Gets target pk.
+   *
+   * @param sourceDbId the source db id
+   * @param identity   the identity
+   * @param sourcePK   the source pk
+   * @return the target pk
+   */
+  public abstract Object getTargetPK(String sourceDbId, IdentityModel identity, Object sourcePK);
+
+  /**
+   * Gets target pk.
+   *
+   * @param identity   the identity
+   * @param naturalKey the natural key
+   * @return the target pk
+   */
+  public abstract Object getTargetPK(IdentityModel identity, String naturalKey);
+
+  /**
+   * Gets natural key.
+   *
+   * @param dbId     the db id
+   * @param identity the identity
+   * @param sourcePK the source pk
+   * @return the natural key
+   */
+  public abstract String getNaturalKey(String dbId, IdentityModel identity, Object sourcePK);
 
 }

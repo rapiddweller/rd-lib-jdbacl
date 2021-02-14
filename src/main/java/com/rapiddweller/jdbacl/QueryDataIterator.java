@@ -32,29 +32,42 @@ import java.sql.Statement;
 /**
  * {@link DataIterator} which provides the results of a SQL query.<br/><br/>
  * Created: 03.08.2011 19:25:54
- * @since 0.6.10
+ *
  * @author Volker Bergmann
+ * @since 0.6.10
  */
 public class QueryDataIterator extends DataIteratorProxy<ResultSet> {
 
-    public QueryDataIterator(String query, Connection connection, int fetchSize) {
-	    super(createSource(query, connection, fetchSize));
-    }
+  /**
+   * Instantiates a new Query data iterator.
+   *
+   * @param query      the query
+   * @param connection the connection
+   * @param fetchSize  the fetch size
+   */
+  public QueryDataIterator(String query, Connection connection, int fetchSize) {
+    super(createSource(query, connection, fetchSize));
+  }
 
-	private static DataIterator<ResultSet> createSource(String query, Connection connection, int fetchSize) {
-        try {
-            Statement statement = connection.createStatement(
-            		ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-            statement.setFetchSize(fetchSize);
-            ResultSet resultSet = statement.executeQuery(query);
-            return new ResultSetDataIterator(resultSet, query);
-        } catch (SQLException e) {
-            throw new RuntimeException("Error in query: " + query, e);
-        }
+  private static DataIterator<ResultSet> createSource(String query, Connection connection, int fetchSize) {
+    try {
+      Statement statement = connection.createStatement(
+          ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+      statement.setFetchSize(fetchSize);
+      ResultSet resultSet = statement.executeQuery(query);
+      return new ResultSetDataIterator(resultSet, query);
+    } catch (SQLException e) {
+      throw new RuntimeException("Error in query: " + query, e);
     }
+  }
 
-	public String[] getColumnLabels() {
-	    return ((ResultSetIterator) source).getColumnLabels();
-    }
+  /**
+   * Get column labels string [ ].
+   *
+   * @return the string [ ]
+   */
+  public String[] getColumnLabels() {
+    return ((ResultSetIterator) source).getColumnLabels();
+  }
 
 }

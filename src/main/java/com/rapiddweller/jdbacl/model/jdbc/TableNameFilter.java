@@ -28,24 +28,32 @@ import java.util.regex.Pattern;
 /**
  * Filters.<br/><br/>
  * Created: 29.01.2012 22:08:43
- * @since 0.8.0
+ *
  * @author Volker Bergmann
+ * @since 0.8.0
  */
 public class TableNameFilter implements Filter<String> {
-	
-	private final Pattern tableInclusionPattern;
-	private final Pattern tableExclusionPattern;
 
-	public TableNameFilter(String tableInclusionPattern, String tableExclusionPattern) {
-		this.tableInclusionPattern = Pattern.compile(tableInclusionPattern != null ? tableInclusionPattern : ".*");
-		this.tableExclusionPattern = (tableExclusionPattern != null ? Pattern.compile(tableExclusionPattern) : null);
-	}
+  private final Pattern tableInclusionPattern;
+  private final Pattern tableExclusionPattern;
 
-	@Override
-	public boolean accept(String tableName) {
-		if (tableName.contains("$") || (tableExclusionPattern != null && tableExclusionPattern.matcher(tableName).matches()))
-			return false;
-	    return (tableInclusionPattern == null || tableInclusionPattern.matcher(tableName).matches());
+  /**
+   * Instantiates a new Table name filter.
+   *
+   * @param tableInclusionPattern the table inclusion pattern
+   * @param tableExclusionPattern the table exclusion pattern
+   */
+  public TableNameFilter(String tableInclusionPattern, String tableExclusionPattern) {
+    this.tableInclusionPattern = Pattern.compile(tableInclusionPattern != null ? tableInclusionPattern : ".*");
+    this.tableExclusionPattern = (tableExclusionPattern != null ? Pattern.compile(tableExclusionPattern) : null);
+  }
+
+  @Override
+  public boolean accept(String tableName) {
+    if (tableName.contains("$") || (tableExclusionPattern != null && tableExclusionPattern.matcher(tableName).matches())) {
+      return false;
     }
-	
+    return (tableInclusionPattern == null || tableInclusionPattern.matcher(tableName).matches());
+  }
+
 }

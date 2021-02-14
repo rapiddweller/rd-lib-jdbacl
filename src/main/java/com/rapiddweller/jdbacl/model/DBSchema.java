@@ -50,15 +50,26 @@ public class DBSchema extends AbstractCompositeDBObject<DBObject> implements Tab
 
   // constructors ----------------------------------------------------------------------------------------------------
 
+  /**
+   * Instantiates a new Db schema.
+   *
+   * @param name the name
+   */
   public DBSchema(String name) {
     this(name, null);
   }
 
+  /**
+   * Instantiates a new Db schema.
+   *
+   * @param name    the name
+   * @param catalog the catalog
+   */
   public DBSchema(String name, DBCatalog catalog) {
     super(name, "schema");
-	  if (catalog != null) {
-		  catalog.addSchema(this);
-	  }
+    if (catalog != null) {
+      catalog.addSchema(this);
+    }
     this.components = new ArrayList<>();
     this.tables = OrderedNameMap.createCaseIgnorantMap();
     this.sequences = OrderedNameMap.createCaseIgnorantMap();
@@ -73,16 +84,31 @@ public class DBSchema extends AbstractCompositeDBObject<DBObject> implements Tab
     return name;
   }
 
+  /**
+   * Gets database.
+   *
+   * @return the database
+   */
   public Database getDatabase() {
     return getCatalog().getDatabase();
   }
 
   // catalog operations ----------------------------------------------------------------------------------------------
 
+  /**
+   * Gets catalog.
+   *
+   * @return the catalog
+   */
   public DBCatalog getCatalog() {
     return (DBCatalog) owner;
   }
 
+  /**
+   * Sets catalog.
+   *
+   * @param catalog the catalog
+   */
   public void setCatalog(DBCatalog catalog) {
     this.owner = catalog;
   }
@@ -111,11 +137,21 @@ public class DBSchema extends AbstractCompositeDBObject<DBObject> implements Tab
     return tables.get(tableName);
   }
 
+  /**
+   * Add table.
+   *
+   * @param table the table
+   */
   public void addTable(DBTable table) {
     tables.put(table.getName(), table);
     components.add(table);
   }
 
+  /**
+   * Remove table.
+   *
+   * @param table the table
+   */
   public void removeTable(DBTable table) {
     tables.remove(table.getName());
     components.remove(table);
@@ -129,11 +165,21 @@ public class DBSchema extends AbstractCompositeDBObject<DBObject> implements Tab
     return sequences.values();
   }
 
+  /**
+   * Add sequence.
+   *
+   * @param sequence the sequence
+   */
   public void addSequence(DBSequence sequence) {
     getDatabase().haveSequencesImported();
     receiveSequence(sequence);
   }
 
+  /**
+   * Receive sequence.
+   *
+   * @param sequence the sequence
+   */
   public void receiveSequence(DBSequence sequence) {
     this.sequences.put(sequence.getName(), sequence);
     components.add(sequence);
@@ -141,16 +187,31 @@ public class DBSchema extends AbstractCompositeDBObject<DBObject> implements Tab
 
   // trigger operations ----------------------------------------------------------------------------------------------
 
+  /**
+   * Gets triggers.
+   *
+   * @return the triggers
+   */
   public List<DBTrigger> getTriggers() {
     getDatabase().haveTriggersImported();
     return triggers.values();
   }
 
+  /**
+   * Add trigger.
+   *
+   * @param trigger the trigger
+   */
   public void addTrigger(DBTrigger trigger) {
     getDatabase().haveTriggersImported();
     receiveTrigger(trigger);
   }
 
+  /**
+   * Receive trigger.
+   *
+   * @param trigger the trigger
+   */
   public void receiveTrigger(DBTrigger trigger) {
     this.triggers.put(trigger.getName(), trigger);
     components.add(trigger);
@@ -158,16 +219,31 @@ public class DBSchema extends AbstractCompositeDBObject<DBObject> implements Tab
 
   // package operations ----------------------------------------------------------------------------------------------
 
+  /**
+   * Gets packages.
+   *
+   * @return the packages
+   */
   public List<DBPackage> getPackages() {
     getDatabase().havePackagesImported();
     return packages.values();
   }
 
+  /**
+   * Add package.
+   *
+   * @param pkg the pkg
+   */
   public void addPackage(DBPackage pkg) {
     getDatabase().havePackagesImported();
     receivePackage(pkg);
   }
 
+  /**
+   * Receive package.
+   *
+   * @param pkg the pkg
+   */
   public void receivePackage(DBPackage pkg) {
     packages.put(pkg.getName(), pkg);
     components.add(pkg);

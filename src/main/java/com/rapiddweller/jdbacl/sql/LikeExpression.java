@@ -31,26 +31,33 @@ import java.util.regex.Pattern;
 /**
  * {@link Expression} which evaluates a SQL 'LIKE' operation.<br/><br/>
  * Created: 05.06.2012 11:45:34
- * @since 0.8.3
+ *
  * @author Volker Bergmann
+ * @since 0.8.3
  */
 public class LikeExpression extends BinaryExpression<Boolean> {
 
-	public LikeExpression(Expression<?> value, Expression<?> pattern) {
-		super(value, pattern);
-	}
+  /**
+   * Instantiates a new Like expression.
+   *
+   * @param value   the value
+   * @param pattern the pattern
+   */
+  public LikeExpression(Expression<?> value, Expression<?> pattern) {
+    super(value, pattern);
+  }
 
-	@Override
-	public Boolean evaluate(Context context) {
-		String value = ToStringConverter.convert(term1.evaluate(context), null);
-		String pattern = ToStringConverter.convert(term2.evaluate(context), null);
-		pattern = pattern.replace("%", ".*");
-		return Pattern.matches(pattern, value);
-	}
-	
-	@Override
-	public String toString() {
-		return "(" + term1 + " LIKE '" + term2 + "')";
-	}
-	
+  @Override
+  public Boolean evaluate(Context context) {
+    String value = ToStringConverter.convert(term1.evaluate(context), null);
+    String pattern = ToStringConverter.convert(term2.evaluate(context), null);
+    pattern = pattern.replace("%", ".*");
+    return Pattern.matches(pattern, value);
+  }
+
+  @Override
+  public String toString() {
+    return "(" + term1 + " LIKE '" + term2 + "')";
+  }
+
 }

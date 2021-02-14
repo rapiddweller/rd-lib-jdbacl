@@ -48,138 +48,191 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Wraps a connection for logging of JDBC connection handling.<br/>
  * Created: 24.08.2008 18:47:44<br/>
+ *
  * @author Volker Bergmann
  * @since 0.5.5
  */
 public class PooledConnectionHandler implements InvocationHandler {
-    
-    private static final Logger jdbcLogger = LogManager.getLogger(LogCategoriesConstants.JDBC);
-    
-    private static long nextId = 0;
 
-    private static final AtomicInteger openConnectionCount;
-    private static ResourceMonitor openConnectionMonitor;
+  private static final Logger jdbcLogger = LogManager.getLogger(LogCategoriesConstants.JDBC);
 
-    private final boolean readOnly;
-    private final Connection realConnection;
-    private final long id;
-    private boolean closed;
-    
-    // construction ----------------------------------------------------------------------------------------------------
-    
-    static {
-    	openConnectionCount = new AtomicInteger();
-    	if (Debug.active())
-    		openConnectionMonitor = new ResourceMonitor();
+  private static long nextId = 0;
+
+  private static final AtomicInteger openConnectionCount;
+  private static ResourceMonitor openConnectionMonitor;
+
+  private final boolean readOnly;
+  private final Connection realConnection;
+  private final long id;
+  private boolean closed;
+
+  // construction ----------------------------------------------------------------------------------------------------
+
+  static {
+    openConnectionCount = new AtomicInteger();
+    if (Debug.active()) {
+      openConnectionMonitor = new ResourceMonitor();
     }
-    
-    public PooledConnectionHandler(Connection realConnection, boolean readOnly) {
-    	this.readOnly = readOnly;
-        this.id = nextId();
-        this.realConnection = realConnection;
-        this.listeners = new ArrayList<>();
-        this.closed = false;
-        if (jdbcLogger.isDebugEnabled())
-            jdbcLogger.debug("Created connection #" + id + ": " + realConnection);
-        openConnectionCount.incrementAndGet();
-    	if (openConnectionMonitor != null)
-    		openConnectionMonitor.register(this);
+  }
+
+  /**
+   * Instantiates a new Pooled connection handler.
+   *
+   * @param realConnection the real connection
+   * @param readOnly       the read only
+   */
+  public PooledConnectionHandler(Connection realConnection, boolean readOnly) {
+    this.readOnly = readOnly;
+    this.id = nextId();
+    this.realConnection = realConnection;
+    this.listeners = new ArrayList<>();
+    this.closed = false;
+    if (jdbcLogger.isDebugEnabled()) {
+      jdbcLogger.debug("Created connection #" + id + ": " + realConnection);
     }
-
-    // InvocationHandler implementation --------------------------------------------------------------------------------
-    
-	@Override
-	public Object invoke(Object proxy, Method method, Object[] args)
-			throws Throwable {
-		String methodName = method.getName();
-		if ("close".equals(methodName))
-			this.close();
-		else if ("getConnection".equals(methodName) && (args == null || args.length == 0))
-			return this.getConnection();
-		else if ("addConnectionEventListener".equals(methodName)) {
-			this.addConnectionEventListener((ConnectionEventListener) args[0]);
-			return null;
-		} else if ("removeConnectionEventListener".equals(methodName)) {
-			this.removeConnectionEventListener((ConnectionEventListener) args[0]);
-			return null;
-		} else if ("prepareStatement".equals(methodName)) {
-			switch (args.length) {
-				case 1: return DBUtil.prepareStatement(realConnection, (String) args[0], readOnly);
-				case 2: 
-					if (method.getParameterTypes()[1] == int.class)
-						return DBUtil.prepareStatement(realConnection, (String) args[0], readOnly,
-								(Integer) args[1], ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-					else
-						break;
-				case 3: return DBUtil.prepareStatement(realConnection, (String) args[0], readOnly,
-						(Integer) args[1], (Integer) args[2], ResultSet.HOLD_CURSORS_OVER_COMMIT);
-				case 4: return DBUtil.prepareStatement(realConnection, (String) args[0], readOnly, 
-						(Integer) args[1], (Integer) args[2], (Integer) args[3]);
-			}
-		} else if ("createStatement".equals(methodName))
-			return createStatement(method, args);
-		return BeanUtil.invoke(realConnection, method, args);
-	}
-
-	private Statement createStatement(Method method, Object[] args) {
-		Statement statement = (Statement) BeanUtil.invoke(realConnection, method, args);
-        return DBUtil.createLoggingStatementHandler(statement, readOnly);
-	}
-
-	// PooledConnection implementation ---------------------------------------------------------------------------------
-    
-	public void close() throws SQLException {
-		if (closed)
-			return;
-        try {
-            realConnection.close();
-            listeners.clear();
-            openConnectionCount.decrementAndGet();
-        	if (openConnectionMonitor != null)
-        		openConnectionMonitor.unregister(this);
-            closed = true;
-            if (jdbcLogger.isDebugEnabled())
-                jdbcLogger.debug("Closed connection #" + id + ": " + realConnection);
-        } catch (SQLException e) {
-            jdbcLogger.error("Error closing connection #" + id + ": " + realConnection, e);
-            throw e;
-        }
+    openConnectionCount.incrementAndGet();
+    if (openConnectionMonitor != null) {
+      openConnectionMonitor.register(this);
     }
+  }
 
-    public Connection getConnection() {
-        return realConnection;
-    }
+  // InvocationHandler implementation --------------------------------------------------------------------------------
 
-    private final List<ConnectionEventListener> listeners;
-    
-    public void addConnectionEventListener(ConnectionEventListener listener) {
-        listeners.add(listener);
+  @Override
+  public Object invoke(Object proxy, Method method, Object[] args)
+      throws Throwable {
+    String methodName = method.getName();
+    if ("close".equals(methodName)) {
+      this.close();
+    } else if ("getConnection".equals(methodName) && (args == null || args.length == 0)) {
+      return this.getConnection();
+    } else if ("addConnectionEventListener".equals(methodName)) {
+      this.addConnectionEventListener((ConnectionEventListener) args[0]);
+      return null;
+    } else if ("removeConnectionEventListener".equals(methodName)) {
+      this.removeConnectionEventListener((ConnectionEventListener) args[0]);
+      return null;
+    } else if ("prepareStatement".equals(methodName)) {
+      switch (args.length) {
+        case 1:
+          return DBUtil.prepareStatement(realConnection, (String) args[0], readOnly);
+        case 2:
+          if (method.getParameterTypes()[1] == int.class) {
+            return DBUtil.prepareStatement(realConnection, (String) args[0], readOnly,
+                (Integer) args[1], ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+          } else {
+            break;
+          }
+        case 3:
+          return DBUtil.prepareStatement(realConnection, (String) args[0], readOnly,
+              (Integer) args[1], (Integer) args[2], ResultSet.HOLD_CURSORS_OVER_COMMIT);
+        case 4:
+          return DBUtil.prepareStatement(realConnection, (String) args[0], readOnly,
+              (Integer) args[1], (Integer) args[2], (Integer) args[3]);
+      }
+    } else if ("createStatement".equals(methodName)) {
+      return createStatement(method, args);
     }
+    return BeanUtil.invoke(realConnection, method, args);
+  }
 
-    public void removeConnectionEventListener(ConnectionEventListener listener) {
-        listeners.remove(listener);
-    }
-    
-    // connection count ------------------------------------------------------------------------------------------------
-    
-    public static int getOpenConnectionCount() {
-    	return openConnectionCount.get();
-    }
-    
-	public static void resetMonitors() {
-		openConnectionCount.set(0);
-		if (openConnectionMonitor != null)
-			openConnectionMonitor.reset();
-	}
-    
-	public static boolean assertAllConnectionsClosed(boolean critical) {
-		return openConnectionMonitor.assertNoRegistrations(critical);
-	}
+  private Statement createStatement(Method method, Object[] args) {
+    Statement statement = (Statement) BeanUtil.invoke(realConnection, method, args);
+    return DBUtil.createLoggingStatementHandler(statement, readOnly);
+  }
 
-    // private helpers -------------------------------------------------------------------------------------------------
+  // PooledConnection implementation ---------------------------------------------------------------------------------
 
-    private static synchronized long nextId() {
-        return ++nextId;
+  /**
+   * Close.
+   *
+   * @throws SQLException the sql exception
+   */
+  public void close() throws SQLException {
+    if (closed) {
+      return;
     }
+    try {
+      realConnection.close();
+      listeners.clear();
+      openConnectionCount.decrementAndGet();
+      if (openConnectionMonitor != null) {
+        openConnectionMonitor.unregister(this);
+      }
+      closed = true;
+      if (jdbcLogger.isDebugEnabled()) {
+        jdbcLogger.debug("Closed connection #" + id + ": " + realConnection);
+      }
+    } catch (SQLException e) {
+      jdbcLogger.error("Error closing connection #" + id + ": " + realConnection, e);
+      throw e;
+    }
+  }
+
+  /**
+   * Gets connection.
+   *
+   * @return the connection
+   */
+  public Connection getConnection() {
+    return realConnection;
+  }
+
+  private final List<ConnectionEventListener> listeners;
+
+  /**
+   * Add connection event listener.
+   *
+   * @param listener the listener
+   */
+  public void addConnectionEventListener(ConnectionEventListener listener) {
+    listeners.add(listener);
+  }
+
+  /**
+   * Remove connection event listener.
+   *
+   * @param listener the listener
+   */
+  public void removeConnectionEventListener(ConnectionEventListener listener) {
+    listeners.remove(listener);
+  }
+
+  // connection count ------------------------------------------------------------------------------------------------
+
+  /**
+   * Gets open connection count.
+   *
+   * @return the open connection count
+   */
+  public static int getOpenConnectionCount() {
+    return openConnectionCount.get();
+  }
+
+  /**
+   * Reset monitors.
+   */
+  public static void resetMonitors() {
+    openConnectionCount.set(0);
+    if (openConnectionMonitor != null) {
+      openConnectionMonitor.reset();
+    }
+  }
+
+  /**
+   * Assert all connections closed boolean.
+   *
+   * @param critical the critical
+   * @return the boolean
+   */
+  public static boolean assertAllConnectionsClosed(boolean critical) {
+    return openConnectionMonitor.assertNoRegistrations(critical);
+  }
+
+  // private helpers -------------------------------------------------------------------------------------------------
+
+  private static synchronized long nextId() {
+    return ++nextId;
+  }
 
 }

@@ -23,61 +23,79 @@ package com.rapiddweller.jdbacl.swing;
 
 import com.rapiddweller.jdbacl.DBUtil;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
+import javax.swing.ComboBoxModel;
+import javax.swing.JComboBox;
 
 /**
  * {@link JComboBox} which recognizes the configured environments and lets the user choose one.<br/><br/>
  * Created: 06.11.2011 19:26:37
- * @since 0.7.0
+ *
  * @author Volker Bergmann
+ * @since 0.7.0
  */
 @SuppressWarnings("serial")
 public class EnvironmentSelector extends JComboBox {
 
-	public EnvironmentSelector() {
-		this(null);
-	}
-	
-	public EnvironmentSelector(String selection) {
-		super(new EnvironmentModel());
-		if (selection != null)
-			setSelectedItem(selection);
-	}
-	
-	@Override
-	public String getSelectedItem() {
-		return (String) super.getSelectedItem();
-	}
-	
-	public static class EnvironmentModel extends AbstractListModel implements ComboBoxModel {
+  /**
+   * Instantiates a new Environment selector.
+   */
+  public EnvironmentSelector() {
+    this(null);
+  }
 
-		private String selectedItem;
-		private final String[] environments;
-		
-		EnvironmentModel() {
-			environments = DBUtil.getEnvironmentNames(); 
-		}
+  /**
+   * Instantiates a new Environment selector.
+   *
+   * @param selection the selection
+   */
+  public EnvironmentSelector(String selection) {
+    super(new EnvironmentModel());
+    if (selection != null) {
+      setSelectedItem(selection);
+    }
+  }
 
-		@Override
-		public Object getElementAt(int index) {
-			return environments[index];
-		}
+  @Override
+  public String getSelectedItem() {
+    return (String) super.getSelectedItem();
+  }
 
-		@Override
-		public int getSize() {
-			return environments.length;
-		}
+  /**
+   * The type Environment model.
+   */
+  public static class EnvironmentModel extends AbstractListModel implements ComboBoxModel {
 
-		@Override
-		public Object getSelectedItem() {
-			return selectedItem;
-		}
+    private String selectedItem;
+    private final String[] environments;
 
-		@Override
-		public void setSelectedItem(Object item) {
-			this.selectedItem = (String) item;
-		}
+    /**
+     * Instantiates a new Environment model.
+     */
+    EnvironmentModel() {
+      environments = DBUtil.getEnvironmentNames();
+    }
 
-	}
+    @Override
+    public Object getElementAt(int index) {
+      return environments[index];
+    }
+
+    @Override
+    public int getSize() {
+      return environments.length;
+    }
+
+    @Override
+    public Object getSelectedItem() {
+      return selectedItem;
+    }
+
+    @Override
+    public void setSelectedItem(Object item) {
+      this.selectedItem = (String) item;
+    }
+
+  }
 
 }

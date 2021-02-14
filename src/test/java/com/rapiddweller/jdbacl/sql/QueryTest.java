@@ -36,146 +36,213 @@ import static org.junit.Assert.assertEquals;
  */
 public class QueryTest {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+  /**
+   * The Thrown.
+   */
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
 
-    @Test
-    public void testConstructor() {
-        assertEquals("SELECT Selection FROM Table", (new Query("Selection", "Table")).toString());
-        assertEquals("SELECT Selection FROM ", (new Query("Selection", null)).toString());
-        assertEquals("SELECT Selection FROM Table WHERE Where Clause",
-                (new Query("Selection", "Table", "Where Clause")).toString());
-        assertEquals("SELECT Selection FROM  WHERE Where Clause",
-                (new Query("Selection", null, "Where Clause")).toString());
-        assertEquals("SELECT Selection FROM Table", (new Query("Selection", "Table", null)).toString());
-    }
+  /**
+   * Test constructor.
+   */
+  @Test
+  public void testConstructor() {
+    assertEquals("SELECT Selection FROM Table", (new Query("Selection", "Table")).toString());
+    assertEquals("SELECT Selection FROM ", (new Query("Selection", null)).toString());
+    assertEquals("SELECT Selection FROM Table WHERE Where Clause",
+        (new Query("Selection", "Table", "Where Clause")).toString());
+    assertEquals("SELECT Selection FROM  WHERE Where Clause",
+        (new Query("Selection", null, "Where Clause")).toString());
+    assertEquals("SELECT Selection FROM Table", (new Query("Selection", "Table", null)).toString());
+  }
 
-    @Test
-    public void testSelect() {
-        assertEquals("SELECT Selection FROM ", Query.select("Selection").toString());
-    }
+  /**
+   * Test select.
+   */
+  @Test
+  public void testSelect() {
+    assertEquals("SELECT Selection FROM ", Query.select("Selection").toString());
+  }
 
-    @Test
-    public void testAddSelectCondition() {
-        Query selectResult = Query.select("Selection");
-        selectResult.addSelectCondition("Select Condition");
-        assertEquals("SELECT Select Condition Selection FROM ", selectResult.toString());
-    }
+  /**
+   * Test add select condition.
+   */
+  @Test
+  public void testAddSelectCondition() {
+    Query selectResult = Query.select("Selection");
+    selectResult.addSelectCondition("Select Condition");
+    assertEquals("SELECT Select Condition Selection FROM ", selectResult.toString());
+  }
 
-    @Test
-    public void testFrom() {
-        thrown.expect(IllegalArgumentException.class);
-        Query.select("Selection").from("Table Name");
-    }
+  /**
+   * Test from.
+   */
+  @Test
+  public void testFrom() {
+    thrown.expect(IllegalArgumentException.class);
+    Query.select("Selection").from("Table Name");
+  }
 
-    @Test
-    public void testFrom2() {
-        assertEquals("SELECT Selection FROM ", Query.select("Selection").from("").toString());
-    }
+  /**
+   * Test from 2.
+   */
+  @Test
+  public void testFrom2() {
+    assertEquals("SELECT Selection FROM ", Query.select("Selection").from("").toString());
+  }
 
-    @Test
-    public void testFrom3() {
-        thrown.expect(IllegalArgumentException.class);
-        Query.select("Selection").from("Table Name", "Alias");
-    }
+  /**
+   * Test from 3.
+   */
+  @Test
+  public void testFrom3() {
+    thrown.expect(IllegalArgumentException.class);
+    Query.select("Selection").from("Table Name", "Alias");
+  }
 
-    @Test
-    public void testFrom4() {
-        assertEquals("SELECT Selection FROM  Alias", Query.select("Selection").from("", "Alias").toString());
-    }
+  /**
+   * Test from 4.
+   */
+  @Test
+  public void testFrom4() {
+    assertEquals("SELECT Selection FROM  Alias", Query.select("Selection").from("", "Alias").toString());
+  }
 
-    @Test
-    public void testFrom5() {
-        assertEquals("SELECT Selection FROM ", Query.select("Selection").from("", null).toString());
-    }
+  /**
+   * Test from 5.
+   */
+  @Test
+  public void testFrom5() {
+    assertEquals("SELECT Selection FROM ", Query.select("Selection").from("", null).toString());
+  }
 
-    @Test
-    public void testFrom6() {
-        thrown.expect(IllegalArgumentException.class);
-        Query.select("Selection").from("Table Name", null);
-    }
+  /**
+   * Test from 6.
+   */
+  @Test
+  public void testFrom6() {
+    thrown.expect(IllegalArgumentException.class);
+    Query.select("Selection").from("Table Name", null);
+  }
 
-    @Test
-    public void testCountStar() {
-        Query query = new Query("COUNT(*)", "TEST");
-        assertEquals("SELECT COUNT(*) FROM TEST", query.toString());
-    }
+  /**
+   * Test count star.
+   */
+  @Test
+  public void testCountStar() {
+    Query query = new Query("COUNT(*)", "TEST");
+    assertEquals("SELECT COUNT(*) FROM TEST", query.toString());
+  }
 
-    @Test
-    public void testLiterate() {
-        Query query = Query.select("COL").from("TEST").where("ID > 0");
-        assertEquals("SELECT COL FROM TEST WHERE ID > 0", query.toString());
-    }
+  /**
+   * Test literate.
+   */
+  @Test
+  public void testLiterate() {
+    Query query = Query.select("COL").from("TEST").where("ID > 0");
+    assertEquals("SELECT COL FROM TEST WHERE ID > 0", query.toString());
+  }
 
-    @Test
-    public void testLeftJoin() {
-        Query query = Query.select("col").from("left", "left__").leftJoin("left__", new String[]{"l1", "l2"}, "right", "right__", new String[]{"r1", "r2"});
-        assertEquals("SELECT col FROM left left__ LEFT JOIN right right__ ON left__.l1 = right__.r1 AND left__.l2 = right__.r2", query.toString());
-    }
+  /**
+   * Test left join.
+   */
+  @Test
+  public void testLeftJoin() {
+    Query query =
+        Query.select("col").from("left", "left__").leftJoin("left__", new String[] {"l1", "l2"}, "right", "right__", new String[] {"r1", "r2"});
+    assertEquals("SELECT col FROM left left__ LEFT JOIN right right__ ON left__.l1 = right__.r1 AND left__.l2 = right__.r2", query.toString());
+  }
 
-    @Test
-    public void testLeftJoin2() {
-        assertEquals(
-                "SELECT Selection FROM  LEFT JOIN Right Table Right Alias ON Left Alias.foo = Right Alias.foo AND Left"
-                        + " Alias.foo = Right Alias.foo AND Left Alias.foo = Right Alias.foo",
-                Query.select("Selection")
-                        .leftJoin("Left Alias", new String[]{"foo", "foo", "foo"}, "Right Table", "Right Alias",
-                                new String[]{"foo", "foo", "foo"})
-                        .toString());
-    }
+  /**
+   * Test left join 2.
+   */
+  @Test
+  public void testLeftJoin2() {
+    assertEquals(
+        "SELECT Selection FROM  LEFT JOIN Right Table Right Alias ON Left Alias.foo = Right Alias.foo AND Left"
+            + " Alias.foo = Right Alias.foo AND Left Alias.foo = Right Alias.foo",
+        Query.select("Selection")
+            .leftJoin("Left Alias", new String[] {"foo", "foo", "foo"}, "Right Table", "Right Alias",
+                new String[] {"foo", "foo", "foo"})
+            .toString());
+  }
 
-    @Test
-    public void testWhere() {
-        assertEquals("SELECT Selection FROM  WHERE Where", Query.select("Selection").where("Where").toString());
-    }
+  /**
+   * Test where.
+   */
+  @Test
+  public void testWhere() {
+    assertEquals("SELECT Selection FROM  WHERE Where", Query.select("Selection").where("Where").toString());
+  }
 
-    @Test
-    public void testWhere2() {
-        thrown.expect(IllegalArgumentException.class);
-        (new Query("Selection", "Table", "Where Clause")).where("Where");
-    }
+  /**
+   * Test where 2.
+   */
+  @Test
+  public void testWhere2() {
+    thrown.expect(IllegalArgumentException.class);
+    (new Query("Selection", "Table", "Where Clause")).where("Where");
+  }
 
-    @Test
-    public void testAnd() {
-        Query selectResult = Query.select("Selection");
-        selectResult.and("Condition");
-        assertEquals("SELECT Selection FROM  WHERE Condition", selectResult.toString());
-    }
+  /**
+   * Test and.
+   */
+  @Test
+  public void testAnd() {
+    Query selectResult = Query.select("Selection");
+    selectResult.and("Condition");
+    assertEquals("SELECT Selection FROM  WHERE Condition", selectResult.toString());
+  }
 
-    @Test
-    public void testAnd2() {
-        Query query = new Query("Selection", "Table", "Where Clause");
-        query.and("Condition");
-        assertEquals("SELECT Selection FROM Table WHERE Where Clause AND Condition", query.toString());
-    }
+  /**
+   * Test and 2.
+   */
+  @Test
+  public void testAnd2() {
+    Query query = new Query("Selection", "Table", "Where Clause");
+    query.and("Condition");
+    assertEquals("SELECT Selection FROM Table WHERE Where Clause AND Condition", query.toString());
+  }
 
-    @Test
-    public void testAddOption() {
-        Query selectResult = Query.select("Selection");
-        selectResult.addOption("Option");
-        assertEquals("SELECT Selection FROM  Option", selectResult.toString());
-    }
+  /**
+   * Test add option.
+   */
+  @Test
+  public void testAddOption() {
+    Query selectResult = Query.select("Selection");
+    selectResult.addOption("Option");
+    assertEquals("SELECT Selection FROM  Option", selectResult.toString());
+  }
 
-    @Test
-    public void testToString() {
-        assertEquals("SELECT Selection FROM ", Query.select("Selection").toString());
-        assertEquals("SELECT Selection FROM Table", (new Query("Selection", "Table")).toString());
-        assertEquals("SELECT Selection FROM Table WHERE Where Clause",
-                (new Query("Selection", "Table", "Where Clause")).toString());
-    }
+  /**
+   * Test to string.
+   */
+  @Test
+  public void testToString() {
+    assertEquals("SELECT Selection FROM ", Query.select("Selection").toString());
+    assertEquals("SELECT Selection FROM Table", (new Query("Selection", "Table")).toString());
+    assertEquals("SELECT Selection FROM Table WHERE Where Clause",
+        (new Query("Selection", "Table", "Where Clause")).toString());
+  }
 
-    @Test
-    public void testToString2() {
-        Query selectResult = Query.select("Selection");
-        selectResult.addSelectCondition("SELECT ");
-        assertEquals("SELECT SELECT  Selection FROM ", selectResult.toString());
-    }
+  /**
+   * Test to string 2.
+   */
+  @Test
+  public void testToString2() {
+    Query selectResult = Query.select("Selection");
+    selectResult.addSelectCondition("SELECT ");
+    assertEquals("SELECT SELECT  Selection FROM ", selectResult.toString());
+  }
 
-    @Test
-    public void testToString3() {
-        Query selectResult = Query.select("Selection");
-        selectResult.addOption("SELECT ");
-        assertEquals("SELECT Selection FROM  SELECT ", selectResult.toString());
-    }
+  /**
+   * Test to string 3.
+   */
+  @Test
+  public void testToString3() {
+    Query selectResult = Query.select("Selection");
+    selectResult.addOption("SELECT ");
+    assertEquals("SELECT Selection FROM  SELECT ", selectResult.toString());
+  }
 
 }

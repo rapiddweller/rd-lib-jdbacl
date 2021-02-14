@@ -69,11 +69,17 @@ public class SQLUtilTest {
   private static final String DROP_TABLE = "drop table users";
   private static final String CREATE_TABLE = "Create Table USERS";
 
+  /**
+   * Test parse column type and size 2.
+   */
   @Test
   public void testParseColumnTypeAndSize2() {
     assertEquals(1, SQLUtil.parseColumnTypeAndSize("Spec").length);
   }
 
+  /**
+   * Test prepend alias.
+   */
   @Test
   public void testPrependAlias() {
     assertEquals(1, SQLUtil.prependAlias("Table Alias", new String[] {"Column Names"}).length);
@@ -81,6 +87,9 @@ public class SQLUtilTest {
     assertEquals(0, SQLUtil.prependAlias("Table Alias", new String[] {}).length);
   }
 
+  /**
+   * Test render column names.
+   */
   @Test
   public void testRenderColumnNames() {
     DBTable table = new DBTable("Name");
@@ -90,6 +99,9 @@ public class SQLUtilTest {
     assertEquals("Name", SQLUtil.renderColumnNames(dbColumnList));
   }
 
+  /**
+   * Test render column names 2.
+   */
   @Test
   public void testRenderColumnNames2() {
     DBTable table = new DBTable("Name");
@@ -101,6 +113,9 @@ public class SQLUtilTest {
     assertEquals("Name, Name", SQLUtil.renderColumnNames(dbColumnList));
   }
 
+  /**
+   * Test render column names 3.
+   */
   @Test
   public void testRenderColumnNames3() {
     DBTable table = new DBTable("Name");
@@ -108,27 +123,42 @@ public class SQLUtilTest {
         SQLUtil.renderColumnNames(new DBColumn[] {new DBColumn("Name", table, DBDataType.getInstance("BLOB"))}));
   }
 
+  /**
+   * Test render column names 4.
+   */
   @Test(expected = ArrayIndexOutOfBoundsException.class)
   public void testRenderColumnNames4() {
     SQLUtil.renderColumnNames(new DBColumn[] {});
   }
 
+  /**
+   * Test render column names 5.
+   */
   @Test
   public void testRenderColumnNames5() {
     assertEquals("(Column Names)", SQLUtil.renderColumnNames(new String[] {"Column Names"}));
   }
 
+  /**
+   * Test render column.
+   */
   @Test
   public void testRenderColumn() {
     DBTable table = new DBTable("Name");
     assertEquals("Name BLOB NULL", SQLUtil.renderColumn(new DBColumn("Name", table, DBDataType.getInstance("BLOB"))));
   }
 
+  /**
+   * Test render column 2.
+   */
   @Test
   public void testRenderColumn2() {
     assertEquals("Name null NULL", SQLUtil.renderColumn(new DBColumn("Name", new DBTable("Name"), null)));
   }
 
+  /**
+   * Test render column 3.
+   */
   @Test
   public void testRenderColumn3() {
     DBTable table = new DBTable("Name");
@@ -137,6 +167,9 @@ public class SQLUtilTest {
     assertEquals("Name BLOB DEFAULT  NULL NULL", SQLUtil.renderColumn(dbColumn));
   }
 
+  /**
+   * Test render column 4.
+   */
   @Test
   public void testRenderColumn4() {
     DBTable table = new DBTable("Name");
@@ -145,6 +178,9 @@ public class SQLUtilTest {
     assertEquals("Name BLOB NULL", SQLUtil.renderColumn(dbColumn));
   }
 
+  /**
+   * Test render column 5.
+   */
   @Test
   public void testRenderColumn5() {
     DBColumn dbColumn = new DBColumn("Name", new DBTable("Name"), null);
@@ -152,6 +188,9 @@ public class SQLUtilTest {
     assertEquals("Name null(3) NULL", SQLUtil.renderColumn(dbColumn));
   }
 
+  /**
+   * Test render column 6.
+   */
   @Test
   public void testRenderColumn6() {
     DBColumn dbColumn = new DBColumn("Name", new DBTable("Name"), null);
@@ -160,17 +199,26 @@ public class SQLUtilTest {
     assertEquals("Name null(3,0) NULL", SQLUtil.renderColumn(dbColumn));
   }
 
+  /**
+   * Test render column type with size.
+   */
   @Test
   public void testRenderColumnTypeWithSize() {
     DBTable table = new DBTable("Name");
     assertEquals("BLOB", SQLUtil.renderColumnTypeWithSize(new DBColumn("Name", table, DBDataType.getInstance("BLOB"))));
   }
 
+  /**
+   * Test render column type with size 2.
+   */
   @Test
   public void testRenderColumnTypeWithSize2() {
     assertEquals("null", SQLUtil.renderColumnTypeWithSize(new DBColumn("Name", new DBTable("Name"), null)));
   }
 
+  /**
+   * Test render column type with size 3.
+   */
   @Test
   public void testRenderColumnTypeWithSize3() {
     DBTable table = new DBTable("Name");
@@ -179,6 +227,9 @@ public class SQLUtilTest {
     assertEquals("BLOB", SQLUtil.renderColumnTypeWithSize(dbColumn));
   }
 
+  /**
+   * Test render column type with size 4.
+   */
   @Test
   public void testRenderColumnTypeWithSize4() {
     DBColumn dbColumn = new DBColumn("Name", new DBTable("Name"), null);
@@ -186,6 +237,9 @@ public class SQLUtilTest {
     assertEquals("null(3)", SQLUtil.renderColumnTypeWithSize(dbColumn));
   }
 
+  /**
+   * Test render column type with size 5.
+   */
   @Test
   public void testRenderColumnTypeWithSize5() {
     DBColumn dbColumn = new DBColumn("Name", new DBTable("Name"), null);
@@ -194,6 +248,9 @@ public class SQLUtilTest {
     assertEquals("null(3,0)", SQLUtil.renderColumnTypeWithSize(dbColumn));
   }
 
+  /**
+   * Test parse column type and size.
+   */
   @Test
   public void testParseColumnTypeAndSize() {
     checkParsing("int", "int");
@@ -201,6 +258,9 @@ public class SQLUtilTest {
     checkParsing("number(8, 2)", "number", 8, 2);
   }
 
+  /**
+   * Test is query.
+   */
   @Test
   public void testIsQuery() {
     assertFalse(SQLUtil.isQuery(CREATE_TABLE));
@@ -217,6 +277,9 @@ public class SQLUtilTest {
     assertFalse(SQLUtil.isQuery("Sql"));
   }
 
+  /**
+   * Test constraint spec.
+   */
   @Test
   public void testConstraintSpec() {
     assertEquals("PRIMARY KEY (foo, foo, foo)", SQLUtil.constraintSpec(
@@ -237,6 +300,9 @@ public class SQLUtilTest {
         new DBPrimaryKeyConstraint(new DBTable("Name"), "Name", false, "foo", "foo", "foo"), NameSpec.IF_REPRODUCIBLE));
   }
 
+  /**
+   * Test pk spec.
+   */
   @Test
   public void testPkSpec() {
     assertEquals("PRIMARY KEY (foo, foo, foo)", SQLUtil
@@ -254,6 +320,9 @@ public class SQLUtilTest {
         new DBPrimaryKeyConstraint(new DBTable("Name"), "Name", false, "foo", "foo", "foo"), NameSpec.IF_REPRODUCIBLE));
   }
 
+  /**
+   * Test uk spec.
+   */
   @Test
   public void testUkSpec() {
     assertEquals("UNIQUE (foo, foo, foo)",
@@ -272,6 +341,9 @@ public class SQLUtilTest {
         new DBUniqueConstraint(new DBTable("Name"), "Name", false, "foo", "foo", "foo"), NameSpec.IF_REPRODUCIBLE));
   }
 
+  /**
+   * Test join fk path.
+   */
   @Test
   public void testJoinFKPath() {
     DBTable owner = new DBTable("Name");
@@ -292,6 +364,9 @@ public class SQLUtilTest {
             "Join Type", "Start Alias", "End Alias", "Intermediate Alias Base"));
   }
 
+  /**
+   * Test join fk path 10.
+   */
   @Test
   public void testJoinFKPath10() {
     DBTable owner = new DBTable("Name");
@@ -315,6 +390,9 @@ public class SQLUtilTest {
             "Join Type", "Start Alias", "End Alias", "Intermediate Alias Base", "Indent"));
   }
 
+  /**
+   * Test join fk path 11.
+   */
   @Test
   public void testJoinFKPath11() {
     DBTable owner = new DBTable("Name");
@@ -338,6 +416,9 @@ public class SQLUtilTest {
                 "INNER", "Start Alias", "End Alias", "Intermediate Alias Base", "Indent"));
   }
 
+  /**
+   * Test join fk path 12.
+   */
   @Test
   public void testJoinFKPath12() {
     DBTable owner = new DBTable("Name");
@@ -361,6 +442,9 @@ public class SQLUtilTest {
                 null, "Start Alias", "End Alias", "Intermediate Alias Base", "Indent"));
   }
 
+  /**
+   * Test join fk path 13.
+   */
   @Test
   public void testJoinFKPath13() {
     DBTable owner = new DBTable("Name");
@@ -383,6 +467,9 @@ public class SQLUtilTest {
                 "Join Type", "Start Alias", "End Alias", "Intermediate Alias Base", null));
   }
 
+  /**
+   * Test join fk path 2.
+   */
   @Test
   public void testJoinFKPath2() {
     DBTable owner = new DBTable("Name");
@@ -404,6 +491,9 @@ public class SQLUtilTest {
             "Join Type", "Start Alias", "End Alias", "Intermediate Alias Base"));
   }
 
+  /**
+   * Test join fk path 3.
+   */
   @Test
   public void testJoinFKPath3() {
     DBTable owner = new DBTable("Name");
@@ -425,6 +515,9 @@ public class SQLUtilTest {
             "Join Type", "Start Alias", "End Alias", "Intermediate Alias Base"));
   }
 
+  /**
+   * Test join fk path 4.
+   */
   @Test
   public void testJoinFKPath4() {
     DBTable owner = new DBTable("Name");
@@ -447,6 +540,9 @@ public class SQLUtilTest {
             "Join Type", "Start Alias", "End Alias", "Intermediate Alias Base"));
   }
 
+  /**
+   * Test join fk path 5.
+   */
   @Test
   public void testJoinFKPath5() {
     DBTable owner = new DBTable("Name");
@@ -467,6 +563,9 @@ public class SQLUtilTest {
             "INNER", "Start Alias", "End Alias", "Intermediate Alias Base"));
   }
 
+  /**
+   * Test join fk path 6.
+   */
   @Test
   public void testJoinFKPath6() {
     DBTable owner = new DBTable("Name");
@@ -487,6 +586,9 @@ public class SQLUtilTest {
             null, "Start Alias", "End Alias", "Intermediate Alias Base"));
   }
 
+  /**
+   * Test join fk path 7.
+   */
   @Test
   public void testJoinFKPath7() {
     DBTable owner = new DBTable("Name");
@@ -510,6 +612,9 @@ public class SQLUtilTest {
             "Join Type", "Start Alias", "End Alias", "Intermediate Alias Base", "Indent"));
   }
 
+  /**
+   * Test join fk path 8.
+   */
   @Test
   public void testJoinFKPath8() {
     DBTable owner = new DBTable("Name");
@@ -534,6 +639,9 @@ public class SQLUtilTest {
             "Join Type", "Start Alias", "End Alias", "Intermediate Alias Base", "Indent"));
   }
 
+  /**
+   * Test join fk path 9.
+   */
   @Test
   public void testJoinFKPath9() {
     DBTable owner = new DBTable("Name");
@@ -557,6 +665,9 @@ public class SQLUtilTest {
             "Join Type", "Start Alias", "End Alias", "Intermediate Alias Base", "Indent"));
   }
 
+  /**
+   * Test is ddl.
+   */
   @Test
   public void testIsDDL() {
     assertTrue(SQLUtil.isDDL(CREATE_TABLE));
@@ -572,6 +683,9 @@ public class SQLUtilTest {
     assertFalse(SQLUtil.isDDL("Sql"));
   }
 
+  /**
+   * Test is dml.
+   */
   @Test
   public void testIsDML() {
     assertFalse(SQLUtil.isDML(CREATE_TABLE));
@@ -587,6 +701,9 @@ public class SQLUtilTest {
     assertFalse(SQLUtil.isDML("Sql"));
   }
 
+  /**
+   * Test is procedure call.
+   */
   @Test
   public void testIsProcedureCall() {
     assertFalse(SQLUtil.isProcedureCall(CREATE_TABLE));
@@ -602,6 +719,9 @@ public class SQLUtilTest {
     assertFalse(SQLUtil.isProcedureCall("Sql"));
   }
 
+  /**
+   * Test mutates structure.
+   */
   @Test
   public void testMutatesStructure() {
     assertTrue(SQLUtil.mutatesStructure(CREATE_TABLE));
@@ -617,6 +737,9 @@ public class SQLUtilTest {
     assertFalse(SQLUtil.mutatesStructure("Sql"));
   }
 
+  /**
+   * Test mutates data or structure.
+   */
   @Test
   public void testMutatesDataOrStructure() {
     assertTrue(SQLUtil.mutatesDataOrStructure(CREATE_TABLE));
@@ -632,6 +755,9 @@ public class SQLUtilTest {
     assertNull(SQLUtil.mutatesDataOrStructure("Sql"));
   }
 
+  /**
+   * Test remove comments.
+   */
   @Test
   public void testRemoveComments() {
     assertEquals("select a from b", SQLUtil.removeComments("select a from b"));
@@ -640,6 +766,9 @@ public class SQLUtilTest {
     assertEquals("Sql", SQLUtil.removeComments("Sql"));
   }
 
+  /**
+   * Test normalize.
+   */
   @Test
   public void testNormalize() {
     assertEquals("select x from t", SQLUtil.normalize("select x from t", false));
@@ -663,11 +792,17 @@ public class SQLUtilTest {
         SQLUtil.normalize("com.rapiddweller.jdbacl.model.DBCheckConstraint", true));
   }
 
+  /**
+   * Test render number.
+   */
   @Test
   public void testRenderNumber() {
     assertEquals("- 0", SQLUtil.renderNumber(new StreamTokenizer(InputStream.nullInputStream())));
   }
 
+  /**
+   * Test render number 2.
+   */
   @Test
   public void testRenderNumber2() {
     StreamTokenizer streamTokenizer = new StreamTokenizer(InputStream.nullInputStream());
@@ -675,6 +810,9 @@ public class SQLUtilTest {
     assertEquals("- 0", SQLUtil.renderNumber(streamTokenizer));
   }
 
+  /**
+   * Test render column list with table name.
+   */
   @Test
   public void testRenderColumnListWithTableName() {
     assertEquals("t.x, t.y", SQLUtil.renderColumnListWithTableName("t", "x", "y"));
@@ -682,6 +820,9 @@ public class SQLUtilTest {
     assertEquals("Table.Columns, Table.Columns", SQLUtil.renderColumnListWithTableName("Table", "Columns", "Columns"));
   }
 
+  /**
+   * Test equals.
+   */
   @Test
   public void testEquals() {
     assertEquals("Table Alias1.Col Names1 = Table Alias2.Col Names2",
@@ -693,11 +834,17 @@ public class SQLUtilTest {
         SQLUtil.equals("Table Alias1", new String[] {"Col Names1"}, null, new String[] {"Col Names2"}));
   }
 
+  /**
+   * Test equals 2.
+   */
   @Test(expected = ArrayIndexOutOfBoundsException.class)
   public void testEquals2() {
     SQLUtil.equals("Table Alias1", new String[] {" = ", " = "}, "Table Alias2", new String[] {"Col Names2"});
   }
 
+  /**
+   * Test join fk.
+   */
   @Test
   public void testJoinFK() {
     DBTable a = new DBTable("a");
@@ -712,6 +859,9 @@ public class SQLUtilTest {
     assertEquals("JOIN a _end ON _start.a_id = _end.id", sql);
   }
 
+  /**
+   * Test join fk 2.
+   */
   @Test
   public void testJoinFK2() {
     DBTable owner = new DBTable("Name");
@@ -721,6 +871,9 @@ public class SQLUtilTest {
             "Referee Column Name"), "Join Type", "Referer Alias", "Referee Alias"));
   }
 
+  /**
+   * Test join fk 3.
+   */
   @Test
   public void testJoinFK3() {
     DBTable owner = new DBTable("Name");
@@ -731,6 +884,9 @@ public class SQLUtilTest {
             new DBTable("Name"), new String[] {"foo", "foo", "foo"}), "Join Type", "Referer Alias", "Referee Alias"));
   }
 
+  /**
+   * Test join fk 4.
+   */
   @Test
   public void testJoinFK4() {
     DBTable owner = new DBTable("Name");
@@ -739,6 +895,9 @@ public class SQLUtilTest {
             "Referee Column Name"), "INNER", "Referer Alias", "Referee Alias"));
   }
 
+  /**
+   * Test join fk 5.
+   */
   @Test
   public void testJoinFK5() {
     DBTable owner = new DBTable("Name");
@@ -747,6 +906,9 @@ public class SQLUtilTest {
             "Referee Column Name"), "", "Referer Alias", "Referee Alias"));
   }
 
+  /**
+   * Test join fk 6.
+   */
   @Test(expected = IllegalArgumentException.class)
   public void testJoinFK6() {
     DBTable owner = new DBTable("Name");
@@ -754,6 +916,9 @@ public class SQLUtilTest {
         new String[] {"foo", "foo", "foo"}), "Join Type", "Referer Alias", "Referee Alias");
   }
 
+  /**
+   * Test left join.
+   */
   @Test
   public void testLeftJoin() {
     assertEquals("LEFT JOIN Right Table Right Alias ON Left Alias.Left Columns = Right Alias.Right Columns",
@@ -761,11 +926,17 @@ public class SQLUtilTest {
             new String[] {"Right Columns"}));
   }
 
+  /**
+   * Test left join 2.
+   */
   @Test(expected = IllegalArgumentException.class)
   public void testLeftJoin2() {
     SQLUtil.leftJoin("Left Alias", new String[] {}, "Right Table", "Right Alias", new String[] {"Right Columns"});
   }
 
+  /**
+   * Test inner join.
+   */
   @Test
   public void testInnerJoin() {
     assertEquals("JOIN Right Table Right Alias ON Left Alias.Left Columns = Right Alias.Right Columns",
@@ -773,11 +944,17 @@ public class SQLUtilTest {
             new String[] {"Right Columns"}));
   }
 
+  /**
+   * Test inner join 2.
+   */
   @Test(expected = IllegalArgumentException.class)
   public void testInnerJoin2() {
     SQLUtil.innerJoin("Left Alias", new String[] {}, "Right Table", "Right Alias", new String[] {"Right Columns"});
   }
 
+  /**
+   * Test join.
+   */
   @Test
   public void testJoin() {
     assertEquals("Type JOIN Right Table Right Alias ON Left Alias.Left Columns = Right Alias.Right Columns",
@@ -790,47 +967,71 @@ public class SQLUtilTest {
         "Left Alias", new String[] {"Left Columns"}, "Right Table", "Right Alias", new String[] {"Right Columns"}));
   }
 
+  /**
+   * Test join 2.
+   */
   @Test(expected = IllegalArgumentException.class)
   public void testJoin2() {
     SQLUtil.join("Type", "Left Alias", new String[] {}, "Right Table", "Right Alias", new String[] {"Right Columns"});
   }
 
+  /**
+   * Test add required condition.
+   */
   @Test
   public void testAddRequiredCondition() {
     StringBuilder stringBuilder = new StringBuilder();
     assertSame(stringBuilder, SQLUtil.addRequiredCondition("Condition", stringBuilder));
   }
 
+  /**
+   * Test add required condition 2.
+   */
   @Test
   public void testAddRequiredCondition2() {
     StringBuilder stringBuilder = new StringBuilder("Str");
     assertSame(stringBuilder, SQLUtil.addRequiredCondition("Condition", stringBuilder));
   }
 
+  /**
+   * Test add required condition 3.
+   */
   @Test
   public void testAddRequiredCondition3() {
     StringBuilder stringBuilder = new StringBuilder("Str");
     assertSame(stringBuilder, SQLUtil.addRequiredCondition(" AND ", stringBuilder));
   }
 
+  /**
+   * Test add optional condition.
+   */
   @Test
   public void testAddOptionalCondition() {
     StringBuilder stringBuilder = new StringBuilder();
     assertSame(stringBuilder, SQLUtil.addOptionalCondition("Condition", stringBuilder));
   }
 
+  /**
+   * Test add optional condition 2.
+   */
   @Test
   public void testAddOptionalCondition2() {
     StringBuilder stringBuilder = new StringBuilder("Str");
     assertSame(stringBuilder, SQLUtil.addOptionalCondition("Condition", stringBuilder));
   }
 
+  /**
+   * Test add optional condition 3.
+   */
   @Test
   public void testAddOptionalCondition3() {
     StringBuilder stringBuilder = new StringBuilder("Str");
     assertSame(stringBuilder, SQLUtil.addOptionalCondition(" OR ", stringBuilder));
   }
 
+  /**
+   * Test owner dot component.
+   */
   @Test
   public void testOwnerDotComponent() {
     assertEquals("null", SQLUtil.ownerDotComponent(new DBCatalog()));
@@ -838,6 +1039,9 @@ public class SQLUtilTest {
     assertEquals("null.Name", SQLUtil.ownerDotComponent(new DBSchema("Name", new DBCatalog())));
   }
 
+  /**
+   * Test constraint name.
+   */
   @Test
   public void testConstraintName() {
     assertEquals("CONSTRAINT Name ",
@@ -846,6 +1050,9 @@ public class SQLUtilTest {
         SQLUtil.constraintName(new DBPrimaryKeyConstraint(new DBTable("Name"), null, true, "foo", "foo", "foo")));
   }
 
+  /**
+   * Test type and name.
+   */
   @Test
   public void testTypeAndName() {
     assertEquals("catalog null", SQLUtil.typeAndName(new DBCatalog()));
@@ -853,6 +1060,9 @@ public class SQLUtilTest {
     assertEquals("catalog Name", SQLUtil.typeAndName(new DBCatalog("Name")));
   }
 
+  /**
+   * Test join fk route.
+   */
   @Test
   public void testJoinFKRoute() {
     DBTable a = new DBTable("a");
@@ -873,6 +1083,9 @@ public class SQLUtilTest {
     assertEquals("JOIN b tmp_1__ ON start__.b_id = tmp_1__.id JOIN a end__ ON tmp_1__.a_id = end__.id", sql);
   }
 
+  /**
+   * Test all null.
+   */
   @Test
   public void testAllNull() {
     assertEquals("c IS NULL", SQLUtil.allNull(new String[] {"c"}, null));
@@ -888,6 +1101,12 @@ public class SQLUtilTest {
 
   // helpers ---------------------------------------------------------------------------------------------------------
 
+  /**
+   * Check parsing.
+   *
+   * @param spec     the spec
+   * @param expected the expected
+   */
   public void checkParsing(String spec, Object... expected) {
     Object[] actual = SQLUtil.parseColumnTypeAndSize(spec);
     String message = "Expected: [" + ArrayFormat.format(expected) + "], " +

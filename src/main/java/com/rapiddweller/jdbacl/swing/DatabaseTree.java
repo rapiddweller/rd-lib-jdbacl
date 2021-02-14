@@ -21,20 +21,26 @@
 
 package com.rapiddweller.jdbacl.swing;
 
-import javax.swing.*;
+import javax.swing.JTree;
 import javax.swing.tree.TreeModel;
 
 /**
  * GUI component which renders a database tree.<br/><br/>
  * Created: 07.11.2011 16:37:37
- * @since 0.7.0
+ *
  * @author Volker Bergmann
+ * @since 0.7.0
  */
 @SuppressWarnings("serial")
 public class DatabaseTree extends JTree {
 
-	public DatabaseTree(TreeModel model) {
-		super(model);
-	}
+  /**
+   * Instantiates a new Database tree.
+   *
+   * @param model the model
+   */
+  public DatabaseTree(TreeModel model) {
+    super(model);
+  }
 
 }

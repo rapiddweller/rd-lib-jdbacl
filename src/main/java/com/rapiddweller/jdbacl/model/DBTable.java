@@ -84,14 +84,35 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
   private Set<DBTable> referrers;
   private List<DBCheckConstraint> checkConstraints;
 
+  /**
+   * Instantiates a new Db table.
+   *
+   * @param name the name
+   */
   public DBTable(String name) {
     this(name, TableType.TABLE, null);
   }
 
+  /**
+   * Instantiates a new Db table.
+   *
+   * @param name   the name
+   * @param type   the type
+   * @param schema the schema
+   */
   public DBTable(String name, TableType type, DBSchema schema) {
     this(name, TableType.TABLE, null, schema, null);
   }
 
+  /**
+   * Instantiates a new Db table.
+   *
+   * @param name     the name
+   * @param type     the type
+   * @param doc      the doc
+   * @param schema   the schema
+   * @param importer the importer
+   */
   public DBTable(String name, TableType type, String doc, DBSchema schema, JDBCDBImporter importer) {
     super(name, "table", schema);
     this.importer = importer;
@@ -127,18 +148,38 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
   // table related methods -------------------------------------------------------------------------------------------
 
+  /**
+   * Gets catalog.
+   *
+   * @return the catalog
+   */
   public DBCatalog getCatalog() {
     return getSchema().getCatalog();
   }
 
+  /**
+   * Gets schema.
+   *
+   * @return the schema
+   */
   public DBSchema getSchema() {
     return (DBSchema) getOwner();
   }
 
+  /**
+   * Sets schema.
+   *
+   * @param schema the schema
+   */
   public void setSchema(DBSchema schema) {
     setOwner(schema);
   }
 
+  /**
+   * Gets table type.
+   *
+   * @return the table type
+   */
   public TableType getTableType() {
     return tableType;
   }
@@ -152,11 +193,22 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     return CollectionUtil.toArray(NameUtil.getNames(columns.values()), String.class);
   }
 
+  /**
+   * Gets columns.
+   *
+   * @return the columns
+   */
   public List<DBColumn> getColumns() {
     haveColumnsImported();
     return columns.values();
   }
 
+  /**
+   * Get columns db column [ ].
+   *
+   * @param columnNames the column names
+   * @return the db column [ ]
+   */
   public DBColumn[] getColumns(String[] columnNames) {
     haveColumnsImported();
     List<DBColumn> list = new ArrayList<>(columnNames.length);
@@ -171,6 +223,12 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     return list.toArray(array);
   }
 
+  /**
+   * Gets column.
+   *
+   * @param columnName the column name
+   * @return the column
+   */
   public DBColumn getColumn(String columnName) {
     haveColumnsImported();
     DBColumn column = columns.get(columnName);
@@ -181,11 +239,21 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     return column;
   }
 
+  /**
+   * Add column.
+   *
+   * @param column the column
+   */
   public void addColumn(DBColumn column) {
     haveColumnsImported();
     receiveColumn(column);
   }
 
+  /**
+   * Receive column.
+   *
+   * @param column the column
+   */
   public void receiveColumn(DBColumn column) {
     if (columns == null) {
       columns = OrderedNameMap.createCaseIgnorantMap();
@@ -194,10 +262,20 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     columns.put(column.getName(), column);
   }
 
+  /**
+   * Are columns imported boolean.
+   *
+   * @return the boolean
+   */
   public boolean areColumnsImported() {
     return (columns != null);
   }
 
+  /**
+   * Sets columns imported.
+   *
+   * @param columnsImported the columns imported
+   */
   public void setColumnsImported(boolean columnsImported) {
     if (columnsImported) {
       this.columns = OrderedNameMap.<DBColumn>createCaseIgnorantMap();
@@ -206,6 +284,9 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
   }
 
+  /**
+   * Have columns imported.
+   */
   public void haveColumnsImported() {
     if (columns == null) {
       columns = OrderedNameMap.createCaseIgnorantMap();
@@ -215,6 +296,9 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
   }
 
+  /**
+   * The type Col receiver.
+   */
   class ColReceiver implements JDBCDBImporter.ColumnReceiver {
     @Override
     public void receiveColumn(String columnName, DBDataType dataType,
@@ -232,29 +316,57 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
   // primary key -----------------------------------------------------------------------------------------------------
 
+  /**
+   * Sets primary key.
+   *
+   * @param constraint the constraint
+   */
   public void setPrimaryKey(DBPrimaryKeyConstraint constraint) {
     havePKImported();
     this.pk = constraint;
   }
 
+  /**
+   * Gets primary key constraint.
+   *
+   * @return the primary key constraint
+   */
   public DBPrimaryKeyConstraint getPrimaryKeyConstraint() {
     havePKImported();
     return pk;
   }
 
+  /**
+   * Get pk column names string [ ].
+   *
+   * @return the string [ ]
+   */
   public String[] getPKColumnNames() {
     DBPrimaryKeyConstraint pk = getPrimaryKeyConstraint();
     return (pk != null ? pk.getColumnNames() : EMPTY_ARRAY);
   }
 
+  /**
+   * Is pk imported boolean.
+   *
+   * @return the boolean
+   */
   public boolean isPKImported() {
     return pkImported;
   }
 
+  /**
+   * Sets pk imported.
+   *
+   * @param pkImported the pk imported
+   */
   public void setPKImported(boolean pkImported) {
     this.pkImported = pkImported;
   }
 
+  /**
+   * Have pk imported.
+   */
   public void havePKImported() {
     if (!isPKImported()) {
       haveColumnsImported();
@@ -265,6 +377,9 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
   }
 
+  /**
+   * The type Pk rec.
+   */
   class PKRec implements JDBCDBImporter.PKReceiver {
 
     @Override
@@ -283,6 +398,12 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
   // uniqueConstraint operations -------------------------------------------------------------------------------------
 
+  /**
+   * Gets unique constraints.
+   *
+   * @param includePK the include pk
+   * @return the unique constraints
+   */
   public Set<DBUniqueConstraint> getUniqueConstraints(boolean includePK) {
     haveIndexesImported();
     Set<DBUniqueConstraint> result = new HashSet<>(uniqueConstraints);
@@ -292,6 +413,12 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     return result;
   }
 
+  /**
+   * Gets unique constraint.
+   *
+   * @param columnNames the column names
+   * @return the unique constraint
+   */
   public DBUniqueConstraint getUniqueConstraint(String[] columnNames) {
     haveIndexesImported();
     if (pk != null && StringUtil.equalsIgnoreCase(columnNames, pk.getColumnNames())) {
@@ -305,6 +432,12 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     return null;
   }
 
+  /**
+   * Gets unique constraint.
+   *
+   * @param name the name
+   * @return the unique constraint
+   */
   public DBUniqueConstraint getUniqueConstraint(String name) {
     haveIndexesImported();
     if (name.equalsIgnoreCase(pk.getName())) {
@@ -318,6 +451,11 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     return null;
   }
 
+  /**
+   * Add unique constraint.
+   *
+   * @param uk the uk
+   */
   public void addUniqueConstraint(DBUniqueConstraint uk) {
     haveIndexesImported();
     uk.setTable(this);
@@ -327,6 +465,11 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     uniqueConstraints.add(uk);
   }
 
+  /**
+   * Remove unique constraint.
+   *
+   * @param constraint the constraint
+   */
   public void removeUniqueConstraint(DBUniqueConstraint constraint) {
     haveIndexesImported();
     uniqueConstraints.remove(constraint.getName());
@@ -335,22 +478,43 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
   // index operations ------------------------------------------------------------------------------------------------
 
+  /**
+   * Gets indexes.
+   *
+   * @return the indexes
+   */
   public List<DBIndex> getIndexes() {
     haveIndexesImported();
     return new ArrayList<>(indexes.values());
   }
 
+  /**
+   * Gets index.
+   *
+   * @param indexName the index name
+   * @return the index
+   */
   public DBIndex getIndex(String indexName) {
     haveIndexesImported();
     return indexes.get(indexName);
   }
 
+  /**
+   * Add index.
+   *
+   * @param index the index
+   */
   public void addIndex(DBIndex index) {
     haveIndexesImported();
     index.setTable(this);
     indexes.put(index.getName(), index);
   }
 
+  /**
+   * Remove index.
+   *
+   * @param index the index
+   */
   public void removeIndex(DBIndex index) {
     haveIndexesImported();
     indexes.remove(index.getName());
@@ -368,10 +532,20 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
   }
 
+  /**
+   * Are indexes imported boolean.
+   *
+   * @return the boolean
+   */
   public boolean areIndexesImported() {
     return (this.indexes != null);
   }
 
+  /**
+   * Sets indexes imported.
+   *
+   * @param indexesImported the indexes imported
+   */
   public void setIndexesImported(boolean indexesImported) {
     if (indexesImported) {
       this.uniqueConstraints = new OrderedSet<>();
@@ -382,6 +556,9 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
   }
 
+  /**
+   * The type Idx receiver.
+   */
   static class IdxReceiver implements JDBCDBImporter.IndexReceiver {
     @Override
     public void receiveIndex(DBIndexInfo indexInfo, boolean deterministicName, DBTable table, DBSchema schema) {
@@ -406,11 +583,22 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
   // ForeignKeyConstraint operations ---------------------------------------------------------------------------------
 
+  /**
+   * Gets foreign key constraints.
+   *
+   * @return the foreign key constraints
+   */
   public Set<DBForeignKeyConstraint> getForeignKeyConstraints() {
     haveFKsImported();
     return new HashSet<>(foreignKeyConstraints);
   }
 
+  /**
+   * Gets foreign key constraint.
+   *
+   * @param columnNames the column names
+   * @return the foreign key constraint
+   */
   public DBForeignKeyConstraint getForeignKeyConstraint(String... columnNames) {
     haveFKsImported();
     for (DBForeignKeyConstraint fk : foreignKeyConstraints) {
@@ -422,12 +610,22 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
         "with the columns (" + ArrayFormat.format(columnNames) + ")");
   }
 
+  /**
+   * Add foreign key.
+   *
+   * @param constraint the constraint
+   */
   public void addForeignKey(DBForeignKeyConstraint constraint) {
     haveFKsImported();
     constraint.setTable(this);
     foreignKeyConstraints.add(constraint);
   }
 
+  /**
+   * Remove foreign key constraint.
+   *
+   * @param constraint the constraint
+   */
   public void removeForeignKeyConstraint(DBForeignKeyConstraint constraint) {
     haveFKsImported();
     foreignKeyConstraints.remove(constraint);
@@ -444,14 +642,27 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
   }
 
+  /**
+   * Are f ks imported boolean.
+   *
+   * @return the boolean
+   */
   public boolean areFKsImported() {
     return (foreignKeyConstraints != null);
   }
 
+  /**
+   * Sets f ks imported.
+   *
+   * @param fksImported the fks imported
+   */
   public void setFKsImported(boolean fksImported) {
     this.foreignKeyConstraints = (fksImported ? new OrderedSet<>() : null);
   }
 
+  /**
+   * The type Fk rec.
+   */
   class FKRec implements JDBCDBImporter.FKReceiver {
 
     @Override
@@ -464,6 +675,11 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
   // check constraint operations -------------------------------------------------------------------------------------
 
+  /**
+   * Gets check constraints.
+   *
+   * @return the check constraints
+   */
   public List<DBCheckConstraint> getCheckConstraints() {
     haveChecksImported();
     if (checkConstraints != null) {
@@ -473,6 +689,11 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
   }
 
+  /**
+   * Add check constraint.
+   *
+   * @param checkConstraint the check constraint
+   */
   public void addCheckConstraint(DBCheckConstraint checkConstraint) {
     haveChecksImported();
     checkConstraint.setTable(this);
@@ -485,10 +706,20 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
   }
 
+  /**
+   * Are checks imported boolean.
+   *
+   * @return the boolean
+   */
   public boolean areChecksImported() {
     return (getCatalog().getDatabase().isChecksImported());
   }
 
+  /**
+   * Sets checks imported.
+   *
+   * @param checksImported the checks imported
+   */
   public void setChecksImported(boolean checksImported) {
     if (checksImported) {
       if (checkConstraints == null) {
@@ -499,6 +730,11 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
   }
 
+  /**
+   * Receive check constraint.
+   *
+   * @param check the check
+   */
   public void receiveCheckConstraint(DBCheckConstraint check) {
     if (this.checkConstraints == null) {
       this.checkConstraints = new ArrayList<>();
@@ -509,16 +745,31 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
   // referrer operations ---------------------------------------------------------------------------------------------
 
+  /**
+   * Gets referrers.
+   *
+   * @return the referrers
+   */
   public Collection<DBTable> getReferrers() {
     haveReferrersImported();
     return new HashSet<>(referrers);
   }
 
+  /**
+   * Add referrer.
+   *
+   * @param referrer the referrer
+   */
   public void addReferrer(DBTable referrer) {
     haveReferrersImported();
     receiveReferrer(referrer);
   }
 
+  /**
+   * Receive referrer.
+   *
+   * @param referrer the referrer
+   */
   public void receiveReferrer(DBTable referrer) {
     if (referrers == null) {
       referrers = new OrderedSet<>();
@@ -536,10 +787,20 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
   }
 
+  /**
+   * Are referrers imported boolean.
+   *
+   * @return the boolean
+   */
   public boolean areReferrersImported() {
     return (referrers == null);
   }
 
+  /**
+   * Sets referrers imported.
+   *
+   * @param referrersImported the referrers imported
+   */
   public void setReferrersImported(boolean referrersImported) {
     if (referrersImported) {
       if (referrers == null) {
@@ -550,6 +811,9 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
   }
 
+  /**
+   * The type Ref receiver.
+   */
   class RefReceiver implements JDBCDBImporter.ReferrerReceiver {
     @Override
     public void receiveReferrer(String fktable_name, DBTable table) {
@@ -580,18 +844,49 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
   // row operations --------------------------------------------------------------------------------------------------
 
+  /**
+   * All rows db row iterator.
+   *
+   * @param connection the connection
+   * @return the db row iterator
+   * @throws SQLException the sql exception
+   */
   public DBRowIterator allRows(Connection connection) throws SQLException {
     return new DBRowIterator(this, connection, null);
   }
 
+  /**
+   * Query rows db row iterator.
+   *
+   * @param whereClause the where clause
+   * @param connection  the connection
+   * @return the db row iterator
+   * @throws SQLException the sql exception
+   */
   public DBRowIterator queryRows(String whereClause, Connection connection) throws SQLException {
     return new DBRowIterator(this, connection, whereClause);
   }
 
+  /**
+   * Gets row count.
+   *
+   * @param connection the connection
+   * @return the row count
+   * @throws SQLException the sql exception
+   */
   public long getRowCount(Connection connection) throws SQLException {
     return DBUtil.countRows(this, connection);
   }
 
+  /**
+   * Query by pk db row.
+   *
+   * @param pk         the pk
+   * @param connection the connection
+   * @param dialect    the dialect
+   * @return the db row
+   * @throws SQLException the sql exception
+   */
   public DBRow queryByPK(Object pk, Connection connection, DatabaseDialect dialect) throws SQLException {
     String[] pkColumnNames = getPrimaryKeyConstraint().getColumnNames();
     if (pkColumnNames.length == 0) {
@@ -608,7 +903,13 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     return result;
   }
 
-  /*
+  /**
+   * Query pk values heavyweight iterator.
+   *
+   * @param connection the connection
+   * @return the heavyweight iterator
+   */
+/*
       public DBRowIterator queryRowsByCellValues(String[] columns, Object[] values, Connection connection) throws SQLException {
           String whereClause = SQLUtil.renderWhereClause(columns, values, dialect);
           return new DBRowIterator(this, connection, whereClause);
@@ -623,6 +924,13 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     return new ConvertingIterator<>(rawIterator, converter);
   }
 
+  /**
+   * Query tabular iterator.
+   *
+   * @param query      the query
+   * @param connection the connection
+   * @return the tabular iterator
+   */
   public TabularIterator query(String query, Connection connection) {
     Assert.notEmpty(query, "query");
     return new ArrayResultSetIterator(connection, query);

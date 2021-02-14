@@ -44,18 +44,35 @@ public class DBCatalog extends AbstractCompositeDBObject<DBSchema> implements Na
 
   private static final long serialVersionUID = 3956827426638393655L;
 
+  /**
+   * The Schemas.
+   */
   final OrderedNameMap<DBSchema> schemas;
 
   // constructors ----------------------------------------------------------------------------------------------------
 
+  /**
+   * Instantiates a new Db catalog.
+   */
   public DBCatalog() {
     this(null);
   }
 
+  /**
+   * Instantiates a new Db catalog.
+   *
+   * @param name the name
+   */
   public DBCatalog(String name) {
     this(name, null);
   }
 
+  /**
+   * Instantiates a new Db catalog.
+   *
+   * @param name  the name
+   * @param owner the owner
+   */
   public DBCatalog(String name, Database owner) {
     super(name, "catalog", owner);
     if (owner != null) {
@@ -66,10 +83,20 @@ public class DBCatalog extends AbstractCompositeDBObject<DBSchema> implements Na
 
   // properties ------------------------------------------------------------------------------------------------------
 
+  /**
+   * Gets database.
+   *
+   * @return the database
+   */
   public Database getDatabase() {
     return (Database) getOwner();
   }
 
+  /**
+   * Sets database.
+   *
+   * @param database the database
+   */
   public void setDatabase(Database database) {
     this.owner = database;
   }
@@ -103,25 +130,51 @@ public class DBCatalog extends AbstractCompositeDBObject<DBSchema> implements Na
 
   // schema operations -----------------------------------------------------------------------------------------------
 
+  /**
+   * Gets schemas.
+   *
+   * @return the schemas
+   */
   public List<DBSchema> getSchemas() {
     return getComponents();
   }
 
+  /**
+   * Gets schema.
+   *
+   * @param schemaName the schema name
+   * @return the schema
+   */
   public DBSchema getSchema(String schemaName) {
     return schemas.get(schemaName);
   }
 
+  /**
+   * Add schema.
+   *
+   * @param schema the schema
+   */
   public void addSchema(DBSchema schema) {
     schemas.put(schema.getName(), schema);
     schema.setOwner(this);
   }
 
+  /**
+   * Remove schema.
+   *
+   * @param schema the schema
+   */
   public void removeSchema(DBSchema schema) {
     schemas.remove(schema.getName());
   }
 
   // table operations ------------------------------------------------------------------------------------------------
 
+  /**
+   * Gets tables.
+   *
+   * @return the tables
+   */
   public List<DBTable> getTables() {
     List<DBTable> tables = new ArrayList<>();
     for (DBSchema schema : getSchemas()) {
@@ -130,10 +183,23 @@ public class DBCatalog extends AbstractCompositeDBObject<DBSchema> implements Na
     return tables;
   }
 
+  /**
+   * Gets table.
+   *
+   * @param name the name
+   * @return the table
+   */
   public DBTable getTable(String name) {
     return getTable(name, true);
   }
 
+  /**
+   * Gets table.
+   *
+   * @param name     the name
+   * @param required the required
+   * @return the table
+   */
   public DBTable getTable(String name, boolean required) {
     for (DBSchema schema : getSchemas()) {
       for (DBTable table : schema.getTables()) {
@@ -149,11 +215,21 @@ public class DBCatalog extends AbstractCompositeDBObject<DBSchema> implements Na
     }
   }
 
+  /**
+   * Remove table.
+   *
+   * @param tableName the table name
+   */
   public void removeTable(String tableName) {
     DBTable table = getTable(tableName);
     table.getSchema().removeTable(table);
   }
 
+  /**
+   * Gets sequences.
+   *
+   * @return the sequences
+   */
   public List<DBSequence> getSequences() {
     List<DBSequence> sequences = new ArrayList<>();
     for (DBSchema schema : getSchemas()) {

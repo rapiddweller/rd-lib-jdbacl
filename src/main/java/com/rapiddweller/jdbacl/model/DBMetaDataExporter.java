@@ -26,9 +26,16 @@ import java.io.IOException;
 /**
  * Interface for classes that can export a meta data model.<br/><br/>
  * Created: 08.07.2010 06:39:28
- * @since 0.6.3
+ *
  * @author Volker Bergmann
+ * @since 0.6.3
  */
 public interface DBMetaDataExporter {
-	void export(Database database) throws IOException;
+  /**
+   * Export.
+   *
+   * @param database the database
+   * @throws IOException the io exception
+   */
+  void export(Database database) throws IOException;
 }

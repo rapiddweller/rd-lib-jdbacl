@@ -21,39 +21,46 @@
 
 package com.rapiddweller.jdbacl;
 
-import static org.junit.Assert.*;
-
 import com.rapiddweller.common.version.VersionInfo;
 import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
 
 /**
  * Tests the {@link VersionInfo}.<br/><br/>
  * Created: 23.03.2011 11:34:32
- * @since 0.6.8
+ *
  * @author Volker Bergmann
+ * @since 0.6.8
  */
 public class VersionInfoTest {
 
-	@Test
-	public void testVersion() {
-		VersionInfo version = getVersionInfo();
-		checkVersionNumber(version.getVersion());
-		System.out.println(version);
-	}
+  /**
+   * Test version.
+   */
+  @Test
+  public void testVersion() {
+    VersionInfo version = getVersionInfo();
+    checkVersionNumber(version.getVersion());
+    System.out.println(version);
+  }
 
-	@Test
-	public void testVerifyDependencies() {
-		VersionInfo version = getVersionInfo();
-		version.verifyDependencies();
-	}
+  /**
+   * Test verify dependencies.
+   */
+  @Test
+  public void testVerifyDependencies() {
+    VersionInfo version = getVersionInfo();
+    version.verifyDependencies();
+  }
 
-	private static VersionInfo getVersionInfo() {
-		return VersionInfo.getInfo("jdbacl");
-	}
+  private static VersionInfo getVersionInfo() {
+    return VersionInfo.getInfo("jdbacl");
+  }
 
-	private static void checkVersionNumber(String versionNumber) {
-		assertFalse("version number is empty", versionNumber == null || versionNumber.length() == 0);
-		assertFalse("version number was not substituted", versionNumber.startsWith("${"));
-	}
-	
+  private static void checkVersionNumber(String versionNumber) {
+    assertFalse("version number is empty", versionNumber == null || versionNumber.length() == 0);
+    assertFalse("version number was not substituted", versionNumber.startsWith("${"));
+  }
+
 }

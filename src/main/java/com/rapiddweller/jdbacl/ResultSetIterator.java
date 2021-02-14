@@ -38,101 +38,128 @@ import java.sql.SQLException;
  * Wraps a ResultSet into the semantic of a {@link HeavyweightIterator}.
  * <br/>
  * Created: 15.08.2007 18:19:25
+ *
  * @author Volker Bergmann
  * @see HeavyweightIterator
  */
 public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
 
-    private static final Logger LOGGER = LogManager.getLogger(ResultSetIterator.class);
+  private static final Logger LOGGER = LogManager.getLogger(ResultSetIterator.class);
 
-    private final ResultSet resultSet;
-    private Boolean hasNext;
-    private String[] columnLabels;
-    private boolean closed;
-    private final String query;
-    
-    // constructors ----------------------------------------------------------------------------------------------------
+  private final ResultSet resultSet;
+  private Boolean hasNext;
+  private String[] columnLabels;
+  private boolean closed;
+  private final String query;
 
-    public ResultSetIterator(ResultSet resultSet) {
-        this(resultSet, "");
+  // constructors ----------------------------------------------------------------------------------------------------
+
+  /**
+   * Instantiates a new Result set iterator.
+   *
+   * @param resultSet the result set
+   */
+  public ResultSetIterator(ResultSet resultSet) {
+    this(resultSet, "");
+  }
+
+  /**
+   * Instantiates a new Result set iterator.
+   *
+   * @param resultSet the result set
+   * @param query     the query
+   */
+  public ResultSetIterator(ResultSet resultSet, String query) {
+    if (resultSet == null) {
+      throw new IllegalArgumentException("resultSet is null");
     }
+    this.resultSet = resultSet;
+    this.hasNext = null;
+    this.closed = false;
+    this.query = query;
+  }
 
-    public ResultSetIterator(ResultSet resultSet, String query) {
-    	if (resultSet == null)
-    		throw new IllegalArgumentException("resultSet is null");
-        this.resultSet = resultSet;
-        this.hasNext = null;
-        this.closed = false;
-        this.query = query;
-    }
+  // interface -------------------------------------------------------------------------------------------------------
 
-    // interface -------------------------------------------------------------------------------------------------------
-
-    public String[] getColumnLabels() {
-    	if (columnLabels == null) {
-    		try {
-	            ResultSetMetaData metaData = resultSet.getMetaData();
-	            int n = metaData.getColumnCount();
-	            columnLabels = new String[n];
-	            for (int i = 0; i < n; i++)
-	            	columnLabels[i] = metaData.getColumnLabel(i + 1);
-            } catch (SQLException e) {
-	            throw new RuntimeException("Error querying column meta data", e);
-            }
-    	}
-    	return columnLabels;
-    }
-    
-    @Override
-	public boolean hasNext() {
-        if (LOGGER.isDebugEnabled())
-            LOGGER.debug("hasNext() called on: " + this);
-        if (hasNext != null)
-            return hasNext;
-        if (closed)
-        	return false;
-        try {
-            if (LOGGER.isDebugEnabled())
-            	LOGGER.debug("hasNext() checks resultSet availability of: " + this);
-            hasNext = resultSet.next();
-            if (!hasNext)
-            	close();
-            return hasNext;
-        } catch (SQLException e) {
-            throw new RuntimeException("Error in query: " + query, e);
+  /**
+   * Get column labels string [ ].
+   *
+   * @return the string [ ]
+   */
+  public String[] getColumnLabels() {
+    if (columnLabels == null) {
+      try {
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        int n = metaData.getColumnCount();
+        columnLabels = new String[n];
+        for (int i = 0; i < n; i++) {
+          columnLabels[i] = metaData.getColumnLabel(i + 1);
         }
+      } catch (SQLException e) {
+        throw new RuntimeException("Error querying column meta data", e);
+      }
     }
+    return columnLabels;
+  }
 
-    @Override
-	public ResultSet next() {
-        if (LOGGER.isDebugEnabled())
-            LOGGER.debug("next() called on: " + this);
-        if (!hasNext())
-            throw new IllegalStateException("No more row available. Use hasNext() for checking availability.");
-        hasNext = null;
-        return resultSet;
+  @Override
+  public boolean hasNext() {
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("hasNext() called on: " + this);
     }
+    if (hasNext != null) {
+      return hasNext;
+    }
+    if (closed) {
+      return false;
+    }
+    try {
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("hasNext() checks resultSet availability of: " + this);
+      }
+      hasNext = resultSet.next();
+      if (!hasNext) {
+        close();
+      }
+      return hasNext;
+    } catch (SQLException e) {
+      throw new RuntimeException("Error in query: " + query, e);
+    }
+  }
 
-    @Override
-	public void remove() {
-        throw new UnsupportedOperationException("Not supported");
+  @Override
+  public ResultSet next() {
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("next() called on: " + this);
     }
+    if (!hasNext()) {
+      throw new IllegalStateException("No more row available. Use hasNext() for checking availability.");
+    }
+    hasNext = null;
+    return resultSet;
+  }
 
-    @Override
-	public synchronized void close() {
-    	if (closed)
-    		return;
-    	LOGGER.debug("closing {}", this);
-        hasNext = false;
-    	DBUtil.closeResultSetAndStatement(resultSet);
-    	closed = true;
-    }
-    
-    // java.lang.Object overrides --------------------------------------------------------------------------------------
+  @Override
+  public void remove() {
+    throw new UnsupportedOperationException("Not supported");
+  }
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + '[' + query + ']';
+  @Override
+  public synchronized void close() {
+    if (closed) {
+      return;
     }
+    LOGGER.debug("closing {}", this);
+    hasNext = false;
+    DBUtil.closeResultSetAndStatement(resultSet);
+    closed = true;
+  }
+
+  // java.lang.Object overrides --------------------------------------------------------------------------------------
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + '[' + query + ']';
+  }
 
 }

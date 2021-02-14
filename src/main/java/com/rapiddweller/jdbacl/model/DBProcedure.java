@@ -24,56 +24,95 @@ package com.rapiddweller.jdbacl.model;
 /**
  * Represents a database procedure.<br/><br/>
  * Created: 07.11.2011 16:06:00
- * @since 0.7.0
+ *
  * @author Volker Bergmann
+ * @since 0.7.0
  */
 public class DBProcedure extends AbstractDBObject {
 
-	private static final long serialVersionUID = -7764571135020675359L;
-	
-	private String objectId;
-	private String subProgramId;
-	private String overload;
+  private static final long serialVersionUID = -7764571135020675359L;
 
-	public DBProcedure(String name, DBPackage owner) {
-		super(name, "procedure", owner);
-		owner.addProcedure(this);
-	}
+  private String objectId;
+  private String subProgramId;
+  private String overload;
 
-	public String getObjectId() {
-		return objectId;
-	}
+  /**
+   * Instantiates a new Db procedure.
+   *
+   * @param name  the name
+   * @param owner the owner
+   */
+  public DBProcedure(String name, DBPackage owner) {
+    super(name, "procedure", owner);
+    owner.addProcedure(this);
+  }
 
-	public void setObjectId(String objectId) {
-		this.objectId = objectId;
-	}
+  /**
+   * Gets object id.
+   *
+   * @return the object id
+   */
+  public String getObjectId() {
+    return objectId;
+  }
 
-	public String getSubProgramId() {
-		return subProgramId;
-	}
+  /**
+   * Sets object id.
+   *
+   * @param objectId the object id
+   */
+  public void setObjectId(String objectId) {
+    this.objectId = objectId;
+  }
 
-	public void setSubProgramId(String subProgramId) {
-		this.subProgramId = subProgramId;
-	}
+  /**
+   * Gets sub program id.
+   *
+   * @return the sub program id
+   */
+  public String getSubProgramId() {
+    return subProgramId;
+  }
 
-	public String getOverload() {
-		return overload;
-	}
+  /**
+   * Sets sub program id.
+   *
+   * @param subProgramId the sub program id
+   */
+  public void setSubProgramId(String subProgramId) {
+    this.subProgramId = subProgramId;
+  }
 
-	public void setOverload(String overload) {
-		this.overload = overload;
-	}
+  /**
+   * Gets overload.
+   *
+   * @return the overload
+   */
+  public String getOverload() {
+    return overload;
+  }
 
-	@Override
-	public boolean isIdentical(DBObject other) {
-		if (this == other)
-			return true;
-		if (other == null || other.getClass() != getClass())
-			return false;
-		DBProcedure that = (DBProcedure) other;
-		return this.objectId.equals(that.objectId)
-			&& this.subProgramId.equals(that.subProgramId)
-			&& this.overload.equals(that.overload);
-	}
+  /**
+   * Sets overload.
+   *
+   * @param overload the overload
+   */
+  public void setOverload(String overload) {
+    this.overload = overload;
+  }
+
+  @Override
+  public boolean isIdentical(DBObject other) {
+    if (this == other) {
+      return true;
+    }
+    if (other == null || other.getClass() != getClass()) {
+      return false;
+    }
+    DBProcedure that = (DBProcedure) other;
+    return this.objectId.equals(that.objectId)
+        && this.subProgramId.equals(that.subProgramId)
+        && this.overload.equals(that.overload);
+  }
 
 }

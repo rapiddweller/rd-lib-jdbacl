@@ -141,19 +141,45 @@ class ImportedKey {
   private final List<String> foreignKeyColumnNames = new ArrayList<>();
   private final List<String> refereeColumnNames = new ArrayList<>();
 
+  /**
+   * Add foreign key column.
+   *
+   * @param foreignKeyColumnName the foreign key column name
+   * @param targetColumnName     the target column name
+   */
   public void addForeignKeyColumn(String foreignKeyColumnName, String targetColumnName) {
     foreignKeyColumnNames.add(foreignKeyColumnName);
     refereeColumnNames.add(targetColumnName);
   }
 
+  /**
+   * Gets foreign key column names.
+   *
+   * @return the foreign key column names
+   */
   public List<String> getForeignKeyColumnNames() {
     return foreignKeyColumnNames;
   }
 
+  /**
+   * Gets referee column names.
+   *
+   * @return the referee column names
+   */
   public List<String> getRefereeColumnNames() {
     return refereeColumnNames;
   }
 
+  /**
+   * Parse imported key.
+   *
+   * @param resultSet the result set
+   * @param catalog   the catalog
+   * @param schema    the schema
+   * @param fkTable   the fk table
+   * @return the imported key
+   * @throws SQLException the sql exception
+   */
   public static ImportedKey parse(ResultSet resultSet, DBCatalog catalog, DBSchema schema, DBTable fkTable) throws SQLException {
     ImportedKey key = new ImportedKey();
     key.pktable_cat = resultSet.getString(1);
@@ -200,6 +226,11 @@ class ImportedKey {
     return key;
   }
 
+  /**
+   * Gets pk table.
+   *
+   * @return the pk table
+   */
   public DBTable getPkTable() {
     return pkTable;
   }

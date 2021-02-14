@@ -33,29 +33,40 @@ import static org.junit.Assert.assertArrayEquals;
 /**
  * Tests the {@link XMLModelExporter}.<br/><br/>
  * Created: 28.11.2010 09:55:52
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public class XMLModelExporterTest extends AbstractModelTest {
 
-	@Test
-	public void testLazy() throws Exception {
-		Database db = createTestModel();
-		File file = new File("target", getClass().getSimpleName() + ".xml");
-		new XMLModelExporter(file).export(db);
-		String[] expectedLines = IOUtil.readTextLines(LAZY_TEST_MODEL_FILENAME, false);
-		String[] actualLines = IOUtil.readTextLines(file.getCanonicalPath(), false);
-        assertArrayEquals(expectedLines, actualLines);
-	}
+  /**
+   * Test lazy.
+   *
+   * @throws Exception the exception
+   */
+  @Test
+  public void testLazy() throws Exception {
+    Database db = createTestModel();
+    File file = new File("target", getClass().getSimpleName() + ".xml");
+    new XMLModelExporter(file).export(db);
+    String[] expectedLines = IOUtil.readTextLines(LAZY_TEST_MODEL_FILENAME, false);
+    String[] actualLines = IOUtil.readTextLines(file.getCanonicalPath(), false);
+    assertArrayEquals(expectedLines, actualLines);
+  }
 
-	@Test
-	public void testEager() throws Exception {
-		Database db = createTestModel();
-		File file = new File("target", getClass().getSimpleName() + ".xml");
-		new XMLModelExporter(file, false).export(db);
-		String[] expectedLines = IOUtil.readTextLines(EAGER_TEST_MODEL_FILENAME, false);
-		String[] actualLines = IOUtil.readTextLines(file.getCanonicalPath(), false);
-        assertArrayEquals(expectedLines, actualLines);
-	}
+  /**
+   * Test eager.
+   *
+   * @throws Exception the exception
+   */
+  @Test
+  public void testEager() throws Exception {
+    Database db = createTestModel();
+    File file = new File("target", getClass().getSimpleName() + ".xml");
+    new XMLModelExporter(file, false).export(db);
+    String[] expectedLines = IOUtil.readTextLines(EAGER_TEST_MODEL_FILENAME, false);
+    String[] actualLines = IOUtil.readTextLines(file.getCanonicalPath(), false);
+    assertArrayEquals(expectedLines, actualLines);
+  }
 
 }

@@ -37,50 +37,64 @@ import java.util.Arrays;
  * Represents a unique constraint on one or the combination of several columns of one table.<br/>
  * <br/>
  * Created: 06.01.2007 09:00:37
+ *
  * @author Volker Bergmann
  */
 public class DBUniqueConstraint extends DBConstraint implements MultiColumnObject {
 
-    private static final long serialVersionUID = -8241121848879185421L;
-    
-	private String[] columnNames;
+  private static final long serialVersionUID = -8241121848879185421L;
 
-    /**
-     * @param name the constraint name - it may be null
-     * @param columnNames the names of the columns to which the constraint applies
-     */
-    public DBUniqueConstraint(DBTable owner, String name, boolean nameDeterministic, String... columnNames) {
-        super(name, nameDeterministic, "unique constraint", owner);
-        this.columnNames = columnNames;
-        if (getClass() == DBUniqueConstraint.class)
-        	owner.addUniqueConstraint(this);
+  private String[] columnNames;
+
+  /**
+   * Instantiates a new Db unique constraint.
+   *
+   * @param owner             the owner
+   * @param name              the constraint name - it may be null
+   * @param nameDeterministic the name deterministic
+   * @param columnNames       the names of the columns to which the constraint applies
+   */
+  public DBUniqueConstraint(DBTable owner, String name, boolean nameDeterministic, String... columnNames) {
+    super(name, nameDeterministic, "unique constraint", owner);
+    this.columnNames = columnNames;
+    if (getClass() == DBUniqueConstraint.class) {
+      owner.addUniqueConstraint(this);
     }
+  }
 
-    @Override
-    public String[] getColumnNames() {
-        return columnNames.clone();
+  @Override
+  public String[] getColumnNames() {
+    return columnNames.clone();
+  }
+
+  /**
+   * Add column name.
+   *
+   * @param columnName the column name
+   */
+  public void addColumnName(String columnName) {
+    if (!ArrayUtil.contains(columnName, columnNames)) {
+      columnNames = ArrayUtil.append(columnName, columnNames);
     }
+  }
 
-	public void addColumnName(String columnName) {
-		if (!ArrayUtil.contains(columnName, columnNames))
-			columnNames = ArrayUtil.append(columnName, columnNames);
-	}
-	
-	@Override
-	public boolean isIdentical(DBObject other) {
-		if (this == other)
-			return true;
-		if (other == null || !(other instanceof DBUniqueConstraint))
-			return false;
-		DBUniqueConstraint that = (DBUniqueConstraint) other;
-		return NullSafeComparator.equals(this.name, that.name)
-			&& Arrays.equals(this.columnNames, that.columnNames)
-			&& NullSafeComparator.equals(this.getTable().getName(), that.getTable().getName());
-	}
+  @Override
+  public boolean isIdentical(DBObject other) {
+    if (this == other) {
+      return true;
+    }
+    if (other == null || !(other instanceof DBUniqueConstraint)) {
+      return false;
+    }
+    DBUniqueConstraint that = (DBUniqueConstraint) other;
+    return NullSafeComparator.equals(this.name, that.name)
+        && Arrays.equals(this.columnNames, that.columnNames)
+        && NullSafeComparator.equals(this.getTable().getName(), that.getTable().getName());
+  }
 
-	@Override
-	public String toString() {
-		return SQLUtil.ukSpec(this, NameSpec.ALWAYS);
-	}
+  @Override
+  public String toString() {
+    return SQLUtil.ukSpec(this, NameSpec.ALWAYS);
+  }
 
 }

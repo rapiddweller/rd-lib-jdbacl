@@ -22,8 +22,16 @@
 package com.rapiddweller.jdbacl.model.sql;
 
 import com.rapiddweller.common.IOUtil;
-import com.rapiddweller.jdbacl.*;
-import com.rapiddweller.jdbacl.model.*;
+import com.rapiddweller.jdbacl.DBUtil;
+import com.rapiddweller.jdbacl.DatabaseDialect;
+import com.rapiddweller.jdbacl.DatabaseDialectManager;
+import com.rapiddweller.jdbacl.NameSpec;
+import com.rapiddweller.jdbacl.SQLUtil;
+import com.rapiddweller.jdbacl.model.DBForeignKeyConstraint;
+import com.rapiddweller.jdbacl.model.DBMetaDataExporter;
+import com.rapiddweller.jdbacl.model.DBSequence;
+import com.rapiddweller.jdbacl.model.DBTable;
+import com.rapiddweller.jdbacl.model.Database;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -35,62 +43,72 @@ import java.util.Set;
 /**
  * Exports database meta data to a DDL file with CREATE TABLE commands.<br/><br/>
  * Created: 11.08.2010 16:23:59
- * @since 0.6.10
+ *
  * @author Volker Bergmann
+ * @since 0.6.10
  */
 public class CreateExporter implements DBMetaDataExporter {
 
-	final File file;
-	
-	public CreateExporter(File file) {
-		this.file = file;
-	}
+  /**
+   * The File.
+   */
+  final File file;
 
-    @Override
-	public void export(Database database) throws IOException {
-	    PrintWriter out = null;
-	    try {
-	    	out = new PrintWriter(new FileWriter(file));
-	    	exportSequences(database, out);
-	    	exportTables(database, out);
-	    	exportForeignKeys(database, out);
-	    } finally {
-	    	IOUtil.close(out);
-	    }
+  /**
+   * Instantiates a new Create exporter.
+   *
+   * @param file the file
+   */
+  public CreateExporter(File file) {
+    this.file = file;
+  }
+
+  @Override
+  public void export(Database database) throws IOException {
+    PrintWriter out = null;
+    try {
+      out = new PrintWriter(new FileWriter(file));
+      exportSequences(database, out);
+      exportTables(database, out);
+      exportForeignKeys(database, out);
+    } finally {
+      IOUtil.close(out);
     }
+  }
 
-	private static void exportSequences(Database database, PrintWriter out) {
-		List<DBSequence> sequences = database.getSequences(true);
-		DatabaseDialect dialect = DatabaseDialectManager.getDialectForProduct(
-			database.getDatabaseProductName(), database.getDatabaseProductVersion());
-		for (DBSequence sequence : sequences) {
-			out.print(dialect.renderCreateSequence(sequence));
-			out.println(';');
-			out.println();
-		}
-	}
-
-	private static void exportTables(Database database, PrintWriter out) {
-		List<DBTable> tables = DBUtil.dependencyOrderedTables(database);
-		for (DBTable table : tables) {
-			SQLUtil.renderCreateTable(table, false, NameSpec.IF_REPRODUCIBLE, out);
-			out.println(';');
-			out.println();
-		}
+  private static void exportSequences(Database database, PrintWriter out) {
+    List<DBSequence> sequences = database.getSequences(true);
+    DatabaseDialect dialect = DatabaseDialectManager.getDialectForProduct(
+        database.getDatabaseProductName(), database.getDatabaseProductVersion());
+    for (DBSequence sequence : sequences) {
+      out.print(dialect.renderCreateSequence(sequence));
+      out.println(';');
+      out.println();
     }
+  }
 
-	private static void exportForeignKeys(Database database, PrintWriter out) {
-		for (DBTable table : database.getTables())
-			exportForeignKeys(table, out);
+  private static void exportTables(Database database, PrintWriter out) {
+    List<DBTable> tables = DBUtil.dependencyOrderedTables(database);
+    for (DBTable table : tables) {
+      SQLUtil.renderCreateTable(table, false, NameSpec.IF_REPRODUCIBLE, out);
+      out.println(';');
+      out.println();
     }
+  }
 
-	private static void exportForeignKeys(DBTable table, PrintWriter out) {
-		Set<DBForeignKeyConstraint> fks = table.getForeignKeyConstraints();
-		for (DBForeignKeyConstraint fk : fks) {
-			SQLUtil.renderAddForeignKey(fk, NameSpec.IF_REPRODUCIBLE, out);
-			out.println(';');
-			out.println();
-		}
+  private static void exportForeignKeys(Database database, PrintWriter out) {
+    for (DBTable table : database.getTables()) {
+      exportForeignKeys(table, out);
     }
+  }
+
+  private static void exportForeignKeys(DBTable table, PrintWriter out) {
+    Set<DBForeignKeyConstraint> fks = table.getForeignKeyConstraints();
+    for (DBForeignKeyConstraint fk : fks) {
+      SQLUtil.renderAddForeignKey(fk, NameSpec.IF_REPRODUCIBLE, out);
+      out.println(';');
+      out.println();
+    }
+  }
 
 }

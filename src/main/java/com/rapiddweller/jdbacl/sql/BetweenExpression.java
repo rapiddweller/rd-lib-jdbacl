@@ -27,18 +27,26 @@ import com.rapiddweller.script.expression.InRangeExpression;
 /**
  * {@link Expression} implementation for the SQL BETWEEN function.<br/><br/>
  * Created: 07.06.2011 22:15:34
- * @since 0.1
+ *
  * @author Volker Bergmann
+ * @since 0.1
  */
 public class BetweenExpression extends InRangeExpression {
 
-	public BetweenExpression(Expression<?> value, Expression<?> min, Expression<?> max) {
-		super(value, min, max);
-	}
+  /**
+   * Instantiates a new Between expression.
+   *
+   * @param value the value
+   * @param min   the min
+   * @param max   the max
+   */
+  public BetweenExpression(Expression<?> value, Expression<?> min, Expression<?> max) {
+    super(value, min, max);
+  }
 
-	@Override
-	public String toString() {
-		return "(" + terms[0] + " BETWEEN " + terms[1] + " AND " + terms[2] + ")";
-	}
-	
+  @Override
+  public String toString() {
+    return "(" + terms[0] + " BETWEEN " + terms[1] + " AND " + terms[2] + ")";
+  }
+
 }

@@ -21,10 +21,10 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
 
 /**
  * Tests the {@link HSQL2Dialect}.<br/><br/>
@@ -35,27 +35,39 @@ import org.junit.Test;
  */
 public class HSQL2DialectTest extends DatabaseDialectTest<HSQL2Dialect> {
 
-    @Test
-    public void testSupportsRegex() {
-        assertTrue((new HSQL2Dialect()).supportsRegex());
-    }
+  /**
+   * Test supports regex.
+   */
+  @Test
+  public void testSupportsRegex() {
+    assertTrue((new HSQL2Dialect()).supportsRegex());
+  }
 
-    public HSQL2DialectTest() {
-        super(new HSQL2Dialect());
-    }
+  /**
+   * Instantiates a new Hsql 2 dialect test.
+   */
+  public HSQL2DialectTest() {
+    super(new HSQL2Dialect());
+  }
 
-    @Test
-    public void testRegexQuery() {
-        assertEquals("NOT REGEXP_MATCHES(Expression, 'Regex')",
-                (new HSQL2Dialect()).regexQuery("Expression", true, "Regex"));
-        assertEquals("REGEXP_MATCHES(Expression, 'Regex')", (new HSQL2Dialect()).regexQuery("Expression", false, "Regex"));
-    }
+  /**
+   * Test regex query.
+   */
+  @Test
+  public void testRegexQuery() {
+    assertEquals("NOT REGEXP_MATCHES(Expression, 'Regex')",
+        (new HSQL2Dialect()).regexQuery("Expression", true, "Regex"));
+    assertEquals("REGEXP_MATCHES(Expression, 'Regex')", (new HSQL2Dialect()).regexQuery("Expression", false, "Regex"));
+  }
 
-    @Test
-    public void testRegex() {
-        assertTrue(dialect.supportsRegex());
-        assertEquals("REGEXP_MATCHES(code, '[A-Z]{5}')", dialect.regexQuery("code", false, "[A-Z]{5}"));
-        assertEquals("NOT REGEXP_MATCHES(code, '[A-Z]{5}')", dialect.regexQuery("code", true, "[A-Z]{5}"));
-    }
+  /**
+   * Test regex.
+   */
+  @Test
+  public void testRegex() {
+    assertTrue(dialect.supportsRegex());
+    assertEquals("REGEXP_MATCHES(code, '[A-Z]{5}')", dialect.regexQuery("code", false, "[A-Z]{5}"));
+    assertEquals("NOT REGEXP_MATCHES(code, '[A-Z]{5}')", dialect.regexQuery("code", true, "[A-Z]{5}"));
+  }
 
 }

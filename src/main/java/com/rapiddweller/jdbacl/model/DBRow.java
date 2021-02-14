@@ -30,100 +30,184 @@ import java.util.Map;
 /**
  * Represents a row in a database table.<br/><br/>
  * Created: 23.07.2010 07:29:14
- * @since 0.6.3
+ *
  * @author Volker Bergmann
+ * @since 0.6.3
  */
 public class DBRow implements Serializable {
-	
-	private static final long serialVersionUID = 644247555736773166L;
-	
-	DBTable table;
-	final OrderedNameMap<Object> cells;
 
-	public DBRow(DBTable table) {
-	    this.table = table;
-	    this.cells = OrderedNameMap.createCaseIgnorantMap();
+  private static final long serialVersionUID = 644247555736773166L;
+
+  /**
+   * The Table.
+   */
+  DBTable table;
+  /**
+   * The Cells.
+   */
+  final OrderedNameMap<Object> cells;
+
+  /**
+   * Instantiates a new Db row.
+   *
+   * @param table the table
+   */
+  public DBRow(DBTable table) {
+    this.table = table;
+    this.cells = OrderedNameMap.createCaseIgnorantMap();
+  }
+
+  /**
+   * Gets table.
+   *
+   * @return the table
+   */
+  public DBTable getTable() {
+    return table;
+  }
+
+  /**
+   * With table db row.
+   *
+   * @param table the table
+   * @return the db row
+   */
+  public DBRow withTable(DBTable table) {
+    this.table = table;
+    return this;
+  }
+
+  /**
+   * Gets cells.
+   *
+   * @return the cells
+   */
+  public Map<String, Object> getCells() {
+    return cells;
+  }
+
+  /**
+   * Get pk values object [ ].
+   *
+   * @return the object [ ]
+   */
+  public Object[] getPKValues() {
+    return getCellValues(table.getPKColumnNames());
+  }
+
+  /**
+   * Gets pk value.
+   *
+   * @return the pk value
+   */
+  public Object getPKValue() {
+    String[] columnNames = table.getPKColumnNames();
+    if (columnNames.length == 1) {
+      return getCellValue(columnNames[0]);
+    } else {
+      return getCellValues(columnNames);
     }
+  }
 
-	public DBTable getTable() {
-    	return table;
+  /**
+   * Gets fk value.
+   *
+   * @param fk the fk
+   * @return the fk value
+   */
+  public Object getFKValue(DBForeignKeyConstraint fk) {
+    String[] columnNames = fk.getColumnNames();
+    if (columnNames.length == 1) {
+      return getCellValue(columnNames[0]);
+    } else {
+      return getCellValues(columnNames);
     }
-	
-	public DBRow withTable(DBTable table) {
-		this.table = table;
-		return this;
-	}
-	
-	public Map<String, Object> getCells() {
-		return cells;
-	}
+  }
 
-	public Object[] getPKValues() {
-		return getCellValues(table.getPKColumnNames());
+  /**
+   * Sets fk value.
+   *
+   * @param fkConstraint the fk constraint
+   * @param fkValue      the fk value
+   */
+  public void setFKValue(DBForeignKeyConstraint fkConstraint, Object fkValue) {
+    String[] columnNames = fkConstraint.getColumnNames();
+    if (columnNames.length == 1) {
+      setCellValue(columnNames[0], fkValue);
+    } else {
+      Object[] cellValues = (Object[]) fkValue;
+      setCellValues(columnNames, cellValues);
     }
+  }
 
-	public Object getPKValue() {
-		String[] columnNames = table.getPKColumnNames();
-		if (columnNames.length == 1)
-			return getCellValue(columnNames[0]);
-		else
-			return getCellValues(columnNames);
-	}
+  /**
+   * Get fk components object [ ].
+   *
+   * @param fk the fk
+   * @return the object [ ]
+   */
+  public Object[] getFKComponents(DBForeignKeyConstraint fk) {
+    return getCellValues(fk.getColumnNames());
+  }
 
-	public Object getFKValue(DBForeignKeyConstraint fk) {
-		String[] columnNames = fk.getColumnNames();
-		if (columnNames.length == 1)
-			return getCellValue(columnNames[0]);
-		else
-			return getCellValues(columnNames);
+  /**
+   * Sets cell values.
+   *
+   * @param columnNames the column names
+   * @param cellValues  the cell values
+   */
+  public void setCellValues(String[] columnNames, Object[] cellValues) {
+    Assert.equals(columnNames.length, cellValues.length, "mismatch of column and value counts");
+    for (int i = 0; i < columnNames.length; i++) {
+      setCellValue(columnNames[i], cellValues[i]);
     }
+  }
 
-	public void setFKValue(DBForeignKeyConstraint fkConstraint, Object fkValue) {
-		String[] columnNames = fkConstraint.getColumnNames();
-		if (columnNames.length == 1)
-			setCellValue(columnNames[0], fkValue);
-		else {
-			Object[] cellValues = (Object[]) fkValue;
-			setCellValues(columnNames, cellValues);
-		}
-	}
-
-	public Object[] getFKComponents(DBForeignKeyConstraint fk) {
-		return getCellValues(fk.getColumnNames());
-	}
-
-	public void setCellValues(String[] columnNames, Object[] cellValues) {
-		Assert.equals(columnNames.length, cellValues.length, "mismatch of column and value counts");
-		for (int i = 0; i < columnNames.length; i++)
-			setCellValue(columnNames[i], cellValues[i]);
-	}
-
-	private Object[] getCellValues(String[] columnNames) {
-		Object[] result = new Object[columnNames.length];
-		for (int i = 0; i < columnNames.length; i++)
-			result[i] = cells.get(columnNames[i]);
-	    return result;
+  private Object[] getCellValues(String[] columnNames) {
+    Object[] result = new Object[columnNames.length];
+    for (int i = 0; i < columnNames.length; i++) {
+      result[i] = cells.get(columnNames[i]);
     }
+    return result;
+  }
 
-	public Object getCellValue(String columnName) {
-	    return cells.get(columnName);
+  /**
+   * Gets cell value.
+   *
+   * @param columnName the column name
+   * @return the cell value
+   */
+  public Object getCellValue(String columnName) {
+    return cells.get(columnName);
+  }
+
+  /**
+   * Sets cell value.
+   *
+   * @param columnName the column name
+   * @param value      the value
+   */
+  public void setCellValue(String columnName, Object value) {
+    cells.put(columnName, value);
+  }
+
+  @Override
+  public String toString() {
+    return table.getName() + cells.values();
+  }
+
+  /**
+   * Sets pk value.
+   *
+   * @param newPK the new pk
+   */
+  public void setPKValue(Object newPK) {
+    String[] columnNames = table.getPKColumnNames();
+    if (columnNames.length == 1) {
+      setCellValue(columnNames[0], newPK);
+    } else {
+      setCellValues(columnNames, (Object[]) newPK);
     }
-
-	public void setCellValue(String columnName, Object value) {
-	    cells.put(columnName, value);
-    }
-
-	@Override
-	public String toString() {
-	    return table.getName() + cells.values();
-	}
-
-	public void setPKValue(Object newPK) {
-		String[] columnNames = table.getPKColumnNames();
-		if (columnNames.length == 1)
-			setCellValue(columnNames[0], newPK);
-		else
-			setCellValues(columnNames, (Object[]) newPK);
-	}
+  }
 
 }

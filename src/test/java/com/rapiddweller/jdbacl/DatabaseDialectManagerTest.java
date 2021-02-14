@@ -21,39 +21,46 @@
 
 package com.rapiddweller.jdbacl;
 
-import static org.junit.Assert.*;
-
 import com.rapiddweller.common.version.VersionNumber;
 import com.rapiddweller.jdbacl.dialect.HSQL2Dialect;
 import com.rapiddweller.jdbacl.dialect.HSQLDialect;
 import com.rapiddweller.jdbacl.dialect.OracleDialect;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Tests the {@link DatabaseDialectManager}.<br/><br/>
  * Created: 20.10.2011 14:16:04
- * @since 0.6.12
+ *
  * @author Volker Bergmann
+ * @since 0.6.12
  */
 public class DatabaseDialectManagerTest {
 
-	@Test
-	public void testPlainSettings() {
-		check("Oracle", "11.2.0.2", OracleDialect.class);
-	}
+  /**
+   * Test plain settings.
+   */
+  @Test
+  public void testPlainSettings() {
+    check("Oracle", "11.2.0.2", OracleDialect.class);
+  }
 
-	@Test
-	public void testVersionedSettings() {
-		check("HSQLDB", "1.5.8", HSQLDialect.class);
-		check("HSQLDB", "2",     HSQL2Dialect.class);
-		check("HSQLDB", "2.0.0", HSQL2Dialect.class);
-		check("HSQLDB", "2.9",   HSQL2Dialect.class);
-	}
+  /**
+   * Test versioned settings.
+   */
+  @Test
+  public void testVersionedSettings() {
+    check("HSQLDB", "1.5.8", HSQLDialect.class);
+    check("HSQLDB", "2", HSQL2Dialect.class);
+    check("HSQLDB", "2.0.0", HSQL2Dialect.class);
+    check("HSQLDB", "2.9", HSQL2Dialect.class);
+  }
 
-	private static void check(String product, String version, Class<? extends DatabaseDialect> expectedClass) {
-		VersionNumber versionNumber = VersionNumber.valueOf(version);
-		DatabaseDialect dialect = DatabaseDialectManager.getDialectForProduct(product, versionNumber);
-		assertEquals(expectedClass, dialect.getClass());
-	}
+  private static void check(String product, String version, Class<? extends DatabaseDialect> expectedClass) {
+    VersionNumber versionNumber = VersionNumber.valueOf(version);
+    DatabaseDialect dialect = DatabaseDialectManager.getDialectForProduct(product, versionNumber);
+    assertEquals(expectedClass, dialect.getClass());
+  }
 
 }

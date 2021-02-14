@@ -21,7 +21,11 @@
 
 package com.rapiddweller.jdbacl.identity;
 
-import com.rapiddweller.common.*;
+import com.rapiddweller.common.ArrayFormat;
+import com.rapiddweller.common.Assert;
+import com.rapiddweller.common.ErrorHandler;
+import com.rapiddweller.common.Level;
+import com.rapiddweller.common.Named;
 import com.rapiddweller.common.bean.HashCodeBuilder;
 import com.rapiddweller.common.iterator.TabularIterator;
 import com.rapiddweller.jdbacl.ArrayResultSetIterator;
@@ -38,107 +42,194 @@ import java.util.Set;
  * Abstract parent for classes which provide information about tables
  * and features for processing the tables.<br/><br/>
  * Created: 01.09.2010 08:53:02
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public abstract class IdentityModel implements Named {
-	
-	protected final Logger logger = LogManager.getLogger(this.getClass());
 
-	final ErrorHandler errorHandler = new ErrorHandler("DBMerger", Level.warn);
-	
-	final String tableName;
-	private final Set<String> unimportantColumns;
+  /**
+   * The Logger.
+   */
+  protected final Logger logger = LogManager.getLogger(this.getClass());
 
-	public IdentityModel(String tableName) {
-		Assert.notNull(tableName, "tableName");
-		this.tableName = tableName;
-	    this.unimportantColumns = new HashSet<>();
+  /**
+   * The Error handler.
+   */
+  final ErrorHandler errorHandler = new ErrorHandler("DBMerger", Level.warn);
+
+  /**
+   * The Table name.
+   */
+  final String tableName;
+  private final Set<String> unimportantColumns;
+
+  /**
+   * Instantiates a new Identity model.
+   *
+   * @param tableName the table name
+   */
+  public IdentityModel(String tableName) {
+    Assert.notNull(tableName, "tableName");
+    this.tableName = tableName;
+    this.unimportantColumns = new HashSet<>();
+  }
+
+  // properties ------------------------------------------------------------------------------------------------------
+
+  /**
+   * Gets table name.
+   *
+   * @return the table name
+   */
+  public String getTableName() {
+    return tableName;
+  }
+
+  @Override
+  public String getName() {
+    return tableName;
+  }
+
+  /**
+   * Add irrelevant column.
+   *
+   * @param unimportantColumn the unimportant column
+   */
+  public void addIrrelevantColumn(String unimportantColumn) {
+    this.unimportantColumns.add(unimportantColumn);
+  }
+
+  // functional interface --------------------------------------------------------------------------------------------
+
+  /**
+   * Create nk pk iterator tabular iterator.
+   *
+   * @param connection the connection
+   * @param dbId       the db id
+   * @param mapper     the mapper
+   * @param database   the database
+   * @return the tabular iterator
+   */
+  public abstract TabularIterator createNkPkIterator(
+      Connection connection, String dbId, KeyMapper mapper, Database database);
+
+  /**
+   * Extract nk string.
+   *
+   * @param nkPkTuple the nk pk tuple
+   * @return the string
+   */
+  public String extractNK(Object[] nkPkTuple) {
+    return String.valueOf(nkPkTuple[0]);
+  }
+
+  /**
+   * Extract pk object.
+   *
+   * @param nkPkTuple the nk pk tuple
+   * @return the object
+   */
+  public Object extractPK(Object[] nkPkTuple) {
+    if (nkPkTuple.length == 2) {
+      return nkPkTuple[1];
+    } else if (nkPkTuple.length > 2) {
+      Object[] pk = new Object[nkPkTuple.length - 1];
+      for (int i = 0; i < nkPkTuple.length - 1; i++) {
+        pk[i] = nkPkTuple[1 + i];
+      }
+      return pk;
+    } else {
+      throw new UnsupportedOperationException("Table " + tableName + " does not have a primary key");
     }
-	
-	// properties ------------------------------------------------------------------------------------------------------
-	
-	public String getTableName() {
-		return tableName;
-	}
+  }
 
-	@Override
-	public String getName() {
-		return tableName;
-	}
-	
-	public void addIrrelevantColumn(String unimportantColumn) {
-	    this.unimportantColumns.add(unimportantColumn);
+  /**
+   * Gets description.
+   *
+   * @return the description
+   */
+  public abstract String getDescription();
+
+  // non-public helpers ----------------------------------------------------------------------------------------------
+
+  /**
+   * Query tabular iterator.
+   *
+   * @param query      the query
+   * @param connection the connection
+   * @return the tabular iterator
+   */
+  protected TabularIterator query(String query, Connection connection) {
+    Assert.notEmpty(query, "query");
+    return new ArrayResultSetIterator(connection, query);
+  }
+
+  /**
+   * Handle nk not found.
+   *
+   * @param naturalKey the natural key
+   * @param tableName  the table name
+   * @param sourceDbId the source db id
+   * @param targetDbId the target db id
+   */
+  protected void handleNKNotFound(String naturalKey, String tableName, String sourceDbId, String targetDbId) {
+    String message = "Missing entry: " + sourceDbId + '.' + tableName + "[" + naturalKey + "]" +
+        " does not appear in " + targetDbId;
+    errorHandler.handleError(message);
+  }
+
+  /**
+   * Handle non equivalence.
+   *
+   * @param message the message
+   * @param pk      the pk
+   * @param entity  the entity
+   */
+  protected void handleNonEquivalence(String message, Object pk, DBRow entity) {
+    errorHandler.handleError(message);
+  }
+
+  /**
+   * Handle missing owner.
+   *
+   * @param ownedTableName the owned table name
+   * @param ownedEntity    the owned entity
+   * @param ownerTableName the owner table name
+   * @param ownerId        the owner id
+   * @param sourceDbId     the source db id
+   */
+  protected void handleMissingOwner(String ownedTableName, DBRow ownedEntity, String ownerTableName, Object ownerId,
+                                    String sourceDbId) {
+    String message = "Owner of " + sourceDbId + '.' + ownedTableName +
+        '[' + ArrayFormat.format(ownedEntity.getPKValues()) + "] was dropped. " +
+        "Missing: " + sourceDbId + '.' + ownerTableName + '[' + ownerId + "]. " +
+        "Possibly it was rejected or it was missing in the NK query";
+    errorHandler.handleError(message);
+  }
+
+  // java.lang.Object overrides --------------------------------------------------------------------------------------
+
+  @Override
+  public int hashCode() {
+    return HashCodeBuilder.hashCode(tableName);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
     }
-
-	// functional interface --------------------------------------------------------------------------------------------
-
-	public abstract TabularIterator createNkPkIterator(
-			Connection connection, String dbId, KeyMapper mapper, Database database);
-
-	public String extractNK(Object[] nkPkTuple) {
-		return String.valueOf(nkPkTuple[0]);
-	}
-
-	public Object extractPK(Object[] nkPkTuple) {
-		if (nkPkTuple.length == 2)
-			return nkPkTuple[1];
-		else if (nkPkTuple.length > 2) {
-			Object[] pk = new Object[nkPkTuple.length - 1];
-			for (int i = 0; i < nkPkTuple.length - 1; i++)
-				pk[i] = nkPkTuple[1 + i];
-			return pk;
-		} else
-			throw new UnsupportedOperationException("Table " + tableName + " does not have a primary key");
-	}
-
-	public abstract String getDescription();
-	
-	// non-public helpers ----------------------------------------------------------------------------------------------
-
-	protected TabularIterator query(String query, Connection connection) {
-		Assert.notEmpty(query, "query");
-		return new ArrayResultSetIterator(connection, query);
-	}
-	protected void handleNKNotFound(String naturalKey, String tableName, String sourceDbId, String targetDbId) {
-	    String message = "Missing entry: " + sourceDbId + '.' + tableName + "[" + naturalKey + "]" + 
-	    	" does not appear in " + targetDbId;
-	    errorHandler.handleError(message);
+    if (obj == null || this.getClass() != obj.getClass()) {
+      return false;
     }
+    IdentityModel that = (IdentityModel) obj;
+    return this.tableName.equals(that.tableName);
+  }
 
-    protected void handleNonEquivalence(String message, Object pk, DBRow entity) {
-	    errorHandler.handleError(message);
-    }
-
-    protected void handleMissingOwner(String ownedTableName, DBRow ownedEntity, String ownerTableName, Object ownerId,
-            String sourceDbId) {
-	    String message = "Owner of " + sourceDbId + '.' + ownedTableName + 
-                		'[' + ArrayFormat.format(ownedEntity.getPKValues()) + "] was dropped. " +
-                		"Missing: " + sourceDbId + '.' + ownerTableName + '[' + ownerId + "]. " +
-                		"Possibly it was rejected or it was missing in the NK query";
-		errorHandler.handleError(message);
-    }
-
-	// java.lang.Object overrides --------------------------------------------------------------------------------------
-
-	@Override
-	public int hashCode() {
-		return HashCodeBuilder.hashCode(tableName);
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == this)
-			return true;
-		if (obj == null || this.getClass() != obj.getClass())
-			return false;
-		IdentityModel that = (IdentityModel) obj;
-		return this.tableName.equals(that.tableName);
-	}
-
-	@Override
-	public String toString() {
-		return getClass().getSimpleName() + "(" + tableName + ")";
-	}
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "(" + tableName + ")";
+  }
 
 }

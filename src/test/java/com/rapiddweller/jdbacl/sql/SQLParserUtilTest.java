@@ -32,248 +32,381 @@ import static org.junit.Assert.assertEquals;
 /**
  * Tests the {@link SQLParserUtil}.<br/><br/>
  * Created: 07.06.2011 15:35:51
- * @since 0.1
+ *
  * @author Volker Bergmann
+ * @since 0.1
  */
 public class SQLParserUtilTest {
 
-	@Test
-	public void testInt() {
-		check("3", "3", 3);
-		check("123", "123", 123);
-	}
+  /**
+   * Test int.
+   */
+  @Test
+  public void testInt() {
+    check("3", "3", 3);
+    check("123", "123", 123);
+  }
 
-	@Test
-	public void testNull() {
-		check("null", "null", null);
-	}
+  /**
+   * Test null.
+   */
+  @Test
+  public void testNull() {
+    check("null", "null", null);
+  }
 
-	@Test
-	public void testIdentifier() {
-		check("a", "a", "a");
-		check("col", "col", "col");
-	}
+  /**
+   * Test identifier.
+   */
+  @Test
+  public void testIdentifier() {
+    check("a", "a", "a");
+    check("col", "col", "col");
+  }
 
-	@Test
-	public void testString() {
-		check("'value'", "'value'", "'value'");
-	}
+  /**
+   * Test string.
+   */
+  @Test
+  public void testString() {
+    check("'value'", "'value'", "'value'");
+  }
 
-	@Test
-	public void testQuotedName() {
-		check("\"col\"", "\"col\"", "col");
-	}
+  /**
+   * Test quoted name.
+   */
+  @Test
+  public void testQuotedName() {
+    check("\"col\"", "\"col\"", "col");
+  }
 
-	@Test
-	public void testUnaryMinus() {
-		check("-123", "-(123)", -123);
-	}
+  /**
+   * Test unary minus.
+   */
+  @Test
+  public void testUnaryMinus() {
+    check("-123", "-(123)", -123);
+  }
 
-	@Test
-	public void testParentheses() {
-		String text = "(col = 3)";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test parentheses.
+   */
+  @Test
+  public void testParentheses() {
+    String text = "(col = 3)";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testInvocation() {
-		String text = "sin(col)";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test invocation.
+   */
+  @Test
+  public void testInvocation() {
+    String text = "sin(col)";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testNot() {
-		String text = "not (col = 3)";
-		Expression<?> expression = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-		assertEquals(LogicalComplementExpression.class, expression.getClass());
-		LogicalComplementExpression complement = (LogicalComplementExpression) expression;
-		assertEquals(EqualsExpression.class, complement.getSourceExpressions()[0].getClass());
-	}
+  /**
+   * Test not.
+   */
+  @Test
+  public void testNot() {
+    String text = "not (col = 3)";
+    Expression<?> expression = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+    assertEquals(LogicalComplementExpression.class, expression.getClass());
+    LogicalComplementExpression complement = (LogicalComplementExpression) expression;
+    assertEquals(EqualsExpression.class, complement.getSourceExpressions()[0].getClass());
+  }
 
-	@Test
-	public void testStar() {
-		check("3 * 2", "(3 * 2)", 6);
-	}
+  /**
+   * Test star.
+   */
+  @Test
+  public void testStar() {
+    check("3 * 2", "(3 * 2)", 6);
+  }
 
-	@Test
-	public void testSlash() {
-		check("6 / 2", "(6 / 2)", 3);
-	}
+  /**
+   * Test slash.
+   */
+  @Test
+  public void testSlash() {
+    check("6 / 2", "(6 / 2)", 3);
+  }
 
-	@Test
-	public void testPercent() {
-		check("8 % 3", "(8 % 3)", 2);
-	}
+  /**
+   * Test percent.
+   */
+  @Test
+  public void testPercent() {
+    check("8 % 3", "(8 % 3)", 2);
+  }
 
-	@Test
-	public void testPlus() {
-		String text = "1 + 2";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test plus.
+   */
+  @Test
+  public void testPlus() {
+    String text = "1 + 2";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testMinus() {
-		String text = "3 - 1";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test minus.
+   */
+  @Test
+  public void testMinus() {
+    String text = "3 - 1";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testBetween() {
-		String text = "col between 3 and 5";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test between.
+   */
+  @Test
+  public void testBetween() {
+    String text = "col between 3 and 5";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testIn_false() {
-		String text = "2 in (2, 3)";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test in false.
+   */
+  @Test
+  public void testIn_false() {
+    String text = "2 in (2, 3)";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testIn_true() {
-		String text = "2 in (2, 3)";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test in true.
+   */
+  @Test
+  public void testIn_true() {
+    String text = "2 in (2, 3)";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testLT_false() {
-		String text = "6 < 5";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test lt false.
+   */
+  @Test
+  public void testLT_false() {
+    String text = "6 < 5";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testLT_true() {
-		String text = "3 < 5";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test lt true.
+   */
+  @Test
+  public void testLT_true() {
+    String text = "3 < 5";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testLE_false() {
-		String text = "5 <= 5";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test le false.
+   */
+  @Test
+  public void testLE_false() {
+    String text = "5 <= 5";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testLE_true() {
-		String text = "5 <= 4";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test le true.
+   */
+  @Test
+  public void testLE_true() {
+    String text = "5 <= 4";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testGT() {
-		String text = "5 > 3";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test gt.
+   */
+  @Test
+  public void testGT() {
+    String text = "5 > 3";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testGE_false() {
-		String text = "4 >= 5";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test ge false.
+   */
+  @Test
+  public void testGE_false() {
+    String text = "4 >= 5";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testGE_true() {
-		String text = "5 >= 5";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test ge true.
+   */
+  @Test
+  public void testGE_true() {
+    String text = "5 >= 5";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testIsNull() {
-		String text = "col is null";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test is null.
+   */
+  @Test
+  public void testIsNull() {
+    String text = "col is null";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testIsNotNull() {
-		String text = "col is not null";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test is not null.
+   */
+  @Test
+  public void testIsNotNull() {
+    String text = "col is not null";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testEq_false() {
-		String text = "3 = 4";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test eq false.
+   */
+  @Test
+  public void testEq_false() {
+    String text = "3 = 4";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testEq_true() {
-		String text = "3 = 3";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test eq true.
+   */
+  @Test
+  public void testEq_true() {
+    String text = "3 = 3";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testBangEq_true() {
-		String text = "4 != 3";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test bang eq true.
+   */
+  @Test
+  public void testBangEq_true() {
+    String text = "4 != 3";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testBangEq_false() {
-		String text = "3 != 3";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test bang eq false.
+   */
+  @Test
+  public void testBangEq_false() {
+    String text = "3 != 3";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testLtGt_true() {
-		String text = "4 <> 3";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test lt gt true.
+   */
+  @Test
+  public void testLtGt_true() {
+    String text = "4 <> 3";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testLtGt_false() {
-		String text = "3 <> 3";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test lt gt false.
+   */
+  @Test
+  public void testLtGt_false() {
+    String text = "3 <> 3";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testBarBar() {
-		String text = "'x' || 3";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test bar bar.
+   */
+  @Test
+  public void testBarBar() {
+    String text = "'x' || 3";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testXor() {
-		String text = "a=1 xor b=2";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test xor.
+   */
+  @Test
+  public void testXor() {
+    String text = "a=1 xor b=2";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testAnd() {
-		String text = "a=1 and b=2";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
+  /**
+   * Test and.
+   */
+  @Test
+  public void testAnd() {
+    String text = "a=1 and b=2";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	@Test
-	public void testOr() {
-		String text = "a=1 or b=2";
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-	}
-	
-	@Test
-	public void testCheck() {
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream("OBJ_NAME NOT LIKE 'JOURNAL%' AND OBJ_NAME NOT LIKE 'DEPLOY%' AND OBJ_NAME NOT LIKE 'LOG%' AND OBJ_NAME <> 'TEMP_GLOBE_SESSION'"));
-	}
-	
-	// helper methods --------------------------------------------------------------------------------------------------
+  /**
+   * Test or.
+   */
+  @Test
+  public void testOr() {
+    String text = "a=1 or b=2";
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+  }
 
-	protected void check(String text, String stringRep, int result) {
-		Expression<?> expression = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-		assertEquals(stringRep, expression.toString());
-		assertEquals(result, ((Number) expression.evaluate(null)).intValue());
-		System.out.println(expression);
-	}
-	
-	protected void check(String text, String stringRep, String result) {
-		Expression<?> expression = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-		assertEquals(stringRep, expression.toString());
-		assertEquals(result, expression.evaluate(null));
-		System.out.println(expression);
-	}
-	
-	protected void check(String text, String stringRep) {
-		Expression<?> expression = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-		assertEquals(stringRep, expression.toString());
-		System.out.println(expression);
-	}
-	
+  /**
+   * Test check.
+   */
+  @Test
+  public void testCheck() {
+    SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(
+        "OBJ_NAME NOT LIKE 'JOURNAL%' AND OBJ_NAME NOT LIKE 'DEPLOY%' AND OBJ_NAME NOT LIKE 'LOG%' AND OBJ_NAME <> 'TEMP_GLOBE_SESSION'"));
+  }
+
+  // helper methods --------------------------------------------------------------------------------------------------
+
+  /**
+   * Check.
+   *
+   * @param text      the text
+   * @param stringRep the string rep
+   * @param result    the result
+   */
+  protected void check(String text, String stringRep, int result) {
+    Expression<?> expression = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+    assertEquals(stringRep, expression.toString());
+    assertEquals(result, ((Number) expression.evaluate(null)).intValue());
+    System.out.println(expression);
+  }
+
+  /**
+   * Check.
+   *
+   * @param text      the text
+   * @param stringRep the string rep
+   * @param result    the result
+   */
+  protected void check(String text, String stringRep, String result) {
+    Expression<?> expression = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+    assertEquals(stringRep, expression.toString());
+    assertEquals(result, expression.evaluate(null));
+    System.out.println(expression);
+  }
+
+  /**
+   * Check.
+   *
+   * @param text      the text
+   * @param stringRep the string rep
+   */
+  protected void check(String text, String stringRep) {
+    Expression<?> expression = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+    assertEquals(stringRep, expression.toString());
+    System.out.println(expression);
+  }
+
 }

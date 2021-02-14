@@ -43,29 +43,59 @@ public class ForeignKeyPath {
   private String startTable;
   private final List<DBForeignKeyConstraint> edges;
 
+  /**
+   * Instantiates a new Foreign key path.
+   *
+   * @param edges the edges
+   */
   public ForeignKeyPath(DBForeignKeyConstraint... edges) {
     this.startTable = (ArrayUtil.isEmpty(edges) ? null : edges[0].getTable().getName());
     this.edges = CollectionUtil.toList(edges);
   }
 
+  /**
+   * Instantiates a new Foreign key path.
+   *
+   * @param startTable the start table
+   */
   public ForeignKeyPath(String startTable) {
     this.startTable = startTable;
     this.edges = new ArrayList<>();
   }
 
+  /**
+   * Instantiates a new Foreign key path.
+   *
+   * @param prototype the prototype
+   */
   public ForeignKeyPath(ForeignKeyPath prototype) {
     this.startTable = prototype.startTable;
     this.edges = new ArrayList<>(prototype.edges);
   }
 
+  /**
+   * Gets start table.
+   *
+   * @return the start table
+   */
   public String getStartTable() {
     return startTable;
   }
 
+  /**
+   * Gets edges.
+   *
+   * @return the edges
+   */
   public List<DBForeignKeyConstraint> getEdges() {
     return edges;
   }
 
+  /**
+   * Add edge.
+   *
+   * @param fk the fk
+   */
   public void addEdge(DBForeignKeyConstraint fk) {
     if (edges.size() == 0) {
       if (startTable == null) {
@@ -78,6 +108,11 @@ public class ForeignKeyPath {
     edges.add(fk);
   }
 
+  /**
+   * Gets target table.
+   *
+   * @return the target table
+   */
   public String getTargetTable() {
     if (edges.size() > 0) {
       return edges.get(edges.size() - 1).getRefereeTable().getName();
@@ -86,12 +121,23 @@ public class ForeignKeyPath {
     }
   }
 
+  /**
+   * Derive path foreign key path.
+   *
+   * @param fk the fk
+   * @return the foreign key path
+   */
   public ForeignKeyPath derivePath(DBForeignKeyConstraint fk) {
     ForeignKeyPath result = new ForeignKeyPath(this);
     result.addEdge(fk);
     return result;
   }
 
+  /**
+   * Gets intermediates.
+   *
+   * @return the intermediates
+   */
   public List<DBTable> getIntermediates() {
     List<DBTable> result = new ArrayList<>(edges.size() - 1);
     for (int i = 0; i < edges.size() - 1; i++) {
@@ -100,6 +146,12 @@ public class ForeignKeyPath {
     return result;
   }
 
+  /**
+   * Has intermediate boolean.
+   *
+   * @param intermediate the intermediate
+   * @return the boolean
+   */
   public boolean hasIntermediate(DBTable intermediate) {
     for (int i = 0; i < edges.size() - 1; i++) {
       if (edges.get(i).getRefereeTable().equals(intermediate)) {
@@ -109,10 +161,22 @@ public class ForeignKeyPath {
     return false;
   }
 
+  /**
+   * Get end column names string [ ].
+   *
+   * @return the string [ ]
+   */
   public String[] getEndColumnNames() {
     return CollectionUtil.lastElement(edges).getRefereeColumnNames();
   }
 
+  /**
+   * Parse foreign key path.
+   *
+   * @param spec     the spec
+   * @param database the database
+   * @return the foreign key path
+   */
   public static ForeignKeyPath parse(String spec, Database database) {
     String[] nodes = spec.split(" \\->");
     ForeignKeyPath path = new ForeignKeyPath();
@@ -137,6 +201,11 @@ public class ForeignKeyPath {
     return fk;
   }
 
+  /**
+   * Gets table path.
+   *
+   * @return the table path
+   */
   public String getTablePath() {
     StringBuilder builder = new StringBuilder();
     for (DBForeignKeyConstraint edge : edges) {

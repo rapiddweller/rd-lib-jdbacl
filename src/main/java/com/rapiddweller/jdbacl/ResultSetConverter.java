@@ -39,64 +39,88 @@ import java.sql.SQLException;
  * Converts a ResultSet's current cursor position to an array of objects or, if it is of size 1, to a single object.<br/>
  * <br/>
  * Created: 15.08.2007 18:19:25
+ *
+ * @param <E> the type parameter
  * @author Volker Bergmann
  */
 public class ResultSetConverter<E> extends UnsafeConverter<ResultSet, E> {
 
-	private final Class<E> targetType;
-    private final boolean simplifying;
+  private final Class<E> targetType;
+  private final boolean simplifying;
 
-    public ResultSetConverter(Class<E> targetType) {
-        this(targetType, true);
-    }
+  /**
+   * Instantiates a new Result set converter.
+   *
+   * @param targetType the target type
+   */
+  public ResultSetConverter(Class<E> targetType) {
+    this(targetType, true);
+  }
 
-    public ResultSetConverter(Class<E> targetType, boolean simplifying) {
-    	super(ResultSet.class, targetType);
-    	this.targetType = targetType;
-        this.simplifying = simplifying;
-    }
-    
-    // Converter interface ---------------------------------------------------------------------------------------------
+  /**
+   * Instantiates a new Result set converter.
+   *
+   * @param targetType  the target type
+   * @param simplifying the simplifying
+   */
+  public ResultSetConverter(Class<E> targetType, boolean simplifying) {
+    super(ResultSet.class, targetType);
+    this.targetType = targetType;
+    this.simplifying = simplifying;
+  }
 
-    @Override
-	@SuppressWarnings("unchecked")
-    public E convert(ResultSet resultSet) throws ConversionException {
-        Object[] tmp = convertToArray(resultSet);
-        if (targetType.isArray())
-        	return (E) tmp;
-        else
-        	return (E) (!simplifying || tmp.length > 1 ? tmp : tmp[0]);
-    }
-    
-    // static convenience methods --------------------------------------------------------------------------------------
+  // Converter interface ---------------------------------------------------------------------------------------------
 
-    public static Object convert(ResultSet resultSet, boolean simplifying) throws ConversionException {
-        Object[] tmp = convertToArray(resultSet);
-        return (!simplifying || tmp.length > 1 ? tmp : tmp[0]);
+  @Override
+  @SuppressWarnings("unchecked")
+  public E convert(ResultSet resultSet) throws ConversionException {
+    Object[] tmp = convertToArray(resultSet);
+    if (targetType.isArray()) {
+      return (E) tmp;
+    } else {
+      return (E) (!simplifying || tmp.length > 1 ? tmp : tmp[0]);
     }
-    
-    // java.lang.Object overrides --------------------------------------------------------------------------------------
+  }
 
-    @Override
-    public String toString() {
-    	return getClass().getSimpleName();
+  // static convenience methods --------------------------------------------------------------------------------------
+
+  /**
+   * Convert object.
+   *
+   * @param resultSet   the result set
+   * @param simplifying the simplifying
+   * @return the object
+   * @throws ConversionException the conversion exception
+   */
+  public static Object convert(ResultSet resultSet, boolean simplifying) throws ConversionException {
+    Object[] tmp = convertToArray(resultSet);
+    return (!simplifying || tmp.length > 1 ? tmp : tmp[0]);
+  }
+
+  // java.lang.Object overrides --------------------------------------------------------------------------------------
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName();
+  }
+
+  // private helpers -------------------------------------------------------------------------------------------------
+
+  private static Object[] convertToArray(ResultSet resultSet) throws ConversionException {
+    try {
+      int columnCount = resultSet.getMetaData().getColumnCount();
+      Object[] cells = new Object[columnCount];
+      for (int i = 0; i < columnCount; i++) {
+        cells[i] = resultSet.getObject(i + 1);
+      }
+      if (logger.isDebugEnabled()) {
+        logger.debug("Converted: " + ArrayFormat.format(cells));
+      }
+      return cells;
+    } catch (SQLException e) {
+      throw new ConversionException(e);
     }
-    
-    // private helpers -------------------------------------------------------------------------------------------------
-    
-    private static Object[] convertToArray(ResultSet resultSet) throws ConversionException {
-        try {
-            int columnCount = resultSet.getMetaData().getColumnCount();
-            Object[] cells = new Object[columnCount];
-            for (int i = 0; i < columnCount; i++)
-                cells[i] = resultSet.getObject(i + 1);
-            if (logger.isDebugEnabled())
-                logger.debug("Converted: " + ArrayFormat.format(cells));
-            return cells;
-        } catch (SQLException e) {
-            throw new ConversionException(e);
-        }
-    }
-    
-    private static final Logger logger = LogManager.getLogger(ResultSetConverter.class);
+  }
+
+  private static final Logger logger = LogManager.getLogger(ResultSetConverter.class);
 }

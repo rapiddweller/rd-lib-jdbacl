@@ -32,49 +32,95 @@ import java.util.Map;
 /**
  * In-memory implementation of the mapping functionality needed for source databases.<br/><br/>
  * Created: 24.08.2010 11:28:44
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public class SourceDatabaseMapper {
 
-	final KeyMapper root;
-	final Connection connection;
-	final String dbId;
-	final Map<String, SourceTableMapper> tableMappers;
-	final Database database;
-	
-	public SourceDatabaseMapper(KeyMapper root, Connection connection, String dbId, Database database) {
-		this.root = root;
-		this.connection = connection;
-		this.dbId = dbId;
-		this.database = database;
-	    this.tableMappers = new HashMap<>(500);
-    }
-	
-	// interface -------------------------------------------------------------------------------------------------------
-	
-	public void store(IdentityModel table, Object sourcePK, String naturalKey, Object targetPK) {
-		getOrCreateTableMapper(table).store(sourcePK, naturalKey, targetPK);
-	}
-	
-	public Object getTargetPK(IdentityModel table, Object sourcePK) {
-		return getOrCreateTableMapper(table).getTargetPK(sourcePK);
-	}
+  /**
+   * The Root.
+   */
+  final KeyMapper root;
+  /**
+   * The Connection.
+   */
+  final Connection connection;
+  /**
+   * The Db id.
+   */
+  final String dbId;
+  /**
+   * The Table mappers.
+   */
+  final Map<String, SourceTableMapper> tableMappers;
+  /**
+   * The Database.
+   */
+  final Database database;
 
-	public String getNaturalKey(IdentityModel identity, Object sourcePK) {
-		return getOrCreateTableMapper(identity).getNaturalKey(sourcePK);
-    }
-	
-	// helper methods --------------------------------------------------------------------------------------------------
+  /**
+   * Instantiates a new Source database mapper.
+   *
+   * @param root       the root
+   * @param connection the connection
+   * @param dbId       the db id
+   * @param database   the database
+   */
+  public SourceDatabaseMapper(KeyMapper root, Connection connection, String dbId, Database database) {
+    this.root = root;
+    this.connection = connection;
+    this.dbId = dbId;
+    this.database = database;
+    this.tableMappers = new HashMap<>(500);
+  }
 
-	private SourceTableMapper getOrCreateTableMapper(IdentityModel identity) {
-		String tableName = identity.getTableName();
-	    SourceTableMapper mapper = tableMappers.get(tableName);
-	    if (mapper == null) {
-	    	mapper = new SourceTableMapper(root, connection, dbId, identity, database);
-	    	tableMappers.put(tableName, mapper);
-	    }
-	    return mapper;
+  // interface -------------------------------------------------------------------------------------------------------
+
+  /**
+   * Store.
+   *
+   * @param table      the table
+   * @param sourcePK   the source pk
+   * @param naturalKey the natural key
+   * @param targetPK   the target pk
+   */
+  public void store(IdentityModel table, Object sourcePK, String naturalKey, Object targetPK) {
+    getOrCreateTableMapper(table).store(sourcePK, naturalKey, targetPK);
+  }
+
+  /**
+   * Gets target pk.
+   *
+   * @param table    the table
+   * @param sourcePK the source pk
+   * @return the target pk
+   */
+  public Object getTargetPK(IdentityModel table, Object sourcePK) {
+    return getOrCreateTableMapper(table).getTargetPK(sourcePK);
+  }
+
+  /**
+   * Gets natural key.
+   *
+   * @param identity the identity
+   * @param sourcePK the source pk
+   * @return the natural key
+   */
+  public String getNaturalKey(IdentityModel identity, Object sourcePK) {
+    return getOrCreateTableMapper(identity).getNaturalKey(sourcePK);
+  }
+
+  // helper methods --------------------------------------------------------------------------------------------------
+
+  private SourceTableMapper getOrCreateTableMapper(IdentityModel identity) {
+    String tableName = identity.getTableName();
+    SourceTableMapper mapper = tableMappers.get(tableName);
+    if (mapper == null) {
+      mapper = new SourceTableMapper(root, connection, dbId, identity, database);
+      tableMappers.put(tableName, mapper);
     }
+    return mapper;
+  }
 
 }

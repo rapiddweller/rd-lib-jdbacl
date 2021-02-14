@@ -35,86 +35,108 @@ import java.sql.SQLException;
 /**
  * Provides {@link DataIterator}-style access to a {@link ResultSet}.<br/><br/>
  * Created: 03.08.2011 19:24:35
- * @since 0.6.10
+ *
  * @author Volker Bergmann
+ * @since 0.6.10
  */
 public class ResultSetDataIterator implements DataIterator<ResultSet> {
 
-    private ResultSet resultSet;
-    private String[] columnLabels;
+  private ResultSet resultSet;
+  private String[] columnLabels;
 
-    private final String query;
-    
-    // constructors ----------------------------------------------------------------------------------------------------
+  private final String query;
 
-    public ResultSetDataIterator(ResultSet resultSet) {
-        this(resultSet, "");
+  // constructors ----------------------------------------------------------------------------------------------------
+
+  /**
+   * Instantiates a new Result set data iterator.
+   *
+   * @param resultSet the result set
+   */
+  public ResultSetDataIterator(ResultSet resultSet) {
+    this(resultSet, "");
+  }
+
+  /**
+   * Instantiates a new Result set data iterator.
+   *
+   * @param resultSet the result set
+   * @param query     the query
+   */
+  public ResultSetDataIterator(ResultSet resultSet, String query) {
+    if (resultSet == null) {
+      throw new IllegalArgumentException("resultSet is null");
     }
-
-    public ResultSetDataIterator(ResultSet resultSet, String query) {
-    	if (resultSet == null)
-    		throw new IllegalArgumentException("resultSet is null");
-        this.resultSet = resultSet;
-        if (StringUtil.isEmpty(query))
-        	throw new IllegalArgumentException("query is empty");
-        this.query = query;
+    this.resultSet = resultSet;
+    if (StringUtil.isEmpty(query)) {
+      throw new IllegalArgumentException("query is empty");
     }
+    this.query = query;
+  }
 
-    // interface -------------------------------------------------------------------------------------------------------
+  // interface -------------------------------------------------------------------------------------------------------
 
-    public String[] getColumnLabels() {
-    	if (columnLabels == null) {
-    		try {
-	            ResultSetMetaData metaData = resultSet.getMetaData();
-	            int n = metaData.getColumnCount();
-	            columnLabels = new String[n];
-	            for (int i = 0; i < n; i++)
-	            	columnLabels[i] = metaData.getColumnLabel(i + 1);
-            } catch (SQLException e) {
-	            throw new RuntimeException("Error querying column meta data", e);
-            }
-    	}
-    	return columnLabels;
+  /**
+   * Get column labels string [ ].
+   *
+   * @return the string [ ]
+   */
+  public String[] getColumnLabels() {
+    if (columnLabels == null) {
+      try {
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        int n = metaData.getColumnCount();
+        columnLabels = new String[n];
+        for (int i = 0; i < n; i++) {
+          columnLabels[i] = metaData.getColumnLabel(i + 1);
+        }
+      } catch (SQLException e) {
+        throw new RuntimeException("Error querying column meta data", e);
+      }
     }
-    
-	@Override
-	public Class<ResultSet> getType() {
-		return ResultSet.class;
-	}
+    return columnLabels;
+  }
 
-	@Override
-	public DataContainer<ResultSet> next(DataContainer<ResultSet> container) {
-        LOGGER.debug("next() called on {}", this);
-        if (resultSet == null)
-        	return null;
-		try {
-			if (resultSet.next()) {
-				return container.setData(resultSet);
-			} else {
-				IOUtil.close(this);
-				return null;
-			}
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
+  @Override
+  public Class<ResultSet> getType() {
+    return ResultSet.class;
+  }
 
-    @Override
-	public synchronized void close() {
-        LOGGER.debug("closing {}", this);
-    	if (resultSet == null)
-    		return;
-    	DBUtil.closeResultSetAndStatement(resultSet);
-    	resultSet = null;
+  @Override
+  public DataContainer<ResultSet> next(DataContainer<ResultSet> container) {
+    LOGGER.debug("next() called on {}", this);
+    if (resultSet == null) {
+      return null;
     }
-    
-    // java.lang.Object overrides --------------------------------------------------------------------------------------
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + '[' + query + ']';
+    try {
+      if (resultSet.next()) {
+        return container.setData(resultSet);
+      } else {
+        IOUtil.close(this);
+        return null;
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    private static final Logger LOGGER = LogManager.getLogger(ResultSetIterator.class);
+  @Override
+  public synchronized void close() {
+    LOGGER.debug("closing {}", this);
+    if (resultSet == null) {
+      return;
+    }
+    DBUtil.closeResultSetAndStatement(resultSet);
+    resultSet = null;
+  }
+
+  // java.lang.Object overrides --------------------------------------------------------------------------------------
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + '[' + query + ']';
+  }
+
+  private static final Logger LOGGER = LogManager.getLogger(ResultSetIterator.class);
 
 }

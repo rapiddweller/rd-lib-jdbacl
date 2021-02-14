@@ -27,26 +27,47 @@ import com.rapiddweller.common.collection.OrderedNameMap;
 /**
  * Manages {@link IdentityModel}s.<br/><br/>
  * Created: 10.12.2010 20:10:15
- * @since 0.6.8
+ *
  * @author Volker Bergmann
+ * @since 0.6.8
  */
 public class IdentityProvider {
 
-	private final OrderedNameMap<IdentityModel> identities = OrderedNameMap.createCaseIgnorantMap();
-	
-	public IdentityModel getIdentity(String tableName) {
-		return getIdentity(tableName, true);
-	}
+  private final OrderedNameMap<IdentityModel> identities = OrderedNameMap.createCaseIgnorantMap();
 
-	public IdentityModel getIdentity(String tableName, boolean required) {
-		IdentityModel result = identities.get(tableName);
-		if (required && (result == null || result instanceof NoIdentity))
-			throw new ObjectNotFoundException("No identity defined for table '" + tableName + "'");
-		return result;
-	}
+  /**
+   * Gets identity.
+   *
+   * @param tableName the table name
+   * @return the identity
+   */
+  public IdentityModel getIdentity(String tableName) {
+    return getIdentity(tableName, true);
+  }
 
-	public void registerIdentity(IdentityModel identity, String tableName) {
-		identities.put(tableName, identity);
-	}
-	
+  /**
+   * Gets identity.
+   *
+   * @param tableName the table name
+   * @param required  the required
+   * @return the identity
+   */
+  public IdentityModel getIdentity(String tableName, boolean required) {
+    IdentityModel result = identities.get(tableName);
+    if (required && (result == null || result instanceof NoIdentity)) {
+      throw new ObjectNotFoundException("No identity defined for table '" + tableName + "'");
+    }
+    return result;
+  }
+
+  /**
+   * Register identity.
+   *
+   * @param identity  the identity
+   * @param tableName the table name
+   */
+  public void registerIdentity(IdentityModel identity, String tableName) {
+    identities.put(tableName, identity);
+  }
+
 }

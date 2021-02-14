@@ -22,21 +22,34 @@
 package com.rapiddweller.jdbacl;
 
 /**
- * Wrapper class for database results which tracks the information 
+ * Wrapper class for database results which tracks the information
  * if the according command changed the database structure.<br/><br/>
  * Created: 21.04.2011 10:15:25
- * @since 0.6.8
+ *
  * @author Volker Bergmann
+ * @since 0.6.8
  */
 public class DBExecutionResult {
-	
-	public final Object result;
-	public final Boolean changedStructure;
-	
-	public DBExecutionResult(Object result, Boolean changedStructure) {
-		super();
-		this.result = result;
-		this.changedStructure = changedStructure;
-	}
+
+  /**
+   * The Result.
+   */
+  public final Object result;
+  /**
+   * The Changed structure.
+   */
+  public final Boolean changedStructure;
+
+  /**
+   * Instantiates a new Db execution result.
+   *
+   * @param result           the result
+   * @param changedStructure the changed structure
+   */
+  public DBExecutionResult(Object result, Boolean changedStructure) {
+    super();
+    this.result = result;
+    this.changedStructure = changedStructure;
+  }
 
 }

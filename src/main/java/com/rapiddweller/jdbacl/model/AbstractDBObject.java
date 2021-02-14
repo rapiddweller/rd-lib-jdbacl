@@ -24,91 +24,129 @@ package com.rapiddweller.jdbacl.model;
 import com.rapiddweller.common.NullSafeComparator;
 
 /**
- * Abstract implementation of the {@link DBObject} interface which serves as 
+ * Abstract implementation of the {@link DBObject} interface which serves as
  * parent class for concrete implementations.<br/><br/>
  * Created: 09.11.2010 11:45:20
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public abstract class AbstractDBObject implements DBObject {
 
-	private static final long serialVersionUID = -9344600767967258L;
-	
-	protected String name;
-	protected final String objectType;
-	protected String doc;
-	protected CompositeDBObject<?> owner;
-	
-	// constructors ----------------------------------------------------------------------------------------------------
-    
-	public AbstractDBObject(String name, String objectType) {
-		this(name, objectType, null);
-	}
+  private static final long serialVersionUID = -9344600767967258L;
 
-	@SuppressWarnings({ "rawtypes"})
-	public AbstractDBObject(String name, String objectType, CompositeDBObject owner) {
-		this.name = name;
-		this.objectType = objectType;
-		setOwner(owner); // allow child classes to do additional work when setting the owner
-	}
+  /**
+   * The Name.
+   */
+  protected String name;
+  /**
+   * The Object type.
+   */
+  protected final String objectType;
+  /**
+   * The Doc.
+   */
+  protected String doc;
+  /**
+   * The Owner.
+   */
+  protected CompositeDBObject<?> owner;
 
-    // properties ------------------------------------------------------------------------------------------------------
+  // constructors ----------------------------------------------------------------------------------------------------
 
-    @Override
-	public String getName() {
-        return name;
+  /**
+   * Instantiates a new Abstract db object.
+   *
+   * @param name       the name
+   * @param objectType the object type
+   */
+  public AbstractDBObject(String name, String objectType) {
+    this(name, objectType, null);
+  }
+
+  /**
+   * Instantiates a new Abstract db object.
+   *
+   * @param name       the name
+   * @param objectType the object type
+   * @param owner      the owner
+   */
+  @SuppressWarnings({"rawtypes"})
+  public AbstractDBObject(String name, String objectType, CompositeDBObject owner) {
+    this.name = name;
+    this.objectType = objectType;
+    setOwner(owner); // allow child classes to do additional work when setting the owner
+  }
+
+  // properties ------------------------------------------------------------------------------------------------------
+
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  @Override
+  public String getObjectType() {
+    return objectType;
+  }
+
+  /**
+   * Sets name.
+   *
+   * @param name the name
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  @Override
+  public String getDoc() {
+    return doc;
+  }
+
+  /**
+   * Sets doc.
+   *
+   * @param doc the doc
+   */
+  public void setDoc(String doc) {
+    this.doc = doc;
+  }
+
+  @Override
+  public CompositeDBObject<?> getOwner() {
+    return owner;
+  }
+
+  @Override
+  public void setOwner(CompositeDBObject<?> owner) {
+    this.owner = owner;
+  }
+
+  // java.lang.Object overrides --------------------------------------------------------------------------------------
+
+  @Override
+  public String toString() {
+    return name;
+  }
+
+  @Override
+  public int hashCode() {
+    return (name != null ? name.hashCode() : 0);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
     }
-
-    @Override
-	public String getObjectType() {
-    	return objectType;
+    if (obj == null || !DBObject.class.isAssignableFrom(obj.getClass())) {
+      return false;
     }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
+    DBObject that = (DBObject) obj;
+    return NullSafeComparator.equals(this.name, that.getName()) &&
+        NullSafeComparator.equals(this.objectType, that.getObjectType()) &&
+        NullSafeComparator.equals(this.owner, that.getOwner());
+  }
 
-    @Override
-	public String getDoc() {
-        return doc;
-    }
-
-    public void setDoc(String doc) {
-        this.doc = doc;
-    }
-
-    @Override
-	public CompositeDBObject<?> getOwner() {
-		return owner;
-	}
-
-	@Override
-	public void setOwner(CompositeDBObject<?> owner) {
-		this.owner = owner;
-	}
-	
-	// java.lang.Object overrides --------------------------------------------------------------------------------------
-
-	@Override
-	public String toString() {
-		return name;
-	}
-	
-	@Override
-	public int hashCode() {
-		return (name != null ? name.hashCode() : 0);
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null || !DBObject.class.isAssignableFrom(obj.getClass()))
-			return false;
-		DBObject that = (DBObject) obj;
-		return NullSafeComparator.equals(this.name, that.getName()) && 
-			NullSafeComparator.equals(this.objectType, that.getObjectType()) &&
-			NullSafeComparator.equals(this.owner, that.getOwner());
-	}
-	
 }

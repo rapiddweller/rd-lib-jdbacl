@@ -37,57 +37,79 @@ import static org.junit.Assert.assertEquals;
 /**
  * Tests the {@link JDBCDBImporter}.<br/><br/>
  * Created: 31.01.2012 12:32:56
- * @since 0.8.0
+ *
  * @author Volker Bergmann
+ * @since 0.8.0
  */
 public class JDBCDBImporterTest extends AbstractJDBCDBImporterTest {
-	
-	private Connection connection;
 
-	@Before
-	public void setUp() throws Exception {
-		this.connection = setupDatabase();
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-		dropDatabaseTables(connection);
-	}
-	
-	@Test
-	public void testImportDatabase_HSQL() {
-		Database db = new Database("hsqlmem", new JDBCDBImporter(connection, "sa", null), true);
-		checkImports(false, false, false, db);
-		DBSchema schema = checkSchema(db);
-		DBTable table = checkTables(schema);
-		checkIndexes(table);
-		checkImports(false, false, false, db);
-		checkSequences(schema);
-		checkImports(true, false, false, db);
-		checkTriggers(schema);
-		checkImports(true, true, false, db);
-		checkPackages(schema);
-		checkImports(true, true, true, db);
-	}
+  private Connection connection;
 
-	private static void checkSequences(DBSchema schema) {
-		List<DBSequence> sequences = schema.getSequences(true);
-		assertEquals(1, sequences.size());
-		assertEquals("SEQ1", sequences.get(0).getName());
-	}
+  /**
+   * Sets up.
+   *
+   * @throws Exception the exception
+   */
+  @Before
+  public void setUp() throws Exception {
+    this.connection = setupDatabase();
+  }
 
-	private static void checkTriggers(DBSchema schema) {
-		assertEquals(0, schema.getTriggers().size());
-	}
+  /**
+   * Tear down.
+   *
+   * @throws Exception the exception
+   */
+  @After
+  public void tearDown() throws Exception {
+    dropDatabaseTables(connection);
+  }
 
-	private static void checkPackages(DBSchema schema) {
-		assertEquals(0, schema.getPackages().size());
-	}
+  /**
+   * Test import database hsql.
+   */
+  @Test
+  public void testImportDatabase_HSQL() {
+    Database db = new Database("hsqlmem", new JDBCDBImporter(connection, "sa", null), true);
+    checkImports(false, false, false, db);
+    DBSchema schema = checkSchema(db);
+    DBTable table = checkTables(schema);
+    checkIndexes(table);
+    checkImports(false, false, false, db);
+    checkSequences(schema);
+    checkImports(true, false, false, db);
+    checkTriggers(schema);
+    checkImports(true, true, false, db);
+    checkPackages(schema);
+    checkImports(true, true, true, db);
+  }
 
-	public void checkImports(boolean sequences, boolean triggers, boolean packages, Database db) {
-		assertEquals(sequences, db.isSequencesImported());
-		assertEquals(triggers,  db.isTriggersImported());
-		assertEquals(packages,  db.isPackagesImported());
-	}
+  private static void checkSequences(DBSchema schema) {
+    List<DBSequence> sequences = schema.getSequences(true);
+    assertEquals(1, sequences.size());
+    assertEquals("SEQ1", sequences.get(0).getName());
+  }
+
+  private static void checkTriggers(DBSchema schema) {
+    assertEquals(0, schema.getTriggers().size());
+  }
+
+  private static void checkPackages(DBSchema schema) {
+    assertEquals(0, schema.getPackages().size());
+  }
+
+  /**
+   * Check imports.
+   *
+   * @param sequences the sequences
+   * @param triggers  the triggers
+   * @param packages  the packages
+   * @param db        the db
+   */
+  public void checkImports(boolean sequences, boolean triggers, boolean packages, Database db) {
+    assertEquals(sequences, db.isSequencesImported());
+    assertEquals(triggers, db.isTriggersImported());
+    assertEquals(packages, db.isPackagesImported());
+  }
 
 }

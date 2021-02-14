@@ -21,24 +21,35 @@
 
 package com.rapiddweller.jdbacl.swing;
 
-import javax.swing.*;
+import javax.swing.JTextField;
 
 /**
  * Provides the content of a {@link JTextField}.<br/><br/>
  * Created: 08.11.2011 16:42:28
- * @since 0.7.0
+ *
  * @author Volker Bergmann
+ * @since 0.7.0
  */
 public class TextFieldValueProvider {
 
-	private final JTextField field;
-	
-	public TextFieldValueProvider(JTextField field) {
-		this.field = field;
-	}
+  private final JTextField field;
 
-	public String getValue() {
-		return field.getText();
-	}
+  /**
+   * Instantiates a new Text field value provider.
+   *
+   * @param field the field
+   */
+  public TextFieldValueProvider(JTextField field) {
+    this.field = field;
+  }
+
+  /**
+   * Gets value.
+   *
+   * @return the value
+   */
+  public String getValue() {
+    return field.getText();
+  }
 
 }

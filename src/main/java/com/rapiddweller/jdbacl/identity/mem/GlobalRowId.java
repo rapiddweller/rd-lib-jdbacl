@@ -26,51 +26,62 @@ import com.rapiddweller.common.bean.HashCodeBuilder;
 import com.rapiddweller.common.bean.ObjectOrArray;
 
 /**
- * Global technical identifier for a database table rows 
+ * Global technical identifier for a database table rows
  * which aggregates database id, table name and primary key.<br/><br/>
  * Created: 31.08.2010 16:19:41
- * @since 1.0
+ *
  * @author Volker Bergmann
+ * @since 1.0
  */
 public class GlobalRowId {
 
-	private final String schemaId;
-	private final String tableName;
-	private final ObjectOrArray pk;
+  private final String schemaId;
+  private final String tableName;
+  private final ObjectOrArray pk;
 
-	public GlobalRowId(String schemaId, String tableName, Object pk) {
-	    this.schemaId = schemaId;
-	    this.tableName = tableName;
-	    this.pk = (pk instanceof ObjectOrArray ? (ObjectOrArray) pk : new ObjectOrArray(pk));
-    }
+  /**
+   * Instantiates a new Global row id.
+   *
+   * @param schemaId  the schema id
+   * @param tableName the table name
+   * @param pk        the pk
+   */
+  public GlobalRowId(String schemaId, String tableName, Object pk) {
+    this.schemaId = schemaId;
+    this.tableName = tableName;
+    this.pk = (pk instanceof ObjectOrArray ? (ObjectOrArray) pk : new ObjectOrArray(pk));
+  }
 
-	@Override
-    public int hashCode() {
-		return HashCodeBuilder.hashCode(schemaId, tableName, pk);
-    }
+  @Override
+  public int hashCode() {
+    return HashCodeBuilder.hashCode(schemaId, tableName, pk);
+  }
 
-	@Override
-    public boolean equals(Object obj) {
-	    if (this == obj)
-		    return true;
-	    if (obj == null || getClass() != obj.getClass())
-		    return false;
-	    GlobalRowId that = (GlobalRowId) obj;
-	    return (this.schemaId.equals(that.schemaId) 
-	    		&& this.tableName.equals(that.tableName)
-	    		&& this.pk.equals(that.pk));
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
     }
-	
-	@Override
-	public String toString() {
-	    return schemaId + '.' + tableName + '#' + renderPK(pk);
-	}
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+    GlobalRowId that = (GlobalRowId) obj;
+    return (this.schemaId.equals(that.schemaId)
+        && this.tableName.equals(that.tableName)
+        && this.pk.equals(that.pk));
+  }
 
-	private static String renderPK(Object pk) {
-		if (pk.getClass().isArray())
-			return ArrayFormat.format((Object[]) pk);
-		else
-			return String.valueOf(pk);
+  @Override
+  public String toString() {
+    return schemaId + '.' + tableName + '#' + renderPK(pk);
+  }
+
+  private static String renderPK(Object pk) {
+    if (pk.getClass().isArray()) {
+      return ArrayFormat.format((Object[]) pk);
+    } else {
+      return String.valueOf(pk);
     }
-	
+  }
+
 }

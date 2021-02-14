@@ -30,48 +30,78 @@ package com.rapiddweller.jdbacl;
  * Indicates an error in the execution of a SQL script.<br/>
  * <br/>
  * Created at 31.07.2008 19:37:20
- * @since 0.4.5
+ *
  * @author Volker Bergmann
+ * @since 0.4.5
  */
 public class SQLScriptException extends Exception {
-	
-	private static final long serialVersionUID = -6190417735216916815L;
 
-	private String uri;
-	private final int lineNo;
+  private static final long serialVersionUID = -6190417735216916815L;
 
-	// constructors ----------------------------------------------------------------------------------------------------
+  private String uri;
+  private final int lineNo;
 
-	public SQLScriptException(Throwable cause, String uri, int lineNo) {
-		super(cause);
-		this.uri = uri;
-		this.lineNo = lineNo;
-	}
+  // constructors ----------------------------------------------------------------------------------------------------
 
-	public SQLScriptException(int lineNo) {
-		super();
-		this.lineNo = lineNo;
-	}
+  /**
+   * Instantiates a new Sql script exception.
+   *
+   * @param cause  the cause
+   * @param uri    the uri
+   * @param lineNo the line no
+   */
+  public SQLScriptException(Throwable cause, String uri, int lineNo) {
+    super(cause);
+    this.uri = uri;
+    this.lineNo = lineNo;
+  }
 
-	public SQLScriptException(Throwable cause, int lineNo) {
-		super(cause);
-		this.lineNo = lineNo;
-	}
-	
-	// properties ------------------------------------------------------------------------------------------------------
-	
-	public SQLScriptException withUri(String uri) {
-		this.uri = uri;
-		return this;
-	}
-	
-	public int getLineNo() {
-		return lineNo;
-	}
+  /**
+   * Instantiates a new Sql script exception.
+   *
+   * @param lineNo the line no
+   */
+  public SQLScriptException(int lineNo) {
+    super();
+    this.lineNo = lineNo;
+  }
 
-	@Override
-    public String getMessage() {
-		return "Error in execution of script " + (uri != null ? uri + ' ' : "") + "line " + lineNo + ": " 
-			+ (getCause() != null ? getCause().getMessage() : "");
-	}
+  /**
+   * Instantiates a new Sql script exception.
+   *
+   * @param cause  the cause
+   * @param lineNo the line no
+   */
+  public SQLScriptException(Throwable cause, int lineNo) {
+    super(cause);
+    this.lineNo = lineNo;
+  }
+
+  // properties ------------------------------------------------------------------------------------------------------
+
+  /**
+   * With uri sql script exception.
+   *
+   * @param uri the uri
+   * @return the sql script exception
+   */
+  public SQLScriptException withUri(String uri) {
+    this.uri = uri;
+    return this;
+  }
+
+  /**
+   * Gets line no.
+   *
+   * @return the line no
+   */
+  public int getLineNo() {
+    return lineNo;
+  }
+
+  @Override
+  public String getMessage() {
+    return "Error in execution of script " + (uri != null ? uri + ' ' : "") + "line " + lineNo + ": "
+        + (getCause() != null ? getCause().getMessage() : "");
+  }
 }

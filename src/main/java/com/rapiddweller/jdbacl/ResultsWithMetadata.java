@@ -30,26 +30,42 @@ package com.rapiddweller.jdbacl;
  * Wraps a tabular query result with its metadata.<br/>
  * <br/>
  * Created at 02.12.2008 13:11:46
- * @since 0.4.6
+ *
  * @author Volker Bergmann
+ * @since 0.4.6
  */
-
 public class ResultsWithMetadata {
 
-	private final String[] columnNames;
-	private final String[][] results;
-	
-	public ResultsWithMetadata(String[] columnNames, String[][] results) {
-		this.columnNames = columnNames;
-		this.results = results;
-	}
+  private final String[] columnNames;
+  private final String[][] results;
 
-	public String[] getColumnLabels() {
-		return columnNames;
-	}
+  /**
+   * Instantiates a new Results with metadata.
+   *
+   * @param columnNames the column names
+   * @param results     the results
+   */
+  public ResultsWithMetadata(String[] columnNames, String[][] results) {
+    this.columnNames = columnNames;
+    this.results = results;
+  }
 
-	public String[][] getResults() {
-		return results;
-	}
+  /**
+   * Get column labels string [ ].
+   *
+   * @return the string [ ]
+   */
+  public String[] getColumnLabels() {
+    return columnNames;
+  }
+
+  /**
+   * Get results string [ ] [ ].
+   *
+   * @return the string [ ] [ ]
+   */
+  public String[][] getResults() {
+    return results;
+  }
 
 }

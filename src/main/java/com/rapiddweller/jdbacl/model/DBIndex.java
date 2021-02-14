@@ -35,73 +35,100 @@ import java.util.Arrays;
 /**
  * Represents a database index.<br/><br/>
  * Created: 06.01.2007 08:58:49
+ *
  * @author Volker Bergmann
  */
 public abstract class DBIndex extends AbstractDBTableComponent implements MultiColumnObject {
 
-	private static final long serialVersionUID = -1656761838194962745L;
-	
-    private final boolean nameDeterministic;
+  private static final long serialVersionUID = -1656761838194962745L;
 
-    public DBIndex() {
-        this(null, false, null);
-    }
+  private final boolean nameDeterministic;
 
-    public DBIndex(String name, boolean nameDeterministic, DBTable table) {
-        super(name, "index", table);
-        this.nameDeterministic = nameDeterministic;
-        table.addIndex(this);
-    }
+  /**
+   * Instantiates a new Db index.
+   */
+  public DBIndex() {
+    this(null, false, null);
+  }
 
-    public abstract boolean isUnique();
-    
-    @Override
-	public abstract String[] getColumnNames();
-    
-    public abstract void addColumnName(String columnName);
-    
-    
-    // properties ------------------------------------------------------------------------------------------------------
+  /**
+   * Instantiates a new Db index.
+   *
+   * @param name              the name
+   * @param nameDeterministic the name deterministic
+   * @param table             the table
+   */
+  public DBIndex(String name, boolean nameDeterministic, DBTable table) {
+    super(name, "index", table);
+    this.nameDeterministic = nameDeterministic;
+    table.addIndex(this);
+  }
 
-    @Override
-	public String getName() {
-        return name;
-    }
+  /**
+   * Is unique boolean.
+   *
+   * @return the boolean
+   */
+  public abstract boolean isUnique();
 
-	public boolean isNameDeterministic() {
-		return nameDeterministic;
-	}
-	
-	
-	
-    // java.lang.Object overrides --------------------------------------------------------------------------------------
+  @Override
+  public abstract String[] getColumnNames();
 
-    @Override
-    public boolean equals(Object obj) {
-    	if (this == obj)
-    		return true;
-    	if (obj == null || obj.getClass() != this.getClass())
-    		return false;
-    	DBIndex that = (DBIndex) obj;
-    	return NullSafeComparator.equals(this.getName(), that.getName())
-			&& NullSafeComparator.equals(this.getTable(), that.getTable())
-			&& NullSafeComparator.equals(this.isUnique(), that.isUnique())
-			&& Arrays.equals(this.getColumnNames(), that.getColumnNames());
+  /**
+   * Add column name.
+   *
+   * @param columnName the column name
+   */
+  public abstract void addColumnName(String columnName);
+
+
+  // properties ------------------------------------------------------------------------------------------------------
+
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * Is name deterministic boolean.
+   *
+   * @return the boolean
+   */
+  public boolean isNameDeterministic() {
+    return nameDeterministic;
+  }
+
+
+  // java.lang.Object overrides --------------------------------------------------------------------------------------
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
     }
-    
-    @Override
-    public int hashCode() {
-    	return HashCodeBuilder.hashCode(getOwner(), getColumnNames());
+    if (obj == null || obj.getClass() != this.getClass()) {
+      return false;
     }
-    
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder(name);
-        builder.append(" (");
-        builder.append(ArrayFormat.format(getColumnNames()));
-        builder.append(')');
-        builder.append(isUnique() ? " unique" : "");
-        return builder.toString();
-    }
-    
+    DBIndex that = (DBIndex) obj;
+    return NullSafeComparator.equals(this.getName(), that.getName())
+        && NullSafeComparator.equals(this.getTable(), that.getTable())
+        && NullSafeComparator.equals(this.isUnique(), that.isUnique())
+        && Arrays.equals(this.getColumnNames(), that.getColumnNames());
+  }
+
+  @Override
+  public int hashCode() {
+    return HashCodeBuilder.hashCode(getOwner(), getColumnNames());
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder(name);
+    builder.append(" (");
+    builder.append(ArrayFormat.format(getColumnNames()));
+    builder.append(')');
+    builder.append(isUnique() ? " unique" : "");
+    return builder.toString();
+  }
+
 }

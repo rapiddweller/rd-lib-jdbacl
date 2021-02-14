@@ -27,7 +27,12 @@ import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.common.SystemInfo;
 import com.rapiddweller.common.iterator.ConvertingIterator;
 import com.rapiddweller.common.iterator.TabularIterator;
-import com.rapiddweller.jdbacl.*;
+import com.rapiddweller.jdbacl.ArrayResultSetIterator;
+import com.rapiddweller.jdbacl.DatabaseDialect;
+import com.rapiddweller.jdbacl.DatabaseDialectManager;
+import com.rapiddweller.jdbacl.QueryIterator;
+import com.rapiddweller.jdbacl.ResultSetConverter;
+import com.rapiddweller.jdbacl.SQLUtil;
 import com.rapiddweller.jdbacl.model.DBTable;
 import com.rapiddweller.jdbacl.model.Database;
 
@@ -36,124 +41,179 @@ import java.sql.ResultSet;
 import java.util.Iterator;
 
 /**
- * {@link IdentityModel} for tables which are owned by another table but have a sub identity 
- * (resulting in a one-to-many relationship between parent and child). 
+ * {@link IdentityModel} for tables which are owned by another table but have a sub identity
+ * (resulting in a one-to-many relationship between parent and child).
  * Their natural key is composed from the owner row's natural key and a sub key for the row itself.<br/><br/>
  * Created: 01.09.2010 09:24:26
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public class SubNkPkQueryIdentity extends IdentityModel {
 
-	private final String[] parentTableNames; // TODO v1.0 support multiple 'parent' and 'parentColumns' property
-	private String subNkPkQuery;
-	private final IdentityProvider identityProvider;
+  private final String[] parentTableNames; // TODO v1.0 support multiple 'parent' and 'parentColumns' property
+  private String subNkPkQuery;
+  private final IdentityProvider identityProvider;
 
-	public SubNkPkQueryIdentity(String tableName, String[] parentTableNames, IdentityProvider identityProvider) {
-	    super(tableName);
-	    this.parentTableNames = parentTableNames;
-	    this.identityProvider = identityProvider;
+  /**
+   * Instantiates a new Sub nk pk query identity.
+   *
+   * @param tableName        the table name
+   * @param parentTableNames the parent table names
+   * @param identityProvider the identity provider
+   */
+  public SubNkPkQueryIdentity(String tableName, String[] parentTableNames, IdentityProvider identityProvider) {
+    super(tableName);
+    this.parentTableNames = parentTableNames;
+    this.identityProvider = identityProvider;
+  }
+
+  // properties ------------------------------------------------------------------------------------------------------
+
+  /**
+   * Sets sub nk pk query.
+   *
+   * @param subNkPkQuery the sub nk pk query
+   */
+  public void setSubNkPkQuery(String subNkPkQuery) {
+    this.subNkPkQuery = subNkPkQuery;
+  }
+
+  @Override
+  public String getDescription() {
+    return "Sub identity of (" + ArrayFormat.format(parentTableNames) + "):" +
+        SystemInfo.getLineSeparator() + subNkPkQuery;
+  }
+
+  // implementation --------------------------------------------------------------------------------------------------
+
+  @Override
+  public TabularIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
+    return new RecursiveIterator(connection, dbId, mapper, database);
+  }
+
+  // helper class for recursive iteration ----------------------------------------------------------------------------
+
+  /**
+   * The type Recursive iterator.
+   */
+  public class RecursiveIterator implements TabularIterator {
+
+    /**
+     * The Connection.
+     */
+    final Connection connection;
+    /**
+     * The Db id.
+     */
+    final String dbId;
+    /**
+     * The Mapper.
+     */
+    final KeyMapper mapper;
+    /**
+     * The Owner pk iterator.
+     */
+    final HeavyweightIterator<Object> ownerPkIterator;
+    /**
+     * The Owner nk.
+     */
+    String ownerNK;
+    /**
+     * The Sub nk pk iterator.
+     */
+    TabularIterator subNkPkIterator;
+    /**
+     * The Dialect.
+     */
+    final DatabaseDialect dialect;
+
+    /**
+     * Instantiates a new Recursive iterator.
+     *
+     * @param connection the connection
+     * @param dbId       the db id
+     * @param mapper     the mapper
+     * @param database   the database
+     */
+    public RecursiveIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
+      this.connection = connection;
+      this.dbId = dbId;
+      this.mapper = mapper;
+      this.dialect = DatabaseDialectManager.getDialectForProduct(
+          database.getDatabaseProductName(), database.getDatabaseProductVersion());
+      ownerPkIterator = createParentPkIterator(connection, database); // TODO v1.0 support multiple parents
+      createSubNkPkIterator(connection, dbId);
     }
-	
-	// properties ------------------------------------------------------------------------------------------------------
 
-	public void setSubNkPkQuery(String subNkPkQuery) {
-	    this.subNkPkQuery = subNkPkQuery;
+    /**
+     * Create parent pk iterator heavyweight iterator.
+     *
+     * @param connection the connection
+     * @param database   the database
+     * @return the heavyweight iterator
+     */
+    protected HeavyweightIterator<Object> createParentPkIterator(Connection connection, Database database) {
+      DBTable parentTable = database.getTable(parentTableNames[0]);
+      StringBuilder query = new StringBuilder("select ");
+      query.append(ArrayFormat.format(parentTable.getPKColumnNames()));
+      query.append(" from ").append(parentTable);
+      Iterator<ResultSet> rawIterator = new QueryIterator(query.toString(), connection, 100);
+      ResultSetConverter<Object> converter = new ResultSetConverter<>(Object.class, true);
+      return new ConvertingIterator<>(rawIterator, converter);
     }
 
-	@Override
-	public String getDescription() {
-		return "Sub identity of (" + ArrayFormat.format(parentTableNames) + "):" + 
-			SystemInfo.getLineSeparator() + subNkPkQuery;
-	}
-
-	// implementation --------------------------------------------------------------------------------------------------
-	
     @Override
-	public TabularIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
-		return new RecursiveIterator(connection, dbId, mapper, database);
+    public boolean hasNext() {
+      if (subNkPkIterator.hasNext()) {
+        return true;
+      }
+      while (subNkPkIterator != null && !subNkPkIterator.hasNext() && ownerPkIterator.hasNext()) {
+        IOUtil.close(subNkPkIterator);
+        createSubNkPkIterator(connection, dbId);
+      }
+      return (subNkPkIterator != null && subNkPkIterator.hasNext());
     }
-    
-    // helper class for recursive iteration ----------------------------------------------------------------------------
 
-    public class RecursiveIterator implements TabularIterator {
-    	
-    	final Connection connection;
-    	final String dbId;
-    	final KeyMapper mapper;
-    	final HeavyweightIterator<Object> ownerPkIterator;
-    	String ownerNK;
-    	TabularIterator subNkPkIterator;
-    	final DatabaseDialect dialect;
-
-	    public RecursiveIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
-	        this.connection = connection;
-	        this.dbId = dbId;
-	        this.mapper = mapper;
-	        this.dialect = DatabaseDialectManager.getDialectForProduct(
-	        		database.getDatabaseProductName(), database.getDatabaseProductVersion());
-	        ownerPkIterator = createParentPkIterator(connection, database); // TODO v1.0 support multiple parents
-	        createSubNkPkIterator(connection, dbId);
-        }
-
-		protected HeavyweightIterator<Object> createParentPkIterator(Connection connection, Database database) {
-			DBTable parentTable = database.getTable(parentTableNames[0]);
-			StringBuilder query = new StringBuilder("select ");
-			query.append(ArrayFormat.format(parentTable.getPKColumnNames()));
-			query.append(" from ").append(parentTable);
-	    	Iterator<ResultSet> rawIterator = new QueryIterator(query.toString(), connection, 100);
-	        ResultSetConverter<Object> converter = new ResultSetConverter<>(Object.class, true);
-	    	return new ConvertingIterator<>(rawIterator, converter);
-		}
-
-		@Override
-		public boolean hasNext() {
-			if (subNkPkIterator.hasNext())
-				return true;
-	    	while (subNkPkIterator != null && !subNkPkIterator.hasNext() && ownerPkIterator.hasNext()) {
-	    		IOUtil.close(subNkPkIterator);
-	    		createSubNkPkIterator(connection, dbId);
-	    	}
-	    	return (subNkPkIterator != null && subNkPkIterator.hasNext());
-	    }
-
-	    @Override
-		public Object[] next() {
-	    	Object[] result = (Object[]) subNkPkIterator.next();
-	    	result[0] = ownerNK + '|' + result[0];
-	    	return result;
-	    }
-
-		@Override
-		public String[] getColumnNames() {
-			return subNkPkIterator.getColumnNames();
-		}
-
-	    @Override
-		public void remove() {
-		    throw new UnsupportedOperationException(getClass() + " does not support removal");
-	    }
-
-	    @Override
-		public void close() {
-	    	IOUtil.close(subNkPkIterator);
-		    IOUtil.close(ownerPkIterator);
-	    }
-
-		private void createSubNkPkIterator(Connection connection, String dbId) {
-	        if (ownerPkIterator.hasNext()) {
-	        	Object ownerPk = ownerPkIterator.next();
-	        	ownerNK = mapper.getNaturalKey(dbId, identityProvider.getIdentity(parentTableNames[0]), ownerPk); // TODO v1.0 support multiple owners
-	        	if (ownerNK == null)
-	        		throw new InvalidIdentityDefinitionError(tableName + " row with PK " + ownerPk + 
-	        				" cannot be found. Most likely this is a subsequent fault of a parent's identity" +
-	        				" definition: " + ArrayFormat.format(parentTableNames));
-	        	String query = SQLUtil.substituteMarkers(subNkPkQuery, "?", ownerPk, dialect);
-	        	subNkPkIterator = new ArrayResultSetIterator(connection, query);
-	        } else
-	        	subNkPkIterator = null;
-        }
-
+    @Override
+    public Object[] next() {
+      Object[] result = (Object[]) subNkPkIterator.next();
+      result[0] = ownerNK + '|' + result[0];
+      return result;
     }
+
+    @Override
+    public String[] getColumnNames() {
+      return subNkPkIterator.getColumnNames();
+    }
+
+    @Override
+    public void remove() {
+      throw new UnsupportedOperationException(getClass() + " does not support removal");
+    }
+
+    @Override
+    public void close() {
+      IOUtil.close(subNkPkIterator);
+      IOUtil.close(ownerPkIterator);
+    }
+
+    private void createSubNkPkIterator(Connection connection, String dbId) {
+      if (ownerPkIterator.hasNext()) {
+        Object ownerPk = ownerPkIterator.next();
+        ownerNK = mapper.getNaturalKey(dbId, identityProvider.getIdentity(parentTableNames[0]), ownerPk); // TODO v1.0 support multiple owners
+        if (ownerNK == null) {
+          throw new InvalidIdentityDefinitionError(tableName + " row with PK " + ownerPk +
+              " cannot be found. Most likely this is a subsequent fault of a parent's identity" +
+              " definition: " + ArrayFormat.format(parentTableNames));
+        }
+        String query = SQLUtil.substituteMarkers(subNkPkQuery, "?", ownerPk, dialect);
+        subNkPkIterator = new ArrayResultSetIterator(connection, query);
+      } else {
+        subNkPkIterator = null;
+      }
+    }
+
+  }
 
 }

@@ -37,117 +37,143 @@ import java.util.regex.Pattern;
  * {@link DatabaseDialect} implementation for the H2 database.
  * See <a href="http://www.h2database.com/html/grammar.html">H2 SQL grammar</a><br/><br/>
  * Created: 28.03.2010 07:54:19
- * @since 0.6.0
+ *
  * @author Volker Bergmann
+ * @since 0.6.0
  */
 public class H2Dialect extends DatabaseDialect {
-    
-	private static final String DATE_PATTERN = "''yyyy-MM-dd''";
-	private static final String TIME_PATTERN = "''HH:mm:ss''";
-	private static final String DATETIME_PATTERN = "''yyyy-MM-dd HH:mm:ss''";
 
-	final Pattern randomPKNamePattern = Pattern.compile("CONSTRAINT_\\w+");
-	final Pattern randomUKNamePattern = Pattern.compile("CONSTRAINT_INDEX_\\w+");
-	final Pattern randomFKNamePattern = Pattern.compile("CONSTRAINT_\\w+");
-	final Pattern randomIndexNamePattern = Pattern.compile("CONSTRAINT_INDEX_\\w+|PRIMARY_KEY_\\w+");
+  private static final String DATE_PATTERN = "''yyyy-MM-dd''";
+  private static final String TIME_PATTERN = "''HH:mm:ss''";
+  private static final String DATETIME_PATTERN = "''yyyy-MM-dd HH:mm:ss''";
 
-    public H2Dialect() {
-	    super("h2", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
+  /**
+   * The Random pk name pattern.
+   */
+  final Pattern randomPKNamePattern = Pattern.compile("CONSTRAINT_\\w+");
+  /**
+   * The Random uk name pattern.
+   */
+  final Pattern randomUKNamePattern = Pattern.compile("CONSTRAINT_INDEX_\\w+");
+  /**
+   * The Random fk name pattern.
+   */
+  final Pattern randomFKNamePattern = Pattern.compile("CONSTRAINT_\\w+");
+  /**
+   * The Random index name pattern.
+   */
+  final Pattern randomIndexNamePattern = Pattern.compile("CONSTRAINT_INDEX_\\w+|PRIMARY_KEY_\\w+");
+
+  /**
+   * Instantiates a new H 2 dialect.
+   */
+  public H2Dialect() {
+    super("h2", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
+  }
+
+  @Override
+  public boolean isDefaultCatalog(String catalog, String user) {
+    return (catalog == null);
+  }
+
+  @Override
+  public boolean isDefaultSchema(String schema, String user) {
+    return "PUBLIC".equalsIgnoreCase(schema);
+  }
+
+  @Override
+  public boolean isSequenceBoundarySupported() {
+    return false;
+  }
+
+  @Override
+  public DBSequence[] querySequences(Connection connection) throws SQLException {
+    String query = "select SEQUENCE_CATALOG, SEQUENCE_SCHEMA, SEQUENCE_NAME, CURRENT_VALUE, INCREMENT, CACHE from information_schema.sequences";
+    // TODO v0.8.2 restrict to catalog and schema, see http://www.h2database.com/html/grammar.html
+    ArrayBuilder<DBSequence> builder = new ArrayBuilder<>(DBSequence.class);
+    ResultSet resultSet = DBUtil.executeQuery(query, connection);
+    while (resultSet.next()) {
+      String name = resultSet.getString("SEQUENCE_NAME");
+      DBSequence sequence = new DBSequence(name, null);
+      sequence.setStart(new BigInteger(resultSet.getString("CURRENT_VALUE")));
+      sequence.setLastNumber(sequence.getStart());
+      sequence.setIncrement(new BigInteger(resultSet.getString("INCREMENT")));
+      sequence.setCache(resultSet.getLong("CACHE"));
+      builder.add(sequence);
     }
+    return builder.toArray();
+  }
 
-	@Override
-    public boolean isDefaultCatalog(String catalog, String user) {
-	    return (catalog == null);
+  @Override
+  public String renderFetchSequenceValue(String sequenceName) {
+    return "select next value for " + sequenceName;
+  }
+
+  @Override
+  public void setNextSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
+    DBUtil.executeUpdate(setSequenceValue(sequenceName, value), connection);
+  }
+
+  /**
+   * Sets sequence value.
+   *
+   * @param sequenceName the sequence name
+   * @param value        the value
+   * @return the sequence value
+   */
+  public String setSequenceValue(String sequenceName, long value) {
+    return "alter sequence " + sequenceName + " restart with " + value;
+  }
+
+  @Override
+  public String renderDropSequence(String name) {
+    return "drop sequence " + name;
+  }
+
+  @Override
+  public boolean isDeterministicPKName(String pkName) {
+    return !randomPKNamePattern.matcher(pkName).matches();
+  }
+
+  @Override
+  public boolean isDeterministicUKName(String ukName) {
+    return !randomUKNamePattern.matcher(ukName).matches();
+  }
+
+  @Override
+  public boolean isDeterministicFKName(String fkName) {
+    return !randomFKNamePattern.matcher(fkName).matches();
+  }
+
+  @Override
+  public boolean isDeterministicIndexName(String indexName) {
+    return !randomIndexNamePattern.matcher(indexName).matches();
+  }
+
+  @Override
+  public boolean supportsRegex() {
+    return true;
+  }
+
+  @Override
+  public String regexQuery(String expression, boolean not, String regex) {
+    return expression + (not ? " NOT" : "") + " REGEXP '" + regex + "'";
+  }
+
+  /**
+   * restricts the query result set to a certain number of rows, optionally starting from an offset.
+   *
+   * @param rowOffset the number of rows to skip from the beginning of the result set;
+   *                  use 0 for not skipping any.
+   * @param rowCount  the number of rows to read;
+   *                  use 0 for unlimited access
+   */
+  @Override
+  public void restrictRownums(int rowOffset, int rowCount, Query query) {
+    query.addOption("LIMIT " + rowCount); // note: LIMIT must not be left out
+    if (rowOffset > 0) {
+      query.addOption("OFFSET " + rowOffset); // note: The order LIMIT x OFFSET y is mandatory
     }
-
-	@Override
-    public boolean isDefaultSchema(String schema, String user) {
-	    return "PUBLIC".equalsIgnoreCase(schema);
-    }
-
-	@Override
-	public boolean isSequenceBoundarySupported() {
-		return false;
-	}
-	
-	@Override
-    public DBSequence[] querySequences(Connection connection) throws SQLException {
-        String query = "select SEQUENCE_CATALOG, SEQUENCE_SCHEMA, SEQUENCE_NAME, CURRENT_VALUE, INCREMENT, CACHE from information_schema.sequences";
-        // TODO v0.8.2 restrict to catalog and schema, see http://www.h2database.com/html/grammar.html
-        ArrayBuilder<DBSequence> builder = new ArrayBuilder<>(DBSequence.class);
-        ResultSet resultSet = DBUtil.executeQuery(query, connection);
-        while (resultSet.next()) {
-        	String name = resultSet.getString("SEQUENCE_NAME");
-        	DBSequence sequence = new DBSequence(name, null);
-        	sequence.setStart(new BigInteger(resultSet.getString("CURRENT_VALUE")));
-        	sequence.setLastNumber(sequence.getStart());
-        	sequence.setIncrement(new BigInteger(resultSet.getString("INCREMENT")));
-        	sequence.setCache(resultSet.getLong("CACHE"));
-        	builder.add(sequence);
-        }
-		return builder.toArray();
-	}
-
-	@Override
-    public String renderFetchSequenceValue(String sequenceName) {
-        return "select next value for " + sequenceName;
-    }
-
-	@Override
-	public void setNextSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
-	    DBUtil.executeUpdate(setSequenceValue(sequenceName, value), connection);
-	}
-
-	public String setSequenceValue(String sequenceName, long value) {
-	    return "alter sequence " + sequenceName + " restart with " + value;
-    }
-	
-	@Override
-	public String renderDropSequence(String name) {
-		return "drop sequence " + name;
-	}
-
-	@Override
-	public boolean isDeterministicPKName(String pkName) {
-		return !randomPKNamePattern.matcher(pkName).matches();
-	}
-
-	@Override
-	public boolean isDeterministicUKName(String ukName) {
-		return !randomUKNamePattern.matcher(ukName).matches();
-	}
-
-	@Override
-	public boolean isDeterministicFKName(String fkName) {
-		return !randomFKNamePattern.matcher(fkName).matches();
-	}
-
-	@Override
-	public boolean isDeterministicIndexName(String indexName) {
-		return !randomIndexNamePattern.matcher(indexName).matches();
-	}
-
-	@Override
-	public boolean supportsRegex() {
-		return true;
-	}
-	
-	@Override
-	public String regexQuery(String expression, boolean not, String regex) {
-		return expression + (not ? " NOT" : "") + " REGEXP '" + regex + "'";
-	}
-	
-	/** restricts the query result set to a certain number of rows, optionally starting from an offset. 
-	 *  @param rowOffset the number of rows to skip from the beginning of the result set; 
-	 *  	use 0 for not skipping any.
-	 *  @param rowCount the number of rows to read; 
-	 *  	use 0 for unlimited access
-	 */
-	@Override
-	public void restrictRownums(int rowOffset, int rowCount, Query query) {
-		query.addOption("LIMIT " + rowCount); // note: LIMIT must not be left out
-		if (rowOffset > 0)
-			query.addOption("OFFSET " + rowOffset); // note: The order LIMIT x OFFSET y is mandatory
-	}
+  }
 
 }

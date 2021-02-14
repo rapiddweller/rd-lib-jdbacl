@@ -30,35 +30,75 @@ import java.sql.Connection;
 /**
  * Provides utility methods for the H2 database.<br/><br/>
  * Created: 21.10.2011 20:40:23
- * @since 0.6.13
+ *
  * @author Volker Bergmann
+ * @since 0.6.13
  */
 public class H2Util {
 
-	public static final String IN_MEMORY_URL_PREFIX = "jdbc:h2:mem:";
-	public static final String DRIVER = "org.h2.Driver";
-	public static final String DEFAULT_USER = "sa";
-	public static final String DEFAULT_PASSWORD = "";
-	public static final String DEFAULT_SCHEMA = "PUBLIC";
-	public static final int    DEFAULT_PORT = 9001;
+  /**
+   * The constant IN_MEMORY_URL_PREFIX.
+   */
+  public static final String IN_MEMORY_URL_PREFIX = "jdbc:h2:mem:";
+  /**
+   * The constant DRIVER.
+   */
+  public static final String DRIVER = "org.h2.Driver";
+  /**
+   * The constant DEFAULT_USER.
+   */
+  public static final String DEFAULT_USER = "sa";
+  /**
+   * The constant DEFAULT_PASSWORD.
+   */
+  public static final String DEFAULT_PASSWORD = "";
+  /**
+   * The constant DEFAULT_SCHEMA.
+   */
+  public static final String DEFAULT_SCHEMA = "PUBLIC";
+  /**
+   * The constant DEFAULT_PORT.
+   */
+  public static final int DEFAULT_PORT = 9001;
 
-	public static Connection connectInMemoryDB(String dbName, int port) throws ConnectFailedException {
-		return connectInMemoryDB(dbName + ":" + port);
-	}
+  /**
+   * Connect in memory db connection.
+   *
+   * @param dbName the db name
+   * @param port   the port
+   * @return the connection
+   * @throws ConnectFailedException the connect failed exception
+   */
+  public static Connection connectInMemoryDB(String dbName, int port) throws ConnectFailedException {
+    return connectInMemoryDB(dbName + ":" + port);
+  }
 
-	public static Connection connectInMemoryDB(String dbName) throws ConnectFailedException {
-		String driver = DRIVER;
-		try {
-			Class.forName(driver);
-        	String url = getInMemoryURL(dbName);
-            return DBUtil.connect(url, DRIVER, DEFAULT_USER, DEFAULT_PASSWORD, false);
-        } catch (ClassNotFoundException e) {
-            throw new ConfigurationError("JDBC driver not found: " + driver, e);
-        }
-	}
-
-	public static String getInMemoryURL(String dbName) {
-        return IN_MEMORY_URL_PREFIX + dbName;
+  /**
+   * Connect in memory db connection.
+   *
+   * @param dbName the db name
+   * @return the connection
+   * @throws ConnectFailedException the connect failed exception
+   */
+  public static Connection connectInMemoryDB(String dbName) throws ConnectFailedException {
+    String driver = DRIVER;
+    try {
+      Class.forName(driver);
+      String url = getInMemoryURL(dbName);
+      return DBUtil.connect(url, DRIVER, DEFAULT_USER, DEFAULT_PASSWORD, false);
+    } catch (ClassNotFoundException e) {
+      throw new ConfigurationError("JDBC driver not found: " + driver, e);
     }
-	
+  }
+
+  /**
+   * Gets in memory url.
+   *
+   * @param dbName the db name
+   * @return the in memory url
+   */
+  public static String getInMemoryURL(String dbName) {
+    return IN_MEMORY_URL_PREFIX + dbName;
+  }
+
 }

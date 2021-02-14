@@ -29,23 +29,29 @@ import java.sql.Connection;
 /**
  * {@link IdentityModel} implementation that represents a missing identity definition.<br/><br/>
  * Created: 20.01.2011 16:24:48
- * @since 0.6.8
+ *
  * @author Volker Bergmann
+ * @since 0.6.8
  */
 public class NoIdentity extends IdentityModel {
-	
-	public NoIdentity(String tableName) {
-		super(tableName);
-    }
 
-	@Override
-	public String getDescription() {
-		return "No identity defined for table " + tableName;
-	}
+  /**
+   * Instantiates a new No identity.
+   *
+   * @param tableName the table name
+   */
+  public NoIdentity(String tableName) {
+    super(tableName);
+  }
 
-	@Override
-	public TabularIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
-		throw new RuntimeException(getDescription());
-    }
+  @Override
+  public String getDescription() {
+    return "No identity defined for table " + tableName;
+  }
+
+  @Override
+  public TabularIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
+    throw new RuntimeException(getDescription());
+  }
 
 }

@@ -32,52 +32,59 @@ import com.rapiddweller.jdbacl.sql.Query;
 /**
  * Space holder for unknown databases.<br/><br/>
  * Created: 26.01.2008 07:13:59
- * @since 0.4.0
+ *
  * @author Volker Bergmann
+ * @since 0.4.0
  */
 public class UnknownDialect extends DatabaseDialect {
 
-	private static final String DATE_PATTERN = "''dd-MMM-yyyy''";
-	private static final String TIME_PATTERN = "''HH-mm-ss''";
-	private static final String DATETIME_PATTERN = "''dd-MMM-yyyy HH-mm-ss''";
+  private static final String DATE_PATTERN = "''dd-MMM-yyyy''";
+  private static final String TIME_PATTERN = "''HH-mm-ss''";
+  private static final String DATETIME_PATTERN = "''dd-MMM-yyyy HH-mm-ss''";
 
-    public UnknownDialect(String system) {
-	    super(system, false, false, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
-    }
+  /**
+   * Instantiates a new Unknown dialect.
+   *
+   * @param system the system
+   */
+  public UnknownDialect(String system) {
+    super(system, false, false, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
+  }
 
-	@Override
-    public boolean isDefaultCatalog(String catalog, String user) {
-	    return true; // hope that the first catalog found is the correct one
-    }
+  @Override
+  public boolean isDefaultCatalog(String catalog, String user) {
+    return true; // hope that the first catalog found is the correct one
+  }
 
-	@Override
-    public boolean isDefaultSchema(String schema, String user) {
-	    return true; // hope that the first schema found is the correct one
-    }
+  @Override
+  public boolean isDefaultSchema(String schema, String user) {
+    return true; // hope that the first schema found is the correct one
+  }
 
-	@Override
-	public boolean isDeterministicPKName(String pkName) {
-		return true; // on unknown database systems, assume the name is reproducible - that's the safer choice
-	}
+  @Override
+  public boolean isDeterministicPKName(String pkName) {
+    return true; // on unknown database systems, assume the name is reproducible - that's the safer choice
+  }
 
-	@Override
-	public boolean isDeterministicUKName(String pkName) {
-		return true; // on unknown database systems, assume the name is reproducible - that's the safer choice
-	}
+  @Override
+  public boolean isDeterministicUKName(String pkName) {
+    return true; // on unknown database systems, assume the name is reproducible - that's the safer choice
+  }
 
-	@Override
-	public boolean isDeterministicFKName(String pkName) {
-		return true; // on unknown database systems, assume the name is reproducible - that's the safer choice
-	}
+  @Override
+  public boolean isDeterministicFKName(String pkName) {
+    return true; // on unknown database systems, assume the name is reproducible - that's the safer choice
+  }
 
-	@Override
-	public boolean isDeterministicIndexName(String indexName) {
-		return true; // on unknown database systems, assume the name is reproducible - that's the safer choice
-	}
+  @Override
+  public boolean isDeterministicIndexName(String indexName) {
+    return true; // on unknown database systems, assume the name is reproducible - that's the safer choice
+  }
 
-	@Override
-	public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
-		throw new UnsupportedOperationException("UnknownDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
-	}
+  @Override
+  public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
+    throw new UnsupportedOperationException(
+        "UnknownDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+  }
 
 }

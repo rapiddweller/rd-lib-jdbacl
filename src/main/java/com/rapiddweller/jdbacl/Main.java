@@ -32,53 +32,62 @@ import com.rapiddweller.jdbacl.model.jdbc.JDBCMetaDataUtil;
 /**
  * Retrieves meta data from a database and prints it to the console in a tree structure.<br/><br/>
  * Created: 26.06.2011 07:38:38
- * @since 0.6.9
+ *
  * @author Volker Bergmann
+ * @since 0.6.9
  */
 public class Main {
 
-	public static void main(String[] args) throws ConnectFailedException, ImportFailedException {
-		String environment = null;
-		for (String arg : args) {
-			if ("-h".equals(arg)) {
-				printHelpAndExit();
-			} else {
-				environment = arg;
-			}
-		}
-		if (environment == null)
-			printErrorAndHelpAndExit();
-		Database database = JDBCMetaDataUtil.getMetaData(environment, true, true, true, true, ".*", null, false, true);
-		new TreeLogger().log(new DatabaseTreeModel(database));
-	}
-
-	private static void printErrorAndHelpAndExit() {
-		ConsoleInfoPrinter.printHelp("Error: " + "No environment specified");
-	    printHelp();
-	    System.exit(-1);
+  /**
+   * The entry point of application.
+   *
+   * @param args the input arguments
+   * @throws ConnectFailedException the connect failed exception
+   * @throws ImportFailedException  the import failed exception
+   */
+  public static void main(String[] args) throws ConnectFailedException, ImportFailedException {
+    String environment = null;
+    for (String arg : args) {
+      if ("-h".equals(arg)) {
+        printHelpAndExit();
+      } else {
+        environment = arg;
+      }
     }
-
-	private static void printHelpAndExit() {
-	    printHelp();
-	    System.exit(0);
+    if (environment == null) {
+      printErrorAndHelpAndExit();
     }
+    Database database = JDBCMetaDataUtil.getMetaData(environment, true, true, true, true, ".*", null, false, true);
+    new TreeLogger().log(new DatabaseTreeModel(database));
+  }
 
-	private static void printHelp() {
-		VersionInfo version = VersionInfo.getInfo("jdbacl");
-		ConsoleInfoPrinter.printHelp("jdbacl " + version);
-		ConsoleInfoPrinter.printHelp("Usage: java -jar jdbacle-" + version.getVersion() + ".jar [options] <environment>");
-		ConsoleInfoPrinter.printHelp(
-			"",
-			"Options:",
-			"-h,--help               print this help",
-			"",
-			"The environment, eg. 'mydb', refers to a properties file, e.g. 'mydb.env.properties',",
-			"which must provide JDBC connection data in the following format:",
-			"	db_url=jdbc:hsqldb:hsql://localhost/mydb",
-			"	db_driver=org.hsqldb.jdbcDriver",
-			"	db_user=customer", 
-			"	db_password=secret"
-		);
-	}
+  private static void printErrorAndHelpAndExit() {
+    ConsoleInfoPrinter.printHelp("Error: " + "No environment specified");
+    printHelp();
+    System.exit(-1);
+  }
+
+  private static void printHelpAndExit() {
+    printHelp();
+    System.exit(0);
+  }
+
+  private static void printHelp() {
+    VersionInfo version = VersionInfo.getInfo("jdbacl");
+    ConsoleInfoPrinter.printHelp("jdbacl " + version);
+    ConsoleInfoPrinter.printHelp("Usage: java -jar jdbacle-" + version.getVersion() + ".jar [options] <environment>");
+    ConsoleInfoPrinter.printHelp(
+        "",
+        "Options:",
+        "-h,--help               print this help",
+        "",
+        "The environment, eg. 'mydb', refers to a properties file, e.g. 'mydb.env.properties',",
+        "which must provide JDBC connection data in the following format:",
+        "	db_url=jdbc:hsqldb:hsql://localhost/mydb",
+        "	db_driver=org.hsqldb.jdbcDriver",
+        "	db_user=customer",
+        "	db_password=secret"
+    );
+  }
 
 }

@@ -27,45 +27,54 @@ import com.rapiddweller.common.TreeModel;
  * {@link TreeModel} adapter for the hierarchy formed by the Composite pattern of
  * {@link DBObject} and {@link CompositeDBObject}.<br/><br/>
  * Created: 10.11.2010 10:17:14
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public class DBTreeModel implements TreeModel<DBObject> {
 
-	final CompositeDBObject<?> root;
-	
-	public DBTreeModel(CompositeDBObject<?> root) {
-		this.root = root;
-	}
+  /**
+   * The Root.
+   */
+  final CompositeDBObject<?> root;
 
-	@Override
-	public DBObject getRoot() {
-		return root;
-	}
+  /**
+   * Instantiates a new Db tree model.
+   *
+   * @param root the root
+   */
+  public DBTreeModel(CompositeDBObject<?> root) {
+    this.root = root;
+  }
 
-	@Override
-	public DBObject getParent(DBObject child) {
-		return child.getOwner();
-	}
+  @Override
+  public DBObject getRoot() {
+    return root;
+  }
 
-	@Override
-	public boolean isLeaf(DBObject node) {
-		return !(node instanceof CompositeDBObject);
-	}
+  @Override
+  public DBObject getParent(DBObject child) {
+    return child.getOwner();
+  }
 
-	@Override
-	public int getChildCount(DBObject parent) {
-		return ((CompositeDBObject<?>) parent).getComponents().size();
-	}
+  @Override
+  public boolean isLeaf(DBObject node) {
+    return !(node instanceof CompositeDBObject);
+  }
 
-	@Override
-	public DBObject getChild(DBObject parent, int index) {
-		return ((CompositeDBObject<?>) parent).getComponents().get(index);
-	}
+  @Override
+  public int getChildCount(DBObject parent) {
+    return ((CompositeDBObject<?>) parent).getComponents().size();
+  }
 
-	@Override
-	public int getIndexOfChild(DBObject parent, DBObject child) {
-		return ((CompositeDBObject<?>) parent).getComponents().indexOf(child);
-	}
+  @Override
+  public DBObject getChild(DBObject parent, int index) {
+    return ((CompositeDBObject<?>) parent).getComponents().get(index);
+  }
+
+  @Override
+  public int getIndexOfChild(DBObject parent, DBObject child) {
+    return ((CompositeDBObject<?>) parent).getComponents().indexOf(child);
+  }
 
 }

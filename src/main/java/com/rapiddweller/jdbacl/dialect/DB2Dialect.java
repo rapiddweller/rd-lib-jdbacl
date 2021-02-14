@@ -34,69 +34,76 @@ import java.util.regex.Pattern;
 /**
  * Implements generic database concepts for DB2<br/><br/>
  * Created: 26.01.2008 07:09:34
- * @since 0.4.0
+ *
  * @author Volker Bergmann
+ * @since 0.4.0
  */
 public class DB2Dialect extends DatabaseDialect {
 
-	private static final String DATE_PATTERN = "''yyyy-MM-dd''";
-	private static final String TIME_PATTERN = "''HH:mm:ss''";
-	private static final String DATETIME_PATTERN = "''yyyy-MM-dd HH:mm:ss''";
+  private static final String DATE_PATTERN = "''yyyy-MM-dd''";
+  private static final String TIME_PATTERN = "''HH:mm:ss''";
+  private static final String DATETIME_PATTERN = "''yyyy-MM-dd HH:mm:ss''";
 
-	final Pattern randomNamePattern = Pattern.compile("SQL\\d{15}");
+  /**
+   * The Random name pattern.
+   */
+  final Pattern randomNamePattern = Pattern.compile("SQL\\d{15}");
 
-    public DB2Dialect() {
-	    super("db2", false, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
+  /**
+   * Instantiates a new Db 2 dialect.
+   */
+  public DB2Dialect() {
+    super("db2", false, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
+  }
+
+  @Override
+  public boolean isDefaultCatalog(String catalog, String user) {
+    return true;
+  }
+
+  @Override
+  public boolean isDefaultSchema(String schema, String user) {
+    return true;
+  }
+
+  @Override
+  public String renderFetchSequenceValue(String sequenceName) {
+    String table = "sysibm.sysdummy1";
+    String sequence = sequenceName;
+    int sep = sequenceName.lastIndexOf('.');
+    if (sep > 0) {
+      table = sequenceName.substring(0, sep);
+      sequence = sequenceName.substring(sep + 1);
     }
+    return "select nextval for " + sequence + " from " + table;
+  }
 
-	@Override
-    public boolean isDefaultCatalog(String catalog, String user) {
-	    return true;
-    }
+  @Override
+  public boolean isDeterministicPKName(String pkName) {
+    return !randomNamePattern.matcher(pkName).matches();
+  }
 
-	@Override
-    public boolean isDefaultSchema(String schema, String user) {
-	    return true;
-    }
+  @Override
+  public boolean isDeterministicUKName(String ukName) {
+    return !randomNamePattern.matcher(ukName).matches();
+  }
 
-	@Override
-    public String renderFetchSequenceValue(String sequenceName) {
-        String table = "sysibm.sysdummy1";
-        String sequence = sequenceName;
-        int sep = sequenceName.lastIndexOf('.');
-        if (sep > 0) {
-            table = sequenceName.substring(0, sep);
-            sequence = sequenceName.substring(sep + 1);
-        }
-        return "select nextval for " + sequence + " from " + table;
-    }
+  @Override
+  public boolean isDeterministicFKName(String fkName) {
+    return !randomNamePattern.matcher(fkName).matches();
+  }
 
-	@Override
-	public boolean isDeterministicPKName(String pkName) {
-		return !randomNamePattern.matcher(pkName).matches();
-	}
+  @Override
+  public boolean isDeterministicIndexName(String indexName) {
+    return !randomNamePattern.matcher(indexName).matches();
+  }
 
-	@Override
-	public boolean isDeterministicUKName(String ukName) {
-		return !randomNamePattern.matcher(ukName).matches();
-	}
-
-	@Override
-	public boolean isDeterministicFKName(String fkName) {
-		return !randomNamePattern.matcher(fkName).matches();
-	}
-
-	@Override
-	public boolean isDeterministicIndexName(String indexName) {
-		return !randomNamePattern.matcher(indexName).matches();
-	}
-
-	@Override
-	public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
+  @Override
+  public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
 	    /* TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
 			DB2: SELECT * FROM T WHERE ID_T > 20 FETCH FIRST 10 ROWS ONLY
 	     */
-		throw new UnsupportedOperationException("DB2Dialect.applyRownumRestriction() is not implemented");
-	}
+    throw new UnsupportedOperationException("DB2Dialect.applyRownumRestriction() is not implemented");
+  }
 
 }

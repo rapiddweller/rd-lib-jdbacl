@@ -26,17 +26,30 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
-import com.rapiddweller.common.*;
+import com.rapiddweller.common.ArrayBuilder;
+import com.rapiddweller.common.CollectionUtil;
+import com.rapiddweller.common.NameUtil;
+import com.rapiddweller.common.OrderedMap;
+import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.converter.TimestampFormatter;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.DatabaseDialect;
-import com.rapiddweller.jdbacl.model.*;
+import com.rapiddweller.jdbacl.model.DBCheckConstraint;
+import com.rapiddweller.jdbacl.model.DBPackage;
+import com.rapiddweller.jdbacl.model.DBProcedure;
+import com.rapiddweller.jdbacl.model.DBSchema;
+import com.rapiddweller.jdbacl.model.DBSequence;
+import com.rapiddweller.jdbacl.model.DBTrigger;
 import com.rapiddweller.jdbacl.sql.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigInteger;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,169 +58,193 @@ import java.util.regex.Pattern;
 /**
  * Implements generic database concepts for Oracle.<br/><br/>
  * Created: 26.01.2008 07:05:28
- * @since 0.4.0
+ *
  * @author Volker Bergmann
+ * @since 0.4.0
  */
 public class OracleDialect extends DatabaseDialect {
-	
-	private static final Logger LOGGER = LogManager.getLogger(OracleDialect.class);
-    
-	private static final String DATE_PATTERN = "'to_date('''yyyy-MM-dd''', ''yyyy-mm-dd'')'";
-	private static final String TIME_PATTERN = "'to_date('''HH:mm:ss''', ''HH24:mi:ss'')'";
-	private static final String DATETIME_PATTERN = "'to_date('''yyyy-MM-dd HH:mm:ss''', ''yyyy-mm-dd HH24:mi:ss'')'";
-    private static final String TIMESTAMP_MESSAGE = "to_timestamp(''{0}'', ''yyyy-mm-dd HH24:mi:ss.FF'')";
-    private static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
-    private static final Pattern SIMPLE_NOT_NULL_CHECK = Pattern.compile("\"[A-Z0-9_]+\" IS NOT NULL");
-    
-	final Pattern randomNamePattern = Pattern.compile("SYS_C\\d{8}");
 
-	public OracleDialect() {
-	    super("oracle", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
-    }
+  private static final Logger LOGGER = LogManager.getLogger(OracleDialect.class);
 
-	@Override
-	public boolean isDefaultCatalog(String catalog, String user) {
-	    return (catalog == null);
-	}
-	
-	@Override
-	public boolean isDefaultSchema(String schema, String user) {
-	    return user.equalsIgnoreCase(schema);
-	}
-	
-	@Override
-	public String renderCreateSequence(DBSequence sequence) {
+  private static final String DATE_PATTERN = "'to_date('''yyyy-MM-dd''', ''yyyy-mm-dd'')'";
+  private static final String TIME_PATTERN = "'to_date('''HH:mm:ss''', ''HH24:mi:ss'')'";
+  private static final String DATETIME_PATTERN = "'to_date('''yyyy-MM-dd HH:mm:ss''', ''yyyy-mm-dd HH24:mi:ss'')'";
+  private static final String TIMESTAMP_MESSAGE = "to_timestamp(''{0}'', ''yyyy-mm-dd HH24:mi:ss.FF'')";
+  private static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
+  private static final Pattern SIMPLE_NOT_NULL_CHECK = Pattern.compile("\"[A-Z0-9_]+\" IS NOT NULL");
+
+  /**
+   * The Random name pattern.
+   */
+  final Pattern randomNamePattern = Pattern.compile("SYS_C\\d{8}");
+
+  /**
+   * Instantiates a new Oracle dialect.
+   */
+  public OracleDialect() {
+    super("oracle", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
+  }
+
+  @Override
+  public boolean isDefaultCatalog(String catalog, String user) {
+    return (catalog == null);
+  }
+
+  @Override
+  public boolean isDefaultSchema(String schema, String user) {
+    return user.equalsIgnoreCase(schema);
+  }
+
+  @Override
+  public String renderCreateSequence(DBSequence sequence) {
 		/* Oracle sequence syntax:
-			CREATE SEQUENCE [myschema.]xyz 
+			CREATE SEQUENCE [myschema.]xyz
 			START WITH 1
-			INCREMENT BY 1 
+			INCREMENT BY 1
 			MINVALUE 1 | NOMINVALUE
 			MAXVALUE 999999999 | NOMAXVALUE
 			CACHE 1 | NOCACHE
 			CYCLE | NOCYCLE
 			ORDER | NOORDER
 		 */
-		String result = super.renderCreateSequence(sequence);
-		// apply cache settings
-    	Long cache = sequence.getCache();
-    	if (cache != null)
-    		result += " CACHE " + cache;
-		// if applicable, append ORDER. This is purely oracle
-		Boolean order = sequence.isOrder();
-		if (order != null)
-			result += (order ? " ORDER" : "NOORDER");
-		return result;
-	}
-	
-	@Override
-	protected String renderSequenceNameAndType(DBSequence sequence) {
-		String schemaName = sequence.getSchemaName();
-		return (schemaName != null ? "\"" + schemaName + "\"." : "") + '"' + sequence.getName() + '"';
-	}
-	
-	@Override
-    public String renderFetchSequenceValue(String sequenceName) {
-        return "select " + sequenceName + ".nextval from dual";
+    String result = super.renderCreateSequence(sequence);
+    // apply cache settings
+    Long cache = sequence.getCache();
+    if (cache != null) {
+      result += " CACHE " + cache;
     }
-	
-	@Override
-    public String formatTimestamp(Timestamp value) {
-		String renderedTimestamp = new TimestampFormatter(TIMESTAMP_PATTERN).format(value);
-		return MessageFormat.format(TIMESTAMP_MESSAGE, renderedTimestamp);
+    // if applicable, append ORDER. This is purely oracle
+    Boolean order = sequence.isOrder();
+    if (order != null) {
+      result += (order ? " ORDER" : "NOORDER");
     }
+    return result;
+  }
 
-	@Override
-	public DBSequence[] querySequences(Connection connection) throws SQLException {
-		Statement statement = connection.createStatement();
-		ResultSet resultSet = statement.executeQuery("select sequence_name, min_value, max_value, increment_by, " +
-				"cycle_flag, order_flag, cache_size, last_number from user_sequences");
-		try {
-			ArrayBuilder<DBSequence> builder = new ArrayBuilder<>(DBSequence.class);
-			while (resultSet.next()) {
-				DBSequence sequence = new DBSequence(resultSet.getString(1), null);
-				sequence.setMinValue(new BigInteger(resultSet.getString(2)));
-				sequence.setMaxValue(new BigInteger(resultSet.getString(3)));
-				sequence.setIncrement(new BigInteger(resultSet.getString(4)));
-				sequence.setCycle("Y".equals(resultSet.getString(5)));
-				sequence.setOrder("Y".equals(resultSet.getString(6)));
-				sequence.setCache(resultSet.getLong(7));
-				sequence.setLastNumber(new BigInteger(resultSet.getString(8)));
-				builder.add(sequence);
-				LOGGER.debug("Imported sequence {}", sequence.getName());
-			}
-			return builder.toArray();
-		} finally {
-			DBUtil.closeResultSetAndStatement(resultSet);
-		}
-	}
-	
-	public DBCheckConstraint[] queryCheckConstraints(Connection connection, String schemaName) throws SQLException {
-		Statement statement = connection.createStatement();
-		statement.setFetchSize(300);
-		String query = "select owner, constraint_name, table_name, search_condition " +
-				"from user_constraints where constraint_type = 'C'";
-		if (schemaName != null)
-			query += " and owner = '" + schemaName.toUpperCase() + "'";
-		ResultSet resultSet = statement.executeQuery(query);
-		ArrayBuilder<DBCheckConstraint> builder = new ArrayBuilder<>(DBCheckConstraint.class);
-		try {
-			while (resultSet.next()) {
-				String ownerName = resultSet.getString("owner");
-				if (schemaName == null || StringUtil.equalsIgnoreCase(schemaName, ownerName)) {
-					String constraintName = resultSet.getString("constraint_name");
-					String tableName = resultSet.getString("table_name");
-					String condition = resultSet.getString("search_condition");
-					if (!SIMPLE_NOT_NULL_CHECK.matcher(condition).matches()) {
-						try {
-							DBCheckConstraint constraint = new DBCheckConstraint(
-									constraintName, !isDeterministicCheckName(constraintName), tableName, condition);
-							builder.add(constraint);
-						} catch (Exception e) {
-							LOGGER.error("Error parsing check constraint ", e);
-						}
-					}
-					LOGGER.debug("Imported check for table {}: {}", tableName, condition);
-				}
-			}
-		} finally {
-			DBUtil.closeResultSetAndStatement(resultSet);
-		}
-		return builder.toArray();
-	}
+  @Override
+  protected String renderSequenceNameAndType(DBSequence sequence) {
+    String schemaName = sequence.getSchemaName();
+    return (schemaName != null ? "\"" + schemaName + "\"." : "") + '"' + sequence.getName() + '"';
+  }
 
-	public boolean isDeterministicCheckName(String checkName) {
-		return !randomNamePattern.matcher(checkName).matches();
-	}
+  @Override
+  public String renderFetchSequenceValue(String sequenceName) {
+    return "select " + sequenceName + ".nextval from dual";
+  }
 
-	@Override
-	public boolean isDeterministicPKName(String pkName) {
-		return !randomNamePattern.matcher(pkName).matches();
-	}
+  @Override
+  public String formatTimestamp(Timestamp value) {
+    String renderedTimestamp = new TimestampFormatter(TIMESTAMP_PATTERN).format(value);
+    return MessageFormat.format(TIMESTAMP_MESSAGE, renderedTimestamp);
+  }
 
-	@Override
-	public boolean isDeterministicUKName(String ukName) {
-		return !randomNamePattern.matcher(ukName).matches();
-	}
+  @Override
+  public DBSequence[] querySequences(Connection connection) throws SQLException {
+    Statement statement = connection.createStatement();
+    ResultSet resultSet = statement.executeQuery("select sequence_name, min_value, max_value, increment_by, " +
+        "cycle_flag, order_flag, cache_size, last_number from user_sequences");
+    try {
+      ArrayBuilder<DBSequence> builder = new ArrayBuilder<>(DBSequence.class);
+      while (resultSet.next()) {
+        DBSequence sequence = new DBSequence(resultSet.getString(1), null);
+        sequence.setMinValue(new BigInteger(resultSet.getString(2)));
+        sequence.setMaxValue(new BigInteger(resultSet.getString(3)));
+        sequence.setIncrement(new BigInteger(resultSet.getString(4)));
+        sequence.setCycle("Y".equals(resultSet.getString(5)));
+        sequence.setOrder("Y".equals(resultSet.getString(6)));
+        sequence.setCache(resultSet.getLong(7));
+        sequence.setLastNumber(new BigInteger(resultSet.getString(8)));
+        builder.add(sequence);
+        LOGGER.debug("Imported sequence {}", sequence.getName());
+      }
+      return builder.toArray();
+    } finally {
+      DBUtil.closeResultSetAndStatement(resultSet);
+    }
+  }
 
-	@Override
-	public boolean isDeterministicFKName(String fkName) {
-		return !randomNamePattern.matcher(fkName).matches();
-	}
+  /**
+   * Query check constraints db check constraint [ ].
+   *
+   * @param connection the connection
+   * @param schemaName the schema name
+   * @return the db check constraint [ ]
+   * @throws SQLException the sql exception
+   */
+  public DBCheckConstraint[] queryCheckConstraints(Connection connection, String schemaName) throws SQLException {
+    Statement statement = connection.createStatement();
+    statement.setFetchSize(300);
+    String query = "select owner, constraint_name, table_name, search_condition " +
+        "from user_constraints where constraint_type = 'C'";
+    if (schemaName != null) {
+      query += " and owner = '" + schemaName.toUpperCase() + "'";
+    }
+    ResultSet resultSet = statement.executeQuery(query);
+    ArrayBuilder<DBCheckConstraint> builder = new ArrayBuilder<>(DBCheckConstraint.class);
+    try {
+      while (resultSet.next()) {
+        String ownerName = resultSet.getString("owner");
+        if (schemaName == null || StringUtil.equalsIgnoreCase(schemaName, ownerName)) {
+          String constraintName = resultSet.getString("constraint_name");
+          String tableName = resultSet.getString("table_name");
+          String condition = resultSet.getString("search_condition");
+          if (!SIMPLE_NOT_NULL_CHECK.matcher(condition).matches()) {
+            try {
+              DBCheckConstraint constraint = new DBCheckConstraint(
+                  constraintName, !isDeterministicCheckName(constraintName), tableName, condition);
+              builder.add(constraint);
+            } catch (Exception e) {
+              LOGGER.error("Error parsing check constraint ", e);
+            }
+          }
+          LOGGER.debug("Imported check for table {}: {}", tableName, condition);
+        }
+      }
+    } finally {
+      DBUtil.closeResultSetAndStatement(resultSet);
+    }
+    return builder.toArray();
+  }
 
-	@Override
-	public boolean isDeterministicIndexName(String indexName) {
-		return !randomNamePattern.matcher(indexName).matches();
-	}
+  /**
+   * Is deterministic check name boolean.
+   *
+   * @param checkName the check name
+   * @return the boolean
+   */
+  public boolean isDeterministicCheckName(String checkName) {
+    return !randomNamePattern.matcher(checkName).matches();
+  }
 
-	@Override
-	public boolean supportsRegex() {
-		return true;
-	}
-	
-	@Override
-	public String regexQuery(String expression, boolean not, String regex) {
-		return (not ? "NOT " : "") + "REGEXP_LIKE(" + expression + ", '" + regex + "')";
-	}
+  @Override
+  public boolean isDeterministicPKName(String pkName) {
+    return !randomNamePattern.matcher(pkName).matches();
+  }
+
+  @Override
+  public boolean isDeterministicUKName(String ukName) {
+    return !randomNamePattern.matcher(ukName).matches();
+  }
+
+  @Override
+  public boolean isDeterministicFKName(String fkName) {
+    return !randomNamePattern.matcher(fkName).matches();
+  }
+
+  @Override
+  public boolean isDeterministicIndexName(String indexName) {
+    return !randomNamePattern.matcher(indexName).matches();
+  }
+
+  @Override
+  public boolean supportsRegex() {
+    return true;
+  }
+
+  @Override
+  public String regexQuery(String expression, boolean not, String regex) {
+    return (not ? "NOT " : "") + "REGEXP_LIKE(" + expression + ", '" + regex + "')";
+  }
 
 	/*
 	@Override
@@ -255,102 +292,104 @@ public class OracleDialect extends DatabaseDialect {
 		return indexes.values();
 	}
 	*/
-	
-	@Override
-	public void queryTriggers(DBSchema schema, Connection connection) throws SQLException {
-		String query = "SELECT OWNER, TRIGGER_NAME, TRIGGER_TYPE, TRIGGERING_EVENT, TABLE_OWNER, BASE_OBJECT_TYPE, " +
-			"TABLE_NAME, COLUMN_NAME, REFERENCING_NAMES, WHEN_CLAUSE, STATUS, DESCRIPTION, ACTION_TYPE, " +
-			"TRIGGER_BODY FROM SYS.ALL_TRIGGERS";
-		if (schema != null)
-			query += " WHERE OWNER = '" + schema.getName().toUpperCase() + "'";
-		ResultSet resultSet = DBUtil.executeQuery(query, connection);
-		List<DBTrigger> triggers = new ArrayList<>();
-		try {
-			while (resultSet.next()) {
-				DBTrigger trigger = new DBTrigger(resultSet.getString(2), null);
-				trigger.setOwner(schema);
-				schema.receiveTrigger(trigger); // use receiveTrigger(), because the DBTrigger ctor would cause a recursion in trigger import
-				trigger.setTriggerType(resultSet.getString(3));
-				trigger.setTriggeringEvent(resultSet.getString(4));
-				trigger.setTableOwner(resultSet.getString(5));
-				trigger.setBaseObjectType(resultSet.getString(6));
-				trigger.setTableName(resultSet.getString(7));
-				trigger.setColumnName(resultSet.getString(8));
-				trigger.setReferencingNames(resultSet.getString(9));
-				trigger.setWhenClause(resultSet.getString(10));
-				trigger.setStatus(resultSet.getString(11));
-				trigger.setDescription(resultSet.getString(12));
-				trigger.setActionType(resultSet.getString(13));
-				trigger.setTriggerBody(resultSet.getString(14));
-				triggers.add(trigger);
-				LOGGER.debug("Imported trigger: {}", trigger.getName());
-			}
-		} finally {
-			DBUtil.closeResultSetAndStatement(resultSet);
-		}
-	}
-	
-	@Override
-	public List<DBPackage> queryPackages(DBSchema schema, Connection connection) throws SQLException {
-		
-		// query packages
+
+  @Override
+  public void queryTriggers(DBSchema schema, Connection connection) throws SQLException {
+    String query = "SELECT OWNER, TRIGGER_NAME, TRIGGER_TYPE, TRIGGERING_EVENT, TABLE_OWNER, BASE_OBJECT_TYPE, " +
+        "TABLE_NAME, COLUMN_NAME, REFERENCING_NAMES, WHEN_CLAUSE, STATUS, DESCRIPTION, ACTION_TYPE, " +
+        "TRIGGER_BODY FROM SYS.ALL_TRIGGERS";
+    if (schema != null) {
+      query += " WHERE OWNER = '" + schema.getName().toUpperCase() + "'";
+    }
+    ResultSet resultSet = DBUtil.executeQuery(query, connection);
+    List<DBTrigger> triggers = new ArrayList<>();
+    try {
+      while (resultSet.next()) {
+        DBTrigger trigger = new DBTrigger(resultSet.getString(2), null);
+        trigger.setOwner(schema);
+        schema.receiveTrigger(trigger); // use receiveTrigger(), because the DBTrigger ctor would cause a recursion in trigger import
+        trigger.setTriggerType(resultSet.getString(3));
+        trigger.setTriggeringEvent(resultSet.getString(4));
+        trigger.setTableOwner(resultSet.getString(5));
+        trigger.setBaseObjectType(resultSet.getString(6));
+        trigger.setTableName(resultSet.getString(7));
+        trigger.setColumnName(resultSet.getString(8));
+        trigger.setReferencingNames(resultSet.getString(9));
+        trigger.setWhenClause(resultSet.getString(10));
+        trigger.setStatus(resultSet.getString(11));
+        trigger.setDescription(resultSet.getString(12));
+        trigger.setActionType(resultSet.getString(13));
+        trigger.setTriggerBody(resultSet.getString(14));
+        triggers.add(trigger);
+        LOGGER.debug("Imported trigger: {}", trigger.getName());
+      }
+    } finally {
+      DBUtil.closeResultSetAndStatement(resultSet);
+    }
+  }
+
+  @Override
+  public List<DBPackage> queryPackages(DBSchema schema, Connection connection) throws SQLException {
+
+    // query packages
 		/* TODO v1.0 this version does not work on each oracle instance
 		String query = "SELECT OWNER, OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, OBJECT_TYPE, STATUS" +
 				" FROM USER_OBJECTS WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'";
 		if (schema != null)
 			query += " AND OWNER = '" + schema.getName().toUpperCase() + "'";
 		*/
-		String query = "SELECT USER, OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, OBJECT_TYPE, STATUS" +
-			" FROM USER_OBJECTS WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'";
-		List<Object[]> pkgInfos = DBUtil.query(query, connection);
-		OrderedMap<String, DBPackage> packages = new OrderedMap<>();
-		for (Object[] pkgInfo : pkgInfos) {
-			String ownerName = (String) pkgInfo[0];
-			if (schema == null || schema.getName().equals(ownerName)) {
-				String name = (String) pkgInfo[1];
-				DBPackage pkg = new DBPackage(name, null);
-				schema.receivePackage(pkg);
-				pkg.setSchema(schema);
-				pkg.setSubObjectName((String) pkgInfo[2]);
-				pkg.setObjectId(pkgInfo[3].toString());
-				pkg.setObjectType((String) pkgInfo[4]);
-				pkg.setStatus((String) pkgInfo[5]);
-				packages.put(pkg.getName(), pkg);
-				LOGGER.debug("Imported package {}", pkg);
-			}
-		}
-		
-		// query package procedures
-		query = "SELECT OBJECT_NAME, PROCEDURE_NAME, OBJECT_ID, SUBPROGRAM_ID, OVERLOAD" +
-			" FROM SYS.USER_PROCEDURES WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'" +
-			" AND PROCEDURE_NAME IS NOT NULL AND OBJECT_NAME IN (" + 
-			CollectionUtil.formatCommaSeparatedList(NameUtil.getNames(packages.values()), '\'') + ")";
-		List<Object[]> procInfos = DBUtil.query(query, connection);
-		for (Object[] procInfo : procInfos) {
-			DBPackage owner = packages.get((String) procInfo[0]);
-			String name = (String) procInfo[1];
-			DBProcedure proc = new DBProcedure(name, owner);
-			proc.setObjectId(procInfo[2].toString());
-			proc.setSubProgramId(procInfo[3].toString());
-			proc.setOverload((String) procInfo[4]);
-			LOGGER.debug("Imported package procedure {}.{}", owner.getName(), proc.getName());
-		}		
-		return packages.values();
-	}
+    String query = "SELECT USER, OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, OBJECT_TYPE, STATUS" +
+        " FROM USER_OBJECTS WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'";
+    List<Object[]> pkgInfos = DBUtil.query(query, connection);
+    OrderedMap<String, DBPackage> packages = new OrderedMap<>();
+    for (Object[] pkgInfo : pkgInfos) {
+      String ownerName = (String) pkgInfo[0];
+      if (schema == null || schema.getName().equals(ownerName)) {
+        String name = (String) pkgInfo[1];
+        DBPackage pkg = new DBPackage(name, null);
+        schema.receivePackage(pkg);
+        pkg.setSchema(schema);
+        pkg.setSubObjectName((String) pkgInfo[2]);
+        pkg.setObjectId(pkgInfo[3].toString());
+        pkg.setObjectType((String) pkgInfo[4]);
+        pkg.setStatus((String) pkgInfo[5]);
+        packages.put(pkg.getName(), pkg);
+        LOGGER.debug("Imported package {}", pkg);
+      }
+    }
 
-	@Override
-	public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
-		String condition;
-		if (firstRowIndex > 1)
-			condition = "ROWNUM BETWEEN " + firstRowIndex + " AND " + (firstRowIndex + rowCount); 
-		else
-			condition = "ROWNUM <= " + rowCount;
-		query.and(condition);
-	}
-	
-	@Override
-	public String trim(String expression) {
-		return "TRIM(" + expression + ")";
-	}
+    // query package procedures
+    query = "SELECT OBJECT_NAME, PROCEDURE_NAME, OBJECT_ID, SUBPROGRAM_ID, OVERLOAD" +
+        " FROM SYS.USER_PROCEDURES WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'" +
+        " AND PROCEDURE_NAME IS NOT NULL AND OBJECT_NAME IN (" +
+        CollectionUtil.formatCommaSeparatedList(NameUtil.getNames(packages.values()), '\'') + ")";
+    List<Object[]> procInfos = DBUtil.query(query, connection);
+    for (Object[] procInfo : procInfos) {
+      DBPackage owner = packages.get((String) procInfo[0]);
+      String name = (String) procInfo[1];
+      DBProcedure proc = new DBProcedure(name, owner);
+      proc.setObjectId(procInfo[2].toString());
+      proc.setSubProgramId(procInfo[3].toString());
+      proc.setOverload((String) procInfo[4]);
+      LOGGER.debug("Imported package procedure {}.{}", owner.getName(), proc.getName());
+    }
+    return packages.values();
+  }
+
+  @Override
+  public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
+    String condition;
+    if (firstRowIndex > 1) {
+      condition = "ROWNUM BETWEEN " + firstRowIndex + " AND " + (firstRowIndex + rowCount);
+    } else {
+      condition = "ROWNUM <= " + rowCount;
+    }
+    query.and(condition);
+  }
+
+  @Override
+  public String trim(String expression) {
+    return "TRIM(" + expression + ")";
+  }
 
 }

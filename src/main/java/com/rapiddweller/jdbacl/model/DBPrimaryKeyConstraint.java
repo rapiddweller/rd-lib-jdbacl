@@ -32,25 +32,31 @@ import com.rapiddweller.jdbacl.SQLUtil;
 /**
  * Represents a primary key constraint in a database.<br/><br/>
  * Created: 08.01.2007 23:53:56
+ *
  * @author Volker Bergmann
  */
 public class DBPrimaryKeyConstraint extends DBUniqueConstraint {
-	
-    private static final long serialVersionUID = 2403324107962405097L;
 
-	/**
-     * @param name    the constraint name - it may be null
-     * @param columnNames the names of the columns to which the constraint is applied
-     */
-    public DBPrimaryKeyConstraint(DBTable table, String name, boolean nameDeterministic, String... columnNames) {
-        super(table, name, nameDeterministic, columnNames);
-        if (table != null)
-        	table.setPrimaryKey(this);
-    }
+  private static final long serialVersionUID = 2403324107962405097L;
 
-    @Override
-    public String toString() {
-        return SQLUtil.pkSpec(this, NameSpec.ALWAYS);
+  /**
+   * Instantiates a new Db primary key constraint.
+   *
+   * @param table             the table
+   * @param name              the constraint name - it may be null
+   * @param nameDeterministic the name deterministic
+   * @param columnNames       the names of the columns to which the constraint is applied
+   */
+  public DBPrimaryKeyConstraint(DBTable table, String name, boolean nameDeterministic, String... columnNames) {
+    super(table, name, nameDeterministic, columnNames);
+    if (table != null) {
+      table.setPrimaryKey(this);
     }
-    
+  }
+
+  @Override
+  public String toString() {
+    return SQLUtil.pkSpec(this, NameSpec.ALWAYS);
+  }
+
 }

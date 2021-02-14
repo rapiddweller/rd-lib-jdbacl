@@ -35,66 +35,153 @@ import java.util.concurrent.Future;
 /**
  * Utility class for JDBC meta data retrieval.<br/><br/>
  * Created: 02.02.2012 13:20:12
- * @since 0.8.0
+ *
  * @author Volker Bergmann
+ * @since 0.8.0
  */
 public class JDBCMetaDataUtil {
 
-	public static Future<Database> getFutureMetaData(String environment, 
-			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
-			String tableInclusionPattern, String tableExclusionPattern, boolean lazy, boolean cached) 
-				throws ConnectFailedException, ImportFailedException {
-		final DBMetaDataImporter importer = getJDBCDBImporter(environment, importUKs, importIndexes, importSequences, 
-				importChecks, tableInclusionPattern, tableExclusionPattern, cached);
-		Callable<Database> callable = importer::importDatabase;
-		return Executors.newSingleThreadExecutor().submit(callable);
-	}
+  /**
+   * Gets future meta data.
+   *
+   * @param environment           the environment
+   * @param importUKs             the import u ks
+   * @param importIndexes         the import indexes
+   * @param importSequences       the import sequences
+   * @param importChecks          the import checks
+   * @param tableInclusionPattern the table inclusion pattern
+   * @param tableExclusionPattern the table exclusion pattern
+   * @param lazy                  the lazy
+   * @param cached                the cached
+   * @return the future meta data
+   * @throws ConnectFailedException the connect failed exception
+   * @throws ImportFailedException  the import failed exception
+   */
+  public static Future<Database> getFutureMetaData(String environment,
+                                                   boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
+                                                   String tableInclusionPattern, String tableExclusionPattern, boolean lazy, boolean cached)
+      throws ConnectFailedException, ImportFailedException {
+    final DBMetaDataImporter importer = getJDBCDBImporter(environment, importUKs, importIndexes, importSequences,
+        importChecks, tableInclusionPattern, tableExclusionPattern, cached);
+    Callable<Database> callable = importer::importDatabase;
+    return Executors.newSingleThreadExecutor().submit(callable);
+  }
 
-	public static Database getMetaData(String environment, 
-			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
-			String tableInclusionPattern, String tableExclusionPattern, boolean lazy, boolean cached) 
-				throws ConnectFailedException, ImportFailedException {
-		DBMetaDataImporter importer = getJDBCDBImporter(environment, 
-				importUKs, importIndexes, importSequences, importChecks, tableInclusionPattern, tableExclusionPattern, cached);
-		return importer.importDatabase();
-	}
+  /**
+   * Gets meta data.
+   *
+   * @param environment           the environment
+   * @param importUKs             the import u ks
+   * @param importIndexes         the import indexes
+   * @param importSequences       the import sequences
+   * @param importChecks          the import checks
+   * @param tableInclusionPattern the table inclusion pattern
+   * @param tableExclusionPattern the table exclusion pattern
+   * @param lazy                  the lazy
+   * @param cached                the cached
+   * @return the meta data
+   * @throws ConnectFailedException the connect failed exception
+   * @throws ImportFailedException  the import failed exception
+   */
+  public static Database getMetaData(String environment,
+                                     boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
+                                     String tableInclusionPattern, String tableExclusionPattern, boolean lazy, boolean cached)
+      throws ConnectFailedException, ImportFailedException {
+    DBMetaDataImporter importer = getJDBCDBImporter(environment,
+        importUKs, importIndexes, importSequences, importChecks, tableInclusionPattern, tableExclusionPattern, cached);
+    return importer.importDatabase();
+  }
 
-	public static DBMetaDataImporter getJDBCDBImporter(String environment, 
-			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks, 
-			String tableInclusionPattern, String tableExclusionPattern, boolean cached) {
-		JDBCDBImporter dbImporter;
-		dbImporter = new JDBCDBImporter(environment);
-		dbImporter.setTableInclusionPattern(tableInclusionPattern);
-		dbImporter.setTableExclusionPattern(tableExclusionPattern);
-		DBMetaDataImporter importer = dbImporter;
-		if (cached)
-			importer = new CachingDBImporter((JDBCDBImporter) importer, environment);
-		return importer;
-	}
-	
-	public static Database getMetaData(Connection target, String user, String schema) 
-			throws ConnectFailedException, ImportFailedException {
-		return getMetaData(target, user, schema, true, true, true, true, ".*", null);
-	}
-	
-	public static Database getMetaData(Connection connection, String user, String schemaName,
-				boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks, 
-				String tableInclusionPattern, String tableExclusionPattern) 
-			throws ConnectFailedException, ImportFailedException {
-		DBMetaDataImporter importer = getJDBCDBImporter(connection, user, schemaName, 
-				importUKs, importIndexes, importSequences, importChecks, 
-				tableInclusionPattern, tableExclusionPattern);
-		return importer.importDatabase();
-	}
+  /**
+   * Gets jdbcdb importer.
+   *
+   * @param environment           the environment
+   * @param importUKs             the import u ks
+   * @param importIndexes         the import indexes
+   * @param importSequences       the import sequences
+   * @param importChecks          the import checks
+   * @param tableInclusionPattern the table inclusion pattern
+   * @param tableExclusionPattern the table exclusion pattern
+   * @param cached                the cached
+   * @return the jdbcdb importer
+   */
+  public static DBMetaDataImporter getJDBCDBImporter(String environment,
+                                                     boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
+                                                     String tableInclusionPattern, String tableExclusionPattern, boolean cached) {
+    JDBCDBImporter dbImporter;
+    dbImporter = new JDBCDBImporter(environment);
+    dbImporter.setTableInclusionPattern(tableInclusionPattern);
+    dbImporter.setTableExclusionPattern(tableExclusionPattern);
+    DBMetaDataImporter importer = dbImporter;
+    if (cached) {
+      importer = new CachingDBImporter((JDBCDBImporter) importer, environment);
+    }
+    return importer;
+  }
 
-	public static JDBCDBImporter getJDBCDBImporter(Connection connection, String user, String schemaName,
-			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks, 
-			String tableInclusionPattern, String tableExclusionPattern) {
-		JDBCDBImporter importer;
-		importer = new JDBCDBImporter(connection, user, schemaName);
-		importer.setTableInclusionPattern(tableInclusionPattern);
-		importer.setTableExclusionPattern(tableExclusionPattern);
-		return importer;
-	}
+  /**
+   * Gets meta data.
+   *
+   * @param target the target
+   * @param user   the user
+   * @param schema the schema
+   * @return the meta data
+   * @throws ConnectFailedException the connect failed exception
+   * @throws ImportFailedException  the import failed exception
+   */
+  public static Database getMetaData(Connection target, String user, String schema)
+      throws ConnectFailedException, ImportFailedException {
+    return getMetaData(target, user, schema, true, true, true, true, ".*", null);
+  }
+
+  /**
+   * Gets meta data.
+   *
+   * @param connection            the connection
+   * @param user                  the user
+   * @param schemaName            the schema name
+   * @param importUKs             the import u ks
+   * @param importIndexes         the import indexes
+   * @param importSequences       the import sequences
+   * @param importChecks          the import checks
+   * @param tableInclusionPattern the table inclusion pattern
+   * @param tableExclusionPattern the table exclusion pattern
+   * @return the meta data
+   * @throws ConnectFailedException the connect failed exception
+   * @throws ImportFailedException  the import failed exception
+   */
+  public static Database getMetaData(Connection connection, String user, String schemaName,
+                                     boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
+                                     String tableInclusionPattern, String tableExclusionPattern)
+      throws ConnectFailedException, ImportFailedException {
+    DBMetaDataImporter importer = getJDBCDBImporter(connection, user, schemaName,
+        importUKs, importIndexes, importSequences, importChecks,
+        tableInclusionPattern, tableExclusionPattern);
+    return importer.importDatabase();
+  }
+
+  /**
+   * Gets jdbcdb importer.
+   *
+   * @param connection            the connection
+   * @param user                  the user
+   * @param schemaName            the schema name
+   * @param importUKs             the import u ks
+   * @param importIndexes         the import indexes
+   * @param importSequences       the import sequences
+   * @param importChecks          the import checks
+   * @param tableInclusionPattern the table inclusion pattern
+   * @param tableExclusionPattern the table exclusion pattern
+   * @return the jdbcdb importer
+   */
+  public static JDBCDBImporter getJDBCDBImporter(Connection connection, String user, String schemaName,
+                                                 boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
+                                                 String tableInclusionPattern, String tableExclusionPattern) {
+    JDBCDBImporter importer;
+    importer = new JDBCDBImporter(connection, user, schemaName);
+    importer.setTableInclusionPattern(tableInclusionPattern);
+    importer.setTableExclusionPattern(tableExclusionPattern);
+    return importer;
+  }
 
 }

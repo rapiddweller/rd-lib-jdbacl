@@ -6,14 +6,20 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertNull;
 
+/**
+ * The type Function invocation test.
+ */
 public class FunctionInvocationTest {
-    @Test
-    public void testEvaluate() {
-        DivisionExpression divisionExpression = new DivisionExpression();
-        DivisionExpression divisionExpression1 = new DivisionExpression();
-        FunctionInvocation functionInvocation = new FunctionInvocation("Name", divisionExpression, divisionExpression1,
-                new DivisionExpression());
-        assertNull(functionInvocation.evaluate(new DefaultContext()));
-    }
+  /**
+   * Test evaluate.
+   */
+  @Test
+  public void testEvaluate() {
+    DivisionExpression divisionExpression = new DivisionExpression();
+    DivisionExpression divisionExpression1 = new DivisionExpression();
+    FunctionInvocation functionInvocation = new FunctionInvocation("Name", divisionExpression, divisionExpression1,
+        new DivisionExpression());
+    assertNull(functionInvocation.evaluate(new DefaultContext()));
+  }
 }
 
