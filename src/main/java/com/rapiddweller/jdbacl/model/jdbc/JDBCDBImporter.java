@@ -63,7 +63,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -277,7 +276,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         catalogName = schemaSet.getString(2);
       }
       if (schemaName.equalsIgnoreCase(this.schemaName)
-          || (this.schemaName == null && dialect.isDefaultSchema(schemaName, user)) || Objects.equals(this.tableInclusionPattern, "#all")) {
+          || (this.schemaName == null && dialect.isDefaultSchema(schemaName, user))) {
         LOGGER.debug("importing schema {}", StringUtil.quoteIfNotNull(schemaName));
         this.schemaName = schemaName; // take over capitalization used in the DB
         String catalogNameOfSchema = (columnCount >= 2 && catalogName != null ? catalogName :
@@ -317,11 +316,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     }
     StopWatch watch = new StopWatch("importAllTables");
     ResultSet tableSet;
-    if (Objects.equals(this.tableInclusionPattern, "#all")) {
-      tableSet = metaData.getTables(null, null, null, new String[] {"TABLE", "VIEW"});
-    } else {
-      tableSet = metaData.getTables(catalogName, schemaName, null, new String[] {"TABLE", "VIEW"});
-    }
+    tableSet = metaData.getTables(catalogName, schemaName, null, new String[] {"TABLE", "VIEW"});
 
     while (tableSet.next()) {
 
@@ -494,12 +489,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     StopWatch watch = new StopWatch("importPrimaryKeyOfTable");
     ResultSet pkset = null;
     try {
-      if (this.tableInclusionPattern != null && this.tableInclusionPattern.contains("#all")) {
-        // removed filter catalog and schema to get all primary keys for matching tables
-        pkset = metaData.getPrimaryKeys(null, null, table.getName());
-      } else {
-        pkset = metaData.getPrimaryKeys(catalogName, schemaName, table.getName());
-      }
+      pkset = metaData.getPrimaryKeys(catalogName, schemaName, table.getName());
       TreeMap<Short, String> pkComponents = new TreeMap<>();
       String pkName = null;
       while (pkset.next()) {
@@ -617,12 +607,8 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     String schemaName = (schema != null ? schema.getName() : null);
     ResultSet resultSet = null;
     try {
-      if (this.tableInclusionPattern != null && this.tableInclusionPattern.contains("#all")) {
-        // removed filter catalog and schema to get all primary keys for matching tables
-        resultSet = metaData.getImportedKeys(null, null, tableName);
-      } else {
-        resultSet = metaData.getImportedKeys(catalogName, schemaName, tableName);
-      }
+      resultSet = metaData.getImportedKeys(catalogName, schemaName, tableName);
+
       List<ImportedKey> keyList = new ArrayList<>();
       Map<String, ImportedKey> keysByName = OrderedNameMap.createCaseIgnorantMap();
       ImportedKey recent = null;
@@ -657,7 +643,11 @@ public class JDBCDBImporter implements DBMetaDataImporter {
           refereeColumnNames[i] = key.getRefereeColumnNames().get(i);
         }
         DBForeignKeyConstraint foreignKeyConstraint = new DBForeignKeyConstraint(
-            key.fk_name, dialect.isDeterministicFKName(key.fk_name), null, columnNames, key.getPkTable(), refereeColumnNames);
+            key.fk_name, dialect.isDeterministicFKName(key.fk_name),
+            table,
+            columnNames,
+            key.getPkTable(),
+            refereeColumnNames);
         foreignKeyConstraint.setUpdateRule(parseRule(key.update_rule));
         foreignKeyConstraint.setDeleteRule(parseRule(key.delete_rule));
         receiver.receiveFK(foreignKeyConstraint, table);

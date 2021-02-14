@@ -21,7 +21,11 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import com.rapiddweller.common.*;
+import com.rapiddweller.common.ArrayFormat;
+import com.rapiddweller.common.ArrayUtil;
+import com.rapiddweller.common.CollectionUtil;
+import com.rapiddweller.common.ObjectNotFoundException;
+import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.jdbacl.SQLUtil;
 
 import java.util.ArrayList;
@@ -30,124 +34,134 @@ import java.util.List;
 /**
  * Represents a sequence of consecutively navigable foreign key references.<br/><br/>
  * Created: 22.03.2012 21:00:34
- * @since 0.8.1
+ *
  * @author Volker Bergmann
+ * @since 0.8.1
  */
 public class ForeignKeyPath {
-	
-	private String startTable;
-	private final List<DBForeignKeyConstraint> edges;
 
-	public ForeignKeyPath(DBForeignKeyConstraint... edges) {
-		this.startTable = (ArrayUtil.isEmpty(edges) ? null : edges[0].getTable().getName());
-		this.edges = CollectionUtil.toList(edges);
-	}
+  private String startTable;
+  private final List<DBForeignKeyConstraint> edges;
 
-	public ForeignKeyPath(String startTable) {
-		this.startTable = startTable;
-		this.edges = new ArrayList<>();
-	}
+  public ForeignKeyPath(DBForeignKeyConstraint... edges) {
+    this.startTable = (ArrayUtil.isEmpty(edges) ? null : edges[0].getTable().getName());
+    this.edges = CollectionUtil.toList(edges);
+  }
 
-	public ForeignKeyPath(ForeignKeyPath prototype) {
-		this.startTable = prototype.startTable;
-		this.edges = new ArrayList<>(prototype.edges);
-	}
+  public ForeignKeyPath(String startTable) {
+    this.startTable = startTable;
+    this.edges = new ArrayList<>();
+  }
 
-	public String getStartTable() {
-		return startTable;
-	}
-	
-	public List<DBForeignKeyConstraint> getEdges() {
-		return edges;
-	}
+  public ForeignKeyPath(ForeignKeyPath prototype) {
+    this.startTable = prototype.startTable;
+    this.edges = new ArrayList<>(prototype.edges);
+  }
 
-	public void addEdge(DBForeignKeyConstraint fk) {
-		if (edges.size() == 0) {
-			if (startTable == null)
-				startTable = fk.getTable().getName();
-			else if (!startTable.equals(fk.getTable().getName()))
-				throw new IllegalArgumentException("Expected reference from " + startTable + ", " +
-					"but found one to " + fk.getTable());
-		}
-		edges.add(fk);
-	}
+  public String getStartTable() {
+    return startTable;
+  }
 
-	public String getTargetTable() {
-		if (edges.size() > 0)
-			return edges.get(edges.size() - 1).getRefereeTable().getName();
-		else
-			return startTable;
-	}
+  public List<DBForeignKeyConstraint> getEdges() {
+    return edges;
+  }
 
-	public ForeignKeyPath derivePath(DBForeignKeyConstraint fk) {
-		ForeignKeyPath result = new ForeignKeyPath(this);
-		result.addEdge(fk);
-		return result;
-	}
+  public void addEdge(DBForeignKeyConstraint fk) {
+    if (edges.size() == 0) {
+      if (startTable == null) {
+        startTable = fk.getTable().getName();
+      } else if (!startTable.equals(fk.getTable().getName())) {
+        throw new IllegalArgumentException("Expected reference from " + startTable + ", " +
+            "but found one to " + fk.getTable());
+      }
+    }
+    edges.add(fk);
+  }
 
-	public List<DBTable> getIntermediates() {
-		List<DBTable> result = new ArrayList<>(edges.size() - 1);
-		for (int i = 0; i < edges.size() - 1; i++)
-			result.add(edges.get(i).getRefereeTable());
-		return result;
-	}
+  public String getTargetTable() {
+    if (edges.size() > 0) {
+      return edges.get(edges.size() - 1).getRefereeTable().getName();
+    } else {
+      return startTable;
+    }
+  }
 
-	public boolean hasIntermediate(DBTable intermediate) {
-		for (int i = 0; i < edges.size() - 1; i++)
-			if (edges.get(i).getRefereeTable().equals(intermediate))
-				return true;
-		return false;
-	}
+  public ForeignKeyPath derivePath(DBForeignKeyConstraint fk) {
+    ForeignKeyPath result = new ForeignKeyPath(this);
+    result.addEdge(fk);
+    return result;
+  }
 
-	public String[] getEndColumnNames() {
-		return CollectionUtil.lastElement(edges).getRefereeColumnNames();
-	}
-	
-	public static ForeignKeyPath parse(String spec, Database database) {
-		String[] nodes = spec.split(" \\->");
-		ForeignKeyPath path = new ForeignKeyPath();
-		for (int i = 0; i < nodes.length - 1; i++)
-			path.addEdge(parseFK(nodes[i], database));
-		return path;
-	}
+  public List<DBTable> getIntermediates() {
+    List<DBTable> result = new ArrayList<>(edges.size() - 1);
+    for (int i = 0; i < edges.size() - 1; i++) {
+      result.add(edges.get(i).getRefereeTable());
+    }
+    return result;
+  }
 
-	private static DBForeignKeyConstraint parseFK(String spec, Database database) {
-		spec = spec.trim();
-		int iBracket = spec.indexOf('(');
-		String tableName = spec.substring(0, iBracket);
-		String columnList = spec.substring(iBracket + 1, spec.length() - 1);
-		String[] columns = StringUtil.splitAndTrim(columnList, ',');
-		DBTable refererTable = database.getTable(tableName, true);
-		DBForeignKeyConstraint fk = refererTable.getForeignKeyConstraint(columns);
-		if (fk == null)
-			throw new ObjectNotFoundException("Foreign ke constraint not found: " + tableName + 
-					'(' + ArrayFormat.format(columns) + ')');
-		return fk;
-	}
+  public boolean hasIntermediate(DBTable intermediate) {
+    for (int i = 0; i < edges.size() - 1; i++) {
+      if (edges.get(i).getRefereeTable().equals(intermediate)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-	public String getTablePath() {
-		StringBuilder builder = new StringBuilder();
-		for (DBForeignKeyConstraint edge : edges)
-			builder.append(edge.getTable().getName()).append(", ");
-		if (edges.size() > 0) {
-			DBForeignKeyConstraint endEdge = CollectionUtil.lastElement(edges);
-			builder.append(endEdge.getRefereeTable().getName());
-		}
-		return builder.toString();
-	}
+  public String[] getEndColumnNames() {
+    return CollectionUtil.lastElement(edges).getRefereeColumnNames();
+  }
 
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		for (DBForeignKeyConstraint edge : edges)
-			builder.append(edge.getTable().getName())
-				.append(SQLUtil.renderColumnNames(edge.getColumnNames()))
-				.append(" -> ");
-		if (edges.size() > 0) {
-			DBForeignKeyConstraint endEdge = CollectionUtil.lastElement(edges);
-			builder.append(endEdge.getRefereeTable().getName()).append(SQLUtil.renderColumnNames(endEdge.getRefereeColumnNames()));
-		}
-		return builder.toString();
-	}
+  public static ForeignKeyPath parse(String spec, Database database) {
+    String[] nodes = spec.split(" \\->");
+    ForeignKeyPath path = new ForeignKeyPath();
+    for (int i = 0; i < nodes.length - 1; i++) {
+      path.addEdge(parseFK(nodes[i], database));
+    }
+    return path;
+  }
+
+  private static DBForeignKeyConstraint parseFK(String spec, Database database) {
+    spec = spec.trim();
+    int iBracket = spec.indexOf('(');
+    String tableName = spec.substring(0, iBracket);
+    String columnList = spec.substring(iBracket + 1, spec.length() - 1);
+    String[] columns = StringUtil.splitAndTrim(columnList, ',');
+    DBTable refererTable = database.getTable(tableName, true);
+    DBForeignKeyConstraint fk = refererTable.getForeignKeyConstraint(columns);
+    if (fk == null) {
+      throw new ObjectNotFoundException("Foreign ke constraint not found: " + tableName +
+          '(' + ArrayFormat.format(columns) + ')');
+    }
+    return fk;
+  }
+
+  public String getTablePath() {
+    StringBuilder builder = new StringBuilder();
+    for (DBForeignKeyConstraint edge : edges) {
+      builder.append(edge.getTable().getName()).append(", ");
+    }
+    if (edges.size() > 0) {
+      DBForeignKeyConstraint endEdge = CollectionUtil.lastElement(edges);
+      builder.append(endEdge.getRefereeTable().getName());
+    }
+    return builder.toString();
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    for (DBForeignKeyConstraint edge : edges) {
+      builder.append(edge.getTable().getName())
+          .append(SQLUtil.renderColumnNames(edge.getColumnNames()))
+          .append(" -> ");
+    }
+    if (edges.size() > 0) {
+      DBForeignKeyConstraint endEdge = CollectionUtil.lastElement(edges);
+      builder.append(endEdge.getRefereeTable().getName()).append(SQLUtil.renderColumnNames(endEdge.getRefereeColumnNames()));
+    }
+    return builder.toString();
+  }
 
 }
