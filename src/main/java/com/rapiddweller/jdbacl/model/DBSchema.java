@@ -134,7 +134,11 @@ public class DBSchema extends AbstractCompositeDBObject<DBObject> implements Tab
 
   @Override
   public DBTable getTable(String tableName) {
-    return tables.get(tableName);
+    if (tableName != null) {
+      return tables.get(tableName);
+    } else {
+      return null;
+    }
   }
 
   /**

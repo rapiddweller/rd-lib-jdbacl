@@ -61,8 +61,10 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -392,6 +394,20 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
   // schema import ---------------------------------------------------------------------------------------------------
 
+  private Set<String> getForeignSchemas(String schemaName) throws SQLException {
+    Set<String> set = new HashSet<>();
+    if (schemaName != null) {
+      set.add(schemaName);
+      if (!this.dialect.getSystem().equals("sql_server")) {
+        ResultSet resultSet = metaData.getImportedKeys(null, schemaName, null);
+        while (resultSet.next()) {
+          set.add((String) resultSet.getObject("PKTABLE_SCHEM"));
+        }
+      }
+    }
+    return set;
+  }
+
   /**
    * Import schemas.
    *
@@ -403,19 +419,16 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     StopWatch watch = new StopWatch("importSchemas");
     int schemaCount = 0;
     ResultSet schemaSet = metaData.getSchemas();
+    Set<String> neededSchemas = getForeignSchemas(this.schemaName);
     while (schemaSet.next()) {
       String schemaName = schemaSet.getString(1);
       String catalogName = null;
-      if (
-          !schemaName.equalsIgnoreCase("pg_catalog")
-              ||
-              !schemaName.equalsIgnoreCase("information_schema")
-      ) {
-        int columnCount = schemaSet.getMetaData().getColumnCount();
-        if (columnCount >= 2) {
-          catalogName = schemaSet.getString(2);
-        }
-
+      int columnCount = schemaSet.getMetaData().getColumnCount();
+      if (columnCount >= 2) {
+        catalogName = schemaSet.getString(2);
+      }
+      if (neededSchemas.contains(schemaName)
+          || (this.schemaName == null && dialect.isDefaultSchema(schemaName, user))) {
         LOGGER.debug("importing schema {}", StringUtil.quoteIfNotNull(schemaName));
         this.schemaName = schemaName; // take over capitalization used in the DB
         String catalogNameOfSchema = (columnCount >= 2 && catalogName != null ? catalogName :
@@ -425,7 +438,10 @@ public class JDBCDBImporter implements DBMetaDataImporter {
           throw new ObjectNotFoundException("Catalog not found: " + catalogOfSchema);
         }
         new DBSchema(schemaName, catalogOfSchema);
+        importAllTables(database, schemaName);
         schemaCount++;
+      } else {
+        LOGGER.debug("ignoring schema {}", StringUtil.quoteIfNotNull(schemaName));
       }
     }
     if (schemaCount == 0) {
@@ -435,6 +451,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         catalogToUse = database.getCatalogs().get(0);
       }
       catalogToUse.addSchema(new DBSchema(null));
+      this.importAllTables(database);
     }
     schemaSet.close();
     watch.stop();
@@ -459,7 +476,71 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     }
     StopWatch watch = new StopWatch("importAllTables");
     ResultSet tableSet;
-    tableSet = metaData.getTables(null, null, null, new String[] {"TABLE", "VIEW"});
+    tableSet = metaData.getTables(this.catalogName, this.schemaName, null, new String[] {"TABLE", "VIEW"});
+
+    while (tableSet.next()) {
+
+      // parsing ResultSet line
+      String tCatalogName = tableSet.getString(1);
+      String tSchemaName = tableSet.getString(2);
+      String tableName = tableSet.getString(3);
+      if (tableName.startsWith("BIN$")) {
+        if (isOracle() && tableName.startsWith("BIN$")) {
+          escalator.escalate("BIN$ table found (for improved performance " +
+              "execute 'PURGE RECYCLEBIN;')", this, tableName);
+        }
+        continue;
+      }
+      if (!tableSupported(tableName)) {
+        LOGGER.debug("ignoring table: {}, {}, {}", new Object[] {tCatalogName, tSchemaName, tableName});
+        continue;
+      }
+      String tableTypeSpec = tableSet.getString(4);
+      String tableRemarks = tableSet.getString(5);
+      if (database.isReservedWord(tableName)) {
+        LOGGER.warn("Table name is a reserved word: '{}'", tableName);
+      }
+      LOGGER.debug("importing table: {}, {}, {}, {}, {}",
+          new Object[] {tCatalogName, tSchemaName, tableName, tableTypeSpec, tableRemarks});
+      TableType tableType = tableType(tableTypeSpec, tableName);
+      DBCatalog catalog = database.getCatalog(tCatalogName);
+      DBSchema schema;
+      if (catalog != null) {
+        // that's the expected way
+        schema = catalog.getSchema(tSchemaName);
+      } else {
+        // postgres returns no catalog info, so we need to search for the schema in the whole database
+        schema = database.getSchema(tSchemaName);
+      }
+      if (schema != null) {
+        DBTable table = new DBTable(tableName, tableType, tableRemarks, schema, this);
+        table.setDoc(tableRemarks);
+      } else {
+        LOGGER.warn("No schema specified. Ignoring table '{}'", tableName);
+      }
+    }
+    tableSet.close();
+    watch.stop();
+  }
+
+
+  /**
+   * Import all tables.
+   *
+   * @param database the database
+   * @throws SQLException the sql exception
+   */
+  public void importAllTables(Database database, String schemaName) throws SQLException {
+    LOGGER.info("Importing tables from schema '{}'", schemaName);
+    if (tableExclusionPattern != null) {
+      LOGGER.debug("excluding tables: {}", tableExclusionPattern);
+    }
+    if (tableInclusionPattern != null && !".*".equals(tableInclusionPattern)) {
+      LOGGER.debug("including tables: {}", tableInclusionPattern);
+    }
+    StopWatch watch = new StopWatch("importAllTables");
+    ResultSet tableSet;
+    tableSet = metaData.getTables(this.catalogName, schemaName, null, new String[] {"TABLE", "VIEW"});
 
     while (tableSet.next()) {
 

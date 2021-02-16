@@ -122,7 +122,6 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
         if (prepopulate) {
           importer.importCatalogs(this);
           importer.importSchemas(this);
-          importer.importAllTables(this);
         }
       }
     } catch (Exception e) {

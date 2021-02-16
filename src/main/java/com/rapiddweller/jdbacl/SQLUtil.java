@@ -1027,12 +1027,13 @@ public class SQLUtil {
    * @param dialect the dialect
    */
   public static void appendCatSchTabToBuilder(String catalog, String schema, String table, StringBuilder builder, DatabaseDialect dialect) {
-    if (catalog != null) {
-      builder.append(quoteIfNecessary(catalog, dialect.quoteTableNames)).append('.').
-          append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.').
-          append(quoteIfNecessary(table, dialect.quoteTableNames));
-    } else if (schema != null) {
-      builder.append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.').append(quoteIfNecessary(table, dialect.quoteTableNames));
+    if (catalog != null && !catalog.equals("")) {
+      builder.append(quoteIfNecessary(catalog, dialect.quoteTableNames)).append('.')
+          .append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.')
+          .append(quoteIfNecessary(table, dialect.quoteTableNames));
+    } else if (schema != null && !schema.equals("")) {
+      builder.append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.')
+          .append(quoteIfNecessary(table, dialect.quoteTableNames));
     } else {
       builder.append(quoteIfNecessary(table, dialect.quoteTableNames));
     }
@@ -1049,11 +1050,11 @@ public class SQLUtil {
    */
   public static String createCatSchTabString(String catalog, String schema, String table, DatabaseDialect dialect) {
     StringBuilder builder = new StringBuilder();
-    if (catalog != null) {
-      builder.append(quoteIfNecessary(catalog, dialect.quoteTableNames)).append('.').
-          append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.').
-          append(quoteIfNecessary(table, dialect.quoteTableNames));
-    } else if (schema != null) {
+    if (catalog != null && !catalog.equals("")) {
+      builder.append(quoteIfNecessary(catalog, dialect.quoteTableNames)).append('.')
+          .append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.')
+          .append(quoteIfNecessary(table, dialect.quoteTableNames));
+    } else if (schema != null && !schema.equals("")) {
       builder.append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.').append(quoteIfNecessary(table, dialect.quoteTableNames));
     } else {
       builder.append(quoteIfNecessary(table, dialect.quoteTableNames));
@@ -1071,11 +1072,11 @@ public class SQLUtil {
    */
   public static String createCatSchTabString(String catalog, String schema, String table) {
     StringBuilder builder = new StringBuilder();
-    if (catalog != null) {
+    if (catalog != null && !catalog.equals("")) {
       builder.append(catalog).append('.').
           append(schema).append('.').
           append(table);
-    } else if (schema != null) {
+    } else if (schema != null && !schema.equals("")) {
       builder.append(schema).append('.').append(table);
     } else {
       builder.append(table);
