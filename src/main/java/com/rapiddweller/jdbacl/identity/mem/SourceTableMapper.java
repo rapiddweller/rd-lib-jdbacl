@@ -32,27 +32,54 @@ import java.util.Map;
 /**
  * In-memory implementation of the mapping functionality needed for source database tables.<br/><br/>
  * Created: 24.08.2010 10:59:40
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public class SourceTableMapper extends AbstractTableMapper {
-	
-	final Map<Object, Object> sourcePkToTargetPk;
-	
-	public SourceTableMapper(KeyMapper root, Connection connection, String dbId, IdentityModel table, Database database) {
-		super(root, connection, dbId, table, database);
-	    this.sourcePkToTargetPk = new HashMap<>(1000);
+
+  /**
+   * The Source pk to target pk.
+   */
+  final Map<Object, Object> sourcePkToTargetPk;
+
+  /**
+   * Instantiates a new Source table mapper.
+   *
+   * @param root       the root
+   * @param connection the connection
+   * @param dbId       the db id
+   * @param table      the table
+   * @param database   the database
+   */
+  public SourceTableMapper(KeyMapper root, Connection connection, String dbId, IdentityModel table, Database database) {
+    super(root, connection, dbId, table, database);
+    this.sourcePkToTargetPk = new HashMap<>(1000);
+  }
+
+  /**
+   * Store.
+   *
+   * @param sourcePK   the source pk
+   * @param naturalKey the natural key
+   * @param targetPK   the target pk
+   */
+  public void store(Object sourcePK, String naturalKey, Object targetPK) {
+    super.store(sourcePK, naturalKey);
+    if (targetPK != null) {
+      sourcePkToTargetPk.put(sourcePK, targetPK);
     }
-	
-	public void store(Object sourcePK, String naturalKey, Object targetPK) {
-		super.store(sourcePK, naturalKey);
-		if (targetPK != null)
-			sourcePkToTargetPk.put(sourcePK, targetPK);
-	}
-	
-	public Object getTargetPK(Object sourcePK) {
-		assureInitialized();
-		return sourcePkToTargetPk.get(sourcePK);
-	}
+  }
+
+  /**
+   * Gets target pk.
+   *
+   * @param sourcePK the source pk
+   * @return the target pk
+   */
+  public Object getTargetPK(Object sourcePK) {
+    assureInitialized();
+    return sourcePkToTargetPk.get(sourcePK);
+  }
 
 }

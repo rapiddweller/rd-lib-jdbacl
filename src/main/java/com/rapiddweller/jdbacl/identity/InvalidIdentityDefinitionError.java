@@ -24,28 +24,48 @@ package com.rapiddweller.jdbacl.identity;
 /**
  * Represents an error induced by a faulty table identity definition.<br/><br/>
  * Created: 06.12.2010 23:02:43
+ *
+ * @author Volker Bergmann
  * @see IdentityModel
  * @since 0.4
- * @author Volker Bergmann
  */
 public class InvalidIdentityDefinitionError extends RuntimeException {
 
-	private static final long serialVersionUID = 5760179913000903636L;
+  private static final long serialVersionUID = 5760179913000903636L;
 
-	public InvalidIdentityDefinitionError() {
-		super();
-	}
+  /**
+   * Instantiates a new Invalid identity definition error.
+   */
+  public InvalidIdentityDefinitionError() {
+    super();
+  }
 
-	public InvalidIdentityDefinitionError(String message, Throwable cause) {
-		super(message, cause);
-	}
+  /**
+   * Instantiates a new Invalid identity definition error.
+   *
+   * @param message the message
+   * @param cause   the cause
+   */
+  public InvalidIdentityDefinitionError(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-	public InvalidIdentityDefinitionError(String message) {
-		super(message);
-	}
+  /**
+   * Instantiates a new Invalid identity definition error.
+   *
+   * @param message the message
+   */
+  public InvalidIdentityDefinitionError(String message) {
+    super(message);
+  }
 
-	public InvalidIdentityDefinitionError(Throwable cause) {
-		super(cause);
-	}
+  /**
+   * Instantiates a new Invalid identity definition error.
+   *
+   * @param cause the cause
+   */
+  public InvalidIdentityDefinitionError(Throwable cause) {
+    super(cause);
+  }
 
 }

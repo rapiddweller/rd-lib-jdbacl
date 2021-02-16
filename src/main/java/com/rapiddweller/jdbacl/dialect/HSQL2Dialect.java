@@ -26,19 +26,20 @@ import com.rapiddweller.jdbacl.DatabaseDialect;
 /**
  * {@link DatabaseDialect} for HSQL databases of major version 2.<br/><br/>
  * Created: 19.10.2011 15:09:03
- * @since 0.6.12
+ *
  * @author Volker Bergmann
+ * @since 0.6.12
  */
 public class HSQL2Dialect extends HSQLDialect {
-    
-	@Override
-	public boolean supportsRegex() {
-		return true;
-	}
-	
-	@Override
-	public String regexQuery(String expression, boolean not, String regex) {
-		return (not ? "NOT " : "") + "REGEXP_MATCHES(" + expression + ", '" + regex + "')";
-	}
-	
+
+  @Override
+  public boolean supportsRegex() {
+    return true;
+  }
+
+  @Override
+  public String regexQuery(String expression, boolean not, String regex) {
+    return (not ? "NOT " : "") + "REGEXP_MATCHES(" + expression + ", '" + regex + "')";
+  }
+
 }

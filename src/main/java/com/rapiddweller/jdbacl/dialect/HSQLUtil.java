@@ -38,45 +38,95 @@ import java.sql.Statement;
 /**
  * Provides utility methods for using HSQLDB.<br/><br/>
  * Created at 02.05.2008 19:56:35
- * @since 0.4.3
+ *
  * @author Volker Bergmann
+ * @since 0.4.3
  */
 public class HSQLUtil {
-	
-	public static final String IN_MEMORY_URL_PREFIX = "jdbc:hsqldb:mem:";
-	public static final String DRIVER = "org.hsqldb.jdbcDriver";
-	public static final String DEFAULT_USER = "sa";
-	public static final String DEFAULT_PASSWORD = "";
-	public static final String DEFAULT_SCHEMA = "PUBLIC";
-	public static final int DEFAULT_PORT = 9001;
 
-	public static Connection connectInMemoryDB(String dbName, int port) throws ConnectFailedException {
-		return connectInMemoryDB(dbName + ":" + port);
-	}
+  /**
+   * The constant IN_MEMORY_URL_PREFIX.
+   */
+  public static final String IN_MEMORY_URL_PREFIX = "jdbc:hsqldb:mem:";
+  /**
+   * The constant DRIVER.
+   */
+  public static final String DRIVER = "org.hsqldb.jdbcDriver";
+  /**
+   * The constant DEFAULT_USER.
+   */
+  public static final String DEFAULT_USER = "sa";
+  /**
+   * The constant DEFAULT_PASSWORD.
+   */
+  public static final String DEFAULT_PASSWORD = "";
+  /**
+   * The constant DEFAULT_SCHEMA.
+   */
+  public static final String DEFAULT_SCHEMA = "PUBLIC";
+  /**
+   * The constant DEFAULT_PORT.
+   */
+  public static final int DEFAULT_PORT = 9001;
 
-	public static Connection connectInMemoryDB(String dbName) throws ConnectFailedException {
-		String driver = DRIVER;
-		try {
-			Class.forName(driver);
-        	String url = getInMemoryURL(dbName);
-            return DBUtil.connect(url, DRIVER, DEFAULT_USER, DEFAULT_PASSWORD, false);
-        } catch (ClassNotFoundException e) {
-            throw new ConfigurationError("JDBC driver not found: " + driver, e);
-        }
-	}
+  /**
+   * Connect in memory db connection.
+   *
+   * @param dbName the db name
+   * @param port   the port
+   * @return the connection
+   * @throws ConnectFailedException the connect failed exception
+   */
+  public static Connection connectInMemoryDB(String dbName, int port) throws ConnectFailedException {
+    return connectInMemoryDB(dbName + ":" + port);
+  }
 
-	public static String getInMemoryURL(String dbName) {
-        return IN_MEMORY_URL_PREFIX + dbName;
+  /**
+   * Connect in memory db connection.
+   *
+   * @param dbName the db name
+   * @return the connection
+   * @throws ConnectFailedException the connect failed exception
+   */
+  public static Connection connectInMemoryDB(String dbName) throws ConnectFailedException {
+    String driver = DRIVER;
+    try {
+      Class.forName(driver);
+      String url = getInMemoryURL(dbName);
+      return DBUtil.connect(url, DRIVER, DEFAULT_USER, DEFAULT_PASSWORD, false);
+    } catch (ClassNotFoundException e) {
+      throw new ConfigurationError("JDBC driver not found: " + driver, e);
     }
-	
-	public static Statement shutdown(String url, String user, String password) 
-			throws ClassNotFoundException, SQLException {
-		Statement statement;
-		Class.forName("org.hsqldb.jdbcDriver");
-		Connection con = DriverManager.getConnection(url, user, password);
-		statement = con.createStatement();
-		statement.executeUpdate("SHUTDOWN");
-		return statement;
-	}
+  }
+
+  /**
+   * Gets in memory url.
+   *
+   * @param dbName the db name
+   * @return the in memory url
+   */
+  public static String getInMemoryURL(String dbName) {
+    return IN_MEMORY_URL_PREFIX + dbName;
+  }
+
+  /**
+   * Shutdown statement.
+   *
+   * @param url      the url
+   * @param user     the user
+   * @param password the password
+   * @return the statement
+   * @throws ClassNotFoundException the class not found exception
+   * @throws SQLException           the sql exception
+   */
+  public static Statement shutdown(String url, String user, String password)
+      throws ClassNotFoundException, SQLException {
+    Statement statement;
+    Class.forName("org.hsqldb.jdbcDriver");
+    Connection con = DriverManager.getConnection(url, user, password);
+    statement = con.createStatement();
+    statement.executeUpdate("SHUTDOWN");
+    return statement;
+  }
 
 }

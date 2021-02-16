@@ -22,13 +22,29 @@
 package com.rapiddweller.jdbacl.model;
 
 /**
- * Represents a rule to apply when a referenced database row 
+ * Represents a rule to apply when a referenced database row
  * has been deleted or undergone a primary key value change.<br/>
  * <br/>
  * Created: 25.06.2011 08:26:41
- * @since 0.6.9
+ *
  * @author Volker Bergmann
+ * @since 0.6.9
  */
 public enum FKChangeRule {
-	NO_ACTION, CASCADE, SET_NULL, SET_DEFAULT
+  /**
+   * No action fk change rule.
+   */
+  NO_ACTION,
+  /**
+   * Cascade fk change rule.
+   */
+  CASCADE,
+  /**
+   * Set null fk change rule.
+   */
+  SET_NULL,
+  /**
+   * Set default fk change rule.
+   */
+  SET_DEFAULT
 }

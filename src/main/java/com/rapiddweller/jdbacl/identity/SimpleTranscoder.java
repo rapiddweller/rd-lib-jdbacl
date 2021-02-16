@@ -30,41 +30,53 @@ import com.rapiddweller.jdbacl.model.DBTable;
 /**
  * Simple implementation of a transcoding mechanism.<br/><br/>
  * Created: 08.12.2010 18:45:49
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public class SimpleTranscoder {
 
-	public static void transcode(DBRow row, String nk, Object newPK, String sourceDbId, IdentityProvider identityProvider, KeyMapper mapper) {
-		DBTable table = row.getTable();
-		String tableName = table.getName();
-		IdentityModel identity = identityProvider.getIdentity(tableName);
-		if (identity == null)
-			throw new ConfigurationError("No identity defined for table " + tableName);
-		
-		// transcode primary key
-		mapper.store("s", identity, nk, row.getPKValue(), newPK);
-		row.setPKValue(newPK);
-		
-		// transcode references
-		for (DBForeignKeyConstraint fk : table.getForeignKeyConstraints()) {
-			String refereeTable = fk.getRefereeTable().getName();
-			Object sourceRef = row.getFKValue(fk);
-			if (sourceRef != null) {
-				IdentityModel sourceTable = identityProvider.getIdentity(refereeTable);
-				String sourceRefNK = mapper.getNaturalKey(sourceDbId, sourceTable, sourceRef);
-				Object targetRef = mapper.getTargetPK(sourceTable, sourceRefNK);
-				if (targetRef == null) {
-					String message = "No mapping found for " + sourceDbId + '.' + refereeTable + "#" + sourceRef + 
-						" referred in " + table.getName() + SQLUtil.renderColumnNames(fk.getColumnNames()) + ". " +
-						"Probably has not been in the result set of the former '" + refereeTable + "' nk query.";
-					throw new RuntimeException(message);
-				}
-				row.setFKValue(fk, targetRef);
-			}
-		}
-
+  /**
+   * Transcode.
+   *
+   * @param row              the row
+   * @param nk               the nk
+   * @param newPK            the new pk
+   * @param sourceDbId       the source db id
+   * @param identityProvider the identity provider
+   * @param mapper           the mapper
+   */
+  public static void transcode(DBRow row, String nk, Object newPK, String sourceDbId, IdentityProvider identityProvider, KeyMapper mapper) {
+    DBTable table = row.getTable();
+    String tableName = table.getName();
+    IdentityModel identity = identityProvider.getIdentity(tableName);
+    if (identity == null) {
+      throw new ConfigurationError("No identity defined for table " + tableName);
     }
+
+    // transcode primary key
+    mapper.store("s", identity, nk, row.getPKValue(), newPK);
+    row.setPKValue(newPK);
+
+    // transcode references
+    for (DBForeignKeyConstraint fk : table.getForeignKeyConstraints()) {
+      String refereeTable = fk.getRefereeTable().getName();
+      Object sourceRef = row.getFKValue(fk);
+      if (sourceRef != null) {
+        IdentityModel sourceTable = identityProvider.getIdentity(refereeTable);
+        String sourceRefNK = mapper.getNaturalKey(sourceDbId, sourceTable, sourceRef);
+        Object targetRef = mapper.getTargetPK(sourceTable, sourceRefNK);
+        if (targetRef == null) {
+          String message = "No mapping found for " + sourceDbId + '.' + refereeTable + "#" + sourceRef +
+              " referred in " + table.getName() + SQLUtil.renderColumnNames(fk.getColumnNames()) + ". " +
+              "Probably has not been in the result set of the former '" + refereeTable + "' nk query.";
+          throw new RuntimeException(message);
+        }
+        row.setFKValue(fk, targetRef);
+      }
+    }
+
+  }
 
 	/* TODO v1.0 use this for merging
 	@Override

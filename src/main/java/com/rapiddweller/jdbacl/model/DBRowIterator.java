@@ -28,82 +28,104 @@ import com.rapiddweller.jdbacl.ResultSetIterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Iterates through the rows of a database.<br/><br/>
  * Created: 23.07.2010 07:29:47
- * @since 0.6.3
+ *
  * @author Volker Bergmann
+ * @since 0.6.3
  */
 public class DBRowIterator implements HeavyweightIterator<DBRow> {
-	
-    private static final Logger SQL_LOGGER = LogManager.getLogger(LogCategoriesConstants.SQL);
 
-    private DBTable table;
-    private ResultSet resultSet;
-    private final ResultSetMetaData resultSetMetaData;
-    private final ResultSetIterator resultSetIterator;
-    private boolean closed;
+  private static final Logger SQL_LOGGER = LogManager.getLogger(LogCategoriesConstants.SQL);
 
-	public DBRowIterator(DBTable table, Connection connection, String whereClause) throws SQLException {
-		this.table = table;
-	    String sql = "SELECT * FROM " + table.getName();
-	    if (whereClause != null)
-	    	sql += " WHERE " + whereClause;
-        SQL_LOGGER.debug(sql);
-        Statement statement = connection.createStatement(
-        		ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-        statement.setFetchSize(1000);
-        this.resultSet = statement.executeQuery(sql);
-        this.resultSetMetaData = resultSet.getMetaData();
-	    this.resultSetIterator = new ResultSetIterator(resultSet, sql);
-	    this.closed = false;
+  private DBTable table;
+  private ResultSet resultSet;
+  private final ResultSetMetaData resultSetMetaData;
+  private final ResultSetIterator resultSetIterator;
+  private boolean closed;
+
+  /**
+   * Instantiates a new Db row iterator.
+   *
+   * @param table       the table
+   * @param connection  the connection
+   * @param whereClause the where clause
+   * @throws SQLException the sql exception
+   */
+  public DBRowIterator(DBTable table, Connection connection, String whereClause) throws SQLException {
+    this.table = table;
+    String sql = "SELECT * FROM " + table.getName();
+    if (whereClause != null) {
+      sql += " WHERE " + whereClause;
     }
-	
-	public DBRowIterator withTable(DBTable table) {
-		this.table = table;
-		return this;
-	}
+    SQL_LOGGER.debug(sql);
+    Statement statement = connection.createStatement(
+        ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+    statement.setFetchSize(1000);
+    this.resultSet = statement.executeQuery(sql);
+    this.resultSetMetaData = resultSet.getMetaData();
+    this.resultSetIterator = new ResultSetIterator(resultSet, sql);
+    this.closed = false;
+  }
 
-	@Override
-	public boolean hasNext() {
-		if (closed)
-			return false;
-		boolean result = resultSetIterator.hasNext();
-		if (!result)
-			close();
-		return result;
-	}
+  /**
+   * With table db row iterator.
+   *
+   * @param table the table
+   * @return the db row iterator
+   */
+  public DBRowIterator withTable(DBTable table) {
+    this.table = table;
+    return this;
+  }
 
-	@Override
-	public DBRow next() {
-		try {
-			resultSetIterator.next();
-	        DBRow row = new DBRow(table);
-	        int columnCount = resultSetMetaData.getColumnCount();
-	        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-	            String columnName = resultSetMetaData.getColumnName(columnIndex);
-	            row.setCellValue(columnName, resultSet.getObject(columnIndex));
-	        }
-	        return row;
-        } catch (SQLException e) {
-	        throw new RuntimeException("Error querying table " + table, e);
-        }
-	}
+  @Override
+  public boolean hasNext() {
+    if (closed) {
+      return false;
+    }
+    boolean result = resultSetIterator.hasNext();
+    if (!result) {
+      close();
+    }
+    return result;
+  }
 
-	@Override
-	public void remove() {
-		throw new UnsupportedOperationException("remove() is not supported by " + getClass());
-	}
+  @Override
+  public DBRow next() {
+    try {
+      resultSetIterator.next();
+      DBRow row = new DBRow(table);
+      int columnCount = resultSetMetaData.getColumnCount();
+      for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+        String columnName = resultSetMetaData.getColumnName(columnIndex);
+        row.setCellValue(columnName, resultSet.getObject(columnIndex));
+      }
+      return row;
+    } catch (SQLException e) {
+      throw new RuntimeException("Error querying table " + table, e);
+    }
+  }
 
-	@Override
-	public void close() {
-		if (!closed) {
-			DBUtil.closeResultSetAndStatement(resultSet);
-			resultSet = null;
-			closed = true;
-		}
-	}
+  @Override
+  public void remove() {
+    throw new UnsupportedOperationException("remove() is not supported by " + getClass());
+  }
+
+  @Override
+  public void close() {
+    if (!closed) {
+      DBUtil.closeResultSetAndStatement(resultSet);
+      resultSet = null;
+      closed = true;
+    }
+  }
 
 }

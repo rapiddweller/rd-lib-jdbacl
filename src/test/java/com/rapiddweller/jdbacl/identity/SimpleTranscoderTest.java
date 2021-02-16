@@ -21,10 +21,6 @@
 
 package com.rapiddweller.jdbacl.identity;
 
-import static org.junit.Assert.*;
-
-import java.sql.Connection;
-
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.DatabaseDialectManager;
 import com.rapiddweller.jdbacl.dialect.HSQLUtil;
@@ -34,55 +30,65 @@ import com.rapiddweller.jdbacl.model.DBTable;
 import com.rapiddweller.jdbacl.model.Database;
 import org.junit.Test;
 
+import java.sql.Connection;
+
+import static org.junit.Assert.assertEquals;
+
 /**
  * Tests the {@link SimpleTranscoder}.<br/><br/>
  * Created: 03.12.2010 11:39:45
- * @since 0.4
+ *
  * @author Volker Bergmann
+ * @since 0.4
  */
 public class SimpleTranscoderTest extends AbstractIdentityTest {
-	
-	@Test
-	public void test() throws Exception {
-		Connection source = connectDB("s", HSQLUtil.DEFAULT_PORT + 1);
-		createTables(source);
-		insertData(source);
-		
-		Connection target = connectDB("t", HSQLUtil.DEFAULT_PORT + 2);
-		createTables(target);
 
-		Database database = importDatabase(target);
-		DatabaseDialect dialect = DatabaseDialectManager.getDialectForProduct(
-				database.getDatabaseProductName(), database.getDatabaseProductVersion());
-		DBTable countryTable = database.getTable("COUNTRY");
-		DBTable stateTable = database.getTable("STATE");
+  /**
+   * Test.
+   *
+   * @throws Exception the exception
+   */
+  @Test
+  public void test() throws Exception {
+    Connection source = connectDB("s", HSQLUtil.DEFAULT_PORT + 1);
+    createTables(source);
+    insertData(source);
 
-		IdentityProvider identityProvider = createIdentities(database);
+    Connection target = connectDB("t", HSQLUtil.DEFAULT_PORT + 2);
+    createTables(target);
 
-		MemKeyMapper mapper = new MemKeyMapper(source, "s", target, "t", identityProvider, database);
-		
-		// country
-		DBRow country = countryTable.queryByPK("DE", source, dialect);
-		checkCountry("DE", country);
-		SimpleTranscoder.transcode(country, "DE", "DX", "s", identityProvider, mapper);
-		checkCountry("DX", country);
+    Database database = importDatabase(target);
+    DatabaseDialect dialect = DatabaseDialectManager.getDialectForProduct(
+        database.getDatabaseProductName(), database.getDatabaseProductVersion());
+    DBTable countryTable = database.getTable("COUNTRY");
+    DBTable stateTable = database.getTable("STATE");
 
-		// state
-		DBRow state = stateTable.queryByPK(1, source, dialect);
-		checkState(1, "DE", state);
-		SimpleTranscoder.transcode(state, "DE|BY", 1001, "s", identityProvider, mapper);
-		checkState(1001, "DX", state);
-	}
+    IdentityProvider identityProvider = createIdentities(database);
 
-	private static void checkCountry(String code, DBRow country) {
-		assertEquals(code, country.getCellValue("code"));
-		assertEquals("GERMANY", country.getCellValue("name"));
-	}
-	
-	private static void checkState(int id, String countryCode, DBRow state) {
-		assertEquals(id, state.getCellValue("id"));
-		assertEquals(countryCode, state.getCellValue("country"));
-		assertEquals("BY", state.getCellValue("code"));
-	}
+    MemKeyMapper mapper = new MemKeyMapper(source, "s", target, "t", identityProvider, database);
+
+    // country
+    DBRow country = countryTable.queryByPK("DE", source, dialect);
+    checkCountry("DE", country);
+    SimpleTranscoder.transcode(country, "DE", "DX", "s", identityProvider, mapper);
+    checkCountry("DX", country);
+
+    // state
+    DBRow state = stateTable.queryByPK(1, source, dialect);
+    checkState(1, "DE", state);
+    SimpleTranscoder.transcode(state, "DE|BY", 1001, "s", identityProvider, mapper);
+    checkState(1001, "DX", state);
+  }
+
+  private static void checkCountry(String code, DBRow country) {
+    assertEquals(code, country.getCellValue("code"));
+    assertEquals("GERMANY", country.getCellValue("name"));
+  }
+
+  private static void checkState(int id, String countryCode, DBRow state) {
+    assertEquals(id, state.getCellValue("id"));
+    assertEquals(countryCode, state.getCellValue("country"));
+    assertEquals("BY", state.getCellValue("code"));
+  }
 
 }

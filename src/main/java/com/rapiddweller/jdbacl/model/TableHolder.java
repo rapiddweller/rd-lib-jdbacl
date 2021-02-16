@@ -26,11 +26,31 @@ import java.util.List;
 /**
  * Common interface for {@link DBObject}s which can hold {@link DBTable}s.<br/><br/>
  * Created: 05.06.2011 16:55:37
- * @since 0.6.8
+ *
  * @author Volker Bergmann
+ * @since 0.6.8
  */
 public interface TableHolder {
-    List<DBTable> getTables();
-    List<DBTable> getTables(boolean recursive);
-    DBTable getTable(String tableName);
+  /**
+   * Gets tables.
+   *
+   * @return the tables
+   */
+  List<DBTable> getTables();
+
+  /**
+   * Gets tables.
+   *
+   * @param recursive the recursive
+   * @return the tables
+   */
+  List<DBTable> getTables(boolean recursive);
+
+  /**
+   * Gets table.
+   *
+   * @param tableName the table name
+   * @return the table
+   */
+  DBTable getTable(String tableName);
 }

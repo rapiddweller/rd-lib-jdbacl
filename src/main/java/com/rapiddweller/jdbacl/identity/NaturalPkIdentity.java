@@ -31,35 +31,44 @@ import java.sql.Connection;
 /**
  * {@link IdentityModel} implementation for tables which have a natural key as primary key.<br/><br/>
  * Created: 12.12.2010 12:23:14
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public class NaturalPkIdentity extends IdentityModel {
-	
-	public NaturalPkIdentity(String tableName) {
-		super(tableName);
-	}
 
-	@Override
-	public TabularIterator createNkPkIterator(
-			Connection connection, String dbId, KeyMapper mapper, Database database) {
-		String[] pkColumnNames = database.getTable(tableName).getPKColumnNames();
-		if (ArrayUtil.isEmpty(pkColumnNames))
-			throw new ConfigurationError("Table '" + tableName + "' has no primary key");
-		StringBuilder builder = new StringBuilder("select ");
-		builder.append(pkColumnNames[0]);
-		for (int i = 1; i < pkColumnNames.length; i++)
-			builder.append(" || '|' || ").append(pkColumnNames[i]);
-		for (String pkColumnName : pkColumnNames)
-			builder.append(", ").append(pkColumnName);
-		builder.append(" from ").append(tableName);
-		String query = builder.toString();
-		return query(query, connection);
-	}
+  /**
+   * Instantiates a new Natural pk identity.
+   *
+   * @param tableName the table name
+   */
+  public NaturalPkIdentity(String tableName) {
+    super(tableName);
+  }
 
-	@Override
-	public String getDescription() {
-		return tableName + " identity by primary key";
-	}
+  @Override
+  public TabularIterator createNkPkIterator(
+      Connection connection, String dbId, KeyMapper mapper, Database database) {
+    String[] pkColumnNames = database.getTable(tableName).getPKColumnNames();
+    if (ArrayUtil.isEmpty(pkColumnNames)) {
+      throw new ConfigurationError("Table '" + tableName + "' has no primary key");
+    }
+    StringBuilder builder = new StringBuilder("select ");
+    builder.append(pkColumnNames[0]);
+    for (int i = 1; i < pkColumnNames.length; i++) {
+      builder.append(" || '|' || ").append(pkColumnNames[i]);
+    }
+    for (String pkColumnName : pkColumnNames) {
+      builder.append(", ").append(pkColumnName);
+    }
+    builder.append(" from ").append(tableName);
+    String query = builder.toString();
+    return query(query, connection);
+  }
+
+  @Override
+  public String getDescription() {
+    return tableName + " identity by primary key";
+  }
 
 }

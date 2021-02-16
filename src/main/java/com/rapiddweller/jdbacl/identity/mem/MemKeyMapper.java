@@ -34,86 +34,106 @@ import java.util.Map;
 /**
  * In-memory implementation of a {@link KeyMapper}.<br/><br/>
  * Created: 23.08.2010 16:55:53
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public class MemKeyMapper extends KeyMapper {
 
-	TargetDatabaseMapper targetDBMapper;
-	private final Database database;
-	private final Map<String, SourceDatabaseMapper> sourceDBMappers;
+  /**
+   * The Target db mapper.
+   */
+  TargetDatabaseMapper targetDBMapper;
+  private final Database database;
+  private final Map<String, SourceDatabaseMapper> sourceDBMappers;
 
-	public MemKeyMapper(Connection source, String sourceDbId, Connection target, String targetDbId, IdentityProvider identityProvider, Database database) {
-		super(identityProvider);
-		sourceDBMappers = new HashMap<>();
-		setTarget(target, targetDbId);
-		createSourceDBMapper(source, sourceDbId);
-		this.database = database;
-    }
-	
-	// KeyMapper interface implementation ------------------------------------------------------------------------------
+  /**
+   * Instantiates a new Mem key mapper.
+   *
+   * @param source           the source
+   * @param sourceDbId       the source db id
+   * @param target           the target
+   * @param targetDbId       the target db id
+   * @param identityProvider the identity provider
+   * @param database         the database
+   */
+  public MemKeyMapper(Connection source, String sourceDbId, Connection target, String targetDbId, IdentityProvider identityProvider,
+                      Database database) {
+    super(identityProvider);
+    sourceDBMappers = new HashMap<>();
+    setTarget(target, targetDbId);
+    createSourceDBMapper(source, sourceDbId);
+    this.database = database;
+  }
 
-    @Override
-    public void store(String sourceDbId, IdentityModel identity, String naturalKey, Object sourcePK, Object targetPK) {
-    	if (targetPK != null)
-    		getTargetDBMapper().store(identity, naturalKey, targetPK);
-    	getSourceDBMapper(sourceDbId).store(identity, sourcePK, naturalKey, targetPK);
-    }
+  // KeyMapper interface implementation ------------------------------------------------------------------------------
 
-	@Override
-    public Object getTargetPK(String sourceDbId, IdentityModel table, Object sourcePK) {
-		return getSourceDBMapper(sourceDbId).getTargetPK(table, sourcePK);
+  @Override
+  public void store(String sourceDbId, IdentityModel identity, String naturalKey, Object sourcePK, Object targetPK) {
+    if (targetPK != null) {
+      getTargetDBMapper().store(identity, naturalKey, targetPK);
     }
+    getSourceDBMapper(sourceDbId).store(identity, sourcePK, naturalKey, targetPK);
+  }
 
-	@Override
-    public String getNaturalKey(String dbId, IdentityModel identity, Object sourcePK) {
-		if (targetDBMapper != null && dbId.equals(targetDBMapper.getDbId()))
-			return getTargetDBMapper().getNaturalKey(identity, sourcePK);
-		else
-			return getSourceDBMapper(dbId).getNaturalKey(identity, sourcePK);
-    }
+  @Override
+  public Object getTargetPK(String sourceDbId, IdentityModel table, Object sourcePK) {
+    return getSourceDBMapper(sourceDbId).getTargetPK(table, sourcePK);
+  }
 
-	@Override
-    public Object getTargetPK(IdentityModel table, String naturalKey) {
-		return getTargetDBMapper().getTargetPK(table, naturalKey);
+  @Override
+  public String getNaturalKey(String dbId, IdentityModel identity, Object sourcePK) {
+    if (targetDBMapper != null && dbId.equals(targetDBMapper.getDbId())) {
+      return getTargetDBMapper().getNaturalKey(identity, sourcePK);
+    } else {
+      return getSourceDBMapper(dbId).getNaturalKey(identity, sourcePK);
     }
+  }
 
-	// helpers ---------------------------------------------------------------------------------------------------------
-	
-	private TargetDatabaseMapper getTargetDBMapper() {
-		if (targetDBMapper == null)
-			throw new ConfigurationError("'target' is undefined. " +
-					"Use MemKeyMapper.setTarget() to register the target database");
-		return targetDBMapper;
-	}
-	
-	private void setTarget(Connection target, String targetDbId) {
-		if (targetDBMapper == null)
-			targetDBMapper = new TargetDatabaseMapper(this, target, targetDbId, database);
-		else if (!(targetDBMapper.getDbId()).equals(targetDbId))
-			throw new ConfigurationError("'target' has already been set to a different database: " + 
-					targetDBMapper.getDbId());
-	}
-	
-    @Override
-	public void registerSource(String sourceDbId, Connection connection) {
-	    SourceDatabaseMapper mapper = sourceDBMappers.get(sourceDbId);
-	    if (mapper == null) {
-	    	mapper = new SourceDatabaseMapper(this, connection, sourceDbId, database);
-	    	sourceDBMappers.put(sourceDbId, mapper);
-	    }
-    }
+  @Override
+  public Object getTargetPK(IdentityModel table, String naturalKey) {
+    return getTargetDBMapper().getTargetPK(table, naturalKey);
+  }
 
-    private void createSourceDBMapper(Connection connection, String sourceDbId) {
-		SourceDatabaseMapper mapper = new SourceDatabaseMapper(this, connection, sourceDbId, database);
-    	sourceDBMappers.put(sourceDbId, mapper);
-    }
+  // helpers ---------------------------------------------------------------------------------------------------------
 
-    private SourceDatabaseMapper getSourceDBMapper(String sourceId) {
-	    SourceDatabaseMapper mapper = sourceDBMappers.get(sourceId);
-	    if (mapper == null)
-	    	throw new RuntimeException("Database not registered: " + sourceId);
-	    return mapper;
+  private TargetDatabaseMapper getTargetDBMapper() {
+    if (targetDBMapper == null) {
+      throw new ConfigurationError("'target' is undefined. " +
+          "Use MemKeyMapper.setTarget() to register the target database");
     }
+    return targetDBMapper;
+  }
+
+  private void setTarget(Connection target, String targetDbId) {
+    if (targetDBMapper == null) {
+      targetDBMapper = new TargetDatabaseMapper(this, target, targetDbId, database);
+    } else if (!(targetDBMapper.getDbId()).equals(targetDbId)) {
+      throw new ConfigurationError("'target' has already been set to a different database: " +
+          targetDBMapper.getDbId());
+    }
+  }
+
+  @Override
+  public void registerSource(String sourceDbId, Connection connection) {
+    SourceDatabaseMapper mapper = sourceDBMappers.get(sourceDbId);
+    if (mapper == null) {
+      mapper = new SourceDatabaseMapper(this, connection, sourceDbId, database);
+      sourceDBMappers.put(sourceDbId, mapper);
+    }
+  }
+
+  private void createSourceDBMapper(Connection connection, String sourceDbId) {
+    SourceDatabaseMapper mapper = new SourceDatabaseMapper(this, connection, sourceDbId, database);
+    sourceDBMappers.put(sourceDbId, mapper);
+  }
+
+  private SourceDatabaseMapper getSourceDBMapper(String sourceId) {
+    SourceDatabaseMapper mapper = sourceDBMappers.get(sourceId);
+    if (mapper == null) {
+      throw new RuntimeException("Database not registered: " + sourceId);
+    }
+    return mapper;
+  }
 
 }

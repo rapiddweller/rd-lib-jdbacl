@@ -34,62 +34,84 @@ import java.util.regex.Pattern;
 /**
  * Implements generic database concepts for Derby.<br/><br/>
  * Created: 26.01.2010 07:14:34
- * @since 0.6.0
+ *
  * @author Volker Bergmann
+ * @since 0.6.0
  */
 public class DerbyDialect extends DatabaseDialect {
 
-	private static final String DATE_PATTERN = "'DATE('''yyyy-MM-dd''')'";
-	private static final String TIME_PATTERN = "'TIME('''HH:mm:ss''')'";
-	private static final String DATETIME_PATTERN = "'TIMESTAMP('''yyyy-MM-dd HH:mm:ss''')'";
+  private static final String DATE_PATTERN = "'DATE('''yyyy-MM-dd''')'";
+  private static final String TIME_PATTERN = "'TIME('''HH:mm:ss''')'";
+  private static final String DATETIME_PATTERN = "'TIMESTAMP('''yyyy-MM-dd HH:mm:ss''')'";
 
-	final Pattern randomPKNamePattern = Pattern.compile("SQL[0-9A-F]{15}");
-	final Pattern randomUKNamePattern = Pattern.compile("SQL[0-9A-F]{15}");
-	final Pattern randomFKNamePattern = Pattern.compile("FK[0-9A-F]{15,16}");
-	final Pattern randomIndexNamePattern = Pattern.compile("SQL\\d+");
+  /**
+   * The Random pk name pattern.
+   */
+  final Pattern randomPKNamePattern = Pattern.compile("SQL[0-9A-F]{15}");
+  /**
+   * The Random uk name pattern.
+   */
+  final Pattern randomUKNamePattern = Pattern.compile("SQL[0-9A-F]{15}");
+  /**
+   * The Random fk name pattern.
+   */
+  final Pattern randomFKNamePattern = Pattern.compile("FK[0-9A-F]{15,16}");
+  /**
+   * The Random index name pattern.
+   */
+  final Pattern randomIndexNamePattern = Pattern.compile("SQL\\d+");
 
-    public DerbyDialect() {
-	    this(false);
-    }
+  /**
+   * Instantiates a new Derby dialect.
+   */
+  public DerbyDialect() {
+    this(false);
+  }
 
-    public DerbyDialect(boolean sequenceSupported) {
-	    super("derby", true, sequenceSupported, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
-    }
+  /**
+   * Instantiates a new Derby dialect.
+   *
+   * @param sequenceSupported the sequence supported
+   */
+  public DerbyDialect(boolean sequenceSupported) {
+    super("derby", true, sequenceSupported, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
+  }
 
-	@Override
-    public boolean isDefaultCatalog(String catalog, String user) {
-	    return true;
-    }
+  @Override
+  public boolean isDefaultCatalog(String catalog, String user) {
+    return true;
+  }
 
-	@Override
-    public boolean isDefaultSchema(String schema, String user) {
-		schema = schema.toUpperCase();
-	    return schema.equalsIgnoreCase("APP") || schema.equalsIgnoreCase(user);
-    }
+  @Override
+  public boolean isDefaultSchema(String schema, String user) {
+    schema = schema.toUpperCase();
+    return schema.equalsIgnoreCase("APP") || schema.equalsIgnoreCase(user);
+  }
 
-	@Override
-	public boolean isDeterministicPKName(String pkName) {
-		return !randomPKNamePattern.matcher(pkName).matches();
-	}
+  @Override
+  public boolean isDeterministicPKName(String pkName) {
+    return !randomPKNamePattern.matcher(pkName).matches();
+  }
 
-	@Override
-	public boolean isDeterministicUKName(String ukName) {
-		return !randomUKNamePattern.matcher(ukName).matches();
-	}
+  @Override
+  public boolean isDeterministicUKName(String ukName) {
+    return !randomUKNamePattern.matcher(ukName).matches();
+  }
 
-	@Override
-	public boolean isDeterministicFKName(String fkName) {
-		return !randomFKNamePattern.matcher(fkName).matches();
-	}
+  @Override
+  public boolean isDeterministicFKName(String fkName) {
+    return !randomFKNamePattern.matcher(fkName).matches();
+  }
 
-	@Override
-	public boolean isDeterministicIndexName(String indexName) {
-		return !randomIndexNamePattern.matcher(indexName).matches();
-	}
+  @Override
+  public boolean isDeterministicIndexName(String indexName) {
+    return !randomIndexNamePattern.matcher(indexName).matches();
+  }
 
-	@Override
-	public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
-		throw new UnsupportedOperationException("DerbyDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
-	}
+  @Override
+  public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
+    throw new UnsupportedOperationException(
+        "DerbyDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+  }
 
 }

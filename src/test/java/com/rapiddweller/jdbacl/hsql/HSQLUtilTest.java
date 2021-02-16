@@ -38,20 +38,26 @@ import static junit.framework.Assert.assertNotNull;
 /**
  * Tests the {@link HSQLUtil} class.<br/><br/>
  * Created at 02.05.2008 20:02:01
- * @since 0.5.3
+ *
  * @author Volker Bergmann
+ * @since 0.5.3
  */
 public class HSQLUtilTest {
 
-	@Test
-	public void test() throws ConnectFailedException {
-		Connection connection = null;
-		try {
-			connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
-            assertNotNull(connection);
-		} finally {
-			DBUtil.close(connection);
-		}
-	}
-	
+  /**
+   * Test.
+   *
+   * @throws ConnectFailedException the connect failed exception
+   */
+  @Test
+  public void test() throws ConnectFailedException {
+    Connection connection = null;
+    try {
+      connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
+      assertNotNull(connection);
+    } finally {
+      DBUtil.close(connection);
+    }
+  }
+
 }

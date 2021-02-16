@@ -32,37 +32,54 @@ import com.rapiddweller.common.NullSafeComparator;
 /**
  * Represents a database not-null constraint.<br/><br/>
  * Created: 06.01.2007 09:00:49
+ *
  * @author Volker Bergmann
  */
 public class DBNotNullConstraint extends DBConstraint {
 
-    private static final long serialVersionUID = 5087538327994954133L;
-    
-	private final String columnName;
+  private static final long serialVersionUID = 5087538327994954133L;
 
-    public DBNotNullConstraint(DBTable owner, String name, boolean nameDeterministic, String columnName) {
-        super(name, nameDeterministic, "not null constraint", owner);
-        Assert.notNull(owner, "owner");
-        Assert.notNull(columnName, "column name");
-        this.columnName = columnName;
-        if (owner != null)
-        	owner.getColumn(columnName).setNotNullConstraint(this);
-    }
+  private final String columnName;
 
-    @Override
-    public String[] getColumnNames() {
-        return new String[] { columnName };
+  /**
+   * Instantiates a new Db not null constraint.
+   *
+   * @param owner             the owner
+   * @param name              the name
+   * @param nameDeterministic the name deterministic
+   * @param columnName        the column name
+   */
+  public DBNotNullConstraint(DBTable owner, String name, boolean nameDeterministic, String columnName) {
+    super(name, nameDeterministic, "not null constraint", owner);
+    Assert.notNull(owner, "owner");
+    Assert.notNull(columnName, "column name");
+    this.columnName = columnName;
+    if (owner != null) {
+      DBSchema schema = owner.getSchema();
+      if (schema != null) {
+        schema.getTable(owner.getName()).getColumn(columnName).setNotNullConstraint(this);
+      } else {
+        owner.getColumn(columnName).setNotNullConstraint(this);
+      }
     }
+  }
 
-    @Override
-	public boolean isIdentical(DBObject other) {
-		if (this == other)
-			return true;
-		if (other == null || !(other instanceof DBNotNullConstraint))
-			return false;
-		DBNotNullConstraint that = (DBNotNullConstraint) other;
-		return NullSafeComparator.equals(this.name, that.name)
-			&& columnName.equals(that.columnName)
-			&& NullSafeComparator.equals(this.getTable().getName(), that.getTable().getName());
+  @Override
+  public String[] getColumnNames() {
+    return new String[] {columnName};
+  }
+
+  @Override
+  public boolean isIdentical(DBObject other) {
+    if (this == other) {
+      return true;
     }
+    if (other == null || !(other instanceof DBNotNullConstraint)) {
+      return false;
+    }
+    DBNotNullConstraint that = (DBNotNullConstraint) other;
+    return NullSafeComparator.equals(this.name, that.name)
+        && columnName.equals(that.columnName)
+        && NullSafeComparator.equals(this.getTable().getName(), that.getTable().getName());
+  }
 }

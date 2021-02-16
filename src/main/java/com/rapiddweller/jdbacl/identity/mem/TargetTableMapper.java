@@ -32,27 +32,46 @@ import java.util.Map;
 /**
  * In-memory implementation of the mapping functionality needed for target database tables.<br/><br/>
  * Created: 24.08.2010 11:13:42
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public class TargetTableMapper extends AbstractTableMapper {
 
-	final Map<String, Object> nkToPk;
+  /**
+   * The Nk to pk.
+   */
+  final Map<String, Object> nkToPk;
 
-	public TargetTableMapper(KeyMapper root, Connection target, String targetDbId, IdentityModel identity, Database database) {
-		super(root, target, targetDbId, identity, database);
-	    this.nkToPk = new HashMap<>(1000);
-    }
+  /**
+   * Instantiates a new Target table mapper.
+   *
+   * @param root       the root
+   * @param target     the target
+   * @param targetDbId the target db id
+   * @param identity   the identity
+   * @param database   the database
+   */
+  public TargetTableMapper(KeyMapper root, Connection target, String targetDbId, IdentityModel identity, Database database) {
+    super(root, target, targetDbId, identity, database);
+    this.nkToPk = new HashMap<>(1000);
+  }
 
-	@Override
-	public void store(Object targetPK, String naturalKey) {
-	    super.store(targetPK, naturalKey);
-		nkToPk.put(naturalKey, targetPK);
-	}
-	
-	public Object getTargetId(String naturalKey) {
-		assureInitialized();
-		return nkToPk.get(naturalKey);
-	}
+  @Override
+  public void store(Object targetPK, String naturalKey) {
+    super.store(targetPK, naturalKey);
+    nkToPk.put(naturalKey, targetPK);
+  }
+
+  /**
+   * Gets target id.
+   *
+   * @param naturalKey the natural key
+   * @return the target id
+   */
+  public Object getTargetId(String naturalKey) {
+    assureInitialized();
+    return nkToPk.get(naturalKey);
+  }
 
 }

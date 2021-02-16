@@ -31,66 +31,95 @@ import com.rapiddweller.jdbacl.model.jdbc.JDBCMetaDataUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeModel;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.io.IOException;
 
 /**
  * {@link JPanel} which displays database information and the hierarchy tree.<br/><br/>
  * Created: 07.11.2011 16:46:33
- * @since 0.7.0
+ *
  * @author Volker Bergmann
+ * @since 0.7.0
  */
 @SuppressWarnings("serial")
 public class DatabasePane extends JPanel {
-	
-	private static final Logger LOGGER = LogManager.getLogger(DatabasePane.class);
-	
-	private final JScrollPane scrollPane;
-	private DatabaseTree tree;
-	private DBMetaDataImporter importer;
-	private final TextFieldValueProvider exclusionPatternProvider;
 
-	public DatabasePane(TextFieldValueProvider exclusionPatternProvider) {
-		super(new BorderLayout());
-		this.exclusionPatternProvider = exclusionPatternProvider;
-		this.scrollPane = new JScrollPane();
-		add(scrollPane, BorderLayout.CENTER);
-	}
-	
-	public void setEnvironment(String environment) throws ConnectFailedException, ImportFailedException {
-		if (importer != null) {
-			try {
-				importer.close();
-			} catch (IOException e) {
-				LOGGER.error("Error closing " + getClass().getName(), e);
-			}
-			if (tree != null)
-				scrollPane.remove(tree);
-		}
-		new Thread(new Importer(environment)).start();
-	}
+  private static final Logger LOGGER = LogManager.getLogger(DatabasePane.class);
 
-	class Importer implements Runnable {
-		final String environment;
-		public Importer(String environment) {
-			this.environment = environment;
-		}
-		@Override
-		public void run() {
-			try {
-				Database database = JDBCMetaDataUtil.getMetaData(environment, true, true, true, true, 
-						".*", exclusionPatternProvider.getValue(), true, true);
-				DatabasePane.this.importer = importer;
-				final TreeModel model = new SwingTreeModelAdapter<>(new DatabaseTreeModel(database));
-				SwingUtilities.invokeLater(() -> {
-					tree = new DatabaseTree(model);
-					scrollPane.setViewportView(tree);
-				});
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
+  private final JScrollPane scrollPane;
+  private DatabaseTree tree;
+  private DBMetaDataImporter importer;
+  private final TextFieldValueProvider exclusionPatternProvider;
+
+  /**
+   * Instantiates a new Database pane.
+   *
+   * @param exclusionPatternProvider the exclusion pattern provider
+   */
+  public DatabasePane(TextFieldValueProvider exclusionPatternProvider) {
+    super(new BorderLayout());
+    this.exclusionPatternProvider = exclusionPatternProvider;
+    this.scrollPane = new JScrollPane();
+    add(scrollPane, BorderLayout.CENTER);
+  }
+
+  /**
+   * Sets environment.
+   *
+   * @param environment the environment
+   * @throws ConnectFailedException the connect failed exception
+   * @throws ImportFailedException  the import failed exception
+   */
+  public void setEnvironment(String environment) throws ConnectFailedException, ImportFailedException {
+    if (importer != null) {
+      try {
+        importer.close();
+      } catch (IOException e) {
+        LOGGER.error("Error closing " + getClass().getName(), e);
+      }
+      if (tree != null) {
+        scrollPane.remove(tree);
+      }
+    }
+    new Thread(new Importer(environment)).start();
+  }
+
+  /**
+   * The type Importer.
+   */
+  class Importer implements Runnable {
+    /**
+     * The Environment.
+     */
+    final String environment;
+
+    /**
+     * Instantiates a new Importer.
+     *
+     * @param environment the environment
+     */
+    public Importer(String environment) {
+      this.environment = environment;
+    }
+
+    @Override
+    public void run() {
+      try {
+        Database database = JDBCMetaDataUtil.getMetaData(environment, true, true, true, true,
+            ".*", exclusionPatternProvider.getValue(), true, true);
+        DatabasePane.this.importer = importer;
+        final TreeModel model = new SwingTreeModelAdapter<>(new DatabaseTreeModel(database));
+        SwingUtilities.invokeLater(() -> {
+          tree = new DatabaseTree(model);
+          scrollPane.setViewportView(tree);
+        });
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
 }

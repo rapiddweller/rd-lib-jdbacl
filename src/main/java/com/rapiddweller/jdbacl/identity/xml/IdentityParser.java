@@ -27,7 +27,12 @@ import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.xml.XMLUtil;
 import com.rapiddweller.format.xml.AbstractXMLElementParser;
 import com.rapiddweller.format.xml.ParseContext;
-import com.rapiddweller.jdbacl.identity.*;
+import com.rapiddweller.jdbacl.identity.IdentityModel;
+import com.rapiddweller.jdbacl.identity.IdentityProvider;
+import com.rapiddweller.jdbacl.identity.NaturalPkIdentity;
+import com.rapiddweller.jdbacl.identity.NkPkQueryIdentity;
+import com.rapiddweller.jdbacl.identity.SubNkPkQueryIdentity;
+import com.rapiddweller.jdbacl.identity.UniqueKeyIdentity;
 import org.w3c.dom.Element;
 
 import java.util.Set;
@@ -35,66 +40,88 @@ import java.util.Set;
 /**
  * Parses an &lt;identity&gt; element in a DB Sanity XML file.<br/><br/>
  * Created: 05.12.2010 14:39:48
- * @since 0.7.1
+ *
  * @author Volker Bergmann
+ * @since 0.7.1
  */
 public class IdentityParser extends AbstractXMLElementParser<Object> {
-	
-	public static final String IDENTITY = "identity";
-	public static final Set<String> REQUIRED_ATTRIBUTES = CollectionUtil.toSet("type", "table");
-	public static final Set<String> OPTIONAL_ATTRIBUTES = CollectionUtil.toSet("nk-pk-query", "sub-nk-pk-query", "parents", "unique-key", "natural-pk", "columns");
-	
-	public IdentityParser() {
-		super(IDENTITY, REQUIRED_ATTRIBUTES, OPTIONAL_ATTRIBUTES, Object.class);
-	}
 
-	@Override
-	public IdentityModel doParse(Element element, Object[] parentPath, ParseContext<Object> context) {
-		String type = getRequiredAttribute("type", element);
-		String tableName = getRequiredAttribute("table", element);
-		
-		IdentityModel identity;
-		IdentityProvider identityProvider = ((IdentityParseContext) context).getIdentityProvider();
-		if ("nk-pk-query".equals(type))
-			identity = parseNkPkQuery(element, tableName);
-		else if ("sub-nk-pk-query".equals(type))
-			identity = parseSubNkPkQuery(element, identityProvider, tableName);
-		else if ("unique-key".equals(type))
-			identity = parseUniqueKey(element, tableName);
-		else if ("natural-pk".equals(type))
-			identity = parseNaturalPk(element, tableName);
-		else
-			throw new ConfigurationError("Not a supported <identity> type: " + type);
-		identityProvider.registerIdentity(identity, identity.getTableName());
-		return identity;
-	}
+  /**
+   * The constant IDENTITY.
+   */
+  public static final String IDENTITY = "identity";
+  /**
+   * The constant REQUIRED_ATTRIBUTES.
+   */
+  public static final Set<String> REQUIRED_ATTRIBUTES = CollectionUtil.toSet("type", "table");
+  /**
+   * The constant OPTIONAL_ATTRIBUTES.
+   */
+  public static final Set<String> OPTIONAL_ATTRIBUTES =
+      CollectionUtil.toSet("nk-pk-query", "sub-nk-pk-query", "parents", "unique-key", "natural-pk", "columns");
 
-	public static String createCheckName(String tableName, String type) {
-		return tableName + "-identity-" + type;
-	}
-	
-	// private helpers -------------------------------------------------------------------------------------------------
+  /**
+   * Instantiates a new Identity parser.
+   */
+  public IdentityParser() {
+    super(IDENTITY, REQUIRED_ATTRIBUTES, OPTIONAL_ATTRIBUTES, Object.class);
+  }
 
-	private static IdentityModel parseNkPkQuery(Element element, String tableName) {
-	    String nkPkQuery = XMLUtil.getWholeText(element);
-	    return new NkPkQueryIdentity(tableName, nkPkQuery);
+  @Override
+  public IdentityModel doParse(Element element, Object[] parentPath, ParseContext<Object> context) {
+    String type = getRequiredAttribute("type", element);
+    String tableName = getRequiredAttribute("table", element);
+
+    IdentityModel identity;
+    IdentityProvider identityProvider = ((IdentityParseContext) context).getIdentityProvider();
+    if ("nk-pk-query".equals(type)) {
+      identity = parseNkPkQuery(element, tableName);
+    } else if ("sub-nk-pk-query".equals(type)) {
+      identity = parseSubNkPkQuery(element, identityProvider, tableName);
+    } else if ("unique-key".equals(type)) {
+      identity = parseUniqueKey(element, tableName);
+    } else if ("natural-pk".equals(type)) {
+      identity = parseNaturalPk(element, tableName);
+    } else {
+      throw new ConfigurationError("Not a supported <identity> type: " + type);
     }
+    identityProvider.registerIdentity(identity, identity.getTableName());
+    return identity;
+  }
 
-	private static IdentityModel parseNaturalPk(Element element, String tableName) {
-		return new NaturalPkIdentity(tableName);
-    }
+  /**
+   * Create check name string.
+   *
+   * @param tableName the table name
+   * @param type      the type
+   * @return the string
+   */
+  public static String createCheckName(String tableName, String type) {
+    return tableName + "-identity-" + type;
+  }
 
-	private IdentityModel parseUniqueKey(Element element, String tableName) {
-		String[] columnNames = getRequiredAttribute("columns", element).split(",");
-		columnNames = StringUtil.trimAll(columnNames);
-		return new UniqueKeyIdentity(tableName, columnNames);
-    }
+  // private helpers -------------------------------------------------------------------------------------------------
 
-	private IdentityModel parseSubNkPkQuery(Element element, IdentityProvider identityProvider, String tableName) {
-		String[] parentTableNames = getRequiredAttribute("parents", element).split(",");
-		SubNkPkQueryIdentity identity = new SubNkPkQueryIdentity(tableName, parentTableNames, identityProvider);
-	    identity.setSubNkPkQuery(XMLUtil.getWholeText(element));
-	    return identity;
-    }
+  private static IdentityModel parseNkPkQuery(Element element, String tableName) {
+    String nkPkQuery = XMLUtil.getWholeText(element);
+    return new NkPkQueryIdentity(tableName, nkPkQuery);
+  }
+
+  private static IdentityModel parseNaturalPk(Element element, String tableName) {
+    return new NaturalPkIdentity(tableName);
+  }
+
+  private IdentityModel parseUniqueKey(Element element, String tableName) {
+    String[] columnNames = getRequiredAttribute("columns", element).split(",");
+    columnNames = StringUtil.trimAll(columnNames);
+    return new UniqueKeyIdentity(tableName, columnNames);
+  }
+
+  private IdentityModel parseSubNkPkQuery(Element element, IdentityProvider identityProvider, String tableName) {
+    String[] parentTableNames = getRequiredAttribute("parents", element).split(",");
+    SubNkPkQueryIdentity identity = new SubNkPkQueryIdentity(tableName, parentTableNames, identityProvider);
+    identity.setSubNkPkQuery(XMLUtil.getWholeText(element));
+    return identity;
+  }
 
 }

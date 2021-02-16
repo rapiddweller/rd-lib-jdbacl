@@ -32,53 +32,103 @@ import java.util.Map;
 /**
  * In-memory implementation of the mapping functionality needed for a target database.<br/><br/>
  * Created: 24.08.2010 11:15:53
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public class TargetDatabaseMapper {
 
-	final KeyMapper root;
-	final Connection target;
-	final String targetDbId;
-	final Database database;
-	final Map<String, TargetTableMapper> tableMappers;
-	
-	public TargetDatabaseMapper(KeyMapper root, Connection target, String targetDbId, Database database) {
-		this.root = root;
-		this.target = target;
-		this.targetDbId = targetDbId;
-		this.database = database;
-		tableMappers = new HashMap<>(500);
+  /**
+   * The Root.
+   */
+  final KeyMapper root;
+  /**
+   * The Target.
+   */
+  final Connection target;
+  /**
+   * The Target db id.
+   */
+  final String targetDbId;
+  /**
+   * The Database.
+   */
+  final Database database;
+  /**
+   * The Table mappers.
+   */
+  final Map<String, TargetTableMapper> tableMappers;
+
+  /**
+   * Instantiates a new Target database mapper.
+   *
+   * @param root       the root
+   * @param target     the target
+   * @param targetDbId the target db id
+   * @param database   the database
+   */
+  public TargetDatabaseMapper(KeyMapper root, Connection target, String targetDbId, Database database) {
+    this.root = root;
+    this.target = target;
+    this.targetDbId = targetDbId;
+    this.database = database;
+    tableMappers = new HashMap<>(500);
+  }
+
+  // interface -------------------------------------------------------------------------------------------------------
+
+  /**
+   * Gets db id.
+   *
+   * @return the db id
+   */
+  public String getDbId() {
+    return targetDbId;
+  }
+
+  /**
+   * Store.
+   *
+   * @param identity   the identity
+   * @param naturalKey the natural key
+   * @param targetPK   the target pk
+   */
+  public void store(IdentityModel identity, String naturalKey, Object targetPK) {
+    getOrCreateTableMapper(target, targetDbId, identity).store(targetPK, naturalKey);
+  }
+
+  /**
+   * Gets natural key.
+   *
+   * @param identity the identity
+   * @param sourcePK the source pk
+   * @return the natural key
+   */
+  public String getNaturalKey(IdentityModel identity, Object sourcePK) {
+    return getOrCreateTableMapper(target, targetDbId, identity).getNaturalKey(sourcePK);
+  }
+
+  /**
+   * Gets target pk.
+   *
+   * @param identity   the identity
+   * @param naturalKey the natural key
+   * @return the target pk
+   */
+  public Object getTargetPK(IdentityModel identity, String naturalKey) {
+    return getOrCreateTableMapper(target, targetDbId, identity).getTargetId(naturalKey);
+  }
+
+  // helpers ---------------------------------------------------------------------------------------------------------
+
+  private TargetTableMapper getOrCreateTableMapper(Connection target, String targetDbId, IdentityModel identity) {
+    String tableName = identity.getTableName();
+    TargetTableMapper result = tableMappers.get(tableName);
+    if (result == null) {
+      result = new TargetTableMapper(root, target, targetDbId, identity, database);
+      tableMappers.put(tableName, result);
     }
-	
-	// interface -------------------------------------------------------------------------------------------------------
-	
-	public String getDbId() {
-		return targetDbId;
-	}
-	
-	public void store(IdentityModel identity, String naturalKey, Object targetPK) {
-		getOrCreateTableMapper(target, targetDbId, identity).store(targetPK, naturalKey);
-	}
-	
-	public String getNaturalKey(IdentityModel identity, Object sourcePK) {
-		return getOrCreateTableMapper(target, targetDbId, identity).getNaturalKey(sourcePK);
-    }
-	
-	public Object getTargetPK(IdentityModel identity, String naturalKey) {
-		return getOrCreateTableMapper(target, targetDbId, identity).getTargetId(naturalKey);
-	}
-	
-	// helpers ---------------------------------------------------------------------------------------------------------
-	
-	private TargetTableMapper getOrCreateTableMapper(Connection target, String targetDbId, IdentityModel identity) {
-		String tableName = identity.getTableName();
-		TargetTableMapper result = tableMappers.get(tableName);
-		if (result == null) {
-			result = new TargetTableMapper(root, target, targetDbId, identity, database);
-			tableMappers.put(tableName, result);
-		}
-		return result;
-	}
+    return result;
+  }
 
 }

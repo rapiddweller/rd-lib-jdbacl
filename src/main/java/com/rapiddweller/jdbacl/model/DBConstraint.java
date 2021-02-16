@@ -34,65 +34,79 @@ import java.util.Arrays;
 /**
  * Parent class for all database constraints.<br/><br/>
  * Created: 06.01.2007 08:58:49
+ *
  * @author Volker Bergmann
  */
 public abstract class DBConstraint extends AbstractDBTableComponent implements MultiColumnObject {
 
-    private static final long serialVersionUID = 3768329019450975632L;
-    
-    private final boolean nameDeterministic;
-    
-    // interface -------------------------------------------------------------------------------------------------------
+  private static final long serialVersionUID = 3768329019450975632L;
 
-    /**
-     * @param name the constraint name - it may be null
-     */
-    public DBConstraint(String name, boolean nameDeterministic, String objectType, DBTable owner) {
-    	super(name, objectType, owner);
-    	this.nameDeterministic = nameDeterministic;
+  private final boolean nameDeterministic;
+
+  // interface -------------------------------------------------------------------------------------------------------
+
+  /**
+   * Instantiates a new Db constraint.
+   *
+   * @param name              the constraint name - it may be null
+   * @param nameDeterministic the name deterministic
+   * @param objectType        the object type
+   * @param owner             the owner
+   */
+  public DBConstraint(String name, boolean nameDeterministic, String objectType, DBTable owner) {
+    super(name, objectType, owner);
+    this.nameDeterministic = nameDeterministic;
+  }
+
+  /**
+   * Returns the columns which constitute this constraint
+   *
+   * @return the columns which constitute this constraint
+   */
+  @Override
+  public abstract String[] getColumnNames();
+
+  @Override
+  public DBTable getTable() {
+    return (DBTable) getOwner();
+  }
+
+  /**
+   * Is name deterministic boolean.
+   *
+   * @return the boolean
+   */
+  public boolean isNameDeterministic() {
+    return nameDeterministic;
+  }
+
+  // java.lang.Object overrides --------------------------------------------------------------------------------------
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
-
-    /**
-     * Returns the columns which constitute this constraint
-     * @return the columns which constitute this constraint
-     */
-    @Override
-	public abstract String[] getColumnNames();
-
-    @Override
-	public DBTable getTable() {
-        return (DBTable) getOwner();
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
+    final DBConstraint that = (DBConstraint) o;
+    return (this.getOwner().equals(that.getOwner())
+        && Arrays.equals(this.getColumnNames(), that.getColumnNames()));
+  }
 
-	public boolean isNameDeterministic() {
-		return nameDeterministic;
-	}
+  @Override
+  public int hashCode() {
+    return HashCodeBuilder.hashCode(this.getOwner(), getColumnNames());
+  }
 
-    // java.lang.Object overrides --------------------------------------------------------------------------------------
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append(getClass().getSimpleName()).append('[').append(getOwner().getName()).append('[');
+    builder.append(ArrayFormat.format(getColumnNames()));
+    builder.append("]]");
+    return builder.toString();
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        final DBConstraint that = (DBConstraint) o;
-        return (this.getOwner().equals(that.getOwner()) 
-        		&& Arrays.equals(this.getColumnNames(), that.getColumnNames()));
-    }
-
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.hashCode(this.getOwner(), getColumnNames());
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(getClass().getSimpleName()).append('[').append(getOwner().getName()).append('[');
-        builder.append(ArrayFormat.format(getColumnNames()));
-        builder.append("]]");
-        return builder.toString();
-    }
-    
 }

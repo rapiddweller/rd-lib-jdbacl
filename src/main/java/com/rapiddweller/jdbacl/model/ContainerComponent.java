@@ -24,9 +24,10 @@ package com.rapiddweller.jdbacl.model;
 /**
  * Parent interface for all classes that can be contained in a database package.<br/><br/>
  * Created: 05.12.2010 11:07:07
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public interface ContainerComponent extends DBObject {
-	// empty marker interface
+  // empty marker interface
 }

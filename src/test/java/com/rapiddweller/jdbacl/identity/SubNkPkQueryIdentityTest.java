@@ -21,40 +21,46 @@
 
 package com.rapiddweller.jdbacl.identity;
 
-import static org.junit.Assert.*;
-
-import java.sql.Connection;
-
 import com.rapiddweller.common.HeavyweightIterator;
 import com.rapiddweller.jdbacl.dialect.HSQLUtil;
 import com.rapiddweller.jdbacl.identity.mem.MemKeyMapper;
 import com.rapiddweller.jdbacl.model.Database;
 import org.junit.Test;
 
+import java.sql.Connection;
+
+import static org.junit.Assert.assertFalse;
+
 /**
  * Tests the {@link SubNkPkQueryIdentity}.<br/><br/>
  * Created: 06.12.2010 07:10:25
- * @since 0.4
+ *
  * @author Volker Bergmann
+ * @since 0.4
  */
 public class SubNkPkQueryIdentityTest extends AbstractIdentityTest {
 
-	@Test
-	public void test() throws Exception {
-		Connection connection = connectDB("db", HSQLUtil.DEFAULT_PORT + 1);
-		createTables(connection);
-		insertData(connection);
-		
-		Database database = importDatabase(connection);
-		IdentityProvider identityProvider = createIdentities(database);
-		IdentityModel identity = identityProvider.getIdentity("state");
+  /**
+   * Test.
+   *
+   * @throws Exception the exception
+   */
+  @Test
+  public void test() throws Exception {
+    Connection connection = connectDB("db", HSQLUtil.DEFAULT_PORT + 1);
+    createTables(connection);
+    insertData(connection);
 
-		MemKeyMapper mapper = new MemKeyMapper(connection, "db", null, null, identityProvider, database);
-		HeavyweightIterator<Object[]> iterator = identity.createNkPkIterator(connection, "db", mapper, database);
-		expectStateNkPk(iterator);
-		assertFalse(iterator.hasNext());
-		
-		dropTables(connection);
-	}
+    Database database = importDatabase(connection);
+    IdentityProvider identityProvider = createIdentities(database);
+    IdentityModel identity = identityProvider.getIdentity("state");
+
+    MemKeyMapper mapper = new MemKeyMapper(connection, "db", null, null, identityProvider, database);
+    HeavyweightIterator<Object[]> iterator = identity.createNkPkIterator(connection, "db", mapper, database);
+    expectStateNkPk(iterator);
+    assertFalse(iterator.hasNext());
+
+    dropTables(connection);
+  }
 
 }

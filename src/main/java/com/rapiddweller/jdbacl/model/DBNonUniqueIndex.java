@@ -34,44 +34,55 @@ import java.util.Arrays;
 /**
  * Represents a non-unique database index.<br/><br/>
  * Created: 11.01.2007 00:32:53
+ *
  * @author Volker Bergmann
  */
 public class DBNonUniqueIndex extends DBIndex {
 
-    private static final long serialVersionUID = -6326915676663722678L;
-    
-	private String[] columnNames;
+  private static final long serialVersionUID = -6326915676663722678L;
 
-    public DBNonUniqueIndex(String name, boolean nameDeterministic, DBTable table, String ... columnNames) {
-        super(name, nameDeterministic, table);
-        this.columnNames = columnNames;
-    }
+  private String[] columnNames;
 
-    @Override
-    public boolean isUnique() {
-        return false;
-    }
+  /**
+   * Instantiates a new Db non unique index.
+   *
+   * @param name              the name
+   * @param nameDeterministic the name deterministic
+   * @param table             the table
+   * @param columnNames       the column names
+   */
+  public DBNonUniqueIndex(String name, boolean nameDeterministic, DBTable table, String... columnNames) {
+    super(name, nameDeterministic, table);
+    this.columnNames = columnNames;
+  }
 
-    @Override
-    public String[] getColumnNames() {
-        return columnNames;
+  @Override
+  public boolean isUnique() {
+    return false;
+  }
+
+  @Override
+  public String[] getColumnNames() {
+    return columnNames;
+  }
+
+  @Override
+  public void addColumnName(String columnName) {
+    this.columnNames = ArrayUtil.append(columnName, columnNames);
+  }
+
+  @Override
+  public boolean isIdentical(DBObject other) {
+    if (this == other) {
+      return true;
     }
-    
-    @Override
-    public void addColumnName(String columnName) {
-    	this.columnNames = ArrayUtil.append(columnName, columnNames);
+    if (other == null || !(other instanceof DBNonUniqueIndex)) {
+      return false;
     }
-    
-	@Override
-	public boolean isIdentical(DBObject other) {
-		if (this == other)
-			return true;
-		if (other == null || !(other instanceof DBNonUniqueIndex))
-			return false;
-		DBNonUniqueIndex that = (DBNonUniqueIndex) other;
-		return NullSafeComparator.equals(this.name, that.name)
-			&& Arrays.equals(columnNames, that.getColumnNames())
-			&& NullSafeComparator.equals(getOwner().getName(), that.getOwner().getName());
-	}
+    DBNonUniqueIndex that = (DBNonUniqueIndex) other;
+    return NullSafeComparator.equals(this.name, that.name)
+        && Arrays.equals(columnNames, that.getColumnNames())
+        && NullSafeComparator.equals(getOwner().getName(), that.getOwner().getName());
+  }
 
 }

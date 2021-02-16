@@ -27,66 +27,71 @@ import com.rapiddweller.jdbacl.sql.Query;
 /**
  * {@link DatabaseDialect} implementation for the MySQL database.<br/><br/>
  * Created: 24.06.2011 07:29:20
- * @since 0.6.9
+ *
  * @author Volker Bergmann
+ * @since 0.6.9
  */
 public class MySQLDialect extends DatabaseDialect {
 
-	private static final String DATE_PATTERN = "''yyyy-MM-dd''";
-	private static final String TIME_PATTERN = "''HH:mm:ss''";
-	private static final String DATETIME_PATTERN = "''yyyy-MM-dd HH:mm:ss''";
+  private static final String DATE_PATTERN = "''yyyy-MM-dd''";
+  private static final String TIME_PATTERN = "''HH:mm:ss''";
+  private static final String DATETIME_PATTERN = "''yyyy-MM-dd HH:mm:ss''";
 
-	public MySQLDialect() {
-	    super("mysql", false, false, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
-	}
+  /**
+   * Instantiates a new My sql dialect.
+   */
+  public MySQLDialect() {
+    super("mysql", false, false, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
+  }
 
-	@Override
-	public boolean isDefaultCatalog(String catalog, String user) {
-		// MySQL does not have a default catalog, so jdbacl has to retrieve it from Connection.getCatalog()
-		return false;
-	}
+  @Override
+  public boolean isDefaultCatalog(String catalog, String user) {
+    // MySQL does not have a default catalog, so jdbacl has to retrieve it from Connection.getCatalog()
+    return false;
+  }
 
-	@Override
-	public boolean isDefaultSchema(String schema, String user) {
-		return false; // MySQL does not make use of schemas at all
-	}
+  @Override
+  public boolean isDefaultSchema(String schema, String user) {
+    return false; // MySQL does not make use of schemas at all
+  }
 
-	@Override
-	public boolean isDeterministicPKName(String pkName) {
-		return true; // MySQL always creates deterministic names
-	}
+  @Override
+  public boolean isDeterministicPKName(String pkName) {
+    return true; // MySQL always creates deterministic names
+  }
 
-	@Override
-	public boolean isDeterministicUKName(String ukName) {
-		return true; // MySQL always creates deterministic names
-	}
+  @Override
+  public boolean isDeterministicUKName(String ukName) {
+    return true; // MySQL always creates deterministic names
+  }
 
-	@Override
-	public boolean isDeterministicFKName(String fkName) {
-		return true; // MySQL always creates deterministic names
-	}
+  @Override
+  public boolean isDeterministicFKName(String fkName) {
+    return true; // MySQL always creates deterministic names
+  }
 
-	@Override
-	public boolean isDeterministicIndexName(String indexName) {
-		return true; // MySQL always creates deterministic names
-	}
+  @Override
+  public boolean isDeterministicIndexName(String indexName) {
+    return true; // MySQL always creates deterministic names
+  }
 
-	@Override
-	public boolean supportsRegex() {
-		return true;
-	}
-	
-	@Override
-	public String regexQuery(String expression, boolean not, String regex) {
-		return expression + (not ? " NOT" : "") + " REGEXP '" + regex + "'";
-	}
+  @Override
+  public boolean supportsRegex() {
+    return true;
+  }
 
-	@Override
-	public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
+  @Override
+  public String regexQuery(String expression, boolean not, String regex) {
+    return expression + (not ? " NOT" : "") + " REGEXP '" + regex + "'";
+  }
+
+  @Override
+  public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
 	    /* TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
 			MySQL, PostgreSQL, H2: SELECT * FROM T LIMIT 10 OFFSET 20
 	     */
-		throw new UnsupportedOperationException("MySQLDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
-	}
+    throw new UnsupportedOperationException(
+        "MySQLDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+  }
 
 }

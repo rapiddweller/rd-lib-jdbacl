@@ -26,27 +26,49 @@ import com.rapiddweller.common.Named;
 import java.io.Serializable;
 
 /**
- * Abstract parent interface for assembling database objects in a tree using the Composite design pattern. 
+ * Abstract parent interface for assembling database objects in a tree using the Composite design pattern.
  * The corresponding interface for Composite objects is {@link CompositeDBObject}.<br/><br/>
  * Created: 09.11.2010 11:41:09
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public interface DBObject extends Named, Serializable {
-	
-	/** @return the type of the DBObject as used in DDL in lower case letters. */
-    String getObjectType();
-    
-    /** @return documentation of the DBObject if available, otherwise null. */
-    String getDoc();
-    
-    /** @return the owner of the DBObject instance or null if no owner has been set. */
-    CompositeDBObject<?> getOwner();
-    
-    /** sets the owner of the DBObject instance. */
-    void setOwner(CompositeDBObject<?> owner);
-	
-	/** tells if an object has the same definition as another one. */
-    boolean isIdentical(DBObject other);
-	
+
+  /**
+   * Gets object type.
+   *
+   * @return the type of the DBObject as used in DDL in lower case letters.
+   */
+  String getObjectType();
+
+  /**
+   * Gets doc.
+   *
+   * @return documentation of the DBObject if available, otherwise null.
+   */
+  String getDoc();
+
+  /**
+   * Gets owner.
+   *
+   * @return the owner of the DBObject instance or null if no owner has been set.
+   */
+  CompositeDBObject<?> getOwner();
+
+  /**
+   * sets the owner of the DBObject instance.
+   *
+   * @param owner the owner
+   */
+  void setOwner(CompositeDBObject<?> owner);
+
+  /**
+   * tells if an object has the same definition as another one.
+   *
+   * @param other the other
+   * @return the boolean
+   */
+  boolean isIdentical(DBObject other);
+
 }

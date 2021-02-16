@@ -35,92 +35,137 @@ import java.sql.Connection;
 /**
  * {@link IdentityModel} implementation based on a unique-key-constraint.<br/><br/>
  * Created: 06.12.2010 09:10:05
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public class UniqueKeyIdentity extends IdentityModel {
-	
-	private String[] columnNames;
 
-	public UniqueKeyIdentity(String tableName, String... columnNames) {
-		super(tableName);
-		setColumns(columnNames);
-	}
+  private String[] columnNames;
 
-	public void setColumns(String[] columnNames) {
-		this.columnNames = columnNames;
-	}
-	
-	@Override
-	public TabularIterator createNkPkIterator(
-			Connection connection, String dbId, KeyMapper mapper, Database database) {
-		if (ArrayUtil.isEmpty(columnNames))
-			throw new ConfigurationError("No unique key columns defined");
-		StringBuilder builder = new StringBuilder("select ");
-		builder.append(columnNames[0]);
-		for (int i = 1; i < columnNames.length; i++)
-			builder.append(", ").append(columnNames[i]);
-		String[] pkColumnNames = database.getTable(tableName).getPKColumnNames();
-		for (String columnName : pkColumnNames)
-			builder.append(", ").append(columnName);
-			
-		builder.append(" from ").append(tableName);
-		String query = builder.toString();
-		TabularIterator rawIterator = query(query, connection);
-		ColumnToNkConverter converter = new ColumnToNkConverter(dbId, mapper);
-		return new UniqueKeyNkPkIterator(rawIterator, converter, pkColumnNames);
-	}
+  /**
+   * Instantiates a new Unique key identity.
+   *
+   * @param tableName   the table name
+   * @param columnNames the column names
+   */
+  public UniqueKeyIdentity(String tableName, String... columnNames) {
+    super(tableName);
+    setColumns(columnNames);
+  }
 
-	@Override
-	public String getDescription() {
-		return "Identity definition by unique key: " + ArrayFormat.format(columnNames);
-	}
+  /**
+   * Sets columns.
+   *
+   * @param columnNames the column names
+   */
+  public void setColumns(String[] columnNames) {
+    this.columnNames = columnNames;
+  }
 
-	public class UniqueKeyNkPkIterator extends ConvertingIterator<Object[], Object[]> implements TabularIterator {
-		
-		final String[] pkColumnNames;
+  @Override
+  public TabularIterator createNkPkIterator(
+      Connection connection, String dbId, KeyMapper mapper, Database database) {
+    if (ArrayUtil.isEmpty(columnNames)) {
+      throw new ConfigurationError("No unique key columns defined");
+    }
+    StringBuilder builder = new StringBuilder("select ");
+    builder.append(columnNames[0]);
+    for (int i = 1; i < columnNames.length; i++) {
+      builder.append(", ").append(columnNames[i]);
+    }
+    String[] pkColumnNames = database.getTable(tableName).getPKColumnNames();
+    for (String columnName : pkColumnNames) {
+      builder.append(", ").append(columnName);
+    }
 
-		public UniqueKeyNkPkIterator(TabularIterator rawIterator, ColumnToNkConverter converter, String[] pkColumnNames) {
-			super(rawIterator, converter);
-			this.pkColumnNames = columnNames;
-		}
+    builder.append(" from ").append(tableName);
+    String query = builder.toString();
+    TabularIterator rawIterator = query(query, connection);
+    ColumnToNkConverter converter = new ColumnToNkConverter(dbId, mapper);
+    return new UniqueKeyNkPkIterator(rawIterator, converter, pkColumnNames);
+  }
 
-		@Override
-		public String[] getColumnNames() {
-			String[] labels = new String[1 + pkColumnNames.length];
-			labels[0] = "NK";
-			for (int i = 1; i < labels.length; i++)
-				labels[i] = pkColumnNames[i - 1];
-			return labels;
-		}
-		
-	}
-	
-	public class ColumnToNkConverter extends ThreadSafeConverter<Object[], Object[]> {
-		
-		final String dbId;
-		final KeyMapper mapper;
-		
-		public ColumnToNkConverter(String dbId, KeyMapper mapper) {
-			super(Object[].class, Object[].class);
-			this.dbId = dbId;
-			this.mapper = mapper;
-		}
+  @Override
+  public String getDescription() {
+    return "Identity definition by unique key: " + ArrayFormat.format(columnNames);
+  }
 
-		@Override
-		public Object[] convert(Object[] raw) {
-			NKBuilder nkBuilder = new NKBuilder();
-			for (int i = 0; i < columnNames.length; i++) {
-				Object value = raw[i];
-				nkBuilder.addComponent(value);
-			}
-			ArrayBuilder<Object> arrayBuilder = new ArrayBuilder<>(Object.class);
-			arrayBuilder.add(nkBuilder.toString());
-			for (int i = columnNames.length; i < raw.length; i++)
-				arrayBuilder.add(raw[i]);
-			return arrayBuilder.toArray();
-		}
+  /**
+   * The type Unique key nk pk iterator.
+   */
+  public class UniqueKeyNkPkIterator extends ConvertingIterator<Object[], Object[]> implements TabularIterator {
 
-	}
+    /**
+     * The Pk column names.
+     */
+    final String[] pkColumnNames;
+
+    /**
+     * Instantiates a new Unique key nk pk iterator.
+     *
+     * @param rawIterator   the raw iterator
+     * @param converter     the converter
+     * @param pkColumnNames the pk column names
+     */
+    public UniqueKeyNkPkIterator(TabularIterator rawIterator, ColumnToNkConverter converter, String[] pkColumnNames) {
+      super(rawIterator, converter);
+      this.pkColumnNames = columnNames;
+    }
+
+    @Override
+    public String[] getColumnNames() {
+      String[] labels = new String[1 + pkColumnNames.length];
+      labels[0] = "NK";
+      for (int i = 1; i < labels.length; i++) {
+        labels[i] = pkColumnNames[i - 1];
+      }
+      return labels;
+    }
+
+  }
+
+  /**
+   * The type Column to nk converter.
+   */
+  public class ColumnToNkConverter extends ThreadSafeConverter<Object[], Object[]> {
+
+    /**
+     * The Db id.
+     */
+    final String dbId;
+    /**
+     * The Mapper.
+     */
+    final KeyMapper mapper;
+
+    /**
+     * Instantiates a new Column to nk converter.
+     *
+     * @param dbId   the db id
+     * @param mapper the mapper
+     */
+    public ColumnToNkConverter(String dbId, KeyMapper mapper) {
+      super(Object[].class, Object[].class);
+      this.dbId = dbId;
+      this.mapper = mapper;
+    }
+
+    @Override
+    public Object[] convert(Object[] raw) {
+      NKBuilder nkBuilder = new NKBuilder();
+      for (int i = 0; i < columnNames.length; i++) {
+        Object value = raw[i];
+        nkBuilder.addComponent(value);
+      }
+      ArrayBuilder<Object> arrayBuilder = new ArrayBuilder<>(Object.class);
+      arrayBuilder.add(nkBuilder.toString());
+      for (int i = columnNames.length; i < raw.length; i++) {
+        arrayBuilder.add(raw[i]);
+      }
+      return arrayBuilder.toArray();
+    }
+
+  }
 
 }

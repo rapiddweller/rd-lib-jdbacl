@@ -42,124 +42,160 @@ import java.util.regex.Pattern;
  * {@link DatabaseDialect} implementation for the Firebird database.<br/>
  * <br/>
  * Created at 09.03.2009 07:13:35
- * @since 0.5.8
+ *
  * @author Volker Bergmann
+ * @since 0.5.8
  */
-
 public class FirebirdDialect extends DatabaseDialect {
 
-	private static final String DATE_PATTERN = "''yyyy-MM-dd''";
-	private static final String TIME_PATTERN = "''HH:mm:ss''";
-	private static final String DATETIME_PATTERN = "''yyyy-MM-dd HH:mm:ss''";
+  private static final String DATE_PATTERN = "''yyyy-MM-dd''";
+  private static final String TIME_PATTERN = "''HH:mm:ss''";
+  private static final String DATETIME_PATTERN = "''yyyy-MM-dd HH:mm:ss''";
 
-	final Pattern randomPKNamePattern = Pattern.compile("INTEG_\\d+");
-	final Pattern randomUKNamePattern = Pattern.compile("RDB\\$\\w+");
-	final Pattern randomFKNamePattern = Pattern.compile("INTEG_\\d+");
-	final Pattern randomIndexNamePattern = Pattern.compile("RDB\\$\\w+");
+  /**
+   * The Random pk name pattern.
+   */
+  final Pattern randomPKNamePattern = Pattern.compile("INTEG_\\d+");
+  /**
+   * The Random uk name pattern.
+   */
+  final Pattern randomUKNamePattern = Pattern.compile("RDB\\$\\w+");
+  /**
+   * The Random fk name pattern.
+   */
+  final Pattern randomFKNamePattern = Pattern.compile("INTEG_\\d+");
+  /**
+   * The Random index name pattern.
+   */
+  final Pattern randomIndexNamePattern = Pattern.compile("RDB\\$\\w+");
 
-    public FirebirdDialect() {
-	    super("firebird", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
-    }
+  /**
+   * Instantiates a new Firebird dialect.
+   */
+  public FirebirdDialect() {
+    super("firebird", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
+  }
 
-    public String getJDBCDriverClass() {
-    	return "org.firebirdsql.jdbc.FBDriver";
-    }
-    
-	@Override
-    public boolean isDefaultCatalog(String catalog, String user) {
-	    return true;
-    }
+  /**
+   * Gets jdbc driver class.
+   *
+   * @return the jdbc driver class
+   */
+  public String getJDBCDriverClass() {
+    return "org.firebirdsql.jdbc.FBDriver";
+  }
 
-	@Override
-    public boolean isDefaultSchema(String schema, String user) {
-	    return true;
-    }
+  @Override
+  public boolean isDefaultCatalog(String catalog, String user) {
+    return true;
+  }
 
-	@Override
-	public boolean isSequenceBoundarySupported() {
-		return false;
-	}
-	
-    @Override
-    public void createSequence(String name, long initialValue, Connection connection) throws SQLException {
-    	DBUtil.executeUpdate(renderCreateSequence(name), connection);
-    	DBUtil.executeUpdate(renderSetSequenceValue(name, initialValue), connection);
-    }
+  @Override
+  public boolean isDefaultSchema(String schema, String user) {
+    return true;
+  }
 
-    @Override
-    public String renderCreateSequence(DBSequence sequence) {
-    	String result = renderCreateSequence(sequence.getName());
-    	BigInteger start = sequence.getStart();
-		if (start != null && isNotOne(start))
-    		result += "; " + renderSetSequenceValue(sequence.getName(), start.longValue()) + ";";
-		return result;
-    }
-    
-    public String renderCreateSequence(String name) {
-        return "CREATE GENERATOR " + name;
-    }
-    
-    @Override
-    public String renderDropSequence(String sequenceName) {
-        return "drop generator " + sequenceName;
-    }
-    
-    @Override
-    public String renderFetchSequenceValue(String sequenceName) {
-        return "select gen_id(" + sequenceName + ", 1) from RDB$DATABASE;";
-    }
-    
-    @Override
-    public DBSequence[] querySequences(Connection connection) throws SQLException {
-        String query = "select RDB$GENERATOR_NAME, RDB$GENERATOR_ID, RDB$SYSTEM_FLAG, RDB$DESCRIPTION " +
-        		"from RDB$GENERATORS where RDB$GENERATOR_NAME NOT LIKE '%$%'";
-        ResultSet resultSet = null;
-        try {
-        	resultSet = DBUtil.executeQuery(query, connection);
-        	ArrayBuilder<DBSequence> builder = new ArrayBuilder<>(DBSequence.class);
-        	while (resultSet.next())
-        		builder.add(new DBSequence(resultSet.getString(1).trim(), null));
-    		return builder.toArray();
-        } finally {
-        	DBUtil.closeResultSetAndStatement(resultSet);
-        }
-    }
-    
-    @Override
-    public void setNextSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
-    	DBUtil.executeUpdate(renderSetSequenceValue(sequenceName, value), connection);
-    }
-    
-    public String renderSetSequenceValue(String sequenceName, long value) {
-        return "SET GENERATOR " + sequenceName + " TO " + (value - 1);
-    }
+  @Override
+  public boolean isSequenceBoundarySupported() {
+    return false;
+  }
 
-	@Override
-	public boolean isDeterministicPKName(String pkName) {
-		return !randomPKNamePattern.matcher(pkName).matches();
-	}
+  @Override
+  public void createSequence(String name, long initialValue, Connection connection) throws SQLException {
+    DBUtil.executeUpdate(renderCreateSequence(name), connection);
+    DBUtil.executeUpdate(renderSetSequenceValue(name, initialValue), connection);
+  }
 
-	@Override
-	public boolean isDeterministicUKName(String ukName) {
-		return !randomUKNamePattern.matcher(ukName).matches();
-	}
+  @Override
+  public String renderCreateSequence(DBSequence sequence) {
+    String result = renderCreateSequence(sequence.getName());
+    BigInteger start = sequence.getStart();
+    if (start != null && isNotOne(start)) {
+      result += "; " + renderSetSequenceValue(sequence.getName(), start.longValue()) + ";";
+    }
+    return result;
+  }
 
-	@Override
-	public boolean isDeterministicFKName(String fkName) {
-		return !randomFKNamePattern.matcher(fkName).matches();
-	}
+  /**
+   * Render create sequence string.
+   *
+   * @param name the name
+   * @return the string
+   */
+  public String renderCreateSequence(String name) {
+    return "CREATE GENERATOR " + name;
+  }
 
-	@Override
-	public boolean isDeterministicIndexName(String indexName) {
-		return !randomIndexNamePattern.matcher(indexName).matches();
-	}
+  @Override
+  public String renderDropSequence(String sequenceName) {
+    return "drop generator " + sequenceName;
+  }
 
-	@Override
-	public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
+  @Override
+  public String renderFetchSequenceValue(String sequenceName) {
+    return "select gen_id(" + sequenceName + ", 1) from RDB$DATABASE;";
+  }
+
+  @Override
+  public DBSequence[] querySequences(Connection connection) throws SQLException {
+    String query = "select RDB$GENERATOR_NAME, RDB$GENERATOR_ID, RDB$SYSTEM_FLAG, RDB$DESCRIPTION " +
+        "from RDB$GENERATORS where RDB$GENERATOR_NAME NOT LIKE '%$%'";
+    ResultSet resultSet = null;
+    try {
+      resultSet = DBUtil.executeQuery(query, connection);
+      ArrayBuilder<DBSequence> builder = new ArrayBuilder<>(DBSequence.class);
+      while (resultSet.next()) {
+        builder.add(new DBSequence(resultSet.getString(1).trim(), null));
+      }
+      return builder.toArray();
+    } finally {
+      DBUtil.closeResultSetAndStatement(resultSet);
+    }
+  }
+
+  @Override
+  public void setNextSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
+    DBUtil.executeUpdate(renderSetSequenceValue(sequenceName, value), connection);
+  }
+
+  /**
+   * Render set sequence value string.
+   *
+   * @param sequenceName the sequence name
+   * @param value        the value
+   * @return the string
+   */
+  public String renderSetSequenceValue(String sequenceName, long value) {
+    return "SET GENERATOR " + sequenceName + " TO " + (value - 1);
+  }
+
+  @Override
+  public boolean isDeterministicPKName(String pkName) {
+    return !randomPKNamePattern.matcher(pkName).matches();
+  }
+
+  @Override
+  public boolean isDeterministicUKName(String ukName) {
+    return !randomUKNamePattern.matcher(ukName).matches();
+  }
+
+  @Override
+  public boolean isDeterministicFKName(String fkName) {
+    return !randomFKNamePattern.matcher(fkName).matches();
+  }
+
+  @Override
+  public boolean isDeterministicIndexName(String indexName) {
+    return !randomIndexNamePattern.matcher(indexName).matches();
+  }
+
+  @Override
+  public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
 	    /* TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
 			Firebird: SELECT FIRST 10 SKIP 20 * FROM T
 	     */
-		throw new UnsupportedOperationException("FirebirdDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
-	}
+    throw new UnsupportedOperationException(
+        "FirebirdDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+  }
 
 }

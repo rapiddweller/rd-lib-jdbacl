@@ -27,29 +27,49 @@ import com.rapiddweller.script.expression.ConstantExpression;
 /**
  * {@link Expression} which represents a database column.<br/><br/>
  * Created: 08.06.2011 13:37:59
- * @since 0.1
+ *
  * @author Volker Bergmann
+ * @since 0.1
  */
 public class ColumnExpression extends ConstantExpression<String> {
 
-	protected final boolean quoted;
-	
-	public ColumnExpression(String name, boolean quoted) {
-		super(name);
-		this.quoted = quoted;
-	}
+  /**
+   * The Quoted.
+   */
+  protected final boolean quoted;
 
-	public String getColumnName() {
-		return getValue();
-	}
-	
-	public boolean isQuoted() {
-		return quoted;
-	}
-	
-	@Override
-	public String toString() {
-		return (quoted ? "\"" + getValue() + "\"" : getValue());
-	}
-	
+  /**
+   * Instantiates a new Column expression.
+   *
+   * @param name   the name
+   * @param quoted the quoted
+   */
+  public ColumnExpression(String name, boolean quoted) {
+    super(name);
+    this.quoted = quoted;
+  }
+
+  /**
+   * Gets column name.
+   *
+   * @return the column name
+   */
+  public String getColumnName() {
+    return getValue();
+  }
+
+  /**
+   * Is quoted boolean.
+   *
+   * @return the boolean
+   */
+  public boolean isQuoted() {
+    return quoted;
+  }
+
+  @Override
+  public String toString() {
+    return (quoted ? "\"" + getValue() + "\"" : getValue());
+  }
+
 }

@@ -26,189 +26,357 @@ import com.rapiddweller.common.NullSafeComparator;
 /**
  * Represents a database trigger.<br/><br/>
  * Created: 07.11.2011 14:46:14
- * @since 0.7.0
+ *
  * @author Volker Bergmann
+ * @since 0.7.0
  */
 public class DBTrigger extends AbstractDBObject implements ContainerComponent {
 
-	private static final long serialVersionUID = -183721433730785529L;
-	
-	/** Type of the trigger, e.g. "AFTER STATEMENT", "BEFORE STATEMENT", "BEFORE EACH ROW" */
-	private String triggerType;
-	
-	/** the event type which invokes the trigger, e.g. "INSERT OR UPDATE OR DELETE" */
-	private String triggeringEvent;
-	
-	private String tableOwner;
-	private String baseObjectType;
-	private String tableName;
-	private String columnName;
-	private String referencingNames;
-	private String whenClause;
-	private String status;
-	private String description;
-	private String actionType;
-	private String triggerBody;
-	
-	private Double priority;
-	private Boolean staticColumn;
-	private String conditionTime;
+  private static final long serialVersionUID = -183721433730785529L;
 
-	public DBTrigger(String name, DBSchema owner) {
-		super(name, "trigger", owner);
-        if (owner != null) {
-			owner.addTrigger(this);
-        }
-	}
-	
-	public String getTriggerType() {
-		return triggerType;
-	}
+  /**
+   * Type of the trigger, e.g. "AFTER STATEMENT", "BEFORE STATEMENT", "BEFORE EACH ROW"
+   */
+  private String triggerType;
 
-	public void setTriggerType(String triggerType) {
-		this.triggerType = triggerType;
-	}
+  /**
+   * the event type which invokes the trigger, e.g. "INSERT OR UPDATE OR DELETE"
+   */
+  private String triggeringEvent;
 
-	public String getTriggeringEvent() {
-		return triggeringEvent;
-	}
+  private String tableOwner;
+  private String baseObjectType;
+  private String tableName;
+  private String columnName;
+  private String referencingNames;
+  private String whenClause;
+  private String status;
+  private String description;
+  private String actionType;
+  private String triggerBody;
 
-	public void setTriggeringEvent(String triggeringEvent) {
-		this.triggeringEvent = triggeringEvent;
-	}
+  private Double priority;
+  private Boolean staticColumn;
+  private String conditionTime;
 
-	public String getTableOwner() {
-		return tableOwner;
-	}
+  /**
+   * Instantiates a new Db trigger.
+   *
+   * @param name  the name
+   * @param owner the owner
+   */
+  public DBTrigger(String name, DBSchema owner) {
+    super(name, "trigger", owner);
+    if (owner != null) {
+      owner.addTrigger(this);
+    }
+  }
 
-	public void setTableOwner(String tableOwner) {
-		this.tableOwner = tableOwner;
-	}
+  /**
+   * Gets trigger type.
+   *
+   * @return the trigger type
+   */
+  public String getTriggerType() {
+    return triggerType;
+  }
 
-	public String getBaseObjectType() {
-		return baseObjectType;
-	}
+  /**
+   * Sets trigger type.
+   *
+   * @param triggerType the trigger type
+   */
+  public void setTriggerType(String triggerType) {
+    this.triggerType = triggerType;
+  }
 
-	public void setBaseObjectType(String baseObjectType) {
-		this.baseObjectType = baseObjectType;
-	}
+  /**
+   * Gets triggering event.
+   *
+   * @return the triggering event
+   */
+  public String getTriggeringEvent() {
+    return triggeringEvent;
+  }
 
-	public String getTableName() {
-		return tableName;
-	}
+  /**
+   * Sets triggering event.
+   *
+   * @param triggeringEvent the triggering event
+   */
+  public void setTriggeringEvent(String triggeringEvent) {
+    this.triggeringEvent = triggeringEvent;
+  }
 
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
-	}
+  /**
+   * Gets table owner.
+   *
+   * @return the table owner
+   */
+  public String getTableOwner() {
+    return tableOwner;
+  }
 
-	public String getColumnName() {
-		return columnName;
-	}
+  /**
+   * Sets table owner.
+   *
+   * @param tableOwner the table owner
+   */
+  public void setTableOwner(String tableOwner) {
+    this.tableOwner = tableOwner;
+  }
 
-	public void setColumnName(String columnName) {
-		this.columnName = columnName;
-	}
+  /**
+   * Gets base object type.
+   *
+   * @return the base object type
+   */
+  public String getBaseObjectType() {
+    return baseObjectType;
+  }
 
-	public String getReferencingNames() {
-		return referencingNames;
-	}
+  /**
+   * Sets base object type.
+   *
+   * @param baseObjectType the base object type
+   */
+  public void setBaseObjectType(String baseObjectType) {
+    this.baseObjectType = baseObjectType;
+  }
 
-	public void setReferencingNames(String referencingNames) {
-		this.referencingNames = referencingNames;
-	}
+  /**
+   * Gets table name.
+   *
+   * @return the table name
+   */
+  public String getTableName() {
+    return tableName;
+  }
 
-	public String getWhenClause() {
-		return whenClause;
-	}
+  /**
+   * Sets table name.
+   *
+   * @param tableName the table name
+   */
+  public void setTableName(String tableName) {
+    this.tableName = tableName;
+  }
 
-	public void setWhenClause(String whenClause) {
-		this.whenClause = whenClause;
-	}
+  /**
+   * Gets column name.
+   *
+   * @return the column name
+   */
+  public String getColumnName() {
+    return columnName;
+  }
 
-	public String getStatus() {
-		return status;
-	}
+  /**
+   * Sets column name.
+   *
+   * @param columnName the column name
+   */
+  public void setColumnName(String columnName) {
+    this.columnName = columnName;
+  }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+  /**
+   * Gets referencing names.
+   *
+   * @return the referencing names
+   */
+  public String getReferencingNames() {
+    return referencingNames;
+  }
 
-	public String getDescription() {
-		return description;
-	}
+  /**
+   * Sets referencing names.
+   *
+   * @param referencingNames the referencing names
+   */
+  public void setReferencingNames(String referencingNames) {
+    this.referencingNames = referencingNames;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  /**
+   * Gets when clause.
+   *
+   * @return the when clause
+   */
+  public String getWhenClause() {
+    return whenClause;
+  }
 
-	public String getActionType() {
-		return actionType;
-	}
+  /**
+   * Sets when clause.
+   *
+   * @param whenClause the when clause
+   */
+  public void setWhenClause(String whenClause) {
+    this.whenClause = whenClause;
+  }
 
-	public void setActionType(String actionType) {
-		this.actionType = actionType;
-	}
+  /**
+   * Gets status.
+   *
+   * @return the status
+   */
+  public String getStatus() {
+    return status;
+  }
 
-	public String getTriggerBody() {
-		return triggerBody;
-	}
+  /**
+   * Sets status.
+   *
+   * @param status the status
+   */
+  public void setStatus(String status) {
+    this.status = status;
+  }
 
-	public void setTriggerBody(String triggerBody) {
-		this.triggerBody = triggerBody;
-	}
-	
-	public double getPriority() {
-		return priority;
-	}
-	
-	public void setPriority(double priority) {
-		this.priority = priority;
-	}
-	
-	public Boolean getStaticColumn() {
-		return staticColumn;
-	}
-	
-	public void setStaticColumn(Boolean staticColumn) {
-		this.staticColumn = staticColumn;
-	}
-	
-	public String getConditionTime() {
-		return conditionTime;
-	}
-	
-	public void setConditionTime(String conditionTime) {
-		this.conditionTime = conditionTime;
-	}
-	
-	public String getNormalizedDescription() {
-		String result = this.description.trim();
-		if (owner != null) {
-			String defaultPrefix = '"' + owner.getName().toUpperCase() + "\".";
-			if (result.startsWith(defaultPrefix))
-				result = result.substring(defaultPrefix.length());
-		}
-		return result;
-	}
+  /**
+   * Gets description.
+   *
+   * @return the description
+   */
+  public String getDescription() {
+    return description;
+  }
 
-	/**
-	 * ignores description
-	 */
-	@Override
-	public boolean isIdentical(DBObject object) {
-		if (!(object instanceof DBTrigger))
-			return false;
-		DBTrigger that = (DBTrigger) object;
-		return NullSafeComparator.equals(this.triggerType, that.triggerType)
-			&& NullSafeComparator.equals(this.triggeringEvent, that.triggeringEvent)
-			&& NullSafeComparator.equals(this.baseObjectType, that.baseObjectType)
-			&& NullSafeComparator.equals(this.tableName, that.tableName)
-			&& NullSafeComparator.equals(this.columnName, that.columnName)
-			&& NullSafeComparator.equals(this.referencingNames, that.referencingNames)
-			&& NullSafeComparator.equals(this.whenClause, that.whenClause)
-			&& NullSafeComparator.equals(this.status, that.status)
-			&& NullSafeComparator.equals(this.actionType, that.actionType)
-			&& NullSafeComparator.equals(this.triggerBody.trim(), that.triggerBody.trim());
-	}
+  /**
+   * Sets description.
+   *
+   * @param description the description
+   */
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  /**
+   * Gets action type.
+   *
+   * @return the action type
+   */
+  public String getActionType() {
+    return actionType;
+  }
+
+  /**
+   * Sets action type.
+   *
+   * @param actionType the action type
+   */
+  public void setActionType(String actionType) {
+    this.actionType = actionType;
+  }
+
+  /**
+   * Gets trigger body.
+   *
+   * @return the trigger body
+   */
+  public String getTriggerBody() {
+    return triggerBody;
+  }
+
+  /**
+   * Sets trigger body.
+   *
+   * @param triggerBody the trigger body
+   */
+  public void setTriggerBody(String triggerBody) {
+    this.triggerBody = triggerBody;
+  }
+
+  /**
+   * Gets priority.
+   *
+   * @return the priority
+   */
+  public double getPriority() {
+    return priority;
+  }
+
+  /**
+   * Sets priority.
+   *
+   * @param priority the priority
+   */
+  public void setPriority(double priority) {
+    this.priority = priority;
+  }
+
+  /**
+   * Gets static column.
+   *
+   * @return the static column
+   */
+  public Boolean getStaticColumn() {
+    return staticColumn;
+  }
+
+  /**
+   * Sets static column.
+   *
+   * @param staticColumn the static column
+   */
+  public void setStaticColumn(Boolean staticColumn) {
+    this.staticColumn = staticColumn;
+  }
+
+  /**
+   * Gets condition time.
+   *
+   * @return the condition time
+   */
+  public String getConditionTime() {
+    return conditionTime;
+  }
+
+  /**
+   * Sets condition time.
+   *
+   * @param conditionTime the condition time
+   */
+  public void setConditionTime(String conditionTime) {
+    this.conditionTime = conditionTime;
+  }
+
+  /**
+   * Gets normalized description.
+   *
+   * @return the normalized description
+   */
+  public String getNormalizedDescription() {
+    String result = this.description.trim();
+    if (owner != null) {
+      String defaultPrefix = '"' + owner.getName().toUpperCase() + "\".";
+      if (result.startsWith(defaultPrefix)) {
+        result = result.substring(defaultPrefix.length());
+      }
+    }
+    return result;
+  }
+
+  /**
+   * ignores description
+   */
+  @Override
+  public boolean isIdentical(DBObject object) {
+    if (!(object instanceof DBTrigger)) {
+      return false;
+    }
+    DBTrigger that = (DBTrigger) object;
+    return NullSafeComparator.equals(this.triggerType, that.triggerType)
+        && NullSafeComparator.equals(this.triggeringEvent, that.triggeringEvent)
+        && NullSafeComparator.equals(this.baseObjectType, that.baseObjectType)
+        && NullSafeComparator.equals(this.tableName, that.tableName)
+        && NullSafeComparator.equals(this.columnName, that.columnName)
+        && NullSafeComparator.equals(this.referencingNames, that.referencingNames)
+        && NullSafeComparator.equals(this.whenClause, that.whenClause)
+        && NullSafeComparator.equals(this.status, that.status)
+        && NullSafeComparator.equals(this.actionType, that.actionType)
+        && NullSafeComparator.equals(this.triggerBody.trim(), that.triggerBody.trim());
+  }
 
 }

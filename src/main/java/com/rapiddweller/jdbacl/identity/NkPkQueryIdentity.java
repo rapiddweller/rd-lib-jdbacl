@@ -29,30 +29,42 @@ import java.sql.Connection;
 /**
  * {@link IdentityModel} for a flat, non-recursive and independent table.<br/><br/>
  * Created: 01.09.2010 07:07:00
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public class NkPkQueryIdentity extends IdentityModel {
-	
-	private String nkPkQuery;
 
-	public NkPkQueryIdentity(String tableName, String nkPkQuery) {
-		super(tableName);
-		setNkPkQuery(nkPkQuery);
-    }
+  private String nkPkQuery;
 
-	public void setNkPkQuery(String nkPkQuery) {
-		this.nkPkQuery = nkPkQuery;
-    }
+  /**
+   * Instantiates a new Nk pk query identity.
+   *
+   * @param tableName the table name
+   * @param nkPkQuery the nk pk query
+   */
+  public NkPkQueryIdentity(String tableName, String nkPkQuery) {
+    super(tableName);
+    setNkPkQuery(nkPkQuery);
+  }
 
-	@Override
-	public String getDescription() {
-		return "Identity definition by NK-PK query: " + nkPkQuery;
-	}
+  /**
+   * Sets nk pk query.
+   *
+   * @param nkPkQuery the nk pk query
+   */
+  public void setNkPkQuery(String nkPkQuery) {
+    this.nkPkQuery = nkPkQuery;
+  }
 
-	@Override
-	public TabularIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
-		return query(nkPkQuery, connection);
-    }
+  @Override
+  public String getDescription() {
+    return "Identity definition by NK-PK query: " + nkPkQuery;
+  }
+
+  @Override
+  public TabularIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
+    return query(nkPkQuery, connection);
+  }
 
 }

@@ -21,12 +21,12 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import static org.junit.Assert.*;
+import com.rapiddweller.common.CollectionUtil;
+import org.junit.Test;
 
 import java.util.Set;
 
-import com.rapiddweller.common.CollectionUtil;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests the {@link DBCheckConstraint}.<br/><br/>
@@ -37,23 +37,27 @@ import org.junit.Test;
  */
 public class DBCheckConstraintTest {
 
-    @Test
-    public void testGetColumnNames() {
-        check("\"col1\" is null", "col1");
-        check("col1 is null", "col1");
-        check("col1 is null or col2 is not null", "col1", "col2");
-        check("col1 is not null and length(col2) >= 3", "col1", "col2");
-        check("((col1 in ('X', 'Y') and col2 is not null) or (col1='Z' and col3 is not null))", "col1", "col2", "col3");
-        check("col1 not in ('a', 'b', 'c', 'd')", "col1");
-        check("(col1 in ('a', 'b', 'c', 'd') and col2 ='d') or (col1 not in ('a', 'b', 'c', 'd') and col2 is not null)", "col1", "col2");
-        check("col1=1 and (col2 IS not null and (col3 is not null or col3 is not null or col4 is not null)) or col5=0", "col1", "col2", "col3", "col4", "col5");
-    }
+  /**
+   * Test get column names.
+   */
+  @Test
+  public void testGetColumnNames() {
+    check("\"col1\" is null", "col1");
+    check("col1 is null", "col1");
+    check("col1 is null or col2 is not null", "col1", "col2");
+    check("col1 is not null and length(col2) >= 3", "col1", "col2");
+    check("((col1 in ('X', 'Y') and col2 is not null) or (col1='Z' and col3 is not null))", "col1", "col2", "col3");
+    check("col1 not in ('a', 'b', 'c', 'd')", "col1");
+    check("(col1 in ('a', 'b', 'c', 'd') and col2 ='d') or (col1 not in ('a', 'b', 'c', 'd') and col2 is not null)", "col1", "col2");
+    check("col1=1 and (col2 IS not null and (col3 is not null or col3 is not null or col4 is not null)) or col5=0", "col1", "col2", "col3", "col4",
+        "col5");
+  }
 
-    private static void check(String condition, String... expectedColumnNames) {
-        DBCheckConstraint constraint = new DBCheckConstraint("ck", false, "tbl", condition);
-        Set<String> expectedSet = CollectionUtil.toSet(expectedColumnNames);
-        Set<String> actualSet = CollectionUtil.toSet(constraint.getColumnNames());
-        assertEquals(expectedSet, actualSet);
-    }
+  private static void check(String condition, String... expectedColumnNames) {
+    DBCheckConstraint constraint = new DBCheckConstraint("ck", false, "tbl", condition);
+    Set<String> expectedSet = CollectionUtil.toSet(expectedColumnNames);
+    Set<String> actualSet = CollectionUtil.toSet(constraint.getColumnNames());
+    assertEquals(expectedSet, actualSet);
+  }
 
 }

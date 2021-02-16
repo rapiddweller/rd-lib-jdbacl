@@ -29,108 +29,183 @@ import java.util.List;
 
 /**
  * Helper class for constructing SQL queries.
- * General structure: 
- * 		[selectConditions] SELECT selections 
- * 		FROM tablesWithAliases [[LEFT | RIGHT | OUTER | INNER] JOIN joins]
- * 		[WHERE whereClause] [options]
+ * General structure:
+ * [selectConditions] SELECT selections
+ * FROM tablesWithAliases [[LEFT | RIGHT | OUTER | INNER] JOIN joins]
+ * [WHERE whereClause] [options]
  * <br/><br/>
  * Created: 09.04.2012 10:16:54
- * @since 0.8.1
+ *
  * @author Volker Bergmann
+ * @since 0.8.1
  */
 public class Query {
-	
-	private final List<String> selectConditions;
-	private final List<String> selections;
-	private final List<String> tablesWithAliases;
-	private final List<String> joins;
-	private final StringBuilder whereClause;
-	private final List<String> options;
-	
-	public Query(String selection, String table) {
-		this(selection, table, null);
-	}
 
-	public Query(String selection, String table, String whereClause) {
-		this.selectConditions = new ArrayList<>();
-		this.selections = CollectionUtil.toList(selection);
-		this.tablesWithAliases = new ArrayList<>();
-		this.joins = new ArrayList<>();
-		if (table != null)
-			this.tablesWithAliases.add(table);
-		this.whereClause = new StringBuilder();
-		if (whereClause != null)
-			this.whereClause.append(whereClause);
-		this.options = new ArrayList<>();
-	}
+  private final List<String> selectConditions;
+  private final List<String> selections;
+  private final List<String> tablesWithAliases;
+  private final List<String> joins;
+  private final StringBuilder whereClause;
+  private final List<String> options;
 
-	public static Query select(String selection) {
-		return new Query(selection, null);
-	}
+  /**
+   * Instantiates a new Query.
+   *
+   * @param selection the selection
+   * @param table     the table
+   */
+  public Query(String selection, String table) {
+    this(selection, table, null);
+  }
 
-	public void addSelectCondition(String selectCondition) {
-		selectConditions.add(selectCondition);
-	}
+  /**
+   * Instantiates a new Query.
+   *
+   * @param selection   the selection
+   * @param table       the table
+   * @param whereClause the where clause
+   */
+  public Query(String selection, String table, String whereClause) {
+    this.selectConditions = new ArrayList<>();
+    this.selections = CollectionUtil.toList(selection);
+    this.tablesWithAliases = new ArrayList<>();
+    this.joins = new ArrayList<>();
+    if (table != null) {
+      this.tablesWithAliases.add(table);
+    }
+    this.whereClause = new StringBuilder();
+    if (whereClause != null) {
+      this.whereClause.append(whereClause);
+    }
+    this.options = new ArrayList<>();
+  }
 
-	public Query from(String tableName) {
-		return from(tableName, null);
-	}
+  /**
+   * Select query.
+   *
+   * @param selection the selection
+   * @return the query
+   */
+  public static Query select(String selection) {
+    return new Query(selection, null);
+  }
 
-	public Query from(String tableName, String alias) {
-		if (tableName.indexOf(' ') >= 0)
-			throw new IllegalArgumentException("Tbale name must not contain spaces: '" + tableName + "'");
-		String term = tableName + (alias != null ? " " + alias : "");
-		this.tablesWithAliases.add(term);
-		return this;
-	}
+  /**
+   * Add select condition.
+   *
+   * @param selectCondition the select condition
+   */
+  public void addSelectCondition(String selectCondition) {
+    selectConditions.add(selectCondition);
+  }
 
-	public Query leftJoin(String leftAlias, String[] leftColumns, 
-			String rightTable, String rightAlias, String[] rightColumns) {
-		joins.add(SQLUtil.leftJoin(leftAlias, leftColumns, rightTable, rightAlias, rightColumns));
-		return this;
-	}
+  /**
+   * From query.
+   *
+   * @param tableName the table name
+   * @return the query
+   */
+  public Query from(String tableName) {
+    return from(tableName, null);
+  }
 
-	public Query where(String where) {
-		if (this.whereClause.length() > 0)
-			throw new IllegalArgumentException("Tried to set where clause to '" + where + "' " +
-					"but there already exists one: " + this.whereClause);
-		whereClause.append(where);
-		return this;
-	}
+  /**
+   * From query.
+   *
+   * @param tableName the table name
+   * @param alias     the alias
+   * @return the query
+   */
+  public Query from(String tableName, String alias) {
+    if (tableName.indexOf(' ') >= 0) {
+      throw new IllegalArgumentException("Tbale name must not contain spaces: '" + tableName + "'");
+    }
+    String term = tableName + (alias != null ? " " + alias : "");
+    this.tablesWithAliases.add(term);
+    return this;
+  }
 
-	public void and(String condition) {
-		if (whereClause.length() > 0)
-			whereClause.append(" AND ");
-		whereClause.append(condition);
-	}
-	
-	public void addOption(String option) {
-		options.add(option);
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder("SELECT ");
-		for (String selectCondition : selectConditions)
-			builder.append(selectCondition).append(' ');
-		for (int i = 0; i < selections.size(); i++) {
-			if (i > 0)
-				builder.append(", ");
-			builder.append(selections.get(i));
-		}
-		builder.append(" FROM ");
-		for (int i = 0; i < tablesWithAliases.size(); i++) {
-			if (i > 0)
-				builder.append(", ");
-			builder.append(tablesWithAliases.get(i));
-		}
-		for (String join : joins)
-			builder.append(" ").append(join);
-		if (whereClause.length() > 0)
-			builder.append(" WHERE ").append(whereClause);
-		for (String option : options)
-			builder.append(' ').append(option);
-		return builder.toString();
-	}
+  /**
+   * Left join query.
+   *
+   * @param leftAlias    the left alias
+   * @param leftColumns  the left columns
+   * @param rightTable   the right table
+   * @param rightAlias   the right alias
+   * @param rightColumns the right columns
+   * @return the query
+   */
+  public Query leftJoin(String leftAlias, String[] leftColumns,
+                        String rightTable, String rightAlias, String[] rightColumns) {
+    joins.add(SQLUtil.leftJoin(leftAlias, leftColumns, rightTable, rightAlias, rightColumns));
+    return this;
+  }
+
+  /**
+   * Where query.
+   *
+   * @param where the where
+   * @return the query
+   */
+  public Query where(String where) {
+    if (this.whereClause.length() > 0) {
+      throw new IllegalArgumentException("Tried to set where clause to '" + where + "' " +
+          "but there already exists one: " + this.whereClause);
+    }
+    whereClause.append(where);
+    return this;
+  }
+
+  /**
+   * And.
+   *
+   * @param condition the condition
+   */
+  public void and(String condition) {
+    if (whereClause.length() > 0) {
+      whereClause.append(" AND ");
+    }
+    whereClause.append(condition);
+  }
+
+  /**
+   * Add option.
+   *
+   * @param option the option
+   */
+  public void addOption(String option) {
+    options.add(option);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder("SELECT ");
+    for (String selectCondition : selectConditions) {
+      builder.append(selectCondition).append(' ');
+    }
+    for (int i = 0; i < selections.size(); i++) {
+      if (i > 0) {
+        builder.append(", ");
+      }
+      builder.append(selections.get(i));
+    }
+    builder.append(" FROM ");
+    for (int i = 0; i < tablesWithAliases.size(); i++) {
+      if (i > 0) {
+        builder.append(", ");
+      }
+      builder.append(tablesWithAliases.get(i));
+    }
+    for (String join : joins) {
+      builder.append(" ").append(join);
+    }
+    if (whereClause.length() > 0) {
+      builder.append(" WHERE ").append(whereClause);
+    }
+    for (String option : options) {
+      builder.append(' ').append(option);
+    }
+    return builder.toString();
+  }
 
 }

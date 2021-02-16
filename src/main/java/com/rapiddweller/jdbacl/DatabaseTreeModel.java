@@ -31,46 +31,55 @@ import java.util.List;
 /**
  * {@link TreeModel} adapter for DBObject hierarchies.<br/><br/>
  * Created: 02.12.2010 06:56:28
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public class DatabaseTreeModel implements TreeModel<DBObject> {
-	
-	final Database database;
 
-	public DatabaseTreeModel(Database database) {
-		this.database = database;
-	}
+  /**
+   * The Database.
+   */
+  final Database database;
 
-	@Override
-	public DBObject getRoot() {
-		return database;
-	}
+  /**
+   * Instantiates a new Database tree model.
+   *
+   * @param database the database
+   */
+  public DatabaseTreeModel(Database database) {
+    this.database = database;
+  }
 
-	@Override
-	public DBObject getParent(DBObject child) {
-		return child.getOwner();
-	}
+  @Override
+  public DBObject getRoot() {
+    return database;
+  }
 
-	@Override
-	public boolean isLeaf(DBObject node) {
-		return !(node instanceof CompositeDBObject);
-	}
+  @Override
+  public DBObject getParent(DBObject child) {
+    return child.getOwner();
+  }
 
-	@Override
-	public int getChildCount(DBObject parent) {
-		return ((CompositeDBObject<?>) parent).getComponents().size();
-	}
+  @Override
+  public boolean isLeaf(DBObject node) {
+    return !(node instanceof CompositeDBObject);
+  }
 
-	@Override
-	public DBObject getChild(DBObject parent, int index) {
-		return ((CompositeDBObject<?>) parent).getComponents().get(index);
-	}
+  @Override
+  public int getChildCount(DBObject parent) {
+    return ((CompositeDBObject<?>) parent).getComponents().size();
+  }
 
-	@Override
-	public int getIndexOfChild(DBObject parent, DBObject child) {
-		List<?> components = ((CompositeDBObject<?>) parent).getComponents();
-		return components.indexOf(child);
-	}
+  @Override
+  public DBObject getChild(DBObject parent, int index) {
+    return ((CompositeDBObject<?>) parent).getComponents().get(index);
+  }
+
+  @Override
+  public int getIndexOfChild(DBObject parent, DBObject child) {
+    List<?> components = ((CompositeDBObject<?>) parent).getComponents();
+    return components.indexOf(child);
+  }
 
 }

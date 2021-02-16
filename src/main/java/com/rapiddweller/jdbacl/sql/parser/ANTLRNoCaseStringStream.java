@@ -26,40 +26,49 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
 
 /**
- * Helper class which provides the content of a string as {@link ANTLRInputStream} 
+ * Helper class which provides the content of a string as {@link ANTLRInputStream}
  * while transforming token characters to upper case.<br/><br/>
  * Created: 07.06.2011 20:04:29
- * @since 0.1
+ *
  * @author Volker Bergmann
+ * @since 0.1
  */
 public class ANTLRNoCaseStringStream extends ANTLRStringStream implements TextHolder {
 
-	private final String text;
-	
-	public ANTLRNoCaseStringStream(String text) {
-		super(text);
-		this.text = text;
-	}
+  private final String text;
 
-	@Override
-    public int LA(int i) {
-        if (i == 0)
-            return 0; // undefined
-        if (i < 0)
-            i++; // e.g., translate LA(-1) to use offset 0
-        if ((p + i - 1) >= n)
-            return CharStream.EOF;
-        return Character.toUpperCase(data[p + i - 1]);
+  /**
+   * Instantiates a new Antlr no case string stream.
+   *
+   * @param text the text
+   */
+  public ANTLRNoCaseStringStream(String text) {
+    super(text);
+    this.text = text;
+  }
+
+  @Override
+  public int LA(int i) {
+    if (i == 0) {
+      return 0; // undefined
     }
+    if (i < 0) {
+      i++; // e.g., translate LA(-1) to use offset 0
+    }
+    if ((p + i - 1) >= n) {
+      return CharStream.EOF;
+    }
+    return Character.toUpperCase(data[p + i - 1]);
+  }
 
-	@Override
-	public String toString() {
-		return new String(data);
-	}
-	
-	@Override
-	public String getText() {
-		return text;
-	}
-	
+  @Override
+  public String toString() {
+    return new String(data);
+  }
+
+  @Override
+  public String getText() {
+    return text;
+  }
+
 }

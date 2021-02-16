@@ -24,29 +24,43 @@ package com.rapiddweller.jdbacl.model;
 /**
  * Parent class for classes that represent a sub {@link DBObject} of a {@link DBTable}.<br/><br/>
  * Created: 28.11.2010 11:58:44
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public abstract class AbstractDBTableComponent extends AbstractDBObject implements DBTableComponent {
 
-	private static final long serialVersionUID = 3009611143703482138L;
+  private static final long serialVersionUID = 3009611143703482138L;
 
-	public AbstractDBTableComponent(String name, String type) {
-		this(name, type, null);
-	}
-	
-	public AbstractDBTableComponent(String name, String type, DBTable owner) {
-		super(name, type, owner);
-	}
+  /**
+   * Instantiates a new Abstract db table component.
+   *
+   * @param name the name
+   * @param type the type
+   */
+  public AbstractDBTableComponent(String name, String type) {
+    this(name, type, null);
+  }
 
-    @Override
-	public DBTable getTable() {
-        return (DBTable) getOwner();
-    }
+  /**
+   * Instantiates a new Abstract db table component.
+   *
+   * @param name  the name
+   * @param type  the type
+   * @param owner the owner
+   */
+  public AbstractDBTableComponent(String name, String type, DBTable owner) {
+    super(name, type, owner);
+  }
 
-    @Override
-	public void setTable(DBTable table) {
-        setOwner(table);
-    }
+  @Override
+  public DBTable getTable() {
+    return (DBTable) getOwner();
+  }
+
+  @Override
+  public void setTable(DBTable table) {
+    setOwner(table);
+  }
 
 }

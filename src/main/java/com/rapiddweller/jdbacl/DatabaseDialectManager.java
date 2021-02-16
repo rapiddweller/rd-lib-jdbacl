@@ -33,38 +33,45 @@ import java.util.Map;
 /**
  * Manages {@link DatabaseDialect}s.<br/><br/>
  * Created: 18.02.2010 16:32:55
- * @since 0.6.0
+ *
  * @author Volker Bergmann
+ * @since 0.6.0
  */
 public class DatabaseDialectManager {
 
-    private static final String FILENAME = "com/rapiddweller/jdbacl/databene.db_dialect.properties";
+  private static final String FILENAME = "com/rapiddweller/jdbacl/databene.db_dialect.properties";
 
-    private static final Map<String, String> mappings;
-    
-    static {
-    	try {
-    		mappings = IOUtil.readProperties(FILENAME);
-    	} catch (IOException e) {
-			throw new DeploymentError("Configuration file not found: " + FILENAME);
-		}
+  private static final Map<String, String> mappings;
+
+  static {
+    try {
+      mappings = IOUtil.readProperties(FILENAME);
+    } catch (IOException e) {
+      throw new DeploymentError("Configuration file not found: " + FILENAME);
     }
-    
-    /**
-     * @param version if no version is specified, the newest one is assumed
-     */
-    public static DatabaseDialect getDialectForProduct(String productName, VersionNumber version) {
-        String normalizedProductName = productName.toLowerCase().replace(' ', '_');
-        for (Map.Entry<String, String> entry : mappings.entrySet()) {
-        	String[] tokens = entry.getKey().split(" ");
-        	String p = tokens[0];
-        	String v = null;
-        	if (tokens.length == 2)
-            	v = tokens[1];
-            if (normalizedProductName.contains(p) && (v == null || version == null || version.compareTo(VersionNumber.valueOf(v)) >= 0))
-                return (DatabaseDialect) BeanUtil.newInstance(entry.getValue());
-        }
-        return new UnknownDialect(productName);
+  }
+
+  /**
+   * Gets dialect for product.
+   *
+   * @param productName the product name
+   * @param version     if no version is specified, the newest one is assumed
+   * @return the dialect for product
+   */
+  public static DatabaseDialect getDialectForProduct(String productName, VersionNumber version) {
+    String normalizedProductName = productName.toLowerCase().replace(' ', '_');
+    for (Map.Entry<String, String> entry : mappings.entrySet()) {
+      String[] tokens = entry.getKey().split(" ");
+      String p = tokens[0];
+      String v = null;
+      if (tokens.length == 2) {
+        v = tokens[1];
+      }
+      if (normalizedProductName.contains(p) && (v == null || version == null || version.compareTo(VersionNumber.valueOf(v)) >= 0)) {
+        return (DatabaseDialect) BeanUtil.newInstance(entry.getValue());
+      }
     }
+    return new UnknownDialect(productName);
+  }
 
 }

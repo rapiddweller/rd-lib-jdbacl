@@ -22,32 +22,48 @@
 package com.rapiddweller.jdbacl.identity;
 
 /**
- * Parent for classes that map between primary key and natural keys 
+ * Parent for classes that map between primary key and natural keys
  * of table rows in different tables in one or more source databases and one target database.<br/><br/>
  * Created: 08.13.2010 13:38:21
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public class NKBuilder {
-	
-	final StringBuilder builder;
-	boolean empty;
-	
-	public NKBuilder() {
-		this.builder = new StringBuilder();
-		this.empty = true;
-	}
 
-	public void addComponent(Object component) {
-		if (!empty)
-			builder.append('|');
-		builder.append(component != null ? component.toString() : "");
-		empty = false;
-	}
-	
-	@Override
-	public String toString() {
-		return builder.toString();
-	}
-	
+  /**
+   * The Builder.
+   */
+  final StringBuilder builder;
+  /**
+   * The Empty.
+   */
+  boolean empty;
+
+  /**
+   * Instantiates a new Nk builder.
+   */
+  public NKBuilder() {
+    this.builder = new StringBuilder();
+    this.empty = true;
+  }
+
+  /**
+   * Add component.
+   *
+   * @param component the component
+   */
+  public void addComponent(Object component) {
+    if (!empty) {
+      builder.append('|');
+    }
+    builder.append(component != null ? component.toString() : "");
+    empty = false;
+  }
+
+  @Override
+  public String toString() {
+    return builder.toString();
+  }
+
 }

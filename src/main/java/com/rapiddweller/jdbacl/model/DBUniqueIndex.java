@@ -33,52 +33,63 @@ import java.util.Arrays;
 /**
  * Represents a unique database index.<br/><br/>
  * Created: 11.01.2007 00:32:42
+ *
  * @author Volker Bergmann
  */
 public class DBUniqueIndex extends DBIndex {
 
-    private static final long serialVersionUID = -1758033589908866869L;
-    
-	private DBUniqueConstraint constraint;
+  private static final long serialVersionUID = -1758033589908866869L;
 
-    public DBUniqueIndex(String name, boolean nameDeterministic, DBUniqueConstraint constraint) {
-        super(name, nameDeterministic, constraint.getTable());
-        this.constraint = constraint;
+  private DBUniqueConstraint constraint;
+
+  /**
+   * Instantiates a new Db unique index.
+   *
+   * @param name              the name
+   * @param nameDeterministic the name deterministic
+   * @param constraint        the constraint
+   */
+  public DBUniqueIndex(String name, boolean nameDeterministic, DBUniqueConstraint constraint) {
+    super(name, nameDeterministic, constraint.getTable());
+    this.constraint = constraint;
+  }
+
+  @Override
+  public boolean isUnique() {
+    return true;
+  }
+
+  @Override
+  public DBTable getTable() {
+    return (DBTable) constraint.getOwner();
+  }
+
+  @Override
+  public String[] getColumnNames() {
+    return constraint.getColumnNames();
+  }
+
+  @Override
+  public void addColumnName(String columnName) {
+    if (constraint == null) {
+      constraint = new DBUniqueConstraint(getTable(), name, isNameDeterministic(), columnName);
+    } else {
+      constraint.addColumnName(columnName);
     }
+  }
 
-    @Override
-    public boolean isUnique() {
-        return true;
+  @Override
+  public boolean isIdentical(DBObject other) {
+    if (this == other) {
+      return true;
     }
-
-    @Override
-    public DBTable getTable() {
-        return (DBTable) constraint.getOwner();
+    if (other == null || !(other instanceof DBUniqueIndex)) {
+      return false;
     }
-
-    @Override
-    public String[] getColumnNames() {
-        return constraint.getColumnNames();
-    }
-
-	@Override
-	public void addColumnName(String columnName) {
-		if (constraint == null)
-			constraint = new DBUniqueConstraint(getTable(), name, isNameDeterministic(), columnName);
-		else
-			constraint.addColumnName(columnName);
-	}
-    
-	@Override
-	public boolean isIdentical(DBObject other) {
-		if (this == other)
-			return true;
-		if (other == null || !(other instanceof DBUniqueIndex))
-			return false;
-		DBUniqueIndex that = (DBUniqueIndex) other;
-		return NullSafeComparator.equals(this.name, that.name)
-			&& Arrays.equals(this.getColumnNames(), that.getColumnNames())
-			&& NullSafeComparator.equals(getOwner().getName(), that.getOwner().getName());
-	}
+    DBUniqueIndex that = (DBUniqueIndex) other;
+    return NullSafeComparator.equals(this.name, that.name)
+        && Arrays.equals(this.getColumnNames(), that.getColumnNames())
+        && NullSafeComparator.equals(getOwner().getName(), that.getOwner().getName());
+  }
 
 }

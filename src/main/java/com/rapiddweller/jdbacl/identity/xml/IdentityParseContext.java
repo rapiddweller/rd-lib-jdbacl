@@ -28,29 +28,46 @@ import com.rapiddweller.jdbacl.identity.IdentityProvider;
 /**
  * {@link ParseContext} implementation for identity definition files.<br/><br/>
  * Created: 07.12.2011 15:45:13
- * @since 0.7.1
+ *
  * @author Volker Bergmann
+ * @since 0.7.1
  */
 public class IdentityParseContext extends ParseContext<Object> {
-	
-	protected final IdentityProvider identityProvider;
 
-	public IdentityParseContext() {
-		this(new IdentityProvider());
-	}
+  /**
+   * The Identity provider.
+   */
+  protected final IdentityProvider identityProvider;
 
-	public IdentityParseContext(IdentityProvider identityProvider) {
-		super(Object.class, new XMLElementParserFactory<>());
-		this.identityProvider = identityProvider;
-		createParsers();
-	}
+  /**
+   * Instantiates a new Identity parse context.
+   */
+  public IdentityParseContext() {
+    this(new IdentityProvider());
+  }
 
-	private void createParsers() {
-		addParser(new IdentityParser());
-	}
+  /**
+   * Instantiates a new Identity parse context.
+   *
+   * @param identityProvider the identity provider
+   */
+  public IdentityParseContext(IdentityProvider identityProvider) {
+    super(Object.class, new XMLElementParserFactory<>());
+    this.identityProvider = identityProvider;
+    createParsers();
+  }
 
-	public IdentityProvider getIdentityProvider() {
-		return identityProvider;
-	}
+  private void createParsers() {
+    addParser(new IdentityParser());
+  }
+
+  /**
+   * Gets identity provider.
+   *
+   * @return the identity provider
+   */
+  public IdentityProvider getIdentityProvider() {
+    return identityProvider;
+  }
 
 }

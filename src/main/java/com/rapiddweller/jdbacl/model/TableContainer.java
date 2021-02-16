@@ -27,91 +27,140 @@ import java.util.List;
 /**
  * Represents a database container which may contain tables or other containers.<br/><br/>
  * Created: 05.12.2010 11:06:48
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public class TableContainer extends AbstractCompositeDBObject<ContainerComponent> implements ContainerComponent, TableHolder, SequenceHolder {
 
-    private static final long serialVersionUID = 5890222751656809426L;
-    
-    final TableContainerSupport support;
-    
-    // constructors ----------------------------------------------------------------------------------------------------
+  private static final long serialVersionUID = 5890222751656809426L;
 
-    public TableContainer(String name) {
-        this(name, null);
+  /**
+   * The Support.
+   */
+  final TableContainerSupport support;
+
+  // constructors ----------------------------------------------------------------------------------------------------
+
+  /**
+   * Instantiates a new Table container.
+   *
+   * @param name the name
+   */
+  public TableContainer(String name) {
+    this(name, null);
+  }
+
+  /**
+   * Instantiates a new Table container.
+   *
+   * @param name   the name
+   * @param parent the parent
+   */
+  public TableContainer(String name, CompositeDBObject<? extends DBObject> parent) {
+    super(name, "container");
+    if (parent instanceof TableContainer) {
+      ((TableContainer) parent).addSubContainer(this);
     }
+    this.support = new TableContainerSupport();
+  }
 
-    public TableContainer(String name, CompositeDBObject<? extends DBObject> parent) {
-    	super(name, "container");
-    	if (parent instanceof TableContainer)
-			((TableContainer) parent).addSubContainer(this);
-    	this.support = new TableContainerSupport();
+  private void addSubContainer(TableContainer subContainer) {
+    support.addSubContainer(subContainer);
+  }
+
+  /**
+   * Gets schema.
+   *
+   * @return the schema
+   */
+  public DBSchema getSchema() {
+    CompositeDBObject<?> parent = getOwner();
+    while (parent != null && !(parent instanceof DBSchema)) {
+      parent = parent.getOwner();
     }
+    return (DBSchema) parent;
+  }
 
-    private void addSubContainer(TableContainer subContainer) {
-		support.addSubContainer(subContainer);
-	}
+  /**
+   * Gets catalog.
+   *
+   * @return the catalog
+   */
+  public DBCatalog getCatalog() {
+    return getSchema().getCatalog();
+  }
 
-	public DBSchema getSchema() {
-		CompositeDBObject<?> parent = getOwner();
-        while (parent != null && !(parent instanceof DBSchema))
-        	parent = parent.getOwner();
-        return (DBSchema) parent;
-    }
+  // CompositeDBObject implementation --------------------------------------------------------------------------------
 
-	public DBCatalog getCatalog() {
-        return getSchema().getCatalog();
-    }
+  @Override
+  public List<ContainerComponent> getComponents() {
+    List<ContainerComponent> result = new ArrayList<>();
+    result.addAll(support.getTables());
+    result.addAll(support.getSubContainers());
+    return result;
+  }
 
-    // CompositeDBObject implementation --------------------------------------------------------------------------------
+  // table operations ------------------------------------------------------------------------------------------------
 
-	@Override
-	public List<ContainerComponent> getComponents() {
-		List<ContainerComponent> result = new ArrayList<>();
-		result.addAll(support.getTables());
-		result.addAll(support.getSubContainers());
-		return result;
-	}
-	
-    // table operations ------------------------------------------------------------------------------------------------
+  @Override
+  public List<DBTable> getTables() {
+    return support.getTables();
+  }
 
-    @Override
-	public List<DBTable> getTables() {
-        return support.getTables();
-    }
+  @Override
+  public List<DBTable> getTables(boolean recursive) {
+    return support.getTables(recursive);
+  }
 
-    @Override
-	public List<DBTable> getTables(boolean recursive) {
-		return support.getTables(recursive);
-    }
+  /**
+   * Gets tables.
+   *
+   * @param recursive the recursive
+   * @param result    the result
+   */
+  public void getTables(boolean recursive, List<DBTable> result) {
+    support.getTables(recursive, result);
+  }
 
-    public void getTables(boolean recursive, List<DBTable> result) {
-        support.getTables(recursive, result);
-    }
+  @Override
+  public DBTable getTable(String tableName) {
+    return support.getTable(tableName);
+  }
 
-    @Override
-	public DBTable getTable(String tableName) {
-        return support.getTable(tableName);
-    }
+  /**
+   * Add table.
+   *
+   * @param table the table
+   */
+  public void addTable(DBTable table) {
+    support.addTable(table);
+  }
 
-    public void addTable(DBTable table) {
-        support.addTable(table);
-    }
+  /**
+   * Remove table.
+   *
+   * @param table the table
+   */
+  public void removeTable(DBTable table) {
+    support.removeTable(table);
+  }
 
-    public void removeTable(DBTable table) {
-        support.removeTable(table);
-    }
+  // sequence operations ---------------------------------------------------------------------------------------------
 
-    // sequence operations ---------------------------------------------------------------------------------------------
-    
-	@Override
-	public List<DBSequence> getSequences(boolean recursive) {
-		return support.getSequences(recursive);
-	}
+  @Override
+  public List<DBSequence> getSequences(boolean recursive) {
+    return support.getSequences(recursive);
+  }
 
-	public void getSequences(boolean recursive, List<DBSequence> result) {
-        support.getSequences(recursive, result);
-    }
+  /**
+   * Gets sequences.
+   *
+   * @param recursive the recursive
+   * @param result    the result
+   */
+  public void getSequences(boolean recursive, List<DBSequence> result) {
+    support.getSequences(recursive, result);
+  }
 
 }

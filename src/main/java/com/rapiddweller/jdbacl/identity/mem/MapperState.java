@@ -24,20 +24,29 @@ package com.rapiddweller.jdbacl.identity.mem;
 /**
  * Represents the state of a key mapper.<br/><br/>
  * Created: 07.09.2010 10:30:06
- * @since 0.6.4
+ *
  * @author Volker Bergmann
+ * @since 0.6.4
  */
 public enum MapperState {
-	
-	/** created but empty */
-	CREATED, 
 
-	/** mapper expects to be populated by the client, thus possibly is not completely filled */
-	PASSIVE, 
+  /**
+   * created but empty
+   */
+  CREATED,
 
-	/** mapper is currently populating itself actively */
-	POPULATING,
+  /**
+   * mapper expects to be populated by the client, thus possibly is not completely filled
+   */
+  PASSIVE,
 
-	/** mapper is completely populated actively */
-	POPULATED
+  /**
+   * mapper is currently populating itself actively
+   */
+  POPULATING,
+
+  /**
+   * mapper is completely populated actively
+   */
+  POPULATED
 }

@@ -1,13 +1,19 @@
 package com.rapiddweller.jdbacl;
 
-import static org.junit.Assert.assertNull;
-
 import org.junit.Test;
 
+import static org.junit.Assert.assertNull;
+
+/**
+ * The type Database test util test.
+ */
 public class DatabaseTestUtilTest {
-    @Test
-    public void testGetConnectData() {
-        assertNull(DatabaseTestUtil.getConnectData("Environment"));
-    }
+  /**
+   * Test get connect data.
+   */
+  @Test
+  public void testGetConnectData() {
+    assertNull(DatabaseTestUtil.getConnectData("Environment"));
+  }
 }
 

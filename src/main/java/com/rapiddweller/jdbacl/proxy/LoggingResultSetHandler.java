@@ -38,84 +38,110 @@ import java.sql.Statement;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * {@link InvocationHandler} for the {@link ResultSet} interface 
+ * {@link InvocationHandler} for the {@link ResultSet} interface
  * that logs certain calls to the category {@link LogCategoriesConstants#JDBC}.<br/>
  * <br/>
  * Created: 12.04.2011 14:02:38
- * @since 0.6.8
+ *
  * @author Volker Bergmann
+ * @since 0.6.8
  */
 public class LoggingResultSetHandler implements InvocationHandler {
 
-    private static final Logger JDBC_LOGGER = LogManager.getLogger(LogCategoriesConstants.JDBC);
-    
-    private static final AtomicInteger openResultSetCount;
-    private static ResourceMonitor openResultSetMonitor;
+  private static final Logger JDBC_LOGGER = LogManager.getLogger(LogCategoriesConstants.JDBC);
 
-	// attributes ------------------------------------------------------------------------------------------------------
+  private static final AtomicInteger openResultSetCount;
+  private static ResourceMonitor openResultSetMonitor;
 
-	private final ResultSet realResultSet;
-	private final Statement statement;
-	
-	// constructor -----------------------------------------------------------------------------------------------------
+  // attributes ------------------------------------------------------------------------------------------------------
 
-	static {
-		openResultSetCount = new AtomicInteger();
-    	if (Debug.active())
-    		openResultSetMonitor = new ResourceMonitor();
-	}
-	
-	public LoggingResultSetHandler(ResultSet realResultSet, Statement statement) {
-		this.realResultSet = realResultSet;
-		this.statement = statement;
-		openResultSetCount.incrementAndGet();
-		if (openResultSetMonitor != null)
-			openResultSetMonitor.register(this);
-		JDBC_LOGGER.debug("created result set {}", this);
-	}
-	
-	// InvocationHandler interface implementation ----------------------------------------------------------------------
+  private final ResultSet realResultSet;
+  private final Statement statement;
 
-	@Override
-	public Object invoke(Object proxy, Method method, Object[] args)
-			throws Throwable {
-		try {
-			String methodName = method.getName();
-            switch (methodName) {
-                case "close":
-                    openResultSetCount.decrementAndGet();
-                    if (openResultSetMonitor != null)
-                        openResultSetMonitor.unregister(this);
-                    JDBC_LOGGER.debug("closing result set {}", this);
-                    break;
-                case "toString":
-                    return "ResultSet (" + statement + ")";
-                case "getStatement":
-                    return statement;
-            }
-			return BeanUtil.invoke(realResultSet, method, args);
-		} catch (ConfigurationError e) {
-			if (e.getCause() instanceof InvocationTargetException && e.getCause().getCause() instanceof SQLException)
-				throw e.getCause().getCause();
-			else
-				throw e;
-		}
-	}
+  // constructor -----------------------------------------------------------------------------------------------------
 
-	// tracking methods ------------------------------------------------------------------------------------------------
-	
-	public static int getOpenResultSetCount() {
-		return openResultSetCount.get();
-	}
+  static {
+    openResultSetCount = new AtomicInteger();
+    if (Debug.active()) {
+      openResultSetMonitor = new ResourceMonitor();
+    }
+  }
 
-	public static void resetMonitors() {
-		openResultSetCount.set(0);
-		if (openResultSetMonitor != null)
-			openResultSetMonitor.reset();
-	}
+  /**
+   * Instantiates a new Logging result set handler.
+   *
+   * @param realResultSet the real result set
+   * @param statement     the statement
+   */
+  public LoggingResultSetHandler(ResultSet realResultSet, Statement statement) {
+    this.realResultSet = realResultSet;
+    this.statement = statement;
+    openResultSetCount.incrementAndGet();
+    if (openResultSetMonitor != null) {
+      openResultSetMonitor.register(this);
+    }
+    JDBC_LOGGER.debug("created result set {}", this);
+  }
 
-	public static boolean assertAllResultSetsClosed(boolean critical) {
-		return openResultSetMonitor.assertNoRegistrations(critical);
-	}
-	
+  // InvocationHandler interface implementation ----------------------------------------------------------------------
+
+  @Override
+  public Object invoke(Object proxy, Method method, Object[] args)
+      throws Throwable {
+    try {
+      String methodName = method.getName();
+      switch (methodName) {
+        case "close":
+          openResultSetCount.decrementAndGet();
+          if (openResultSetMonitor != null) {
+            openResultSetMonitor.unregister(this);
+          }
+          JDBC_LOGGER.debug("closing result set {}", this);
+          break;
+        case "toString":
+          return "ResultSet (" + statement + ")";
+        case "getStatement":
+          return statement;
+      }
+      return BeanUtil.invoke(realResultSet, method, args);
+    } catch (ConfigurationError e) {
+      if (e.getCause() instanceof InvocationTargetException && e.getCause().getCause() instanceof SQLException) {
+        throw e.getCause().getCause();
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  // tracking methods ------------------------------------------------------------------------------------------------
+
+  /**
+   * Gets open result set count.
+   *
+   * @return the open result set count
+   */
+  public static int getOpenResultSetCount() {
+    return openResultSetCount.get();
+  }
+
+  /**
+   * Reset monitors.
+   */
+  public static void resetMonitors() {
+    openResultSetCount.set(0);
+    if (openResultSetMonitor != null) {
+      openResultSetMonitor.reset();
+    }
+  }
+
+  /**
+   * Assert all result sets closed boolean.
+   *
+   * @param critical the critical
+   * @return the boolean
+   */
+  public static boolean assertAllResultSetsClosed(boolean critical) {
+    return openResultSetMonitor.assertNoRegistrations(critical);
+  }
+
 }
