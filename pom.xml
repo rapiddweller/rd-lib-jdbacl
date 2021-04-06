@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.rapiddweller</groupId>
     <artifactId>rd-lib-jdbacl</artifactId>
-    <version>1.1.3-jdk-11-SNAPSHOT</version>
+    <version>1.1.4-jdk-11-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>rapiddweller jdbacl</name>
     <description>
@@ -16,20 +16,20 @@
     <inceptionYear>2006</inceptionYear>
 
     <properties>
-        <_rd_common_version>1.1.0-jdk-11</_rd_common_version>
+        <_rd_common_version>1.1.1-jdk-11</_rd_common_version>
         <_rd_contiperf_version>2.4.0-jdk-11</_rd_contiperf_version>
-        <_rd_format_version>1.1.0-jdk-11</_rd_format_version>
+        <_rd_format_version>1.1.2-jdk-11</_rd_format_version>
         <_rd_script_version>1.1.0-jdk-11</_rd_script_version>
         <dependency_antlr-runtime.version>3.3</dependency_antlr-runtime.version>
         <dependency_connector-api.version>1.5</dependency_connector-api.version>
         <dependency_derby.version>10.7.1.1</dependency_derby.version>
-        <dependency_h2.version>1.2.136</dependency_h2.version>
+        <dependency_h2.version>1.4.200</dependency_h2.version>
         <dependency_hsqldb.version>1.8.0.7</dependency_hsqldb.version>
         <dependency_junit.version>4.13.1</dependency_junit.version>
         <dependency_log4j-api.version>2.14.0</dependency_log4j-api.version>
         <dependency_log4j-core.version>2.14.0</dependency_log4j-core.version>
         <dependency_log4j.version>1.2.16</dependency_log4j.version>
-        <dependency_postgresql.version>8.4-701.jdbc4</dependency_postgresql.version>
+        <dependency_postgresql.version>42.2.19</dependency_postgresql.version>
         <finalName>${project.artifactId}-${project.version}</finalName>
         <java_source_version>11</java_source_version>
         <java_target_version>11</java_target_version>
@@ -149,32 +149,27 @@
             <groupId>hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
             <version>${dependency_hsqldb.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <!-- needed for firebird -->
             <groupId>javax.resource</groupId>
             <artifactId>connector-api</artifactId>
             <version>${dependency_connector-api.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>${dependency_h2.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
             <version>${dependency_derby.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${dependency_postgresql.version}</version>
-            <scope>test</scope>
         </dependency>
         <!-- test framework -->
         <dependency>
@@ -497,9 +492,11 @@
             <id>central</id>
             <url>https://repo1.maven.org/maven2</url>
             <releases>
+                <updatePolicy>always</updatePolicy>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
+                <updatePolicy>always</updatePolicy>
                 <enabled>false</enabled>
             </snapshots>
         </repository>
@@ -510,6 +507,7 @@
                 <enabled>false</enabled>
             </releases>
             <snapshots>
+                <updatePolicy>always</updatePolicy>
                 <enabled>true</enabled>
             </snapshots>
         </repository>

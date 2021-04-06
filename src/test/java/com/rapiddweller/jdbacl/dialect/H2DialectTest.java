@@ -322,9 +322,9 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
     try {
       createAndFillSimpleTable(connection, tableName);
       Query query = Query.select("x").from(tableName);
-      dialect.restrictRownums(7, 0, query);
+      dialect.restrictRownums(7, 3, query);
       String sql = query.toString();
-      assertEquals("SELECT x FROM " + tableName + " LIMIT 0 OFFSET 7", sql);
+      assertEquals("SELECT x FROM " + tableName + " LIMIT 3 OFFSET 7", sql);
       Integer[] result = DBUtil.queryScalarRowsAsArray(sql, Integer.class, connection);
       assertArrayEquals(new Integer[] {7, 8, 9}, result);
     } finally {
