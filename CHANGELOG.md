@@ -1,3 +1,11 @@
+# Release 1.1.4-jdk-11
+
+## Release Highlights
+
+* multischema fix H2 dialect
+
+---
+
 # Release 1.1.3-jdk-11
 
 ## Release Highlights
