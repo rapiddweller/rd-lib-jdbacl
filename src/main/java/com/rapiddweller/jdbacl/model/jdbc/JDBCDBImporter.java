@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -398,7 +399,12 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     Set<String> set = new HashSet<>();
     if (schemaName != null) {
       set.add(schemaName);
-      if (!this.dialect.getSystem().equals("sql_server")) {
+      if (this.dialect.getSystem().equals("h2")) {
+        ResultSet resultSet = metaData.getSchemas();
+        while (resultSet.next()) {
+          set.add((String) resultSet.getObject("TABLE_SCHEM"));
+        }
+      } else if (!this.dialect.getSystem().equals("sql_server")) {
         ResultSet resultSet = metaData.getImportedKeys(null, schemaName, null);
         while (resultSet.next()) {
           set.add((String) resultSet.getObject("PKTABLE_SCHEM"));
@@ -740,8 +746,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
       String pkName = null;
       while (pkset.next()) {
         String tableName = pkset.getString(3);
-        if (!tableName.equals(table.getName())) // Bug fix for Firebird:
-        {
+        if (!tableName.equals(table.getName())) { // Bug fix for Firebird:
           continue;                            // When querying X, it returns the pks of XY too
         }
 
@@ -895,7 +900,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
           if (cursor.fk_name != null) {
             keysByName.get(cursor.fk_name).addForeignKeyColumn(cursor.fkcolumn_name, cursor.pkcolumn_name);
           } else { // some systems may not report an fk constraint name
-            recent.addForeignKeyColumn(cursor.fkcolumn_name,
+            Objects.requireNonNull(recent).addForeignKeyColumn(cursor.fkcolumn_name,
                 cursor.pkcolumn_name);
           }
         }
@@ -906,7 +911,13 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         int n = key.getForeignKeyColumnNames().size();
         DBTable pkTable = key.getPkTable();
         if (pkTable == null && catalog != null) {
-          pkTable = catalog.getSchema(key.getPkSchemaName()).getTable(key.getPkTableName());
+          DBSchema pkSchema = catalog.getSchema(key.getPkSchemaName());
+          if (pkSchema != null) {
+            pkTable = pkSchema.getTable(key.getPkTableName());
+          } else {
+            LOGGER.warn("build DBForeignKeyConstraint objects from the gathered information could not get the proper Schema, " +
+                "there might be an Error with this Database Dialect implementation!");
+          }
         }
         String[] columnNames = new String[n];
         String[] refereeColumnNames = new String[n];
