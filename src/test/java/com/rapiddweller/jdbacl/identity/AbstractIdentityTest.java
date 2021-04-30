@@ -165,7 +165,7 @@ public abstract class AbstractIdentityTest {
    * @throws ImportFailedException  the import failed exception
    */
   protected Database importDatabase(Connection target) throws ConnectFailedException, ImportFailedException {
-    return JDBCMetaDataUtil.getMetaData(target, "sa", "PUBLIC");
+    return JDBCMetaDataUtil.getMetaData(target, "sa", null, "PUBLIC");
   }
 
   /**

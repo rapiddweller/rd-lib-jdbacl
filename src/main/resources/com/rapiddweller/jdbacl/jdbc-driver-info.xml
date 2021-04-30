@@ -56,14 +56,15 @@ POSSIBILITY OF SUCH DAMAGE. -->
 
     <driver id="SQL_SERVER"
             database="MS SQL Server"
-            system="MS SQL Server (jTDS Driver)"
-            name="jTDS JDBC Driver"
-            class="net.sourceforge.jtds.jdbc.Driver"
+            system="MS SQL Server (Microsoft Driver)"
+            name="MS JDBC SQLServerDriver"
+            class="com.microsoft.sqlserver.jdbc.SQLServerDriver"
             port="1433"
-            url="jdbc:jtds:sqlserver://{0}:{1}/{2}"
+            url="jdbc:sqlserver://{0}:{1}/{2}"
             user="user"
-            info="http://jtds.sourceforge.net/">
-        <dependency lib="jtds-1.2.2.jar" artifact="net.sourceforge.jtds:jtds:1.2.2" official="no"/>
+            info="https://docs.microsoft.com/de-de/sql/connect/jdbc/microsoft-jdbc-driver-for-sql-server?view=sql-server-ver15">
+        <dependency lib="mssql-jdbc-9.2.1.jre11.jar" artifact="com.microsoft.sqlserver:mssql-jdbc:9.2.1.jre11"
+                    official="yes"/>
     </driver>
 
     <driver id="SYBASE"

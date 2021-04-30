@@ -122,16 +122,17 @@ public class JDBCMetaDataUtil {
   /**
    * Gets meta data.
    *
-   * @param target the target
-   * @param user   the user
-   * @param schema the schema
+   * @param target  the target
+   * @param user    the user
+   * @param catalog the catalog
+   * @param schema  the schema
    * @return the meta data
    * @throws ConnectFailedException the connect failed exception
    * @throws ImportFailedException  the import failed exception
    */
-  public static Database getMetaData(Connection target, String user, String schema)
+  public static Database getMetaData(Connection target, String user, String catalog, String schema)
       throws ConnectFailedException, ImportFailedException {
-    return getMetaData(target, user, schema, true, true, true, true, ".*", null);
+    return getMetaData(target, user, catalog, schema, true, true, true, true, ".*", null);
   }
 
   /**
@@ -139,6 +140,7 @@ public class JDBCMetaDataUtil {
    *
    * @param connection            the connection
    * @param user                  the user
+   * @param catalogName           the catalog name
    * @param schemaName            the schema name
    * @param importUKs             the import u ks
    * @param importIndexes         the import indexes
@@ -150,11 +152,11 @@ public class JDBCMetaDataUtil {
    * @throws ConnectFailedException the connect failed exception
    * @throws ImportFailedException  the import failed exception
    */
-  public static Database getMetaData(Connection connection, String user, String schemaName,
+  public static Database getMetaData(Connection connection, String user, String catalogName, String schemaName,
                                      boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
                                      String tableInclusionPattern, String tableExclusionPattern)
       throws ConnectFailedException, ImportFailedException {
-    DBMetaDataImporter importer = getJDBCDBImporter(connection, user, schemaName,
+    DBMetaDataImporter importer = getJDBCDBImporter(connection, user, catalogName, schemaName,
         importUKs, importIndexes, importSequences, importChecks,
         tableInclusionPattern, tableExclusionPattern);
     return importer.importDatabase();
@@ -174,11 +176,11 @@ public class JDBCMetaDataUtil {
    * @param tableExclusionPattern the table exclusion pattern
    * @return the jdbcdb importer
    */
-  public static JDBCDBImporter getJDBCDBImporter(Connection connection, String user, String schemaName,
+  public static JDBCDBImporter getJDBCDBImporter(Connection connection, String user, String catalogName, String schemaName,
                                                  boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
                                                  String tableInclusionPattern, String tableExclusionPattern) {
     JDBCDBImporter importer;
-    importer = new JDBCDBImporter(connection, user, schemaName);
+    importer = new JDBCDBImporter(connection, user, catalogName, schemaName);
     importer.setTableInclusionPattern(tableInclusionPattern);
     importer.setTableExclusionPattern(tableExclusionPattern);
     return importer;

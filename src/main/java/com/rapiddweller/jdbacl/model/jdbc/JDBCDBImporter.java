@@ -194,14 +194,16 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   /**
    * Instantiates a new Jdbcdb importer.
    *
-   * @param connection the connection
-   * @param user       the user
-   * @param schemaName the schema name
+   * @param connection  the connection
+   * @param user        the user
+   * @param catalogName the catalog Name
+   * @param schemaName  the schema name
    */
-  public JDBCDBImporter(Connection connection, String user, String schemaName) {
+  public JDBCDBImporter(Connection connection, String user, String catalogName, String schemaName) {
     this.environment = TEMPORARY_ENVIRONMENT;
     this._connection = connection;
     this.user = user;
+    this.catalogName = catalogName;
     this.schemaName = schemaName;
     this.errorHandler = new ErrorHandler(getClass().getName(), Level.error);
     init();
