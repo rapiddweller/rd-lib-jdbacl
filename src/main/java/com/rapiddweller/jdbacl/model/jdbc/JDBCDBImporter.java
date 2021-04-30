@@ -345,8 +345,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
       databaseProductVersion = VersionNumber.valueOf(metaData.getDatabaseProductVersion());
       LOGGER.debug("Product: {} {}", databaseProductName, databaseProductVersion);
       dialect = DatabaseDialectManager.getDialectForProduct(databaseProductName, databaseProductVersion);
-      if (isOracle()) // fix for Oracle varchar column size, see http://kr.forums.oracle.com/forums/thread.jspa?threadID=554236
-      {
+      if (isOracle()) { // fix for Oracle varchar column size, see http://kr.forums.oracle.com/forums/thread.jspa?threadID=554236
         DBUtil.executeUpdate("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", getConnection());
       }
     } catch (Exception e) {
