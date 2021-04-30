@@ -1,3 +1,12 @@
+# Release 1.1.5-jdk-11
+
+## Release Highlights
+
+* JDBCDBImporter add catalog
+* switched to official MS SQL JDBC Driver
+
+---
+
 # Release 1.1.4-jdk-11
 
 ## Release Highlights
