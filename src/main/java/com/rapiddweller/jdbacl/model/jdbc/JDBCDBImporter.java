@@ -395,7 +395,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
 
   // schema import ---------------------------------------------------------------------------------------------------
-
+  // TODO refactor to support all dialects properly
   private Set<String> getForeignSchemas(String schemaName) throws SQLException {
     Set<String> set = new HashSet<>();
     if (schemaName != null) {
@@ -656,8 +656,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         int sqlType = columnSet.getInt(5);
         String columnType = columnSet.getString(6);
         Integer columnSize = columnSet.getInt(7);
-        if (columnSize == 0) // happens with INTEGER values on HSQLDB
-        {
+        if (columnSize == 0) { // happens with INTEGER values on HSQLDB
           columnSize = null;
         }
         int decimalDigits = columnSet.getInt(9);
