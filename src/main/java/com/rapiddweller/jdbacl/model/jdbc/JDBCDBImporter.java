@@ -405,7 +405,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         while (resultSet.next()) {
           set.add((String) resultSet.getObject("TABLE_SCHEM"));
         }
-      } else if (!this.dialect.getSystem().equals("sql_server")) {
+      } else if (this.dialect.getSystem().equals("postgres")) {
         ResultSet resultSet = metaData.getImportedKeys(null, schemaName, null);
         while (resultSet.next()) {
           set.add((String) resultSet.getObject("PKTABLE_SCHEM"));
