@@ -1,3 +1,10 @@
+# Release 1.1.6-jdk-11
+
+## Release Highlights
+
+* prevent potential errors by changing the way how getForeignSchemas works
+
+---
 # Release 1.1.5-jdk-11
 
 ## Release Highlights
