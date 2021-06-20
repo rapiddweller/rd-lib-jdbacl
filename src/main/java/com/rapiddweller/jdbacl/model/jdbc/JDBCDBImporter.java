@@ -395,7 +395,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
 
   // schema import ---------------------------------------------------------------------------------------------------
-
+  // TODO refactor to support all dialects properly
   private Set<String> getForeignSchemas(String schemaName) throws SQLException {
     Set<String> set = new HashSet<>();
     if (schemaName != null) {
@@ -405,7 +405,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         while (resultSet.next()) {
           set.add((String) resultSet.getObject("TABLE_SCHEM"));
         }
-      } else if (this.dialect.getSystem().equals("postgres")) {
+      } else if (!this.dialect.getSystem().equals("sql_server")) {
         ResultSet resultSet = metaData.getImportedKeys(null, schemaName, null);
         while (resultSet.next()) {
           set.add((String) resultSet.getObject("PKTABLE_SCHEM"));
