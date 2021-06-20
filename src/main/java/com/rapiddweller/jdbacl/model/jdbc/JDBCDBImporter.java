@@ -405,7 +405,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         while (resultSet.next()) {
           set.add((String) resultSet.getObject("TABLE_SCHEM"));
         }
-      } else if (this.dialect.getSystem().equals("postgres")) {
+      } else if (!this.dialect.getSystem().equals("sql_server")) {
         ResultSet resultSet = metaData.getImportedKeys(null, schemaName, null);
         while (resultSet.next()) {
           set.add((String) resultSet.getObject("PKTABLE_SCHEM"));
@@ -656,7 +656,8 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         int sqlType = columnSet.getInt(5);
         String columnType = columnSet.getString(6);
         Integer columnSize = columnSet.getInt(7);
-        if (columnSize == 0) { // happens with INTEGER values on HSQLDB
+        if (columnSize == 0) // happens with INTEGER values on HSQLDB
+        {
           columnSize = null;
         }
         int decimalDigits = columnSet.getInt(9);
