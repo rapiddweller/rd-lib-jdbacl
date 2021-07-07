@@ -491,7 +491,7 @@ public abstract class DatabaseDialect {
 
   private StringBuilder appendQualifiedTableName(DBTable table, StringBuilder builder) {
     DBCatalog catalog = table.getCatalog();
-    if (catalog != null && catalog.getName() != null) {
+    if (catalog != null && catalog.getName() != null && !this.getSystem().equals("oracle")) {
       appendQuoted(catalog.getName(), builder).append('.');
     }
     if (table.getSchema() != null && table.getSchema().getName() != null) {

@@ -43,6 +43,7 @@ import java.io.PrintWriter;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -239,7 +240,7 @@ public class SQLUtil {
 
     // default
     if (column.getDefaultValue() != null) {
-      builder.append(" DEFAULT " + column.getDefaultValue());
+      builder.append(" DEFAULT ").append(column.getDefaultValue());
     }
 
     // nullability
@@ -274,9 +275,9 @@ public class SQLUtil {
     String typeName = (columnType != null ? columnType.getName() : null);
     builder.append(typeName);
     if (column.getSize() != null && !NO_SIZE_TYPES.contains(typeName)) {
-      builder.append("(" + column.getSize());
+      builder.append("(").append(column.getSize());
       if (column.getFractionDigits() != null) {
-        builder.append("," + column.getFractionDigits());
+        builder.append(",").append(column.getFractionDigits());
       }
       builder.append(")");
     }
@@ -345,11 +346,7 @@ public class SQLUtil {
    */
   public static String renderQuery(String catalog, String schema, String table, String columnName, String selector, DatabaseDialect dialect) {
     StringBuilder builder = new StringBuilder("SELECT ");
-    if (columnName != null) {
-      builder.append(columnName);
-    } else {
-      builder.append(" * ");
-    }
+    builder.append(Objects.requireNonNullElse(columnName, " * "));
     builder.append(" FROM ");
     appendCatSchTabToBuilder(catalog, schema, table, builder, dialect);
     if (selector != null) {
@@ -795,7 +792,7 @@ public class SQLUtil {
    */
   public static void appendConstraintName(DBConstraint constraint, StringBuilder builder) {
     if (constraint.getName() != null) {
-      builder.append("CONSTRAINT " + quoteNameIfNullOrSpaces(constraint.getName()) + ' ');
+      builder.append("CONSTRAINT ").append(quoteNameIfNullOrSpaces(constraint.getName())).append(' ');
     }
   }
 
@@ -1028,8 +1025,10 @@ public class SQLUtil {
    */
   public static void appendCatSchTabToBuilder(String catalog, String schema, String table, StringBuilder builder, DatabaseDialect dialect) {
     if (catalog != null && !catalog.equals("")) {
-      builder.append(quoteIfNecessary(catalog, dialect.quoteTableNames)).append('.')
-          .append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.')
+      if (!dialect.getSystem().equalsIgnoreCase("oracle")) {
+        builder.append(quoteIfNecessary(catalog, dialect.quoteTableNames)).append('.');
+      }
+      builder.append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.')
           .append(quoteIfNecessary(table, dialect.quoteTableNames));
     } else if (schema != null && !schema.equals("")) {
       builder.append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.')
@@ -1051,8 +1050,10 @@ public class SQLUtil {
   public static String createCatSchTabString(String catalog, String schema, String table, DatabaseDialect dialect) {
     StringBuilder builder = new StringBuilder();
     if (catalog != null && !catalog.equals("")) {
-      builder.append(quoteIfNecessary(catalog, dialect.quoteTableNames)).append('.')
-          .append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.')
+      if (!dialect.getSystem().equalsIgnoreCase("oracle")) {
+        builder.append(quoteIfNecessary(catalog, dialect.quoteTableNames)).append('.');
+      }
+      builder.append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.')
           .append(quoteIfNecessary(table, dialect.quoteTableNames));
     } else if (schema != null && !schema.equals("")) {
       builder.append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.').append(quoteIfNecessary(table, dialect.quoteTableNames));
@@ -1073,9 +1074,7 @@ public class SQLUtil {
   public static String createCatSchTabString(String catalog, String schema, String table) {
     StringBuilder builder = new StringBuilder();
     if (catalog != null && !catalog.equals("")) {
-      builder.append(catalog).append('.').
-          append(schema).append('.').
-          append(table);
+      builder.append(schema).append('.').append(table);
     } else if (schema != null && !schema.equals("")) {
       builder.append(schema).append('.').append(table);
     } else {
