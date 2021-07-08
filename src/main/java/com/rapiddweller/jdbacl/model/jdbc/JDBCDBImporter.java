@@ -387,7 +387,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
       }
     }
     if (catalogCount == 0) {
-      database.addCatalog(new DBCatalog(null));
+      database.addCatalog(new DBCatalog(this.catalogName));
     }
     catalogSet.close();
     watch.stop();
@@ -485,51 +485,8 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     ResultSet tableSet;
     tableSet = metaData.getTables(this.catalogName, this.schemaName, null, new String[] {"TABLE", "VIEW"});
 
-    while (tableSet.next()) {
-
-      // parsing ResultSet line
-      String tCatalogName = tableSet.getString(1);
-      String tSchemaName = tableSet.getString(2);
-      String tableName = tableSet.getString(3);
-      if (tableName.startsWith("BIN$")) {
-        if (isOracle() && tableName.startsWith("BIN$")) {
-          escalator.escalate("BIN$ table found (for improved performance " +
-              "execute 'PURGE RECYCLEBIN;')", this, tableName);
-        }
-        continue;
-      }
-      if (!tableSupported(tableName)) {
-        LOGGER.debug("ignoring table: {}, {}, {}", new Object[] {tCatalogName, tSchemaName, tableName});
-        continue;
-      }
-      String tableTypeSpec = tableSet.getString(4);
-      String tableRemarks = tableSet.getString(5);
-      if (database.isReservedWord(tableName)) {
-        LOGGER.warn("Table name is a reserved word: '{}'", tableName);
-      }
-      LOGGER.debug("importing table: {}, {}, {}, {}, {}",
-          new Object[] {tCatalogName, tSchemaName, tableName, tableTypeSpec, tableRemarks});
-      TableType tableType = tableType(tableTypeSpec, tableName);
-      DBCatalog catalog = database.getCatalog(tCatalogName);
-      DBSchema schema;
-      if (catalog != null) {
-        // that's the expected way
-        schema = catalog.getSchema(tSchemaName);
-      } else {
-        // postgres returns no catalog info, so we need to search for the schema in the whole database
-        schema = database.getSchema(tSchemaName);
-      }
-      if (schema != null) {
-        DBTable table = new DBTable(tableName, tableType, tableRemarks, schema, this);
-        table.setDoc(tableRemarks);
-      } else {
-        LOGGER.warn("No schema specified. Ignoring table '{}'", tableName);
-      }
-    }
-    tableSet.close();
-    watch.stop();
+    handleTableImport(database, watch, tableSet);
   }
-
 
   /**
    * Import all tables.
@@ -549,11 +506,15 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     ResultSet tableSet;
     tableSet = metaData.getTables(this.catalogName, schemaName, null, new String[] {"TABLE", "VIEW"});
 
+    handleTableImport(database, watch, tableSet);
+  }
+
+  private void handleTableImport(Database database, StopWatch watch, ResultSet tableSet) throws SQLException {
     while (tableSet.next()) {
 
       // parsing ResultSet line
-      String tCatalogName = tableSet.getString(1);
-      String tSchemaName = tableSet.getString(2);
+      String tableCatalogName = tableSet.getString(1);
+      String tableSchemaName = tableSet.getString(2);
       String tableName = tableSet.getString(3);
       if (tableName.startsWith("BIN$")) {
         if (isOracle() && tableName.startsWith("BIN$")) {
@@ -562,8 +523,12 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         }
         continue;
       }
+      // exclude oracle system tables
+      if (tableName.startsWith("SYS_") && isOracle()) {
+        continue;
+      }
       if (!tableSupported(tableName)) {
-        LOGGER.debug("ignoring table: {}, {}, {}", new Object[] {tCatalogName, tSchemaName, tableName});
+        LOGGER.debug("ignoring table: {}, {}, {}", new Object[] {tableCatalogName, tableSchemaName, tableName});
         continue;
       }
       String tableTypeSpec = tableSet.getString(4);
@@ -572,16 +537,16 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         LOGGER.warn("Table name is a reserved word: '{}'", tableName);
       }
       LOGGER.debug("importing table: {}, {}, {}, {}, {}",
-          new Object[] {tCatalogName, tSchemaName, tableName, tableTypeSpec, tableRemarks});
+          new Object[] {tableCatalogName, tableSchemaName, tableName, tableTypeSpec, tableRemarks});
       TableType tableType = tableType(tableTypeSpec, tableName);
-      DBCatalog catalog = database.getCatalog(tCatalogName);
+      DBCatalog catalog = database.getCatalog(tableCatalogName);
       DBSchema schema;
       if (catalog != null) {
         // that's the expected way
-        schema = catalog.getSchema(tSchemaName);
+        schema = catalog.getSchema(tableSchemaName);
       } else {
         // postgres returns no catalog info, so we need to search for the schema in the whole database
-        schema = database.getSchema(tSchemaName);
+        schema = database.getSchema(tableSchemaName);
       }
       if (schema != null) {
         DBTable table = new DBTable(tableName, tableType, tableRemarks, schema, this);
@@ -593,6 +558,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     tableSet.close();
     watch.stop();
   }
+
 
   private TableType tableType(String tableTypeSpec, String tableName) {
     // Typical types are "TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"
