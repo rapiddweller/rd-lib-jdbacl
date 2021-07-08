@@ -848,6 +848,7 @@ public class SQLUtil {
    * @param removeComments the remove comments
    * @return the string
    */
+  @SuppressWarnings("checkstyle:Indentation")
   public static String normalize(String sql, boolean removeComments) {
     if (removeComments) {
       sql = sql.replace("--", "//");
@@ -1024,18 +1025,7 @@ public class SQLUtil {
    * @param dialect the dialect
    */
   public static void appendCatSchTabToBuilder(String catalog, String schema, String table, StringBuilder builder, DatabaseDialect dialect) {
-    if (catalog != null && !catalog.equals("")) {
-      if (!dialect.getSystem().equalsIgnoreCase("oracle")) {
-        builder.append(quoteIfNecessary(catalog, dialect.quoteTableNames)).append('.');
-      }
-      builder.append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.')
-          .append(quoteIfNecessary(table, dialect.quoteTableNames));
-    } else if (schema != null && !schema.equals("")) {
-      builder.append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.')
-          .append(quoteIfNecessary(table, dialect.quoteTableNames));
-    } else {
-      builder.append(quoteIfNecessary(table, dialect.quoteTableNames));
-    }
+    checkCatSchTab(catalog, schema, table, dialect, builder);
   }
 
   /**
@@ -1049,18 +1039,24 @@ public class SQLUtil {
    */
   public static String createCatSchTabString(String catalog, String schema, String table, DatabaseDialect dialect) {
     StringBuilder builder = new StringBuilder();
-    if (catalog != null && !catalog.equals("")) {
-      if (!dialect.getSystem().equalsIgnoreCase("oracle")) {
-        builder.append(quoteIfNecessary(catalog, dialect.quoteTableNames)).append('.');
-      }
-      builder.append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.')
-          .append(quoteIfNecessary(table, dialect.quoteTableNames));
-    } else if (schema != null && !schema.equals("")) {
-      builder.append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.').append(quoteIfNecessary(table, dialect.quoteTableNames));
-    } else {
-      builder.append(quoteIfNecessary(table, dialect.quoteTableNames));
-    }
+    checkCatSchTab(catalog, schema, table, dialect, builder);
     return builder.toString();
+  }
+
+
+  // helper
+  private static void checkCatSchTab(String catalog, String schema, String table, DatabaseDialect dialect, StringBuilder builder) {
+    if (catalog != null && !catalog.equals("") && !dialect.getSystem().equalsIgnoreCase("oracle")) {
+      builder.append(quoteIfNecessary(catalog, dialect.quoteTableNames)).append('.');
+    }
+    if (schema != null && !schema.equals("")) {
+      builder.append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.');
+    }
+    if (table != null && !table.equals("")) {
+      builder.append(quoteIfNecessary(table, dialect.quoteTableNames));
+    } else {
+      throw new RuntimeException("Table is missing");
+    }
   }
 
   /**
@@ -1099,6 +1095,18 @@ public class SQLUtil {
       builder.append(dialect.formatValue(values.get(i)));
     }
     return builder.toString();
+  }
+
+  public static void appendColumnName(String columnName, StringBuilder builder, DatabaseDialect dialect) {
+    appendQuoted(columnName, builder, dialect);
+  }
+
+  private static void appendQuoted(String name, StringBuilder builder, DatabaseDialect dialect) {
+    if (dialect.quoteTableNames) {
+      builder.append('"').append(name).append('"');
+    } else {
+      builder.append(name);
+    }
   }
 
 }

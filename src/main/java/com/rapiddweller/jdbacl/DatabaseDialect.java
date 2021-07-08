@@ -33,7 +33,6 @@ import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.TimeUtil;
 import com.rapiddweller.common.converter.TimestampFormatter;
-import com.rapiddweller.jdbacl.model.DBCatalog;
 import com.rapiddweller.jdbacl.model.DBPackage;
 import com.rapiddweller.jdbacl.model.DBSchema;
 import com.rapiddweller.jdbacl.model.DBSequence;
@@ -57,6 +56,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.rapiddweller.jdbacl.SQLUtil.appendColumnName;
+import static com.rapiddweller.jdbacl.SQLUtil.createCatSchTabString;
+
 /**
  * Provides abstractions of concepts that are implemented differently
  * by different database vendors.<br/><br/>
@@ -64,6 +66,7 @@ import java.util.Set;
  * @author Volker Bergmann
  * @since 0.4.0
  */
+@SuppressWarnings("checkstyle:CommentsIndentation")
 public abstract class DatabaseDialect {
 
   private static final String DEFAULT_TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
@@ -396,13 +399,13 @@ public abstract class DatabaseDialect {
    */
   public String insert(DBTable table, List<ColumnInfo> columnInfos) {
     StringBuilder builder = new StringBuilder("insert into ");
-    appendQualifiedTableName(table, builder).append(" (");
+    builder.append(createCatSchTabString(table.getCatalog().getName(), table.getSchema().getName(), table.getName(), this)).append(" (");
     if (columnInfos.size() > 0) {
-      appendColumnName(columnInfos.get(0).name, builder);
+      appendColumnName(columnInfos.get(0).name, builder, this);
     }
     for (int i = 1; i < columnInfos.size(); i++) {
       builder.append(",");
-      appendColumnName(columnInfos.get(i).name, builder);
+      appendColumnName(columnInfos.get(i).name, builder, this);
     }
     builder.append(") values (");
     if (columnInfos.size() > 0) {
@@ -428,11 +431,11 @@ public abstract class DatabaseDialect {
       throw new UnsupportedOperationException("Cannot update table without primary key: " + table.getName());
     }
     StringBuilder builder = new StringBuilder("update ");
-    appendQualifiedTableName(table, builder).append(" set");
+    builder.append(createCatSchTabString(table.getCatalog().getName(), table.getSchema().getName(), table.getName(), this)).append(" set");
     for (int i = 0; i < columnInfos.size(); i++) {
       if (!ArrayUtil.contains(columnInfos.get(i).name, pkColumnNames)) {
         builder.append(" ");
-        appendColumnName(columnInfos.get(i).name, builder);
+        appendColumnName(columnInfos.get(i).name, builder, this);
         builder.append("=?");
         if (i < columnInfos.size() - pkColumnNames.length - 1) {
           builder.append(", ");
@@ -442,7 +445,7 @@ public abstract class DatabaseDialect {
     builder.append(" where");
     for (int i = 0; i < pkColumnNames.length; i++) {
       builder.append(' ');
-      appendColumnName(pkColumnNames[i], builder);
+      appendColumnName(pkColumnNames[i], builder, this);
       builder.append("=?");
       if (i < pkColumnNames.length - 1) {
         builder.append(" and");
@@ -487,30 +490,9 @@ public abstract class DatabaseDialect {
     return "'" + new TimestampFormatter(DEFAULT_TIMESTAMP_PATTERN).format(timestamp) + "'";
   }
 
-  // private helpers -------------------------------------------------------------------------------------------------
+  // private helpers for prepared statements-------------------------------------------------------------------------------------------------
 
-  private StringBuilder appendQualifiedTableName(DBTable table, StringBuilder builder) {
-    DBCatalog catalog = table.getCatalog();
-    if (catalog != null && catalog.getName() != null && !this.getSystem().equals("oracle")) {
-      appendQuoted(catalog.getName(), builder).append('.');
-    }
-    if (table.getSchema() != null && table.getSchema().getName() != null) {
-      appendQuoted(table.getSchema().getName(), builder).append('.');
-    }
-    return appendQuoted(table.getName(), builder);
-  }
 
-  private void appendColumnName(String columnName, StringBuilder builder) {
-    appendQuoted(columnName, builder);
-  }
-
-  private StringBuilder appendQuoted(String name, StringBuilder builder) {
-    if (quoteTableNames) {
-      return builder.append('"').append(name).append('"');
-    } else {
-      return builder.append(name);
-    }
-  }
 
   /**
    * Check sequence support unsupported operation exception.
