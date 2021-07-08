@@ -1,3 +1,15 @@
+# Release 1.1.7-jdk-11
+
+## Release Highlights
+
+Fix oracle sql handling
+
+* exclude SYS_ Tables from metadata import
+* handle sql builder for oracle correctly without catalog
+* refactoring
+
+---
+
 # Release 1.1.6-jdk-11
 
 ## Release Highlights
@@ -5,6 +17,7 @@
 * prevent potential errors by changing the way how getForeignSchemas works
 
 ---
+
 # Release 1.1.5-jdk-11
 
 ## Release Highlights
@@ -32,15 +45,12 @@
 
 ## Important Notes
 
-* Known Issue: when you have two tables with identical name in different schema, imported as Database connection in your
-  benerator script ( for example: tableA in schema1 as db connection id="db1"
-  and tableA in schema2 as dbconnection id="db2" ), the framework won't be able to identify the right table when it
-  comes to persisting entities to Database.
+* Known Issue: when you have two tables with identical name in different schema, imported as Database connection in your benerator script ( for example: tableA in schema1 as db connection id="db1"
+  and tableA in schema2 as dbconnection id="db2" ), the framework won't be able to identify the right table when it comes to persisting entities to Database.
 
 ## Breaking Changes
 
-* removed __includeTables="#all"__ tag, this is not necessary anymore, because the is a mechanism to identify related
-  schema automatically based on JDBC metadata.
+* removed __includeTables="#all"__ tag, this is not necessary anymore, because the is a mechanism to identify related schema automatically based on JDBC metadata.
 
 ---
 
@@ -52,15 +62,12 @@
 
 ## Important Notes
 
-* Known Issue: when you have two tables with identical name in different schema, imported as Database connection in your
-  benerator script ( for example: tableA in schema1 as db connection id="db1"
-  and tableA in schema2 as dbconnection id="db2" ), the framework won't be able to identify the right table when it
-  comes to persisting entities to Database.
+* Known Issue: when you have two tables with identical name in different schema, imported as Database connection in your benerator script ( for example: tableA in schema1 as db connection id="db1"
+  and tableA in schema2 as dbconnection id="db2" ), the framework won't be able to identify the right table when it comes to persisting entities to Database.
 
 ## Breaking Changes
 
-* removed __includeTables="#all"__ tag, this is not necessary anymore, because the is a mechanism to identify related
-  schema automatically based on JDBC metadata.
+* removed __includeTables="#all"__ tag, this is not necessary anymore, because the is a mechanism to identify related schema automatically based on JDBC metadata.
 
 ---
 
