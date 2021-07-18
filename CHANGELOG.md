@@ -1,3 +1,13 @@
+# Release 1.1.8-jdk-11
+
+## Release Highlights
+
+* improve error messages
+* adjustments for benerator archetypes (db driver info)
+* driver update and better pom props
+
+---
+
 # Release 1.1.7-jdk-11
 
 ## Release Highlights
