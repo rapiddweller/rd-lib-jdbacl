@@ -94,7 +94,7 @@ POSSIBILITY OF SUCH DAMAGE. -->
             system="HSQL Embedded"
             name="HSQL Embedded"
             class="org.hsqldb.jdbcDriver"
-            url="jdbc:hsqldb:database"
+            url="jdbc:hsqldb:mem:db"
             defaultSchema="PUBLIC"
             user="sa"
             info="http://hsqldb.sourceforge.net/">
@@ -110,7 +110,7 @@ POSSIBILITY OF SUCH DAMAGE. -->
             defaultSchema="PUBLIC"
             user="sa"
             info="http://hsqldb.sourceforge.net/">
-        <dependency lib="hsqldb.jar" artifact="hsqldb:hsqldb:1.8.0.7" official="yes"/>
+        <dependency lib="hsqldb.jar" artifact="hsqldb:hsqldb:2.6.0" official="yes"/>
     </driver>
 
     <driver id="H2"
@@ -118,11 +118,11 @@ POSSIBILITY OF SUCH DAMAGE. -->
             name="H2"
             class="org.h2.Driver"
             port="9001"
-            url="jdbc:h2:{2}"
+            url="jdbc:h2:mem:db"
             defaultSchema="PUBLIC"
             user="sa"
             info="http://hsqldb.sourceforge.net/">
-        <dependency lib="hsqldb.jar" artifact="hsqldb:hsqldb:1.8.0.7" official="yes"/>
+        <dependency lib="h2-1.4.200.jar" artifact="com.h2database:h2:1.4.200" official="yes"/>
     </driver>
 
     <driver id="DERBY"
@@ -141,10 +141,11 @@ POSSIBILITY OF SUCH DAMAGE. -->
             name="PostgreSQL"
             class="org.postgresql.Driver"
             port="5432"
-            url="jdbc:postgresql://{0}:{1}/{2}"
-            user="user"
+            url="jdbc:postgresql://localhost:5432/postgres"
+            defaultSchema="public"
+            user="postgres"
             info="http://jdbc.postgresql.org/download.html">
-        <dependency lib="postgresql-nn.jdbc3.jar" artifact="postgresql:postgresql:8.3-603.jdbc4" official="yes"/>
+        <dependency lib="postgresql-42.2.23.jar" artifact="postgresql:postgresql:42.2.23" official="yes"/>
     </driver>
 
     <driver id="FIREBIRD"

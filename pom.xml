@@ -22,9 +22,15 @@
         <_rd_script_version>1.1.0-jdk-11</_rd_script_version>
         <dependency_antlr-runtime.version>3.3</dependency_antlr-runtime.version>
         <dependency_connector-api.version>1.5</dependency_connector-api.version>
-        <dependency_derby.version>10.7.1.1</dependency_derby.version>
-        <dependency_h2.version>1.4.200</dependency_h2.version>
-        <dependency_hsqldb.version>1.8.0.7</dependency_hsqldb.version>
+        <database_h2.version>1.4.200</database_h2.version>
+        <database_hsqldb.version>1.8.0.7</database_hsqldb.version>
+        <database_icu4j.version>67.1</database_icu4j.version>
+        <database_jaybird.version>4.0.1.java11</database_jaybird.version>
+        <database_mssqldb.version>9.2.1.jre11</database_mssqldb.version>
+        <database_oracle.version>21.1.0.0</database_oracle.version>
+        <database_mysql-connector-java.version>8.0.20</database_mysql-connector-java.version>
+        <database_postgresql.version>42.2.23</database_postgresql.version>
+        <database_derbyclient.version>10.7.1.1</database_derbyclient.version>
         <dependency_junit.version>4.13.1</dependency_junit.version>
         <dependency_log4j-api.version>2.14.0</dependency_log4j-api.version>
         <dependency_log4j-core.version>2.14.0</dependency_log4j-core.version>
@@ -144,37 +150,57 @@
             <version>${_rd_script_version}</version>
         </dependency>
         <!-- Test dependencies -->
-        <!-- databases (for testing) -->
+        <!--  databases -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${database_h2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <version>${database_derbyclient.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.firebirdsql.jdbc</groupId>
+            <artifactId>jaybird</artifactId>
+            <version>${database_jaybird.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${database_mysql-connector-java.version}</version>
+        </dependency>
         <dependency>
             <groupId>hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
-            <version>${dependency_hsqldb.version}</version>
+            <version>${database_hsqldb.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>${database_mssqldb.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc11</artifactId>
+            <version>${database_oracle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${database_postgresql.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+            <version>${database_icu4j.version}</version>
         </dependency>
         <dependency>
             <!-- needed for firebird -->
             <groupId>javax.resource</groupId>
             <artifactId>connector-api</artifactId>
             <version>${dependency_connector-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>${dependency_h2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>${dependency_derby.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>mssql-jdbc</artifactId>
-            <version>9.2.1.jre11</version>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${dependency_postgresql.version}</version>
         </dependency>
         <!-- test framework -->
         <dependency>
@@ -201,6 +227,12 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>${dependency_log4j-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>${database_derbyclient.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
