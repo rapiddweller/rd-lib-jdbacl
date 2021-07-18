@@ -104,7 +104,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
    * @param importer    the importer
    * @param prepopulate the prepopulate
    */
-  public Database(String environment, JDBCDBImporter importer, boolean prepopulate) {
+  public Database(String environment, JDBCDBImporter importer, boolean prepopulate) throws RuntimeException {
     super(environment, "database");
     try {
       this.environment = environment;
@@ -125,8 +125,16 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
         }
       }
     } catch (Exception e) {
-      throw new RuntimeException("Database import failed for environment " + environment, e);
+      StringBuilder messageBuilder = new StringBuilder("Database import failed. environment (" +
+          environment + ")");
+      if (importer != null) {
+        messageBuilder.append(", catalog (").append(importer.getCatalogName())
+            .append("), schema (").append(importer.getSchemaName())
+            .append("), dbUrl (").append(importer.getUrl()).append(")");
+      }
+      throw new RuntimeException(messageBuilder.toString(), e);
     }
+
   }
 
   // properties ------------------------------------------------------------------------------------------------------

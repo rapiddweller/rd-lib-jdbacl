@@ -88,6 +88,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
    * The Environment.
    */
   protected final String environment;
+
   /**
    * The Url.
    */
@@ -210,6 +211,36 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   }
 
   // properties ------------------------------------------------------------------------------------------------------
+
+  /**
+   * Gets schemaName.
+   *
+   * @return the schemaName as string
+   */
+  public String getSchemaName() {
+    return schemaName;
+  }
+
+  /**
+   * Gets catalogName.
+   *
+   * @return the catalogName as string
+   */
+  public String getCatalogName() {
+    return catalogName;
+  }
+
+  /**
+   * Gets url.
+   *
+   * @return the url as string
+   */
+  public String getUrl() {
+    if (url == null) {
+      url = "no url used";
+    }
+    return url;
+  }
 
   /**
    * Gets database product name.
