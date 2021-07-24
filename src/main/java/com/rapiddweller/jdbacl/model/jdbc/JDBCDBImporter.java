@@ -502,7 +502,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
             this.catalogName); // PostgreSQL and SQL Server do not necessarily tell you the catalog name
         DBCatalog catalogOfSchema = database.getCatalog(catalogNameOfSchema);
         if (catalogOfSchema == null) {
-          throw new ObjectNotFoundException("Catalog not found: " + catalogOfSchema);
+          throw new ObjectNotFoundException("Catalog of Schema not found: " + schemaName);
         }
         new DBSchema(schemaName, catalogOfSchema);
         importAllTables(database, schemaName);
@@ -783,7 +783,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         LOGGER.debug("found pk column {}, {}, {}", new Object[] {columnName, keySeq, pkName});
       }
       if (pkComponents.size() > 0) {
-        String[] columnNames = pkComponents.values().toArray(new String[pkComponents.size()]);
+        String[] columnNames = pkComponents.values().toArray(new String[0]);
         receiver.receivePK(pkName, dialect.isDeterministicPKName(pkName), columnNames, table);
       }
     } catch (SQLException e) {

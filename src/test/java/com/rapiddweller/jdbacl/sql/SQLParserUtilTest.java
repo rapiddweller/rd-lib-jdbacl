@@ -27,6 +27,8 @@ import com.rapiddweller.script.expression.EqualsExpression;
 import com.rapiddweller.script.expression.LogicalComplementExpression;
 import org.junit.Test;
 
+import java.util.Objects;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -113,7 +115,7 @@ public class SQLParserUtilTest {
   public void testNot() {
     String text = "not (col = 3)";
     Expression<?> expression = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-    assertEquals(LogicalComplementExpression.class, expression.getClass());
+    assertEquals(LogicalComplementExpression.class, Objects.requireNonNull(expression).getClass());
     LogicalComplementExpression complement = (LogicalComplementExpression) expression;
     assertEquals(EqualsExpression.class, complement.getSourceExpressions()[0].getClass());
   }
@@ -378,7 +380,7 @@ public class SQLParserUtilTest {
    */
   protected void check(String text, String stringRep, int result) {
     Expression<?> expression = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-    assertEquals(stringRep, expression.toString());
+    assertEquals(stringRep, Objects.requireNonNull(expression).toString());
     assertEquals(result, ((Number) expression.evaluate(null)).intValue());
     System.out.println(expression);
   }
@@ -392,7 +394,7 @@ public class SQLParserUtilTest {
    */
   protected void check(String text, String stringRep, String result) {
     Expression<?> expression = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-    assertEquals(stringRep, expression.toString());
+    assertEquals(stringRep, Objects.requireNonNull(expression).toString());
     assertEquals(result, expression.evaluate(null));
     System.out.println(expression);
   }
@@ -405,7 +407,7 @@ public class SQLParserUtilTest {
    */
   protected void check(String text, String stringRep) {
     Expression<?> expression = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
-    assertEquals(stringRep, expression.toString());
+    assertEquals(stringRep, Objects.requireNonNull(expression).toString());
     System.out.println(expression);
   }
 

@@ -53,6 +53,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -896,7 +897,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     String whereClause = SQLUtil.renderWhereClause(pkColumnNames, pkComponents, dialect);
     DBRowIterator iterator = new DBRowIterator(this, connection, whereClause);
     if (!iterator.hasNext()) {
-      throw new ObjectNotFoundException("No " + name + " row with id (" + pkComponents + ")");
+      throw new ObjectNotFoundException("No " + name + " row with id (" + Arrays.toString(pkComponents) + ")");
     }
     DBRow result = iterator.next();
     iterator.close();

@@ -117,9 +117,7 @@ public class UniqueKeyIdentity extends IdentityModel {
     public String[] getColumnNames() {
       String[] labels = new String[1 + pkColumnNames.length];
       labels[0] = "NK";
-      for (int i = 1; i < labels.length; i++) {
-        labels[i] = pkColumnNames[i - 1];
-      }
+      System.arraycopy(pkColumnNames, 0, labels, 1, labels.length - 1);
       return labels;
     }
 

@@ -135,9 +135,7 @@ public abstract class IdentityModel implements Named {
       return nkPkTuple[1];
     } else if (nkPkTuple.length > 2) {
       Object[] pk = new Object[nkPkTuple.length - 1];
-      for (int i = 0; i < nkPkTuple.length - 1; i++) {
-        pk[i] = nkPkTuple[1 + i];
-      }
+      System.arraycopy(nkPkTuple, 1, pk, 0, nkPkTuple.length - 1);
       return pk;
     } else {
       throw new UnsupportedOperationException("Table " + tableName + " does not have a primary key");
