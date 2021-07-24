@@ -90,7 +90,7 @@ public class CubridDialect extends DatabaseDialect {
 
   @Override
   public String renderCreateSequence(DBSequence sequence) {
-		/*
+    /*
 		CREATE SERIAL serial_name
 		[ START WITH initial ]
 		[ INCREMENT BY interval]

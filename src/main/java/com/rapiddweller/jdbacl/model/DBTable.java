@@ -816,8 +816,8 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
    */
   class RefReceiver implements JDBCDBImporter.ReferrerReceiver {
     @Override
-    public void receiveReferrer(String fktable_name, DBTable table) {
-      DBTable referrer = getSchema().getCatalog().getTable(fktable_name);
+    public void receiveReferrer(String fktableName, DBTable table) {
+      DBTable referrer = getSchema().getCatalog().getTable(fktableName);
       table.addReferrer(referrer);
     }
   }
@@ -904,27 +904,6 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
   }
 
   /**
-   * Query pk values heavyweight iterator.
-   *
-   * @param connection the connection
-   * @return the heavyweight iterator
-   */
-/*
-      public DBRowIterator queryRowsByCellValues(String[] columns, Object[] values, Connection connection) throws SQLException {
-          String whereClause = SQLUtil.renderWhereClause(columns, values, dialect);
-          return new DBRowIterator(this, connection, whereClause);
-      }
-  */
-  public HeavyweightIterator<Object> queryPKValues(Connection connection) {
-    StringBuilder query = new StringBuilder("select ");
-    query.append(ArrayFormat.format(getPKColumnNames()));
-    query.append(" from ").append(name);
-    Iterator<ResultSet> rawIterator = new QueryIterator(query.toString(), connection, 100);
-    ResultSetConverter<Object> converter = new ResultSetConverter<>(Object.class, true);
-    return new ConvertingIterator<>(rawIterator, converter);
-  }
-
-  /**
    * Query tabular iterator.
    *
    * @param query      the query
@@ -936,6 +915,27 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     return new ArrayResultSetIterator(connection, query);
   }
 
+  /**
+   * Query pk values heavyweight iterator.
+   *
+   * @param connection the connection
+   * @return the heavyweight iterator
+   */
+  public HeavyweightIterator<Object> queryPKValues(Connection connection) {
+    StringBuilder query = new StringBuilder("select ");
+    query.append(ArrayFormat.format(getPKColumnNames()));
+    query.append(" from ").append(name);
+    Iterator<ResultSet> rawIterator = new QueryIterator(query.toString(), connection, 100);
+    ResultSetConverter<Object> converter = new ResultSetConverter<>(Object.class, true);
+    return new ConvertingIterator<>(rawIterator, converter);
+  }
+
+  /*
+      public DBRowIterator queryRowsByCellValues(String[] columns, Object[] values, Connection connection) throws SQLException {
+          String whereClause = SQLUtil.renderWhereClause(columns, values, dialect);
+          return new DBRowIterator(this, connection, whereClause);
+      }
+  */
 
   // java.lang.Object overrides --------------------------------------------------------------------------------------
 

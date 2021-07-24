@@ -100,9 +100,9 @@ public class DB2Dialect extends DatabaseDialect {
 
   @Override
   public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
-	    /* TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+    /* TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
 			DB2: SELECT * FROM T WHERE ID_T > 20 FETCH FIRST 10 ROWS ONLY
-	     */
+	*/
     throw new UnsupportedOperationException("DB2Dialect.applyRownumRestriction() is not implemented");
   }
 

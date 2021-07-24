@@ -123,8 +123,8 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
    * @return the cache file
    */
   public static File getCacheFile(String environment) {
-    String SEP = File.separator;
-    String cacheDirName = SystemInfo.getUserHome() + SEP + "rapiddweller" + SEP + "cache";
+    String fileSeparator = File.separator;
+    String cacheDirName = SystemInfo.getUserHome() + fileSeparator + "rapiddweller" + fileSeparator + "cache";
     String cacheFileName = environment + CACHE_FILE_SUFFIX;
     return FileUtil.getFileIgnoreCase(new File(cacheDirName, cacheFileName), false);
   }
