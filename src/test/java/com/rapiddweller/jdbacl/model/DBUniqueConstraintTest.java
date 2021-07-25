@@ -142,14 +142,14 @@ public class DBUniqueConstraintTest {
     DBTable table = new DBTable("tablename");
     // simple checks
     DBUniqueConstraint uc1 = new DBUniqueConstraint(table, "uc1", false, "col1");
-    assertFalse(uc1.equals(null));
-    assertFalse(uc1.equals(""));
-    assertTrue(uc1.equals(uc1));
+    assertNotEquals(null, uc1);
+    assertNotEquals("", uc1);
+    assertEquals(uc1, uc1);
     // real comparisons
     DBUniqueConstraint uc2 = new DBUniqueConstraint(table, "uc2", false, "col2");
     DBUniqueConstraint uc3 = new DBUniqueConstraint(table, "uc3", false, "col1", "col2");
-    assertFalse(uc1.equals(uc2));
-    assertFalse(uc1.equals(uc3));
+    assertNotEquals(uc1, uc2);
+    assertNotEquals(uc1, uc3);
     assertNotEquals(uc3, uc1);
   }
 

@@ -111,7 +111,7 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 
   @Override
   public void close() throws IOException {
-    if (realImporter instanceof Closeable) {
+    if (realImporter != null) {
       ((Closeable) realImporter).close();
     }
   }

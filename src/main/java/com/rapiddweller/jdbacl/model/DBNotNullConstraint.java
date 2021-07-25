@@ -54,13 +54,11 @@ public class DBNotNullConstraint extends DBConstraint {
     Assert.notNull(owner, "owner");
     Assert.notNull(columnName, "column name");
     this.columnName = columnName;
-    if (owner != null) {
-      DBSchema schema = owner.getSchema();
-      if (schema != null) {
-        schema.getTable(owner.getName()).getColumn(columnName).setNotNullConstraint(this);
-      } else {
-        owner.getColumn(columnName).setNotNullConstraint(this);
-      }
+    DBSchema schema = owner.getSchema();
+    if (schema != null) {
+      schema.getTable(owner.getName()).getColumn(columnName).setNotNullConstraint(this);
+    } else {
+      owner.getColumn(columnName).setNotNullConstraint(this);
     }
   }
 

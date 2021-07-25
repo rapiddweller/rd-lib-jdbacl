@@ -102,7 +102,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
    * @param schema the schema
    */
   public DBTable(String name, TableType type, DBSchema schema) {
-    this(name, TableType.TABLE, null, schema, null);
+    this(name, type, null, schema, null);
   }
 
   /**
@@ -120,7 +120,6 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     this.name = name;
     this.tableType = type;
     this.doc = doc;
-    this.tableType = type;
     this.pkImported = false;
     if (schema != null) {
       schema.addTable(this);
@@ -132,8 +131,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
   @Override
   public List<DBTableComponent> getComponents() {
-    List<DBTableComponent> result = new ArrayList<>();
-    result.addAll(getColumns());
+    List<DBTableComponent> result = new ArrayList<>(getColumns());
     havePKImported();
     if (pk != null) {
       result.add(pk);
