@@ -83,7 +83,7 @@
 
     <files>
         <file>
-            <source>src/test/resources/log4j.xml</source>
+            <source>src/test/resources/log4j2.xml</source>
             <outputDirectory>bin</outputDirectory>
             <filtered>false</filtered>
         </file>
