@@ -53,6 +53,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -101,7 +102,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
    * @param schema the schema
    */
   public DBTable(String name, TableType type, DBSchema schema) {
-    this(name, TableType.TABLE, null, schema, null);
+    this(name, type, null, schema, null);
   }
 
   /**
@@ -119,7 +120,6 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     this.name = name;
     this.tableType = type;
     this.doc = doc;
-    this.tableType = type;
     this.pkImported = false;
     if (schema != null) {
       schema.addTable(this);
@@ -131,8 +131,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
   @Override
   public List<DBTableComponent> getComponents() {
-    List<DBTableComponent> result = new ArrayList<>();
-    result.addAll(getColumns());
+    List<DBTableComponent> result = new ArrayList<>(getColumns());
     havePKImported();
     if (pk != null) {
       result.add(pk);
@@ -816,8 +815,8 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
    */
   class RefReceiver implements JDBCDBImporter.ReferrerReceiver {
     @Override
-    public void receiveReferrer(String fktable_name, DBTable table) {
-      DBTable referrer = getSchema().getCatalog().getTable(fktable_name);
+    public void receiveReferrer(String fktableName, DBTable table) {
+      DBTable referrer = getSchema().getCatalog().getTable(fktableName);
       table.addReferrer(referrer);
     }
   }
@@ -896,32 +895,11 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     String whereClause = SQLUtil.renderWhereClause(pkColumnNames, pkComponents, dialect);
     DBRowIterator iterator = new DBRowIterator(this, connection, whereClause);
     if (!iterator.hasNext()) {
-      throw new ObjectNotFoundException("No " + name + " row with id (" + pkComponents + ")");
+      throw new ObjectNotFoundException("No " + name + " row with id (" + Arrays.toString(pkComponents) + ")");
     }
     DBRow result = iterator.next();
     iterator.close();
     return result;
-  }
-
-  /**
-   * Query pk values heavyweight iterator.
-   *
-   * @param connection the connection
-   * @return the heavyweight iterator
-   */
-/*
-      public DBRowIterator queryRowsByCellValues(String[] columns, Object[] values, Connection connection) throws SQLException {
-          String whereClause = SQLUtil.renderWhereClause(columns, values, dialect);
-          return new DBRowIterator(this, connection, whereClause);
-      }
-  */
-  public HeavyweightIterator<Object> queryPKValues(Connection connection) {
-    StringBuilder query = new StringBuilder("select ");
-    query.append(ArrayFormat.format(getPKColumnNames()));
-    query.append(" from ").append(name);
-    Iterator<ResultSet> rawIterator = new QueryIterator(query.toString(), connection, 100);
-    ResultSetConverter<Object> converter = new ResultSetConverter<>(Object.class, true);
-    return new ConvertingIterator<>(rawIterator, converter);
   }
 
   /**
@@ -936,6 +914,27 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     return new ArrayResultSetIterator(connection, query);
   }
 
+  /**
+   * Query pk values heavyweight iterator.
+   *
+   * @param connection the connection
+   * @return the heavyweight iterator
+   */
+  public HeavyweightIterator<Object> queryPKValues(Connection connection) {
+    StringBuilder query = new StringBuilder("select ");
+    query.append(ArrayFormat.format(getPKColumnNames()));
+    query.append(" from ").append(name);
+    Iterator<ResultSet> rawIterator = new QueryIterator(query.toString(), connection, 100);
+    ResultSetConverter<Object> converter = new ResultSetConverter<>(Object.class, true);
+    return new ConvertingIterator<>(rawIterator, converter);
+  }
+
+  /*
+      public DBRowIterator queryRowsByCellValues(String[] columns, Object[] values, Connection connection) throws SQLException {
+          String whereClause = SQLUtil.renderWhereClause(columns, values, dialect);
+          return new DBRowIterator(this, connection, whereClause);
+      }
+  */
 
   // java.lang.Object overrides --------------------------------------------------------------------------------------
 

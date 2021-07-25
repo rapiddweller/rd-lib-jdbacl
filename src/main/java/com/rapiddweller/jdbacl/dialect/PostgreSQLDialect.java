@@ -65,15 +65,15 @@ public class PostgreSQLDialect extends DatabaseDialect {
 
   @Override
   public String renderCreateSequence(DBSequence sequence) {
-    	/* PostgreSQL syntax:
-			create sequence xyz 
-			start [with] 1
-			increment [by] 1 
-			minvalue 1 | no minvalue
-			maxvalue 999999999 | no maxvalue
-			CACHE 1
-			[NO] CYCLE
-    	 */
+  //PostgreSQL syntax:
+  //create sequence xyz
+  //start [with] 1
+  //increment [by] 1
+  //minvalue 1 | no minvalue
+  //maxvalue 999999999 | no maxvalue
+  //CACHE 1
+  //[NO] CYCLE
+
     String result = super.renderCreateSequence(sequence);
     Long cache = sequence.getCache();
     if (cache != null) {

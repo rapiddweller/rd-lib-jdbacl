@@ -136,6 +136,22 @@ public class DBDataType implements Named, Serializable {
 
   private static final HashMap<TypeDescriptor, DBDataType> INSTANCES_BY_TYPE_AND_NAME = new HashMap<>();
   private static final HashMap<String, DBDataType> INSTANCES_BY_NAME = new HashMap<>();
+  private final String name;
+  private final int jdbcType;
+
+  private DBDataType(String name) {
+    this(jdbcTypeFor(name), name);
+  }
+
+  private DBDataType(int sqlType, String name) {
+    if (name.equals("NCLOB")) {
+      sqlType = Types.NCLOB; // fix for Oracle
+    }
+    this.jdbcType = sqlType;
+    this.name = name.toUpperCase();
+  }
+
+  // constructors ----------------------------------------------------------------------------------------------------
 
   /**
    * Gets instance.
@@ -175,23 +191,6 @@ public class DBDataType implements Named, Serializable {
     return result;
   }
 
-  private final String name;
-  private final int jdbcType;
-
-  // constructors ----------------------------------------------------------------------------------------------------
-
-  private DBDataType(String name) {
-    this(jdbcTypeFor(name), name);
-  }
-
-  private DBDataType(int sqlType, String name) {
-    if (name.equals("NCLOB")) {
-      sqlType = Types.NCLOB; // fix for Oracle
-    }
-    this.jdbcType = sqlType;
-    this.name = name.toUpperCase();
-  }
-
   /**
    * Jdbc type for int.
    *
@@ -203,7 +202,7 @@ public class DBDataType implements Named, Serializable {
   }
 
 
-// properties ------------------------------------------------------------------------------------------------------
+  // properties ------------------------------------------------------------------------------------------------------
 
   @Override
   public String getName() {
@@ -290,7 +289,7 @@ public class DBDataType implements Named, Serializable {
         name.contains("TIME");
   }
 
-// java.lang.Object overrides --------------------------------------------------------------------------------------
+  // java.lang.Object overrides --------------------------------------------------------------------------------------
 
   @Override
   public boolean equals(Object o) {

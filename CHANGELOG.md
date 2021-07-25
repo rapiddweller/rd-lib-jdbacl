@@ -1,3 +1,13 @@
+# Release 1.1.9-jdk-11
+
+## Release Highlights
+
+* introduce checkstyle config
+* reformat and style  
+* pom improvements
+* update rd-libs, JUnit and log4j
+
+---
 # Release 1.1.8-jdk-11
 
 ## Release Highlights

@@ -23,7 +23,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
+// CHECKSTYLE:OFF
 package com.rapiddweller.jdbacl.model.jdbc;
 
 import com.rapiddweller.common.ObjectNotFoundException;

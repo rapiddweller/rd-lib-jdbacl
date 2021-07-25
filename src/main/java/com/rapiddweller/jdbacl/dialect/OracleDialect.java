@@ -97,16 +97,16 @@ public class OracleDialect extends DatabaseDialect {
 
   @Override
   public String renderCreateSequence(DBSequence sequence) {
-		/* Oracle sequence syntax:
-			CREATE SEQUENCE [myschema.]xyz
-			START WITH 1
-			INCREMENT BY 1
-			MINVALUE 1 | NOMINVALUE
-			MAXVALUE 999999999 | NOMAXVALUE
-			CACHE 1 | NOCACHE
-			CYCLE | NOCYCLE
-			ORDER | NOORDER
-		 */
+    //		  Oracle sequence syntax:
+    //			CREATE SEQUENCE [myschema.]xyz
+    //			START WITH 1
+    //			INCREMENT BY 1
+    //			MINVALUE 1 | NOMINVALUE
+    //			MAXVALUE 999999999 | NOMAXVALUE
+    //			CACHE 1 | NOCACHE
+    //			CYCLE | NOCYCLE
+    //			ORDER | NOORDER
+
     String result = super.renderCreateSequence(sequence);
     // apply cache settings
     Long cache = sequence.getCache();
@@ -246,52 +246,54 @@ public class OracleDialect extends DatabaseDialect {
     return (not ? "NOT " : "") + "REGEXP_LIKE(" + expression + ", '" + regex + "')";
   }
 
-	/*
-	@Override
-	public List<DBIndex> queryIndexes(DBSchema schema, Connection connection) throws SQLException {
-		String query = "SELECT INDEX_NAME, INDEX_TYPE, TABLE_OWNER, TABLE_NAME, TABLE_TYPE, UNIQUENESS" +
-				" FROM USER_INDEXES";
-		if (schema != null)
-			query += " WHERE TABLE_OWNER = '" + schema.getName().toUpperCase() + "'";
-		List<Object[]> indexInfos = DBUtil.query(query, connection);
-		OrderedMap<String, DBIndex> indexes = new OrderedMap<String, DBIndex>();
-		for (int i = 0; i < indexInfos.size(); i++) {
-			Object[] indexInfo = indexInfos.get(i);
-			String ownerName = (String) indexInfo[2];
-			if (schema == null || schema.getName().equals(ownerName)) {
-				boolean unique = "UNIQUE".equalsIgnoreCase(indexInfo[5].toString());
-				String name = (String) indexInfo[0];
-				String tableName = (String) indexInfo[3];
-				boolean deterministicName = isDeterministicIndexName(name);
-				DBTable table = schema.getTable(tableName);
-				DBIndex index;
-				if (unique) {
-					DBUniqueConstraint uk = table.getUniqueConstraint(name);
-					index = new DBUniqueIndex(name, deterministicName, uk);
-				} else {
-					index = new DBNonUniqueIndex(name, deterministicName, table);
-				}
-				indexes.put(index.getName(), index);
-				LOGGER.debug("Imported index {}", index);
-			}
-		}
-		
-		// query package procedures
-		query = "SELECT INDEX_NAME, TABLE_NAME, COLUMN_NAME, COLUMN_POSITION FROM USER_IND_COLUMNS";
-		if (schema != null)
-			query += " AND OWNER = '" + schema.getName().toUpperCase() + "'";
-		query += " ORDER BY INDEX_NAME, COLUMN_POSITION";
-		List<Object[]> colInfos = DBUtil.query(query, connection);
-		for (int i = 0; i < colInfos.size(); i++) {
-			Object[] colInfo = colInfos.get(i);
-			DBIndex index = indexes.get((String) colInfo[0]);
-			String columnName = (String) colInfo[2];
-			index.addColumnName(columnName);
-			LOGGER.debug("Imported index column {}.{}", index.getName(), columnName);
-		}		
-		return indexes.values();
-	}
-	*/
+
+  //  @Override
+  //  public List<DBIndex> queryIndexes(DBSchema schema, Connection connection) throws SQLException {
+  //    String query = "SELECT INDEX_NAME, INDEX_TYPE, TABLE_OWNER, TABLE_NAME, TABLE_TYPE, UNIQUENESS" +
+  //        " FROM USER_INDEXES";
+  //    if (schema != null) {
+  //      query += " WHERE TABLE_OWNER = '" + schema.getName().toUpperCase() + "'";
+  //    }
+  //    List<Object[]> indexInfos = DBUtil.query(query, connection);
+  //    OrderedMap<String, DBIndex> indexes = new OrderedMap<String, DBIndex>();
+  //    for (int i = 0; i < indexInfos.size(); i++) {
+  //      Object[] indexInfo = indexInfos.get(i);
+  //      String ownerName = (String) indexInfo[2];
+  //      if (schema == null || schema.getName().equals(ownerName)) {
+  //        boolean unique = "UNIQUE".equalsIgnoreCase(indexInfo[5].toString());
+  //        String name = (String) indexInfo[0];
+  //        String tableName = (String) indexInfo[3];
+  //        boolean deterministicName = isDeterministicIndexName(name);
+  //        DBTable table = schema.getTable(tableName);
+  //        DBIndex index;
+  //        if (unique) {
+  //          DBUniqueConstraint uk = table.getUniqueConstraint(name);
+  //          index = new DBUniqueIndex(name, deterministicName, uk);
+  //        } else {
+  //          index = new DBNonUniqueIndex(name, deterministicName, table);
+  //        }
+  //        indexes.put(index.getName(), index);
+  //        LOGGER.debug("Imported index {}", index);
+  //      }
+  //    }
+  //
+  //    // query package procedures
+  //    query = "SELECT INDEX_NAME, TABLE_NAME, COLUMN_NAME, COLUMN_POSITION FROM USER_IND_COLUMNS";
+  //    if (schema != null) {
+  //      query += " AND OWNER = '" + schema.getName().toUpperCase() + "'";
+  //    }
+  //    query += " ORDER BY INDEX_NAME, COLUMN_POSITION";
+  //    List<Object[]> colInfos = DBUtil.query(query, connection);
+  //    for (int i = 0; i < colInfos.size(); i++) {
+  //      Object[] colInfo = colInfos.get(i);
+  //      DBIndex index = indexes.get((String) colInfo[0]);
+  //      String columnName = (String) colInfo[2];
+  //      index.addColumnName(columnName);
+  //      LOGGER.debug("Imported index column {}.{}", index.getName(), columnName);
+  //    }
+  //    return indexes.values();
+  //  }
+
 
   @Override
   public void queryTriggers(DBSchema schema, Connection connection) throws SQLException {
@@ -307,6 +309,7 @@ public class OracleDialect extends DatabaseDialect {
       while (resultSet.next()) {
         DBTrigger trigger = new DBTrigger(resultSet.getString(2), null);
         trigger.setOwner(schema);
+        assert schema != null;
         schema.receiveTrigger(trigger); // use receiveTrigger(), because the DBTrigger ctor would cause a recursion in trigger import
         trigger.setTriggerType(resultSet.getString(3));
         trigger.setTriggeringEvent(resultSet.getString(4));
@@ -332,12 +335,12 @@ public class OracleDialect extends DatabaseDialect {
   public List<DBPackage> queryPackages(DBSchema schema, Connection connection) throws SQLException {
 
     // query packages
-		/* TODO v1.0 this version does not work on each oracle instance
-		String query = "SELECT OWNER, OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, OBJECT_TYPE, STATUS" +
-				" FROM USER_OBJECTS WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'";
-		if (schema != null)
-			query += " AND OWNER = '" + schema.getName().toUpperCase() + "'";
-		*/
+    //		TODO v1.3.0 this version does not work on each oracle instance
+    //		String query = "SELECT OWNER, OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, OBJECT_TYPE, STATUS" +
+    //				" FROM USER_OBJECTS WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'";
+    //		if (schema != null)
+    //			query += " AND OWNER = '" + schema.getName().toUpperCase() + "'";
+
     String query = "SELECT USER, OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, OBJECT_TYPE, STATUS" +
         " FROM USER_OBJECTS WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'";
     List<Object[]> pkgInfos = DBUtil.query(query, connection);
@@ -347,6 +350,7 @@ public class OracleDialect extends DatabaseDialect {
       if (schema == null || schema.getName().equals(ownerName)) {
         String name = (String) pkgInfo[1];
         DBPackage pkg = new DBPackage(name, null);
+        assert schema != null;
         schema.receivePackage(pkg);
         pkg.setSchema(schema);
         pkg.setSubObjectName((String) pkgInfo[2]);

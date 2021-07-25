@@ -55,18 +55,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PooledConnectionHandler implements InvocationHandler {
 
   private static final Logger jdbcLogger = LogManager.getLogger(LogCategoriesConstants.JDBC);
-
-  private static long nextId = 0;
-
   private static final AtomicInteger openConnectionCount;
+  private static long nextId = 0;
   private static ResourceMonitor openConnectionMonitor;
-
-  private final boolean readOnly;
-  private final Connection realConnection;
-  private final long id;
-  private boolean closed;
-
-  // construction ----------------------------------------------------------------------------------------------------
 
   static {
     openConnectionCount = new AtomicInteger();
@@ -74,6 +65,16 @@ public class PooledConnectionHandler implements InvocationHandler {
       openConnectionMonitor = new ResourceMonitor();
     }
   }
+
+  private final boolean readOnly;
+  private final Connection realConnection;
+  private final long id;
+
+  // construction ----------------------------------------------------------------------------------------------------
+  private final List<ConnectionEventListener> listeners;
+  private boolean closed;
+
+  // InvocationHandler implementation --------------------------------------------------------------------------------
 
   /**
    * Instantiates a new Pooled connection handler.
@@ -96,7 +97,40 @@ public class PooledConnectionHandler implements InvocationHandler {
     }
   }
 
-  // InvocationHandler implementation --------------------------------------------------------------------------------
+  /**
+   * Gets open connection count.
+   *
+   * @return the open connection count
+   */
+  public static int getOpenConnectionCount() {
+    return openConnectionCount.get();
+  }
+
+  // PooledConnection implementation ---------------------------------------------------------------------------------
+
+  /**
+   * Reset monitors.
+   */
+  public static void resetMonitors() {
+    openConnectionCount.set(0);
+    if (openConnectionMonitor != null) {
+      openConnectionMonitor.reset();
+    }
+  }
+
+  /**
+   * Assert all connections closed boolean.
+   *
+   * @param critical the critical
+   * @return the boolean
+   */
+  public static boolean assertAllConnectionsClosed(boolean critical) {
+    return openConnectionMonitor.assertNoRegistrations(critical);
+  }
+
+  private static synchronized long nextId() {
+    return ++nextId;
+  }
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args)
@@ -129,6 +163,12 @@ public class PooledConnectionHandler implements InvocationHandler {
         case 4:
           return DBUtil.prepareStatement(realConnection, (String) args[0], readOnly,
               (Integer) args[1], (Integer) args[2], (Integer) args[3]);
+
+        default:
+          throw new RuntimeException(
+              "Error prepareStatement wrong argument input, got "
+                  + args.length
+                  + " but only 1,2,3 and 4 are supported arguments");
       }
     } else if ("createStatement".equals(methodName)) {
       return createStatement(method, args);
@@ -141,7 +181,7 @@ public class PooledConnectionHandler implements InvocationHandler {
     return DBUtil.createLoggingStatementHandler(statement, readOnly);
   }
 
-  // PooledConnection implementation ---------------------------------------------------------------------------------
+  // connection count ------------------------------------------------------------------------------------------------
 
   /**
    * Close.
@@ -178,8 +218,6 @@ public class PooledConnectionHandler implements InvocationHandler {
     return realConnection;
   }
 
-  private final List<ConnectionEventListener> listeners;
-
   /**
    * Add connection event listener.
    *
@@ -189,6 +227,8 @@ public class PooledConnectionHandler implements InvocationHandler {
     listeners.add(listener);
   }
 
+  // private helpers -------------------------------------------------------------------------------------------------
+
   /**
    * Remove connection event listener.
    *
@@ -196,43 +236,6 @@ public class PooledConnectionHandler implements InvocationHandler {
    */
   public void removeConnectionEventListener(ConnectionEventListener listener) {
     listeners.remove(listener);
-  }
-
-  // connection count ------------------------------------------------------------------------------------------------
-
-  /**
-   * Gets open connection count.
-   *
-   * @return the open connection count
-   */
-  public static int getOpenConnectionCount() {
-    return openConnectionCount.get();
-  }
-
-  /**
-   * Reset monitors.
-   */
-  public static void resetMonitors() {
-    openConnectionCount.set(0);
-    if (openConnectionMonitor != null) {
-      openConnectionMonitor.reset();
-    }
-  }
-
-  /**
-   * Assert all connections closed boolean.
-   *
-   * @param critical the critical
-   * @return the boolean
-   */
-  public static boolean assertAllConnectionsClosed(boolean critical) {
-    return openConnectionMonitor.assertNoRegistrations(critical);
-  }
-
-  // private helpers -------------------------------------------------------------------------------------------------
-
-  private static synchronized long nextId() {
-    return ++nextId;
   }
 
 }

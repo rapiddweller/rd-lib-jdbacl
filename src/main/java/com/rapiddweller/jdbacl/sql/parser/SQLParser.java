@@ -1,5 +1,5 @@
 // $ANTLR 3.3 Nov 30, 2010 12:45:30 /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g 2012-06-05 11:38:25
-
+// CHECKSTYLE:OFF
 package com.rapiddweller.jdbacl.sql.parser;
 
 

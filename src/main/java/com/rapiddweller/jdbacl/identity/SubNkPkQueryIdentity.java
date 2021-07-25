@@ -177,7 +177,7 @@ public class SubNkPkQueryIdentity extends IdentityModel {
 
     @Override
     public Object[] next() {
-      Object[] result = (Object[]) subNkPkIterator.next();
+      Object[] result = subNkPkIterator.next();
       result[0] = ownerNK + '|' + result[0];
       return result;
     }

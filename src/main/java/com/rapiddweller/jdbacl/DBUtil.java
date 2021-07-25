@@ -238,10 +238,6 @@ public class DBUtil {
         throw new ConfigurationError("No JDBC driver class name provided");
       }
 
-      // Instantiate driver
-      Class<Driver> driverClass = BeanUtil.forName(driverClassName);
-      Driver driver = driverClass.getDeclaredConstructor().newInstance();
-
       // Wrap connection properties
       java.util.Properties info = new java.util.Properties();
       if (user != null) {
@@ -250,6 +246,10 @@ public class DBUtil {
       if (password != null) {
         info.put("password", password);
       }
+
+      // Instantiate driver
+      Class<Driver> driverClass = BeanUtil.forName(driverClassName);
+      Driver driver = driverClass.getDeclaredConstructor().newInstance();
 
       // connect
       JDBC_LOGGER.debug("opening connection to " + url);
