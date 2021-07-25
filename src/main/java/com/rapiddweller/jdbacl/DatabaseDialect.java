@@ -70,21 +70,19 @@ import static com.rapiddweller.jdbacl.SQLUtil.createCatSchTabString;
 public abstract class DatabaseDialect {
 
   private static final String DEFAULT_TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
-
-  /**
-   * The Logger.
-   */
-  protected final Logger logger = LogManager.getLogger(getClass());
-
-  private final String system;
   /**
    * The Quote table names.
    */
   public final boolean quoteTableNames;
   /**
+   * The Logger.
+   */
+  protected final Logger logger = LogManager.getLogger(getClass());
+  /**
    * The Sequence supported.
    */
   protected final boolean sequenceSupported;
+  private final String system;
   private final DateFormat dateFormat;
   private final DateFormat datetimeFormat;
   private final DateFormat timeFormat;
@@ -109,6 +107,16 @@ public abstract class DatabaseDialect {
     this.timeFormat = new SimpleDateFormat(timePattern);
     this.datetimeFormat = new SimpleDateFormat(datetimePattern);
     this.reservedWords = null;
+  }
+
+  /**
+   * Is not one boolean.
+   *
+   * @param i the
+   * @return the boolean
+   */
+  protected static boolean isNotOne(BigInteger i) {
+    return (BigInteger.ONE.compareTo(i) != 0);
   }
 
   /**
@@ -197,7 +205,6 @@ public abstract class DatabaseDialect {
       throw new ConfigurationError("Error reading file " + resourceName, e);
     }
   }
-
 
   /**
    * Is default catalog boolean.
@@ -313,16 +320,6 @@ public abstract class DatabaseDialect {
    */
   protected String sequenceNoCycle() {
     return "NOCYCLE";
-  }
-
-  /**
-   * Is not one boolean.
-   *
-   * @param i the
-   * @return the boolean
-   */
-  protected static boolean isNotOne(BigInteger i) {
-    return (BigInteger.ONE.compareTo(i) != 0);
   }
 
   /**
@@ -493,7 +490,6 @@ public abstract class DatabaseDialect {
   // private helpers for prepared statements-------------------------------------------------------------------------------------------------
 
 
-
   /**
    * Check sequence support unsupported operation exception.
    *
@@ -601,7 +597,7 @@ public abstract class DatabaseDialect {
     return builder.toString();
   }
 	
-    /* TODO v0.8.x implement queries for indexes, views, functions and procedures
+  /* TODO v0.8.x implement queries for indexes, views, functions and procedures
     public List<DBView> queryViews(Connection connection) throws SQLException {
 		return new ArrayList<DBView>();
 		// ORA: select VIEW_NAME, OWNER from SYS.ALL_VIEWS order by OWNER, VIEW_NAME
@@ -620,7 +616,7 @@ public abstract class DatabaseDialect {
 		return new ArrayList<DBTrigger>();
 		// ORA: select OBJECT_NAME, OWNER from SYS.ALL_OBJECTS where upper(OBJECT_TYPE) = upper('PROCEDURE') order by OWNER, OBJECT_NAME 
 	}
-	*/
+  */
 
   /**
    * Query triggers.

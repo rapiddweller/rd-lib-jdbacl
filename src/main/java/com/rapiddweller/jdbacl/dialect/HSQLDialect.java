@@ -88,7 +88,15 @@ public class HSQLDialect extends DatabaseDialect {
   @Override
   public DBSequence[] querySequences(Connection connection) throws SQLException {
     String query =
-        "select SEQUENCE_CATALOG, SEQUENCE_SCHEMA, SEQUENCE_NAME, START_WITH, INCREMENT, MINIMUM_VALUE, MAXIMUM_VALUE, CYCLE_OPTION from information_schema.system_sequences";
+        "select SEQUENCE_CATALOG, " +
+            "SEQUENCE_SCHEMA, " +
+            "SEQUENCE_NAME, " +
+            "START_WITH, " +
+            "INCREMENT, " +
+            "MINIMUM_VALUE, " +
+            "MAXIMUM_VALUE, " +
+            "CYCLE_OPTION " +
+            "from information_schema.system_sequences";
     ArrayBuilder<DBSequence> builder = new ArrayBuilder<>(DBSequence.class);
     ResultSet resultSet = DBUtil.executeQuery(query, connection);
     try {

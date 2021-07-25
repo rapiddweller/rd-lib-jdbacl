@@ -49,7 +49,7 @@ public class Derby10_6Dialect extends DerbyDialect {
 
   @Override
   public String renderCreateSequence(DBSequence sequence) {
-		/*
+    /*
 			CREATE SEQUENCE [ schemaName. ] SQL92Identifier
 			AS dataType 
 			| START WITH signedInteger 
@@ -57,7 +57,7 @@ public class Derby10_6Dialect extends DerbyDialect {
 			| MAXVALUE signedInteger | NO MAXVALUE 
 			| MINVALUE signedInteger | NO MINVALUE 
 			| CYCLE | NO CYCLE 
-		 */
+    */
     return super.renderCreateSequence(sequence);
   }
 
