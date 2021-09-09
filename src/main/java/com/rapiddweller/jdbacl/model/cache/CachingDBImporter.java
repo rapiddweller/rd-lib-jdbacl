@@ -32,8 +32,8 @@ import com.rapiddweller.jdbacl.model.Database;
 import com.rapiddweller.jdbacl.model.jdbc.JDBCDBImporter;
 import com.rapiddweller.jdbacl.model.xml.XMLModelExporter;
 import com.rapiddweller.jdbacl.model.xml.XMLModelImporter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.Closeable;
 import java.io.File;
@@ -50,7 +50,7 @@ import java.io.IOException;
  */
 public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 
-  private static final Logger LOGGER = LogManager.getLogger(CachingDBImporter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CachingDBImporter.class);
 
   /**
    * The constant TIME_TO_LIVE_SYSPROP.

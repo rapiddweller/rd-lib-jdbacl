@@ -31,8 +31,8 @@ import com.rapiddweller.common.LogCategoriesConstants;
 import com.rapiddweller.common.debug.Debug;
 import com.rapiddweller.common.debug.ResourceMonitor;
 import com.rapiddweller.jdbacl.DBUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import javax.sql.ConnectionEventListener;
 import java.lang.reflect.InvocationHandler;
@@ -54,7 +54,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class PooledConnectionHandler implements InvocationHandler {
 
-  private static final Logger jdbcLogger = LogManager.getLogger(LogCategoriesConstants.JDBC);
+  private static final Logger jdbcLogger = LoggerFactory.getLogger(LogCategoriesConstants.JDBC);
   private static final AtomicInteger openConnectionCount;
   private static long nextId = 0;
   private static ResourceMonitor openConnectionMonitor;

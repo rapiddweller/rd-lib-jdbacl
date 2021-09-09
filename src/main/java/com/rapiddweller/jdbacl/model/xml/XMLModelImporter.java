@@ -49,8 +49,8 @@ import com.rapiddweller.jdbacl.model.Database;
 import com.rapiddweller.jdbacl.model.FKChangeRule;
 import com.rapiddweller.jdbacl.model.TableType;
 import com.rapiddweller.jdbacl.model.jdbc.JDBCDBImporter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -69,7 +69,7 @@ import java.util.Set;
  */
 public class XMLModelImporter implements DBMetaDataImporter {
 
-  private static final Logger LOGGER = LogManager.getLogger(XMLModelImporter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(XMLModelImporter.class);
 
   private final String uri;
   private final JDBCDBImporter realImporter;

@@ -60,8 +60,8 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.ParserRuleReturnScope;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -80,7 +80,7 @@ public class SQLParserUtil {
   /**
    * The Logger.
    */
-  static final Logger LOGGER = LogManager.getLogger(SQLParserUtil.class);
+  static final Logger LOGGER = LoggerFactory.getLogger(SQLParserUtil.class);
 
   /**
    * Parse object.

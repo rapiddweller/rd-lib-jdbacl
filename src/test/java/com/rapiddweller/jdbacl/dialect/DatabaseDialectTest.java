@@ -29,8 +29,8 @@ import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.DatabaseTestUtil;
 import com.rapiddweller.jdbacl.JDBCConnectData;
 import com.rapiddweller.jdbacl.model.DBSequence;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -88,7 +88,7 @@ public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
    */
   public DatabaseDialectTest(E dialect) {
     this.dialect = dialect;
-    this.logger = LogManager.getLogger(getClass());
+    this.logger = LoggerFactory.getLogger(getClass());
   }
 
   // common tests for all databases ----------------------------------------------------------------------------------

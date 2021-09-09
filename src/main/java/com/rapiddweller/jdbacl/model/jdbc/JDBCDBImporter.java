@@ -51,8 +51,8 @@ import com.rapiddweller.jdbacl.model.DBTable;
 import com.rapiddweller.jdbacl.model.Database;
 import com.rapiddweller.jdbacl.model.FKChangeRule;
 import com.rapiddweller.jdbacl.model.TableType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -80,7 +80,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   /**
    * The constant LOGGER.
    */
-  protected static final Logger LOGGER = LogManager.getLogger(JDBCDBImporter.class);
+  protected static final Logger LOGGER = LoggerFactory.getLogger(JDBCDBImporter.class);
   private static final String TEMPORARY_ENVIRONMENT = "___temp";
   /**
    * The Environment.

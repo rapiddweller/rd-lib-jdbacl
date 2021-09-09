@@ -41,8 +41,8 @@ import com.rapiddweller.jdbacl.model.DBSchema;
 import com.rapiddweller.jdbacl.model.DBSequence;
 import com.rapiddweller.jdbacl.model.DBTrigger;
 import com.rapiddweller.jdbacl.sql.Query;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.math.BigInteger;
 import java.sql.Connection;
@@ -64,7 +64,7 @@ import java.util.regex.Pattern;
  */
 public class OracleDialect extends DatabaseDialect {
 
-  private static final Logger LOGGER = LogManager.getLogger(OracleDialect.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OracleDialect.class);
 
   private static final String DATE_PATTERN = "'to_date('''yyyy-MM-dd''', ''yyyy-mm-dd'')'";
   private static final String TIME_PATTERN = "'to_date('''HH:mm:ss''', ''HH24:mi:ss'')'";

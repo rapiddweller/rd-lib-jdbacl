@@ -29,8 +29,8 @@ import com.rapiddweller.common.OrderedMap;
 import com.rapiddweller.common.SystemInfo;
 import com.rapiddweller.common.ui.ApplicationUtil;
 import com.rapiddweller.common.ui.JavaApplication;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
@@ -57,7 +57,7 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class JdbaclGUI extends JFrame implements JavaApplication {
 
-  private static final Logger LOGGER = LogManager.getLogger(JdbaclGUI.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(JdbaclGUI.class);
 
   private static final String DATABENE_DIRECTORY_NAME = SystemInfo.getUserHome() + File.separator + "rapiddweller";
   private static final String GUI_PROPERTIES_FILE_NAME =

@@ -55,8 +55,8 @@ import com.rapiddweller.jdbacl.proxy.LoggingPreparedStatementHandler;
 import com.rapiddweller.jdbacl.proxy.LoggingResultSetHandler;
 import com.rapiddweller.jdbacl.proxy.LoggingStatementHandler;
 import com.rapiddweller.jdbacl.proxy.PooledConnectionHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import javax.sql.PooledConnection;
 import java.io.BufferedReader;
@@ -91,10 +91,10 @@ import static com.rapiddweller.jdbacl.SQLUtil.createCatSchTabString;
  */
 public class DBUtil {
 
-  private static final Logger LOGGER = LogManager.getLogger(DBUtil.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DBUtil.class);
 
-  private static final Logger JDBC_LOGGER = LogManager.getLogger(LogCategoriesConstants.JDBC);
-  private static final Logger SQL_LOGGER = LogManager.getLogger(LogCategoriesConstants.SQL);
+  private static final Logger JDBC_LOGGER = LoggerFactory.getLogger(LogCategoriesConstants.JDBC);
+  private static final Logger SQL_LOGGER = LoggerFactory.getLogger(LogCategoriesConstants.SQL);
 
   /**
    * private constructor for preventing instantiation.

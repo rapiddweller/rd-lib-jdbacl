@@ -36,8 +36,8 @@ import com.rapiddweller.common.converter.ToStringConverter;
 import com.rapiddweller.common.debug.Debug;
 import com.rapiddweller.common.debug.ResourceMonitor;
 import com.rapiddweller.jdbacl.DBUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -57,8 +57,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SuppressWarnings("unchecked")
 public class LoggingPreparedStatementHandler implements InvocationHandler {
 
-  private static final Logger SQL_LOGGER = LogManager.getLogger(LogCategoriesConstants.SQL);
-  private static final Logger JDBC_LOGGER = LogManager.getLogger(LogCategoriesConstants.JDBC);
+  private static final Logger SQL_LOGGER = LoggerFactory.getLogger(LogCategoriesConstants.SQL);
+  private static final Logger JDBC_LOGGER = LoggerFactory.getLogger(LogCategoriesConstants.JDBC);
 
   private static final AtomicInteger openStatementCount;
   private static ResourceMonitor openStatementMonitor;

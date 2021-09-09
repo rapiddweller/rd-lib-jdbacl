@@ -28,8 +28,8 @@ import com.rapiddweller.jdbacl.DatabaseTreeModel;
 import com.rapiddweller.jdbacl.model.DBMetaDataImporter;
 import com.rapiddweller.jdbacl.model.Database;
 import com.rapiddweller.jdbacl.model.jdbc.JDBCMetaDataUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -48,7 +48,7 @@ import java.io.IOException;
 @SuppressWarnings("serial")
 public class DatabasePane extends JPanel {
 
-  private static final Logger LOGGER = LogManager.getLogger(DatabasePane.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DatabasePane.class);
 
   private final JScrollPane scrollPane;
   private DatabaseTree tree;

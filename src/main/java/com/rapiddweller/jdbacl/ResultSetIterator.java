@@ -27,8 +27,8 @@
 package com.rapiddweller.jdbacl;
 
 import com.rapiddweller.common.HeavyweightIterator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -44,7 +44,7 @@ import java.sql.SQLException;
  */
 public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
 
-  private static final Logger LOGGER = LogManager.getLogger(ResultSetIterator.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetIterator.class);
 
   private final ResultSet resultSet;
   private Boolean hasNext;

@@ -27,8 +27,8 @@ import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.model.DBTable;
 import com.rapiddweller.jdbacl.model.Database;
 import com.rapiddweller.jdbacl.model.jdbc.JDBCDBImporter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.junit.Test;
 
 import java.io.File;
@@ -47,7 +47,7 @@ import static org.junit.Assert.assertFalse;
 public class CachingDBImporterTest {
 
   private static final String ENVIRONMENT = "hsqlmem";
-  private static final Logger LOGGER = LogManager.getLogger(CachingDBImporterTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CachingDBImporterTest.class);
   private static final String TEST_TABLE_NAME = "CachingDBImporterTest";
 
   /**

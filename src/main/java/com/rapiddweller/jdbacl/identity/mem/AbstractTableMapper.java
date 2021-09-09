@@ -26,8 +26,8 @@ import com.rapiddweller.common.bean.ObjectOrArray;
 import com.rapiddweller.jdbacl.identity.IdentityModel;
 import com.rapiddweller.jdbacl.identity.KeyMapper;
 import com.rapiddweller.jdbacl.model.Database;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.util.HashMap;
@@ -43,7 +43,7 @@ import java.util.Map;
  */
 public abstract class AbstractTableMapper {
 
-  private static final Logger LOGGER = LogManager.getLogger(AbstractTableMapper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTableMapper.class);
 
   /**
    * The Root.

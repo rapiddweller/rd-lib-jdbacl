@@ -25,8 +25,8 @@ import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.format.DataContainer;
 import com.rapiddweller.format.DataIterator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -137,6 +137,6 @@ public class ResultSetDataIterator implements DataIterator<ResultSet> {
     return getClass().getSimpleName() + '[' + query + ']';
   }
 
-  private static final Logger LOGGER = LogManager.getLogger(ResultSetIterator.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetIterator.class);
 
 }

@@ -38,8 +38,8 @@ import com.rapiddweller.jdbacl.model.DBSchema;
 import com.rapiddweller.jdbacl.model.DBSequence;
 import com.rapiddweller.jdbacl.model.DBTable;
 import com.rapiddweller.jdbacl.sql.Query;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -77,7 +77,7 @@ public abstract class DatabaseDialect {
   /**
    * The Logger.
    */
-  protected final Logger logger = LogManager.getLogger(getClass());
+  protected final Logger logger = LoggerFactory.getLogger(getClass());
   /**
    * The Sequence supported.
    */

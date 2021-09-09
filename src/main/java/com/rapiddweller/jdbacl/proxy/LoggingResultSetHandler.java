@@ -26,8 +26,8 @@ import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.LogCategoriesConstants;
 import com.rapiddweller.common.debug.Debug;
 import com.rapiddweller.common.debug.ResourceMonitor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -48,7 +48,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class LoggingResultSetHandler implements InvocationHandler {
 
-  private static final Logger JDBC_LOGGER = LogManager.getLogger(LogCategoriesConstants.JDBC);
+  private static final Logger JDBC_LOGGER = LoggerFactory.getLogger(LogCategoriesConstants.JDBC);
 
   private static final AtomicInteger openResultSetCount;
   private static ResourceMonitor openResultSetMonitor;
