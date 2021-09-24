@@ -1,3 +1,15 @@
+# Release 1.1.11-jdk-11
+
+## Release Highlights
+
+* return back to slf4j
+* upgrade rd-lib-common to 1.1.3
+* upgrade rd-lib-contiperf to 2.5.0
+* upgrade rd-lib-format to 1.1.4
+* upgrade rd-lib-script to 1.1.3
+
+---
+
 # Release 1.1.10-jdk-11
 
 ## Release Highlights
