@@ -1,3 +1,9 @@
+# Release 1.1.12-jdk-11
+
+## Release Highlights
+
+---
+
 # Release 1.1.11-jdk-11
 
 ## Release Highlights
