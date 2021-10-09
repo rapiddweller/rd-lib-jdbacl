@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2011-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -35,7 +35,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests the {@link Derby10_6Dialect}.<br/><br/>
  * Created: 24.10.2011 10:33:53
- *
  * @author Volker Bergmann
  * @since 0.6.13
  */
@@ -43,9 +42,6 @@ public class Derby10_6DialectTest extends DatabaseDialectTest<Derby10_6Dialect> 
 
   private static final String ENVIRONMENT = "derby-embedded";
 
-  /**
-   * Test constructor.
-   */
   @Test
   public void testConstructor() {
     Derby10_6Dialect actualDerby10_6Dialect = new Derby10_6Dialect();
@@ -53,16 +49,10 @@ public class Derby10_6DialectTest extends DatabaseDialectTest<Derby10_6Dialect> 
     assertTrue(actualDerby10_6Dialect.isSequenceSupported());
   }
 
-  /**
-   * Instantiates a new Derby 10 6 dialect test.
-   */
   public Derby10_6DialectTest() {
     super(new Derby10_6Dialect());
   }
 
-  /**
-   * Test render create sequence.
-   */
   @Test
   public void testRenderCreateSequence() {
     assertEquals("CREATE SEQUENCE my_seq AS BIGINT", dialect.renderCreateSequence(new DBSequence("my_seq", null)));
@@ -70,72 +60,49 @@ public class Derby10_6DialectTest extends DatabaseDialectTest<Derby10_6Dialect> 
         dialect.renderCreateSequence(createConfiguredSequence()));
   }
 
-  /**
-   * Test render create sequence 2.
-   */
   @Test
   public void testRenderCreateSequence2() {
     DBSequence sequence = new DBSequence("Name", null);
     assertEquals("CREATE SEQUENCE Name AS BIGINT", (new Derby10_6Dialect()).renderCreateSequence(sequence));
   }
 
-  /**
-   * Test render create sequence 3.
-   */
   @Test
   public void testRenderCreateSequence3() {
     DBSequence sequence = new DBSequence("Name", "Catalog Name", "Schema Name");
     assertEquals("CREATE SEQUENCE Schema Name.Name AS BIGINT", (new Derby10_6Dialect()).renderCreateSequence(sequence));
   }
 
-  /**
-   * Test render sequence name and type.
-   */
   @Test
   public void testRenderSequenceNameAndType() {
     DBSequence sequence = new DBSequence("Name", null);
     assertEquals("Name AS BIGINT", (new Derby10_6Dialect()).renderSequenceNameAndType(sequence));
   }
 
-  /**
-   * Test render sequence name and type 2.
-   */
   @Test
   public void testRenderSequenceNameAndType2() {
     DBSequence sequence = new DBSequence("Name", "Catalog Name", "Schema Name");
     assertEquals("Schema Name.Name AS BIGINT", (new Derby10_6Dialect()).renderSequenceNameAndType(sequence));
   }
 
-  /**
-   * Test sequence no cycle.
-   */
   @Test
   public void testSequenceNoCycle() {
     assertEquals("NO CYCLE", (new Derby10_6Dialect()).sequenceNoCycle());
   }
 
-  /**
-   * Test render drop sequence.
-   */
   @Test
   public void testRenderDropSequence() {
     assertEquals("DROP SEQUENCE my_seq RESTRICT", dialect.renderDropSequence("my_seq"));
     assertEquals("DROP SEQUENCE Sequence Name RESTRICT", (new Derby10_6Dialect()).renderDropSequence("Sequence Name"));
   }
 
-  /**
-   * Test sequences online.
-   *
-   * @throws Exception the exception
-   */
   @Test
   public void testSequencesOnline() throws Exception {
-    if (!DBUtil.existsEnvironment(ENVIRONMENT)) {
+    if (!DBUtil.existsEnvironment(ENVIRONMENT, ".")) {
       System.out.println("Skipping test: testSequencesOnline()");
       return;
     }
     String sequenceName = getClass().getSimpleName();
-    Connection connection = DBUtil.connect(ENVIRONMENT, false);
+    Connection connection = DBUtil.connect(ENVIRONMENT, ".", false);
     try {
       dialect.createSequence(sequenceName, 23, connection);
       DBSequence[] sequences = dialect.querySequences(connection);
@@ -151,9 +118,6 @@ public class Derby10_6DialectTest extends DatabaseDialectTest<Derby10_6Dialect> 
     }
   }
 
-  /**
-   * Test render fetch sequence value.
-   */
   @Test
   public void testRenderFetchSequenceValue() {
     assertEquals("VALUES (NEXT VALUE FOR my_seq)", dialect.renderFetchSequenceValue("my_seq"));

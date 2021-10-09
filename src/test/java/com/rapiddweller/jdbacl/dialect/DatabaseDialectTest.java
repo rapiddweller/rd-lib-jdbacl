@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2009-2012 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2009-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -47,45 +47,21 @@ import static org.junit.Assert.fail;
 /**
  * Parent class for testing concrete {@link DatabaseDialect} implementations.<br/><br/>
  * Created: 10.11.2009 16:59:14
- *
  * @param <E> the type parameter
  * @author Volker Bergmann
  * @since 0.6.0
  */
 public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
 
-  /**
-   * The Logger.
-   */
   protected final Logger logger;
 
-  /**
-   * The Dialect.
-   */
   protected final E dialect;
 
-  /**
-   * The constant DATETIME_19710203131415.
-   */
   protected final static Date DATETIME_19710203131415 = TimeUtil.date(1971, 1, 3, 13, 14, 15, 0);
-  /**
-   * The constant DATE_19710203.
-   */
   protected final static Date DATE_19710203 = TimeUtil.date(1971, 1, 3);
-  /**
-   * The constant TIME_131415.
-   */
   protected final static Time TIME_131415 = TimeUtil.time(13, 14, 15, 0);
-  /**
-   * The constant TIMESTAMP_19710203131415123456789.
-   */
   protected final static Timestamp TIMESTAMP_19710203131415123456789 = TimeUtil.timestamp(1971, 1, 3, 13, 14, 15, 123456789);
 
-  /**
-   * Instantiates a new Database dialect test.
-   *
-   * @param dialect the dialect
-   */
   public DatabaseDialectTest(E dialect) {
     this.dialect = dialect;
     this.logger = LoggerFactory.getLogger(getClass());
@@ -93,9 +69,6 @@ public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
 
   // common tests for all databases ----------------------------------------------------------------------------------
 
-  /**
-   * Test sequence setup consistency.
-   */
   @Test
   public void testSequenceSetupConsistency() {
     boolean supported = dialect.isSequenceSupported();
@@ -106,11 +79,6 @@ public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
     }
   }
 
-  /**
-   * Test canonical reserved words.
-   *
-   * @throws Exception the exception
-   */
   @Test
   public void testCanonicalReservedWords() throws Exception {
     assertTrue(dialect.isReservedWord("TABLE", null));
@@ -142,14 +110,8 @@ public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
     }
   }
 
-  /**
-   * Test sequences online.
-   *
-   * @param databaseId the database id
-   * @throws Exception the exception
-   */
   protected void testSequencesOnline(String databaseId) throws Exception {
-    JDBCConnectData data = DatabaseTestUtil.getConnectData(databaseId);
+    JDBCConnectData data = DatabaseTestUtil.getConnectData(databaseId, ".");
     if (data == null) {
       System.out.println("Skipping test: testSequencesOnline(" + databaseId + ")");
       return;
@@ -168,11 +130,6 @@ public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
     }
   }
 
-  /**
-   * Create configured sequence db sequence.
-   *
-   * @return the db sequence
-   */
   protected DBSequence createConfiguredSequence() {
     DBSequence seq = new DBSequence("my_seq", null);
     seq.setStart(new BigInteger("10"));

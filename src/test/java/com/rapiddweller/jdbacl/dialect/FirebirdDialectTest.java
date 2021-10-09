@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2009-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2009-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -36,15 +36,11 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests the {@link FirebirdDialect}.<br/><br/>
  * Created: 10.11.2009 18:18:04
- *
  * @author Volker Bergmann
  * @since 0.6.0
  */
 public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
 
-  /**
-   * Test constructor.
-   */
   @Test
   public void testConstructor() {
     FirebirdDialect actualFirebirdDialect = new FirebirdDialect();
@@ -52,49 +48,31 @@ public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
     assertTrue(actualFirebirdDialect.isSequenceSupported());
   }
 
-  /**
-   * Instantiates a new Firebird dialect test.
-   */
   public FirebirdDialectTest() {
     super(new FirebirdDialect());
   }
 
-  /**
-   * Test format date.
-   */
   @Test
   public void testFormatDate() {
     assertEquals("'1971-02-03'", dialect.formatValue(DATE_19710203));
   }
 
-  /**
-   * Test format datetime.
-   */
   @Test
   public void testFormatDatetime() {
     assertEquals("'1971-02-03 13:14:15'", dialect.formatValue(DATETIME_19710203131415));
   }
 
-  /**
-   * Test format time.
-   */
   @Test
   public void testFormatTime() {
     assertEquals("'13:14:15'", dialect.formatValue(TIME_131415));
   }
 
-  /**
-   * Test format timestamp.
-   */
   @Test
   public void testFormatTimestamp() {
     assertEquals("'1971-02-03 13:14:15.123456789'",
         dialect.formatValue(TIMESTAMP_19710203131415123456789));
   }
 
-  /**
-   * Test is deterministic pk name.
-   */
   @Test
   public void testIsDeterministicPKName() {
     assertFalse(dialect.isDeterministicPKName("INTEG_3486"));
@@ -103,9 +81,6 @@ public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
     assertFalse((new FirebirdDialect()).isDeterministicPKName("INTEG_9"));
   }
 
-  /**
-   * Test is deterministic uk name.
-   */
   @Test
   public void testIsDeterministicUKName() {
     assertFalse(dialect.isDeterministicUKName("RDB$749"));
@@ -114,9 +89,6 @@ public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
     assertFalse((new FirebirdDialect()).isDeterministicUKName("RDB$U"));
   }
 
-  /**
-   * Test is deterministic fk name.
-   */
   @Test
   public void testIsDeterministicFKName() {
     assertFalse(dialect.isDeterministicFKName("INTEG_3487"));
@@ -125,9 +97,6 @@ public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
     assertFalse((new FirebirdDialect()).isDeterministicFKName("INTEG_9"));
   }
 
-  /**
-   * Test is deterministic index name.
-   */
   @Test
   public void testIsDeterministicIndexName() {
     assertFalse(dialect.isDeterministicIndexName("RDB$749"));
@@ -136,18 +105,12 @@ public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
     assertFalse((new FirebirdDialect()).isDeterministicIndexName("RDB$U"));
   }
 
-  /**
-   * Test regex.
-   */
   @Test(expected = UnsupportedOperationException.class)
   public void testRegex() {
     assertFalse(dialect.supportsRegex());
     dialect.regexQuery("code", false, "[A-Z]{4}");
   }
 
-  /**
-   * Test render create sequence.
-   */
   @Test
   public void testRenderCreateSequence() {
     assertEquals("CREATE GENERATOR my_seq", dialect.renderCreateSequence(new DBSequence("my_seq", null)));
@@ -156,18 +119,12 @@ public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
     assertEquals("CREATE GENERATOR Name", (new FirebirdDialect()).renderCreateSequence("Name"));
   }
 
-  /**
-   * Test render create sequence 2.
-   */
   @Test
   public void testRenderCreateSequence2() {
     DBSequence sequence = new DBSequence("Name", null);
     assertEquals("CREATE GENERATOR Name", (new FirebirdDialect()).renderCreateSequence(sequence));
   }
 
-  /**
-   * Test render create sequence 3.
-   */
   @Test
   public void testRenderCreateSequence3() {
     DBSequence dbSequence = new DBSequence("Name", null);
@@ -175,9 +132,6 @@ public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
     assertEquals("CREATE GENERATOR Name", (new FirebirdDialect()).renderCreateSequence(dbSequence));
   }
 
-  /**
-   * Test render create sequence 4.
-   */
   @Test
   public void testRenderCreateSequence4() {
     DBSequence dbSequence = new DBSequence("Name", null);
@@ -186,45 +140,29 @@ public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
         (new FirebirdDialect()).renderCreateSequence(dbSequence));
   }
 
-  /**
-   * Test render drop sequence.
-   */
   @Test
   public void testRenderDropSequence() {
     assertEquals("drop generator Sequence Name", (new FirebirdDialect()).renderDropSequence("Sequence Name"));
   }
 
-  /**
-   * Test render fetch sequence value.
-   */
   @Test
   public void testRenderFetchSequenceValue() {
     assertEquals("select gen_id(Sequence Name, 1) from RDB$DATABASE;",
         (new FirebirdDialect()).renderFetchSequenceValue("Sequence Name"));
   }
 
-  /**
-   * Test sequences online.
-   *
-   * @throws Exception the exception
-   */
   @Test
   public void testSequencesOnline() throws Exception {
     testSequencesOnline("firebird");
   }
 
-  /**
-   * Test set next sequence value.
-   *
-   * @throws Exception the exception
-   */
   @Test // requires a Firebird installation configured as environment named 'firebird'
   public void testSetNextSequenceValue() throws Exception {
-    if (DatabaseTestUtil.getConnectData("firebird") == null) {
+    if (DatabaseTestUtil.getConnectData("firebird", ".") == null) {
       logger.warn("Skipping test " + getClass() + ".testSetNextSequenceValue() since there is no 'firebird' environment defined or online");
       return;
     }
-    Connection connection = DBUtil.connect("firebird", false);
+    Connection connection = DBUtil.connect("firebird", ".", false);
     String sequenceName = getClass().getSimpleName();
     DBUtil.executeUpdate("create sequence " + sequenceName, connection);
     dialect.setNextSequenceValue(sequenceName, 123, connection);
@@ -233,18 +171,12 @@ public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
     DBUtil.executeUpdate("drop sequence " + sequenceName, connection);
   }
 
-  /**
-   * Test render set sequence value.
-   */
   @Test
   public void testRenderSetSequenceValue() {
     assertEquals("SET GENERATOR Sequence Name TO 41",
         (new FirebirdDialect()).renderSetSequenceValue("Sequence Name", 42L));
   }
 
-  /**
-   * Test render case.
-   */
   @Test
   public void testRenderCase() {
     assertEquals("CASE WHEN condition1 THEN result1 WHEN condition2 THEN result2 ELSE result4 END AS col",

@@ -40,7 +40,6 @@ import static org.junit.Assert.assertFalse;
 /**
  * Tests the {@link CachingDBImporter}.<br/><br/>
  * Created: 18.03.2012 12:57:24
- *
  * @author Volker Bergmann
  * @since 0.8.1
  */
@@ -50,23 +49,18 @@ public class CachingDBImporterTest {
   private static final Logger LOGGER = LoggerFactory.getLogger(CachingDBImporterTest.class);
   private static final String TEST_TABLE_NAME = "CachingDBImporterTest";
 
-  /**
-   * Test lazy import.
-   *
-   * @throws Exception the exception
-   */
   @Test
   public void testLazyImport() throws Exception {
     // if no environment 'hsqlmem' is defined on the system, skip the test
-    if (!DBUtil.existsEnvironment(ENVIRONMENT)) {
+    if (!DBUtil.existsEnvironment(ENVIRONMENT, ".")) {
       LOGGER.warn("Skipping test: testLazyImport()");
       return;
     }
 
     // given a database which has not been cached yet
-    Connection connection = DBUtil.connect(ENVIRONMENT, false);
+    Connection connection = DBUtil.connect(ENVIRONMENT, ".", false);
     DBUtil.executeUpdate("create table " + TEST_TABLE_NAME + " ( id int, primary key (id))", connection);
-    JDBCDBImporter realImporter = new JDBCDBImporter(ENVIRONMENT);
+    JDBCDBImporter realImporter = new JDBCDBImporter(ENVIRONMENT, ".");
     CachingDBImporter importer = null;
     try {
       importer = new CachingDBImporter(realImporter, ENVIRONMENT);

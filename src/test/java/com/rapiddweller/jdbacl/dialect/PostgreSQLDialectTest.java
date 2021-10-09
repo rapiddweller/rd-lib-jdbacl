@@ -37,15 +37,15 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests the PostgreSQLDialect.<br/><br/>
  * Created: 10.11.2009 18:18:51
- *
  * @author Volker Bergmann
  * @since 0.6.0
  */
 public class PostgreSQLDialectTest extends DatabaseDialectTest<PostgreSQLDialect> {
 
-  /**
-   * Test constructor.
-   */
+  public PostgreSQLDialectTest() {
+    super(new PostgreSQLDialect());
+  }
+
   @Test
   public void testConstructor() {
     PostgreSQLDialect actualPostgreSQLDialect = new PostgreSQLDialect();
@@ -54,106 +54,63 @@ public class PostgreSQLDialectTest extends DatabaseDialectTest<PostgreSQLDialect
     assertTrue(actualPostgreSQLDialect.isSequenceBoundarySupported());
   }
 
-  /**
-   * Test sequence no cycle.
-   */
   @Test
   public void testSequenceNoCycle() {
     assertEquals("NO CYCLE", (new PostgreSQLDialect()).sequenceNoCycle());
   }
 
-  /**
-   * Instantiates a new Postgre sql dialect test.
-   */
-  public PostgreSQLDialectTest() {
-    super(new PostgreSQLDialect());
-  }
-
-  /**
-   * Test format date.
-   */
   @Test
   public void testFormatDate() {
     assertEquals("date '1971-02-03'", dialect.formatValue(DATE_19710203));
   }
 
-  /**
-   * Test format datetime.
-   */
   @Test
   public void testFormatDatetime() {
     assertEquals("timestamp '1971-02-03 13:14:15'", dialect.formatValue(DATETIME_19710203131415));
   }
 
-  /**
-   * Test format time.
-   */
   @Test
   public void testFormatTime() {
     assertEquals("time '13:14:15'", dialect.formatValue(TIME_131415));
   }
 
-  /**
-   * Test format timestamp.
-   */
   @Test
   public void testFormatTimestamp() {
     assertEquals("timestamp '1971-02-03 13:14:15.123456789'",
         dialect.formatValue(TIMESTAMP_19710203131415123456789));
   }
 
-  /**
-   * Test is deterministic pk name.
-   */
   @Test
   public void testIsDeterministicPKName() {
     assertTrue(dialect.isDeterministicPKName("USER_PK"));
   }
 
-  /**
-   * Test is deterministic uk name.
-   */
   @Test
   public void testIsDeterministicUKName() {
     assertTrue(dialect.isDeterministicUKName("USER_NAME_UK"));
   }
 
-  /**
-   * Test is deterministic fk name.
-   */
   @Test
   public void testIsDeterministicFKName() {
     assertTrue(dialect.isDeterministicFKName("USER_ROLE_FK"));
   }
 
-  /**
-   * Test is deterministic index name.
-   */
   @Test
   public void testIsDeterministicIndexName() {
     assertTrue(dialect.isDeterministicIndexName("USER_NAME_IDX"));
   }
 
-  /**
-   * Test supports regex.
-   */
   @Test
   public void testSupportsRegex() {
     assertTrue((new PostgreSQLDialect()).supportsRegex());
   }
 
-  /**
-   * Test regex query.
-   */
   @Test
   public void testRegexQuery() {
     assertEquals("NOT Expression ~ 'Regex'", (new PostgreSQLDialect()).regexQuery("Expression", true, "Regex"));
     assertEquals("Expression ~ 'Regex'", (new PostgreSQLDialect()).regexQuery("Expression", false, "Regex"));
   }
 
-  /**
-   * Test regex.
-   */
   @Test
   public void testRegex() {
     assertTrue(dialect.supportsRegex());
@@ -161,9 +118,6 @@ public class PostgreSQLDialectTest extends DatabaseDialectTest<PostgreSQLDialect
     assertEquals("NOT code ~ '[A-Z]{5}'", dialect.regexQuery("code", true, "[A-Z]{5}"));
   }
 
-  /**
-   * Test render create sequence.
-   */
   @Test
   public void testRenderCreateSequence() {
     assertEquals("CREATE SEQUENCE my_seq", dialect.renderCreateSequence(new DBSequence("my_seq", null)));
@@ -171,18 +125,12 @@ public class PostgreSQLDialectTest extends DatabaseDialectTest<PostgreSQLDialect
         dialect.renderCreateSequence(createConfiguredSequence()));
   }
 
-  /**
-   * Test render create sequence 2.
-   */
   @Test
   public void testRenderCreateSequence2() {
     DBSequence sequence = new DBSequence("Name", null);
     assertEquals("CREATE SEQUENCE Name", (new PostgreSQLDialect()).renderCreateSequence(sequence));
   }
 
-  /**
-   * Test render create sequence 3.
-   */
   @Test
   public void testRenderCreateSequence3() {
     DBSequence dbSequence = new DBSequence("Name", null);
@@ -190,9 +138,6 @@ public class PostgreSQLDialectTest extends DatabaseDialectTest<PostgreSQLDialect
     assertEquals("CREATE SEQUENCE Name CACHE 0", (new PostgreSQLDialect()).renderCreateSequence(dbSequence));
   }
 
-  /**
-   * Test is default catalog.
-   */
   @Test
   public void testIsDefaultCatalog() {
     assertFalse((new PostgreSQLDialect()).isDefaultCatalog("Catalog", "User"));
@@ -200,28 +145,20 @@ public class PostgreSQLDialectTest extends DatabaseDialectTest<PostgreSQLDialect
     assertTrue((new PostgreSQLDialect()).isDefaultCatalog("Catalog", "Catalog"));
   }
 
-  /**
-   * Test is default schema.
-   */
   @Test
   public void testIsDefaultSchema() {
     assertFalse((new PostgreSQLDialect()).isDefaultSchema("Schema", "User"));
     assertTrue((new PostgreSQLDialect()).isDefaultSchema("public", "User"));
   }
 
-  /**
-   * Test set next sequence value.
-   *
-   * @throws Exception the exception
-   */
   @Test // requires a PostgreSQL installation configured as environment named 'postgres'
   public void testSetNextSequenceValue() throws Exception {
-    if (DatabaseTestUtil.getConnectData("postgres") == null) {
+    if (DatabaseTestUtil.getConnectData("postgres", ".") == null) {
       logger.warn("Skipping test " + getClass() + ".testSetNextSequenceValue() since there is no 'postgres' " +
           "environment defined or online");
       return;
     }
-    Connection connection = DBUtil.connect("postgres", false);
+    Connection connection = DBUtil.connect("postgres", ".", false);
     String sequenceName = getClass().getSimpleName();
     try {
       DBUtil.executeUpdate("create sequence " + sequenceName, connection);
@@ -233,9 +170,6 @@ public class PostgreSQLDialectTest extends DatabaseDialectTest<PostgreSQLDialect
     }
   }
 
-  /**
-   * Test render fetch sequence value.
-   */
   @Test
   public void testRenderFetchSequenceValue() {
     assertEquals("select nextval('SEQ')", dialect.renderFetchSequenceValue("SEQ"));
@@ -243,26 +177,17 @@ public class PostgreSQLDialectTest extends DatabaseDialectTest<PostgreSQLDialect
         (new PostgreSQLDialect()).renderFetchSequenceValue("Sequence Name"));
   }
 
-  /**
-   * Test format timestamp 2.
-   */
   @Test
   public void testFormatTimestamp2() {
     Timestamp timestamp = new Timestamp(10L);
     assertNotNull((new PostgreSQLDialect()).formatTimestamp(timestamp));
   }
 
-  /**
-   * Test drop sequence.
-   */
   @Test
   public void testDropSequence() {
     assertEquals("drop sequence SEQ", dialect.renderDropSequence("SEQ"));
   }
 
-  /**
-   * Test render case.
-   */
   @Test
   public void testRenderCase() {
     assertEquals("CASE WHEN condition1 THEN result1 WHEN condition2 THEN result2 ELSE result4 END AS col",

@@ -42,35 +42,21 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests the {@link XMLModelImporter}.<br/><br/>
  * Created: 28.11.2010 18:23:12
- *
  * @author Volker Bergmann
  * @since 0.6.4
  */
 public class XMLModelImporterTest extends AbstractModelTest {
 
-  /**
-   * Sets up tables.
-   *
-   * @throws Exception the exception
-   */
   @Before
   public void setUpTables() throws Exception {
     createTables();
   }
 
-  /**
-   * Tear down tables.
-   *
-   * @throws Exception the exception
-   */
   @After
   public void tearDownTables() throws Exception {
     dropTables();
   }
 
-  /**
-   * Test offline.
-   */
   @Test
   public void testOffline() {
     XMLModelImporter importer = new XMLModelImporter(EAGER_TEST_MODEL_FILENAME, null);
@@ -85,12 +71,9 @@ public class XMLModelImporterTest extends AbstractModelTest {
     }
   }
 
-  /**
-   * Test online.
-   */
   @Test
   public void testOnline() {
-    XMLModelImporter importer = new XMLModelImporter(LAZY_TEST_MODEL_FILENAME, new JDBCDBImporter(ENVIRONMENT));
+    XMLModelImporter importer = new XMLModelImporter(LAZY_TEST_MODEL_FILENAME, new JDBCDBImporter(ENVIRONMENT, "."));
     try {
       Database db = importer.importDatabase();
       new TreeLogger().log(new DBTreeModel(db));

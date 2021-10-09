@@ -41,7 +41,6 @@ import java.io.IOException;
 /**
  * {@link JPanel} which displays database information and the hierarchy tree.<br/><br/>
  * Created: 07.11.2011 16:46:33
- *
  * @author Volker Bergmann
  * @since 0.7.0
  */
@@ -55,11 +54,6 @@ public class DatabasePane extends JPanel {
   private DBMetaDataImporter importer;
   private final TextFieldValueProvider exclusionPatternProvider;
 
-  /**
-   * Instantiates a new Database pane.
-   *
-   * @param exclusionPatternProvider the exclusion pattern provider
-   */
   public DatabasePane(TextFieldValueProvider exclusionPatternProvider) {
     super(new BorderLayout());
     this.exclusionPatternProvider = exclusionPatternProvider;
@@ -67,13 +61,6 @@ public class DatabasePane extends JPanel {
     add(scrollPane, BorderLayout.CENTER);
   }
 
-  /**
-   * Sets environment.
-   *
-   * @param environment the environment
-   * @throws ConnectFailedException the connect failed exception
-   * @throws ImportFailedException  the import failed exception
-   */
   public void setEnvironment(String environment) throws ConnectFailedException, ImportFailedException {
     if (importer != null) {
       try {
@@ -88,20 +75,9 @@ public class DatabasePane extends JPanel {
     new Thread(new Importer(environment)).start();
   }
 
-  /**
-   * The type Importer.
-   */
   class Importer implements Runnable {
-    /**
-     * The Environment.
-     */
     final String environment;
 
-    /**
-     * Instantiates a new Importer.
-     *
-     * @param environment the environment
-     */
     public Importer(String environment) {
       this.environment = environment;
     }
@@ -109,7 +85,7 @@ public class DatabasePane extends JPanel {
     @Override
     public void run() {
       try {
-        Database database = JDBCMetaDataUtil.getMetaData(environment, true, true, true, true,
+        Database database = JDBCMetaDataUtil.getMetaData(environment, ".", true, true, true, true,
             ".*", exclusionPatternProvider.getValue(), true, true);
         DatabasePane.this.importer = importer;
         final TreeModel model = new SwingTreeModelAdapter<>(new DatabaseTreeModel(database));

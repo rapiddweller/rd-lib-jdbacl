@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -32,40 +32,19 @@ import java.util.Date;
 /**
  * Abstract parent class for testing XML in-/output of jdbacl models.<br/><br/>
  * Created: 28.11.2010 09:58:56
- *
  * @author Volker Bergmann
  * @since 0.6.4
  */
 public abstract class AbstractModelTest {
 
-  /**
-   * The constant ENVIRONMENT.
-   */
   protected static final String ENVIRONMENT = "com/rapiddweller/jdbacl/model/hsqlmem";
-  /**
-   * The constant CREATE_TABLES_FILE_NAME.
-   */
   protected static final String CREATE_TABLES_FILE_NAME = "com/rapiddweller/jdbacl/model/xml/create_tables.sql";
-  /**
-   * The constant DROP_TABLES_FILE_NAME.
-   */
   protected static final String DROP_TABLES_FILE_NAME = "com/rapiddweller/jdbacl/model/xml/drop_tables.sql";
-  /**
-   * The constant EAGER_TEST_MODEL_FILENAME.
-   */
   protected static final String EAGER_TEST_MODEL_FILENAME = "com/rapiddweller/jdbacl/model/xml/testmodel-eager.xml";
-  /**
-   * The constant LAZY_TEST_MODEL_FILENAME.
-   */
   protected static final String LAZY_TEST_MODEL_FILENAME = "com/rapiddweller/jdbacl/model/xml/testmodel-lazy-seq.xml";
 
   private Connection connection;
 
-  /**
-   * Create test model database.
-   *
-   * @return the database
-   */
   @SuppressWarnings("unused")
   protected static Database createTestModel() {
     Database db = new Database(ENVIRONMENT, "hsql", "1.5.8", new Date());
@@ -110,24 +89,14 @@ public abstract class AbstractModelTest {
     return db;
   }
 
-  /**
-   * Create tables.
-   *
-   * @throws Exception the exception
-   */
   protected void createTables() throws Exception {
-    connection = DBUtil.connect(ENVIRONMENT, false);
+    connection = DBUtil.connect(ENVIRONMENT, ".", false);
     DBUtil.executeScriptFile(CREATE_TABLES_FILE_NAME, Encodings.UTF_8, connection, false, null);
   }
 
-  /**
-   * Drop tables.
-   *
-   * @throws Exception the exception
-   */
   protected void dropTables() throws Exception {
     try {
-      connection = DBUtil.connect(ENVIRONMENT, false);
+      connection = DBUtil.connect(ENVIRONMENT, ".", false);
       DBUtil.executeScriptFile(DROP_TABLES_FILE_NAME, Encodings.UTF_8, connection, false, null);
     } finally {
       DBUtil.close(connection);

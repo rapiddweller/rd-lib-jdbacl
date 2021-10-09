@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2012 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2012-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -38,15 +38,11 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests the {@link DatabaseDialect} for CUBRID.<br/><br/>
  * Created: 16.04.2012 11:26:57
- *
  * @author Volker Bergmann
  * @since 0.8.2
  */
 public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
 
-  /**
-   * Test constructor.
-   */
   @Test
   public void testConstructor() {
     CubridDialect actualCubridDialect = new CubridDialect();
@@ -54,89 +50,56 @@ public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
     assertTrue(actualCubridDialect.isSequenceBoundarySupported());
   }
 
-  /**
-   * Instantiates a new Cubrid dialect test.
-   */
   public CubridDialectTest() {
     super(new CubridDialect());
   }
 
-  /**
-   * Test format date.
-   */
   @Test
   public void testFormatDate() {
     assertEquals("'1971-02-03'", dialect.formatValue(DATE_19710203));
   }
 
-  /**
-   * Test format datetime.
-   */
   @Test
   public void testFormatDatetime() {
     assertEquals("'1971-02-03 13:14:15'", dialect.formatValue(DATETIME_19710203131415));
   }
 
-  /**
-   * Test format time.
-   */
   @Test
   public void testFormatTime() {
     assertEquals("'13:14:15'", dialect.formatValue(TIME_131415));
   }
 
-  /**
-   * Test format timestamp.
-   */
   @Test
   public void testFormatTimestamp() {
     assertEquals("'1971-02-03 13:14:15.123456789'",
         dialect.formatValue(TIMESTAMP_19710203131415123456789));
   }
 
-  /**
-   * Test is deterministic pk name.
-   */
   @Test
   public void testIsDeterministicPKName() {
     assertTrue(dialect.isDeterministicPKName("USER_PK"));
   }
 
-  /**
-   * Test is deterministic uk name.
-   */
   @Test
   public void testIsDeterministicUKName() {
     assertTrue(dialect.isDeterministicUKName("USER_NAME_UK"));
   }
 
-  /**
-   * Test is deterministic fk name.
-   */
   @Test
   public void testIsDeterministicFKName() {
     assertTrue(dialect.isDeterministicFKName("USER_ROLE_FK"));
   }
 
-  /**
-   * Test is deterministic index name.
-   */
   @Test
   public void testIsDeterministicIndexName() {
     assertTrue(dialect.isDeterministicIndexName("USER_NAME_IDX"));
   }
 
-  /**
-   * Test trim.
-   */
   @Test
   public void testTrim() {
     assertEquals("trim(Expression)", (new CubridDialect()).trim("Expression"));
   }
 
-  /**
-   * Test restrict rownums.
-   */
   @Test
   public void testRestrictRownums() {
     Query selectResult = Query.select("Selection");
@@ -144,9 +107,6 @@ public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
     assertEquals("SELECT Selection FROM  limit 2, 3", selectResult.toString());
   }
 
-  /**
-   * Test restrict rownums 2.
-   */
   @Test
   public void testRestrictRownums2() {
     Query selectResult = Query.select("Selection");
@@ -154,26 +114,17 @@ public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
     assertEquals("SELECT Selection FROM  limit 3", selectResult.toString());
   }
 
-  /**
-   * Test supports regex.
-   */
   @Test
   public void testSupportsRegex() {
     assertTrue((new CubridDialect()).supportsRegex());
   }
 
-  /**
-   * Test regex query.
-   */
   @Test
   public void testRegexQuery() {
     assertEquals("Expression NOT REGEX 'Regex'", (new CubridDialect()).regexQuery("Expression", true, "Regex"));
     assertEquals("Expression REGEX 'Regex'", (new CubridDialect()).regexQuery("Expression", false, "Regex"));
   }
 
-  /**
-   * Test regex.
-   */
   @Test
   public void testRegex() {
     assertTrue(dialect.supportsRegex());
@@ -181,9 +132,6 @@ public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
     assertEquals("code NOT REGEX '[A-Z]{5}'", dialect.regexQuery("code", true, "[A-Z]{5}"));
   }
 
-  /**
-   * Test render create sequence.
-   */
   @Test
   public void testRenderCreateSequence() {
     assertEquals("CREATE SERIAL my_seq", dialect.renderCreateSequence(new DBSequence("my_seq", null)));
@@ -191,9 +139,6 @@ public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
         dialect.renderCreateSequence(createConfiguredSequence()));
   }
 
-  /**
-   * Test render create sequence 10.
-   */
   @Test
   public void testRenderCreateSequence10() {
     DBSequence dbSequence = new DBSequence("Name", null);
@@ -201,9 +146,6 @@ public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
     assertEquals("CREATE SERIAL Name MINVALUE 42", (new CubridDialect()).renderCreateSequence(dbSequence));
   }
 
-  /**
-   * Test render create sequence 11.
-   */
   @Test
   public void testRenderCreateSequence11() {
     DBSequence dbSequence = new DBSequence("Name", null);
@@ -211,18 +153,12 @@ public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
     assertEquals("CREATE SERIAL Name MAXVALUE 42", (new CubridDialect()).renderCreateSequence(dbSequence));
   }
 
-  /**
-   * Test render create sequence 2.
-   */
   @Test
   public void testRenderCreateSequence2() {
     DBSequence sequence = new DBSequence("Name", null);
     assertEquals("CREATE SERIAL Name", (new CubridDialect()).renderCreateSequence(sequence));
   }
 
-  /**
-   * Test render create sequence 3.
-   */
   @Test
   public void testRenderCreateSequence3() {
     DBSequence dbSequence = new DBSequence("Name", null);
@@ -230,9 +166,6 @@ public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
     assertEquals("CREATE SERIAL Name CYCLE", (new CubridDialect()).renderCreateSequence(dbSequence));
   }
 
-  /**
-   * Test render create sequence 4.
-   */
   @Test
   public void testRenderCreateSequence4() {
     DBSequence dbSequence = new DBSequence("Name", null);
@@ -240,9 +173,6 @@ public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
     assertEquals("CREATE SERIAL Name", (new CubridDialect()).renderCreateSequence(dbSequence));
   }
 
-  /**
-   * Test render create sequence 5.
-   */
   @Test
   public void testRenderCreateSequence5() {
     DBSequence dbSequence = new DBSequence("Name", null);
@@ -250,9 +180,6 @@ public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
     assertEquals("CREATE SERIAL Name CACHE 0", (new CubridDialect()).renderCreateSequence(dbSequence));
   }
 
-  /**
-   * Test render create sequence 6.
-   */
   @Test
   public void testRenderCreateSequence6() {
     DBSequence dbSequence = new DBSequence("Name", null);
@@ -260,9 +187,6 @@ public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
     assertEquals("CREATE SERIAL Name", (new CubridDialect()).renderCreateSequence(dbSequence));
   }
 
-  /**
-   * Test render create sequence 7.
-   */
   @Test
   public void testRenderCreateSequence7() {
     DBSequence dbSequence = new DBSequence("Name", null);
@@ -270,9 +194,6 @@ public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
     assertEquals("CREATE SERIAL Name NOCYCLE", (new CubridDialect()).renderCreateSequence(dbSequence));
   }
 
-  /**
-   * Test render create sequence 8.
-   */
   @Test
   public void testRenderCreateSequence8() {
     DBSequence dbSequence = new DBSequence("Name", null);
@@ -280,9 +201,6 @@ public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
     assertEquals("CREATE SERIAL Name INCREMENT BY 42", (new CubridDialect()).renderCreateSequence(dbSequence));
   }
 
-  /**
-   * Test render create sequence 9.
-   */
   @Test
   public void testRenderCreateSequence9() {
     DBSequence dbSequence = new DBSequence("Name", null);
@@ -290,19 +208,14 @@ public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
     assertEquals("CREATE SERIAL Name START WITH 42", (new CubridDialect()).renderCreateSequence(dbSequence));
   }
 
-  /**
-   * Test set next sequence value.
-   *
-   * @throws Exception the exception
-   */
   @Test // requires a CUBRID installation configured as environment named 'cubrid'
   public void testSetNextSequenceValue() throws Exception {
-    if (DatabaseTestUtil.getConnectData("cubrid") == null) {
+    if (DatabaseTestUtil.getConnectData("cubrid", ".") == null) {
       logger.warn("Skipping test " + getClass().getSimpleName() + ".testSetNextSequenceValue() " +
           "since no 'cubrid' environment is defined or online");
       return;
     }
-    Connection connection = DBUtil.connect("cubrid", false);
+    Connection connection = DBUtil.connect("cubrid", ".", false);
     String sequenceName = getClass().getSimpleName();
     try {
       DBUtil.executeUpdate("CREATE SERIAL " + sequenceName, connection);
@@ -314,26 +227,17 @@ public class CubridDialectTest extends DatabaseDialectTest<CubridDialect> {
     }
   }
 
-  /**
-   * Test render fetch sequence value.
-   */
   @Test
   public void testRenderFetchSequenceValue() {
     assertEquals("SELECT seq.NEXT_VALUE", dialect.renderFetchSequenceValue("seq"));
     assertEquals("SELECT Sequence Name.NEXT_VALUE", (new CubridDialect()).renderFetchSequenceValue("Sequence Name"));
   }
 
-  /**
-   * Test drop sequence.
-   */
   @Test
   public void testDropSequence() {
     assertEquals("drop sequence SEQ", dialect.renderDropSequence("SEQ"));
   }
 
-  /**
-   * Test render case.
-   */
   @Test
   public void testRenderCase() {
     assertEquals("CASE WHEN condition1 THEN result1 WHEN condition2 THEN result2 ELSE result4 END AS col",

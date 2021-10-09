@@ -33,22 +33,16 @@ import org.junit.Test;
 
 import java.sql.Connection;
 
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests the {@link HSQLUtil} class.<br/><br/>
  * Created at 02.05.2008 20:02:01
- *
  * @author Volker Bergmann
  * @since 0.5.3
  */
 public class HSQLUtilTest {
 
-  /**
-   * Test.
-   *
-   * @throws ConnectFailedException the connect failed exception
-   */
   @Test
   public void test() throws ConnectFailedException {
     Connection connection = null;

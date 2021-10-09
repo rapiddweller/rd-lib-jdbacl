@@ -6,14 +6,12 @@ import static org.junit.Assert.assertNull;
 
 /**
  * The type Database test util test.
+ * @author Volker Bergmann
  */
 public class DatabaseTestUtilTest {
-  /**
-   * Test get connect data.
-   */
   @Test
   public void testGetConnectData() {
-    assertNull(DatabaseTestUtil.getConnectData("Environment"));
+    assertNull(DatabaseTestUtil.getConnectData("Environment", "."));
   }
 }
 

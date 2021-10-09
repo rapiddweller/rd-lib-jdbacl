@@ -44,40 +44,21 @@ import java.io.IOException;
  * adding the feature of caching its output. The data file is named '&lt;environment&gt;.meta.xml'
  * and expires after 12 hrs.<br/><br/>
  * Created: 10.01.2011 14:48:00
- *
  * @author Volker Bergmann
  * @since 0.6.5
  */
 public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CachingDBImporter.class);
+  private static final Logger logger = LoggerFactory.getLogger(CachingDBImporter.class);
 
-  /**
-   * The constant TIME_TO_LIVE_SYSPROP.
-   */
   public static final String TIME_TO_LIVE_SYSPROP = "jdbacl.cache.timetolive";
-  /**
-   * The constant DEFAULT_TIME_TO_LIVE.
-   */
   public static final long DEFAULT_TIME_TO_LIVE = Period.HOUR.getMillis() * 12;
 
   private static final String CACHE_FILE_SUFFIX = ".meta.xml";
 
-  /**
-   * The Real importer.
-   */
   protected final JDBCDBImporter realImporter;
-  /**
-   * The Environment.
-   */
   protected final String environment;
 
-  /**
-   * Instantiates a new Caching db importer.
-   *
-   * @param realImporter the real importer
-   * @param environment  the environment
-   */
   public CachingDBImporter(JDBCDBImporter realImporter, String environment) {
     this.realImporter = realImporter;
     this.environment = environment;
@@ -116,12 +97,6 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
     }
   }
 
-  /**
-   * Gets cache file.
-   *
-   * @param environment the environment
-   * @return the cache file
-   */
   public static File getCacheFile(String environment) {
     String fileSeparator = File.separator;
     String cacheDirName = SystemInfo.getUserHome() + fileSeparator + "rapiddweller" + fileSeparator + "cache";
@@ -131,53 +106,27 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 
   // non-public helpers ----------------------------------------------------------------------------------------------
 
-  /**
-   * Gets cache file.
-   *
-   * @return the cache file
-   */
   protected File getCacheFile() {
     return getCacheFile(environment);
   }
 
-  /**
-   * Read cached data database.
-   *
-   * @param cacheFile the cache file
-   * @return the database
-   * @throws ConnectFailedException the connect failed exception
-   * @throws ImportFailedException  the import failed exception
-   */
   protected Database readCachedData(File cacheFile) throws ConnectFailedException, ImportFailedException {
     try {
-      LOGGER.info("Importing database meta data from cache file " + cacheFile.getPath());
+      logger.info("Importing database meta data from cache file {}", cacheFile.getPath());
       Database database = new XMLModelImporter(cacheFile, realImporter).importDatabase();
-      LOGGER.info("Database meta data import completed");
+      logger.info("Database meta data import completed");
       return database;
     } catch (Exception e) {
-      LOGGER.info("Error reading cache file, reparsing database", e);
+      logger.info("Error reading cache file, reparsing database", e);
       return importFreshData(cacheFile);
     }
   }
 
-  /**
-   * Import fresh data database.
-   *
-   * @param file the file
-   * @return the database
-   * @throws ConnectFailedException the connect failed exception
-   * @throws ImportFailedException  the import failed exception
-   */
   protected Database importFreshData(File file) throws ConnectFailedException, ImportFailedException {
     Database database = realImporter.importDatabase();
     return writeCacheFile(file, database);
   }
 
-  /**
-   * Update cache file.
-   *
-   * @param database the database
-   */
   public static void updateCacheFile(Database database) {
     if (database == null) {
       throw new IllegalArgumentException("database is null");
@@ -189,21 +138,14 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
     }
   }
 
-  /**
-   * Write cache file database.
-   *
-   * @param file     the file
-   * @param database the database
-   * @return the database
-   */
   public static Database writeCacheFile(File file, Database database) {
-    LOGGER.info("Exporting Database meta data of " + database.getEnvironment() + " to cache file");
+    logger.info("Exporting Database meta data of {} to cache file", database.getEnvironment());
     try {
       FileUtil.ensureDirectoryExists(file.getParentFile());
       new XMLModelExporter(file).export(database);
-      LOGGER.debug("Database meta data export completed");
+      logger.debug("Database meta data export completed");
     } catch (Exception e) {
-      LOGGER.error("Error writing database meta data file " + ": " + e.getMessage(), e);
+      logger.error("Error writing database meta data file " + ": " + e.getMessage(), e);
     }
     return database;
   }

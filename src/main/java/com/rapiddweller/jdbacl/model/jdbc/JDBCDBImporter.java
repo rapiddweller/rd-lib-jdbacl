@@ -71,110 +71,48 @@ import java.util.TreeMap;
 /**
  * Abstract parent class for JDBC meta data importers.<br/><br/>
  * Created: 29.01.2012 21:52:06
- *
  * @author Volker Bergmann
  * @since 0.8.0
  */
 public class JDBCDBImporter implements DBMetaDataImporter {
 
-  /**
-   * The constant LOGGER.
-   */
-  protected static final Logger LOGGER = LoggerFactory.getLogger(JDBCDBImporter.class);
+  protected static final Logger logger = LoggerFactory.getLogger(JDBCDBImporter.class);
+
   private static final String TEMPORARY_ENVIRONMENT = "___temp";
-  /**
-   * The Environment.
-   */
+
   protected final String environment;
-  /**
-   * The Escalator.
-   */
+  protected final String folder;
   final Escalator escalator = new LoggerEscalator();
-  /**
-   * The Url.
-   */
   protected String url;
-  /**
-   * The Driver.
-   */
   protected String driver;
-  /**
-   * The Password.
-   */
   protected String password;
-  /**
-   * The User.
-   */
   protected String user;
-  /**
-   * The Catalog name.
-   */
   protected String catalogName;
-  /**
-   * The Schema name.
-   */
   protected String schemaName;
-  /**
-   * The Table inclusion pattern.
-   */
   protected String tableInclusionPattern;
-  /**
-   * The Table exclusion pattern.
-   */
   protected String tableExclusionPattern;
-  /**
-   * The Connection.
-   */
   Connection connection;
-  /**
-   * The Dialect.
-   */
   DatabaseDialect dialect;
-  /**
-   * The Database product name.
-   */
   String databaseProductName;
-  /**
-   * The Error handler.
-   */
   ErrorHandler errorHandler;
-  /**
-   * The Table name filter.
-   */
   TableNameFilter tableNameFilter;
-  /**
-   * The Meta data.
-   */
   DatabaseMetaData metaData;
   private VersionNumber databaseProductVersion;
 
-  /**
-   * Instantiates a new Jdbcdb importer.
-   *
-   * @param environment the environment
-   */
-  public JDBCDBImporter(String environment) {
+  public JDBCDBImporter(String environment, String folder) {
     this.connection = null;
     this.environment = environment;
+    this.folder = folder;
     this.tableInclusionPattern = ".*";
     this.tableExclusionPattern = null;
     this.errorHandler = new ErrorHandler(getClass().getName(), Level.error);
     init();
   }
 
-  /**
-   * Instantiates a new Jdbcdb importer.
-   *
-   * @param url      the url
-   * @param driver   the driver
-   * @param user     the user
-   * @param password the password
-   * @param catalog  the catalog
-   * @param schema   the schema
-   */
   public JDBCDBImporter(String url, String driver, String user, String password, String catalog, String schema) {
     this.connection = null;
     this.environment = TEMPORARY_ENVIRONMENT;
+    this.folder = ".";
     this.url = url;
     this.driver = driver;
     this.user = user;
@@ -186,16 +124,9 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     init();
   }
 
-  /**
-   * Instantiates a new Jdbcdb importer.
-   *
-   * @param connection  the connection
-   * @param user        the user
-   * @param catalogName the catalog Name
-   * @param schemaName  the schema name
-   */
   public JDBCDBImporter(Connection connection, String user, String catalogName, String schemaName) {
     this.environment = TEMPORARY_ENVIRONMENT;
+    this.folder = ".";
     this.connection = connection;
     this.user = user;
     this.catalogName = catalogName;
@@ -223,12 +154,6 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     }
   }
 
-  /**
-   * Remove brackets string.
-   *
-   * @param defaultValue the default value
-   * @return the string
-   */
   protected static String removeBrackets(String defaultValue) {
     if (StringUtil.isEmpty(defaultValue)) {
       return defaultValue;
@@ -239,47 +164,22 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     return removeBrackets(defaultValue.substring(1, defaultValue.length() - 1));
   }
 
-  /**
-   * Gets schemaName.
-   *
-   * @return the schemaName as string
-   */
   public String getSchemaName() {
     return schemaName;
   }
 
-  /**
-   * Sets schema name.
-   *
-   * @param schemaName the schema name
-   */
   public void setSchemaName(String schemaName) {
     this.schemaName = schemaName;
   }
 
-  /**
-   * Gets catalogName.
-   *
-   * @return the catalogName as string
-   */
   public String getCatalogName() {
     return catalogName;
   }
 
-  /**
-   * Sets catalog name.
-   *
-   * @param catalogName the catalog name
-   */
   public void setCatalogName(String catalogName) {
     this.catalogName = catalogName;
   }
 
-  /**
-   * Gets url.
-   *
-   * @return the url as string
-   */
   public String getUrl() {
     if (url == null) {
       url = "no url used";
@@ -287,39 +187,18 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     return url;
   }
 
-  /**
-   * Gets database product name.
-   *
-   * @return the database product name
-   */
   public String getDatabaseProductName() {
     return databaseProductName;
   }
 
-  /**
-   * Gets database product version.
-   *
-   * @return the database product version
-   */
   public VersionNumber getDatabaseProductVersion() {
     return databaseProductVersion;
   }
 
-  /**
-   * Sets fault tolerant.
-   *
-   * @param faultTolerant the fault tolerant
-   */
   public void setFaultTolerant(boolean faultTolerant) {
     this.errorHandler = new ErrorHandler(getClass().getName(), (faultTolerant ? Level.warn : Level.error));
   }
 
-  /**
-   * Gets connection.
-   *
-   * @return the connection
-   * @throws ConnectFailedException the connect failed exception
-   */
   public Connection getConnection() throws ConnectFailedException {
     if (this.connection == null) {
       StopWatch watch = new StopWatch("connect");
@@ -329,21 +208,11 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     return this.connection;
   }
 
-  /**
-   * Sets table pattern.
-   *
-   * @param tablePattern the table pattern
-   */
   @Deprecated
   public void setTablePattern(String tablePattern) {
     this.tableInclusionPattern = tablePattern;
   }
 
-  /**
-   * Sets table inclusion pattern.
-   *
-   * @param tableInclusionPattern the table inclusion pattern
-   */
   public void setTableInclusionPattern(String tableInclusionPattern) {
     this.tableInclusionPattern = tableInclusionPattern;
   }
@@ -351,11 +220,6 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
   // database import -------------------------------------------------------------------------------------------------
 
-  /**
-   * Sets table exclusion pattern.
-   *
-   * @param tableExclusionPattern the table exclusion pattern
-   */
   public void setTableExclusionPattern(String tableExclusionPattern) {
     this.tableExclusionPattern = tableExclusionPattern;
   }
@@ -372,13 +236,10 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
   // catalog import --------------------------------------------------------------------------------------------------
 
-  /**
-   * Init.
-   */
   protected void init() {
     try {
       if (!TEMPORARY_ENVIRONMENT.equals(environment)) {
-        JDBCConnectData cd = DBUtil.getConnectData(environment);
+        JDBCConnectData cd = DBUtil.getConnectData(environment, folder);
         if (this.url == null) {
           this.url = cd.url;
         }
@@ -404,7 +265,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
       watch.stop();
       databaseProductName = metaData.getDatabaseProductName();
       databaseProductVersion = VersionNumber.valueOf(metaData.getDatabaseProductVersion());
-      LOGGER.debug("Product: {} {}", databaseProductName, databaseProductVersion);
+      logger.debug("Product: {} {}", databaseProductName, databaseProductVersion);
       dialect = DatabaseDialectManager.getDialectForProduct(databaseProductName, databaseProductVersion);
       if (isOracle()) { // fix for Oracle varchar column size, see http://kr.forums.oracle.com/forums/thread.jspa?threadID=554236
         DBUtil.executeUpdate("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", getConnection());
@@ -419,21 +280,14 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     DBUtil.close(connection);
   }
 
-  /**
-   * Import catalogs.
-   *
-   * @param database the database
-   * @throws SQLException           the sql exception
-   * @throws ConnectFailedException the connect failed exception
-   */
   public void importCatalogs(Database database) throws SQLException, ConnectFailedException {
-    LOGGER.debug("Importing catalogs from environment '{}'", database.getEnvironment());
+    logger.debug("Importing catalogs from environment '{}'", database.getEnvironment());
     StopWatch watch = new StopWatch("importCatalogs");
     ResultSet catalogSet = metaData.getCatalogs();
     int catalogCount = 0;
     while (catalogSet.next()) {
       String foundCatalog = catalogSet.getString(1);
-      LOGGER.debug("found catalog {}", StringUtil.quoteIfNotNull(foundCatalog));
+      logger.debug("found catalog {}", StringUtil.quoteIfNotNull(foundCatalog));
       if (StringUtil.equalsIgnoreCase(foundCatalog, this.catalogName) // this is the configured catalog
           || (StringUtil.isEmpty(this.catalogName) && ( // no catalog configured but...
           dialect.isDefaultCatalog(foundCatalog, user) // ...the one found is the default for the database
@@ -475,14 +329,8 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     return set;
   }
 
-  /**
-   * Import schemas.
-   *
-   * @param database the database
-   * @throws SQLException the sql exception
-   */
   public void importSchemas(Database database) throws SQLException {
-    LOGGER.debug("Importing schemas from environment '{}'", database.getEnvironment());
+    logger.debug("Importing schemas from environment '{}'", database.getEnvironment());
     StopWatch watch = new StopWatch("importSchemas");
     int schemaCount = 0;
     ResultSet schemaSet = metaData.getSchemas();
@@ -496,7 +344,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
       }
       if (neededSchemas.contains(schemaName)
           || (this.schemaName == null && dialect.isDefaultSchema(schemaName, user))) {
-        LOGGER.debug("importing schema {}", StringUtil.quoteIfNotNull(schemaName));
+        logger.debug("importing schema {}", StringUtil.quoteIfNotNull(schemaName));
         this.schemaName = schemaName; // take over capitalization used in the DB
         String catalogNameOfSchema = (columnCount >= 2 && catalogName != null ? catalogName :
             this.catalogName); // PostgreSQL and SQL Server do not necessarily tell you the catalog name
@@ -508,7 +356,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         importAllTables(database, schemaName);
         schemaCount++;
       } else {
-        LOGGER.debug("ignoring schema {}", StringUtil.quoteIfNotNull(schemaName));
+        logger.debug("ignoring schema {}", StringUtil.quoteIfNotNull(schemaName));
       }
     }
     if (schemaCount == 0) {
@@ -524,19 +372,13 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     watch.stop();
   }
 
-  /**
-   * Import all tables.
-   *
-   * @param database the database
-   * @throws SQLException the sql exception
-   */
   public void importAllTables(Database database) throws SQLException {
-    LOGGER.info("Importing tables from environment '{}'", database.getEnvironment());
+    logger.info("Importing tables from environment '{}'", database.getEnvironment());
     if (tableExclusionPattern != null) {
-      LOGGER.debug("excluding tables: {}", tableExclusionPattern);
+      logger.debug("excluding tables: {}", tableExclusionPattern);
     }
     if (tableInclusionPattern != null && !".*".equals(tableInclusionPattern)) {
-      LOGGER.debug("including tables: {}", tableInclusionPattern);
+      logger.debug("including tables: {}", tableInclusionPattern);
     }
     StopWatch watch = new StopWatch("importAllTables");
     ResultSet tableSet;
@@ -545,19 +387,13 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     handleTableImport(database, watch, tableSet);
   }
 
-  /**
-   * Import all tables.
-   *
-   * @param database the database
-   * @throws SQLException the sql exception
-   */
   public void importAllTables(Database database, String schemaName) throws SQLException {
-    LOGGER.info("Importing tables from schema '{}'", schemaName);
+    logger.info("Importing tables from schema '{}'", schemaName);
     if (tableExclusionPattern != null) {
-      LOGGER.debug("excluding tables: {}", tableExclusionPattern);
+      logger.debug("excluding tables: {}", tableExclusionPattern);
     }
     if (tableInclusionPattern != null && !".*".equals(tableInclusionPattern)) {
-      LOGGER.debug("including tables: {}", tableInclusionPattern);
+      logger.debug("including tables: {}", tableInclusionPattern);
     }
     StopWatch watch = new StopWatch("importAllTables");
     ResultSet tableSet;
@@ -588,15 +424,15 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         continue;
       }
       if (!tableSupported(tableName)) {
-        LOGGER.debug("ignoring table: {}, {}, {}", new Object[] {tableCatalogName, tableSchemaName, tableName});
+        logger.debug("ignoring table: {}, {}, {}", new Object[] {tableCatalogName, tableSchemaName, tableName});
         continue;
       }
       String tableTypeSpec = tableSet.getString(4);
       String tableRemarks = tableSet.getString(5);
       if (database.isReservedWord(tableName)) {
-        LOGGER.warn("Table name is a reserved word: '{}'", tableName);
+        logger.warn("Table name is a reserved word: '{}'", tableName);
       }
-      LOGGER.debug("importing table: {}, {}, {}, {}, {}",
+      logger.debug("importing table: {}, {}, {}, {}, {}",
           new Object[] {tableCatalogName, tableSchemaName, tableName, tableTypeSpec, tableRemarks});
       TableType tableType = tableType(tableTypeSpec, tableName);
       DBCatalog catalog = database.getCatalog(tableCatalogName);
@@ -612,7 +448,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         DBTable table = new DBTable(tableName, tableType, tableRemarks, schema, this);
         table.setDoc(tableRemarks);
       } else {
-        LOGGER.warn("No schema specified. Ignoring table '{}'", tableName);
+        logger.warn("No schema specified. Ignoring table '{}'", tableName);
       }
     }
     tableSet.close();
@@ -654,12 +490,6 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
   // primary key import ----------------------------------------------------------------------------------------------
 
-  /**
-   * Import columns of table.
-   *
-   * @param table    the table
-   * @param receiver the receiver
-   */
   public void importColumnsOfTable(DBTable table, ColumnReceiver receiver) {
     importColumns(table.getCatalog(), table.getSchema().getName(), table.getName(), tableNameFilter, receiver, errorHandler);
   }
@@ -667,24 +497,14 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
   // index import ----------------------------------------------------------------------------------------------------
 
-  /**
-   * Import columns.
-   *
-   * @param catalog      the catalog
-   * @param schemaName   the schema name
-   * @param tablePattern the table pattern
-   * @param tableFilter  the table filter
-   * @param receiver     the receiver
-   * @param errorHandler the error handler
-   */
   protected void importColumns(DBCatalog catalog, String schemaName, String tablePattern,
                                Filter<String> tableFilter, ColumnReceiver receiver, ErrorHandler errorHandler) {
     StopWatch watch = new StopWatch("importColumns");
     String catalogName = catalog.getName();
     String schemaPattern = (schemaName != null ? schemaName : (catalog.getSchemas().size() == 1 ? catalog.getSchemas().get(0).getName() : null));
-    LOGGER.debug("Importing columns for catalog {}, schemaPattern {}, tablePattern '{}'",
-        new Object[] {StringUtil.quoteIfNotNull(catalogName), StringUtil.quoteIfNotNull(schemaName),
-            StringUtil.quoteIfNotNull(tablePattern)});
+    logger.debug("Importing columns for catalog {}, schemaPattern {}, tablePattern '{}'",
+        StringUtil.quoteIfNotNull(catalogName), StringUtil.quoteIfNotNull(schemaName),
+            StringUtil.quoteIfNotNull(tablePattern));
     ResultSet columnSet = null;
     try {
       columnSet = metaData.getColumns(catalogName, schemaPattern, tablePattern, null);
@@ -697,7 +517,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         String tableName = columnSet.getString(3);
         String columnName = columnSet.getString(4);
         if (tableName.startsWith("BIN$") || (tableFilter != null && !tableFilter.accept(tableName))) {
-          LOGGER.debug("ignoring column {}.{}.{}.{}", new Object[] {catalogName, colSchemaName, tableName, columnName});
+          logger.debug("ignoring column {}.{}.{}.{}", new Object[] {catalogName, colSchemaName, tableName, columnName});
           continue;
         }
         int sqlType = columnSet.getInt(5);
@@ -717,14 +537,14 @@ public class JDBCDBImporter implements DBMetaDataImporter {
           sqlType = Types.BOOLEAN;
         }
 
-        LOGGER.debug("found column: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}",
+        logger.debug("found column: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}",
             catalogName, colSchemaName, tableName,
             columnName, sqlType, columnType, columnSize, decimalDigits,
             nullable, comment, defaultValue);
         // determine table
         DBTable table = catalog.getTable(tableName, false);
         if (table == null) {
-          LOGGER.debug("Ignoring column {}.{}", tableName, columnName);
+          logger.debug("Ignoring column {}.{}", tableName, columnName);
           continue; // PostgreSQL returns the columns of indexes, too
         }
         DBSchema schema = catalog.getSchema(schemaName);
@@ -756,14 +576,8 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     watch.stop();
   }
 
-  /**
-   * Import primary key of table.
-   *
-   * @param table    the table
-   * @param receiver the receiver
-   */
   public void importPrimaryKeyOfTable(DBTable table, PKReceiver receiver) {
-    LOGGER.debug("Importing primary keys for table '{}'", table);
+    logger.debug("Importing primary keys for table '{}'", table);
     StopWatch watch = new StopWatch("importPrimaryKeyOfTable");
     ResultSet pkset = null;
     try {
@@ -780,7 +594,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         short keySeq = pkset.getShort(5);
         pkComponents.put(keySeq, columnName);
         pkName = pkset.getString(6);
-        LOGGER.debug("found pk column {}, {}, {}", new Object[] {columnName, keySeq, pkName});
+        logger.debug("found pk column {}, {}, {}", new Object[] {columnName, keySeq, pkName});
       }
       if (pkComponents.size() > 0) {
         String[] columnNames = pkComponents.values().toArray(new String[0]);
@@ -797,19 +611,12 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
   // foreign key import ----------------------------------------------------------------------------------------------
 
-  /**
-   * Import indexes of table.
-   *
-   * @param table       the table
-   * @param uniquesOnly the uniques only
-   * @param receiver    the receiver
-   */
   public void importIndexesOfTable(DBTable table, boolean uniquesOnly, IndexReceiver receiver) {
     StopWatch watch = new StopWatch("importIndexesOfTable");
     if (table.getTableType() == TableType.TABLE) {
-      LOGGER.debug("Importing indexes of table '{}'", table.getName());
+      logger.debug("Importing indexes of table '{}'", table.getName());
     } else {
-      LOGGER.debug("Skipping indexes of table '{}' with type '{}'", table.getName(), table.getTableType());
+      logger.debug("Skipping indexes of table '{}' with type '{}'", table.getName(), table.getTableType());
     }
     ResultSet indexSet = null;
     try {
@@ -824,15 +631,6 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     watch.stop();
   }
 
-  /**
-   * Parse index set.
-   *
-   * @param indexSet     the index set
-   * @param schema       the schema
-   * @param queriedTable the queried table
-   * @param receiver     the receiver
-   * @throws SQLException the sql exception
-   */
   public void parseIndexSet(ResultSet indexSet, DBSchema schema, DBTable queriedTable, IndexReceiver receiver) throws SQLException {
     StopWatch watch = new StopWatch("parseIndexSet");
     OrderedNameMap<DBIndexInfo> indexes = new OrderedNameMap<>();
@@ -863,10 +661,11 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         int cardinality = indexSet.getInt(11);
         int pages = indexSet.getInt(12);
         String filterCondition = indexSet.getString(13);
-        LOGGER.debug("found " + (unique ? "unique index " : "index ") + indexName + ", "
-            + indexCatalogName + ", " + indexType + ", "
-            + ordinalPosition + ", " + columnName + ", " + ascOrDesc + ", "
-            + cardinality + ", " + pages + ", " + filterCondition);
+        logger.debug("found {} {}, {}, {}, {}, {}, {}, {}, {}, {}",
+            (unique ? "unique index" : "index"), indexName, indexCatalogName, indexType,
+            ordinalPosition, columnName, ascOrDesc, cardinality, pages, filterCondition
+        );
+
         DBIndexInfo index = indexes.get(indexName);
         if (index == null) {
           index = new DBIndexInfo(indexName, tableName, indexType, indexCatalogName, unique,
@@ -890,14 +689,8 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
   // check import ----------------------------------------------------------------------------------------------------
 
-  /**
-   * Import imported keys.
-   *
-   * @param table    the table
-   * @param receiver the receiver
-   */
   public void importImportedKeys(DBTable table, FKReceiver receiver) {
-    LOGGER.debug("Importing imported keys for table '{}'", table.getName());
+    logger.debug("Importing imported keys for table '{}'", table.getName());
     StopWatch watch = new StopWatch("importImportedKeys");
     DBCatalog catalog = table.getCatalog();
     DBSchema schema = table.getSchema();
@@ -941,7 +734,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
           if (pkSchema != null) {
             pkTable = pkSchema.getTable(key.getPkTableName());
           } else {
-            LOGGER.warn("build DBForeignKeyConstraint objects from the gathered information could not get the proper Schema, " +
+            logger.warn("build DBForeignKeyConstraint objects from the gathered information could not get the proper Schema, " +
                 "there might be an Error with this Database Dialect implementation!");
           }
         }
@@ -960,7 +753,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         foreignKeyConstraint.setUpdateRule(parseRule(key.update_rule));
         foreignKeyConstraint.setDeleteRule(parseRule(key.delete_rule));
         receiver.receiveFK(foreignKeyConstraint, table);
-        LOGGER.debug("Imported foreign key {}", foreignKeyConstraint);
+        logger.debug("Imported foreign key {}", foreignKeyConstraint);
       }
     } catch (SQLException e) {
       errorHandler.handleError("Error importing foreign key constraints", e);
@@ -973,13 +766,8 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
   // referrer table import -------------------------------------------------------------------------------------------
 
-  /**
-   * Import all checks.
-   *
-   * @param database the database
-   */
   public final void importAllChecks(Database database) {
-    LOGGER.info("Importing checks from environment '{}'", database.getEnvironment());
+    logger.info("Importing checks from environment '{}'", database.getEnvironment());
     StopWatch watch = new StopWatch("importAllChecks");
     try {
       database.setChecksImported(true);
@@ -1008,15 +796,9 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
   // sequence import -------------------------------------------------------------------------------------------------
 
-  /**
-   * Import referer tables.
-   *
-   * @param table    the table
-   * @param receiver the receiver
-   */
   public void importRefererTables(DBTable table, ReferrerReceiver receiver) {
     StopWatch watch = new StopWatch("importRefererTables");
-    LOGGER.debug("Importing exported keys for table '{}'", table);
+    logger.debug("Importing exported keys for table '{}'", table);
     DBCatalog catalog = table.getCatalog();
     DBSchema schema = table.getSchema();
     String catalogName = (catalog != null ? catalog.getName() : null);
@@ -1030,7 +812,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         String fktableSchem = resultSet.getString(6);
         String fktableName = resultSet.getString(7);
         if (tableSupported(fktableName)) {
-          LOGGER.debug("Importing referrer: {}", fktableName);
+          logger.debug("Importing referrer: {}", fktableName);
           receiver.receiveReferrer(fktableName, table);
         }
       }
@@ -1045,13 +827,8 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
   // trigger import --------------------------------------------------------------------------------------------------
 
-  /**
-   * Import sequences.
-   *
-   * @param database the database
-   */
   public void importSequences(Database database) {
-    LOGGER.info("Importing sequences from environment '{}'", database.getEnvironment());
+    logger.info("Importing sequences from environment '{}'", database.getEnvironment());
     StopWatch watch = new StopWatch("importSequences");
     try {
       if (dialect.isSequenceSupported()) {
@@ -1069,17 +846,11 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         }
       }
     } catch (Exception e) {
-      LOGGER.error("Error importing sequences from environment '{}'", database.getEnvironment(), e);
+      logger.error("Error importing sequences from environment '{}'", database.getEnvironment(), e);
     }
     watch.stop();
   }
 
-  /**
-   * Import triggers.
-   *
-   * @param database the database
-   * @throws SQLException the sql exception
-   */
   public void importTriggers(Database database) throws SQLException {
     for (DBCatalog catalog : database.getCatalogs()) {
       for (DBSchema schema : catalog.getSchemas()) {
@@ -1097,12 +868,6 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     watch.stop();
   }
 
-  /**
-   * Import packages.
-   *
-   * @param database the database
-   * @throws SQLException the sql exception
-   */
   public void importPackages(Database database) throws SQLException {
     for (DBCatalog catalog : database.getCatalogs()) {
       for (DBSchema schema : catalog.getSchemas()) {
@@ -1124,12 +889,6 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     watch.stop();
   }
 
-  /**
-   * Table supported boolean.
-   *
-   * @param tableName the table name
-   * @return the boolean
-   */
   protected boolean tableSupported(String tableName) {
     return tableNameFilter.accept(tableName);
   }
@@ -1142,79 +901,24 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     return getClass().getSimpleName();
   }
 
-  /**
-   * The interface Column receiver.
-   */
   public interface ColumnReceiver {
-    /**
-     * Receive column.
-     *
-     * @param columnName     the column name
-     * @param dataType       the data type
-     * @param columnSize     the column size
-     * @param fractionDigits the fraction digits
-     * @param nullable       the nullable
-     * @param defaultValue   the default value
-     * @param comment        the comment
-     * @param table          the table
-     */
     void receiveColumn(String columnName, DBDataType dataType, Integer columnSize, Integer fractionDigits,
                        boolean nullable, String defaultValue, String comment, DBTable table);
   }
 
-  /**
-   * The interface Pk receiver.
-   */
   public interface PKReceiver {
-    /**
-     * Receive pk.
-     *
-     * @param pkName            the pk name
-     * @param deterministicName the deterministic name
-     * @param columnNames       the column names
-     * @param table             the table
-     */
     void receivePK(String pkName, boolean deterministicName, String[] columnNames, DBTable table);
   }
 
-  /**
-   * The interface Fk receiver.
-   */
   public interface FKReceiver {
-    /**
-     * Receive fk.
-     *
-     * @param fk    the fk
-     * @param table the table
-     */
     void receiveFK(DBForeignKeyConstraint fk, DBTable table);
   }
 
-  /**
-   * The interface Referrer receiver.
-   */
   public interface ReferrerReceiver {
-    /**
-     * Receive referrer.
-     *
-     * @param fktableName the fktable name
-     * @param table        the table
-     */
     void receiveReferrer(String fktableName, DBTable table);
   }
 
-  /**
-   * The interface Index receiver.
-   */
   public interface IndexReceiver {
-    /**
-     * Receive index.
-     *
-     * @param indexInfo         the index info
-     * @param deterministicName the deterministic name
-     * @param table             the table
-     * @param schema            the schema
-     */
     void receiveIndex(DBIndexInfo indexInfo, boolean deterministicName, DBTable table, DBSchema schema);
   }
 

@@ -28,25 +28,18 @@ import java.util.Map;
 /**
  * Reads a configuration file to check which databases are enabled or disabled for testing.<br/><br/>
  * Created: 02.11.2011 10:06:21
- *
  * @author Volker Bergmann
  * @since 0.6.14
  */
 public class DatabaseTestUtil {
 
-  /**
-   * Gets connect data.
-   *
-   * @param environment the environment
-   * @return the connect data
-   */
-  public static JDBCConnectData getConnectData(String environment) {
+  public static JDBCConnectData getConnectData(String environment, String folder) {
     Map<String, String> properties = DatabeneTestUtil.getProperties();
     String prefix = "db." + environment + ".";
     if (!"true".equals(properties.get(prefix + "online"))) {
       return null;
     }
-    return DBUtil.getConnectData(environment);
+    return DBUtil.getConnectData(environment, folder);
   }
 
 }

@@ -32,19 +32,11 @@ import com.rapiddweller.jdbacl.model.jdbc.JDBCMetaDataUtil;
 /**
  * Retrieves meta data from a database and prints it to the console in a tree structure.<br/><br/>
  * Created: 26.06.2011 07:38:38
- *
  * @author Volker Bergmann
  * @since 0.6.9
  */
 public class Main {
 
-  /**
-   * The entry point of application.
-   *
-   * @param args the input arguments
-   * @throws ConnectFailedException the connect failed exception
-   * @throws ImportFailedException  the import failed exception
-   */
   public static void main(String[] args) throws ConnectFailedException, ImportFailedException {
     String environment = null;
     for (String arg : args) {
@@ -57,7 +49,7 @@ public class Main {
     if (environment == null) {
       printErrorAndHelpAndExit();
     }
-    Database database = JDBCMetaDataUtil.getMetaData(environment, true, true, true, true, ".*", null, false, true);
+    Database database = JDBCMetaDataUtil.getMetaData(environment, ".", true, true, true, true, ".*", null, false, true);
     new TreeLogger().log(new DatabaseTreeModel(database));
   }
 
