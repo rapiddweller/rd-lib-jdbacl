@@ -55,8 +55,8 @@ import com.rapiddweller.jdbacl.proxy.LoggingPreparedStatementHandler;
 import com.rapiddweller.jdbacl.proxy.LoggingResultSetHandler;
 import com.rapiddweller.jdbacl.proxy.LoggingStatementHandler;
 import com.rapiddweller.jdbacl.proxy.PooledConnectionHandler;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.PooledConnection;
 import java.io.BufferedReader;
@@ -156,6 +156,10 @@ public class DBUtil {
     File file = FileUtil.getFileIgnoreCase(new File(folder, filename), false);
     if (!file.exists()) {
       file = FileUtil.getFileIgnoreCase(new File(filename), false);
+    }
+    if (!file.exists()) {
+      folder = folder + SystemInfo.getFileSeparator() + "conf";
+      file = FileUtil.getFileIgnoreCase(new File(folder, filename), false);
     }
     if (!file.exists()) {
       File defaultUserHomeFile = new File(SystemInfo.getUserHome() + SystemInfo.getFileSeparator() + "rapiddweller", filename);
