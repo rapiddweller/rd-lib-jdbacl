@@ -30,6 +30,7 @@ import com.rapiddweller.common.ArrayBuilder;
 import com.rapiddweller.common.ArrayFormat;
 import com.rapiddweller.common.ArrayUtil;
 import com.rapiddweller.common.BeanUtil;
+import com.rapiddweller.common.ConfigUtil;
 import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.ConnectFailedException;
 import com.rapiddweller.common.ErrorHandler;
@@ -162,7 +163,7 @@ public class DBUtil {
       file = FileUtil.getFileIgnoreCase(new File(folder, filename), false);
     }
     if (!file.exists()) {
-      File defaultUserHomeFile = new File(SystemInfo.getUserHome() + SystemInfo.getFileSeparator() + "rapiddweller", filename);
+      File defaultUserHomeFile = new File(ConfigUtil.userConfigFolder(), filename);
       file = FileUtil.getFileIgnoreCase(defaultUserHomeFile, false);
     }
     String path;
