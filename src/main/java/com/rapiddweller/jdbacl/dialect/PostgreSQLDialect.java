@@ -164,4 +164,12 @@ public class PostgreSQLDialect extends DatabaseDialect {
         "PostgreSQLDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
   }
 
+  @Override
+  public String getSpecialType(String type) {
+    if ("double".equals(type)) {
+      return "numeric";
+    } else {
+      return super.getSpecialType(type);
+    }
+  }
 }
