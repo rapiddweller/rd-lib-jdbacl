@@ -62,7 +62,6 @@ import static com.rapiddweller.jdbacl.SQLUtil.createCatSchTabString;
 /**
  * Provides abstractions of concepts that are implemented differently
  * by different database vendors.<br/><br/>
- *
  * @author Volker Bergmann
  * @since 0.4.0
  */
@@ -70,17 +69,8 @@ import static com.rapiddweller.jdbacl.SQLUtil.createCatSchTabString;
 public abstract class DatabaseDialect {
 
   private static final String DEFAULT_TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
-  /**
-   * The Quote table names.
-   */
   public final boolean quoteTableNames;
-  /**
-   * The Logger.
-   */
   protected final Logger logger = LoggerFactory.getLogger(getClass());
-  /**
-   * The Sequence supported.
-   */
   protected final boolean sequenceSupported;
   private final String system;
   private final DateFormat dateFormat;
@@ -88,17 +78,7 @@ public abstract class DatabaseDialect {
   private final DateFormat timeFormat;
   private Set<String> reservedWords;
 
-  /**
-   * Instantiates a new Database dialect.
-   *
-   * @param system            the system
-   * @param quoteTableNames   the quote table names
-   * @param sequenceSupported the sequence supported
-   * @param datePattern       the date pattern
-   * @param timePattern       the time pattern
-   * @param datetimePattern   the datetime pattern
-   */
-  public DatabaseDialect(String system, boolean quoteTableNames, boolean sequenceSupported,
+  protected DatabaseDialect(String system, boolean quoteTableNames, boolean sequenceSupported,
                          String datePattern, String timePattern, String datetimePattern) {
     this.system = system;
     this.quoteTableNames = quoteTableNames;
@@ -109,44 +89,18 @@ public abstract class DatabaseDialect {
     this.reservedWords = null;
   }
 
-  /**
-   * Is not one boolean.
-   *
-   * @param i the
-   * @return the boolean
-   */
   protected static boolean isNotOne(BigInteger i) {
     return (BigInteger.ONE.compareTo(i) != 0);
   }
 
-  /**
-   * Gets system.
-   *
-   * @return the system
-   */
   public String getSystem() {
     return system;
   }
 
-  /**
-   * Is reserved word boolean.
-   *
-   * @param word       the word
-   * @param connection the connection
-   * @return the boolean
-   * @throws SQLException the sql exception
-   */
   public boolean isReservedWord(String word, Connection connection) throws SQLException {
     return (word != null && getReservedWords(connection).contains(word.toUpperCase()));
   }
 
-  /**
-   * Gets reserved words.
-   *
-   * @param connection the connection
-   * @return the reserved words
-   * @throws SQLException the sql exception
-   */
   public Set<String> getReservedWords(Connection connection) throws SQLException {
     if (reservedWords == null) {
       importReservedWords(connection);
@@ -178,7 +132,7 @@ public abstract class DatabaseDialect {
   private void importReservedWordsFromDriver(Connection connection) throws SQLException {
     DatabaseMetaData metaData = connection.getMetaData();
     String keywordList = metaData.getSQLKeywords();
-    logger.debug("Imported keywords: " + keywordList);
+    logger.debug("Imported keywords: {}", keywordList);
     String[] keywords = StringUtil.splitAndTrim(keywordList, ',');
     for (String keyword : keywords) {
       this.reservedWords.add(keyword.toUpperCase());
@@ -190,13 +144,13 @@ public abstract class DatabaseDialect {
     if (IOUtil.isURIAvailable(resourceName)) {
       parseReservedWords(resourceName);
     } else {
-      logger.debug("Configuration file not found: " + resourceName + ". Falling back to SQL:2003 keywords");
+      logger.debug("Configuration file not found: {}. Falling back to SQL:2003 keywords", resourceName);
       parseReservedWords("com/rapiddweller/jdbacl/dialect/SQL2003-reserved_words.txt");
     }
   }
 
   private void parseReservedWords(String resourceName) {
-    logger.debug("reading reserved word from config file " + resourceName);
+    logger.debug("reading reserved word from config file {}", resourceName);
     try {
       for (String word : IOUtil.readTextLines(resourceName, false)) {
         reservedWords.add(word.trim());
@@ -206,61 +160,22 @@ public abstract class DatabaseDialect {
     }
   }
 
-  /**
-   * Is default catalog boolean.
-   *
-   * @param catalog the catalog
-   * @param user    the user
-   * @return the boolean
-   */
   public abstract boolean isDefaultCatalog(String catalog, String user);
 
-  /**
-   * Is default schema boolean.
-   *
-   * @param schema the schema
-   * @param user   the user
-   * @return the boolean
-   */
   public abstract boolean isDefaultSchema(String schema, String user);
 
-  /**
-   * Is sequence supported boolean.
-   *
-   * @return the boolean
-   */
   public boolean isSequenceSupported() {
     return sequenceSupported;
   }
 
-  /**
-   * Is sequence boundary supported boolean.
-   *
-   * @return the boolean
-   */
   public boolean isSequenceBoundarySupported() {
     return sequenceSupported;
   }
 
-  /**
-   * Query sequences db sequence [ ].
-   *
-   * @param connection the connection
-   * @return the db sequence [ ]
-   * @throws SQLException the sql exception
-   */
   public DBSequence[] querySequences(Connection connection) throws SQLException {
     throw new UnsupportedOperationException(getClass().getSimpleName() + " does not support querying sequences");
   }
 
-  /**
-   * Create sequence.
-   *
-   * @param name         the name
-   * @param initialValue the initial value
-   * @param connection   the connection
-   * @throws SQLException the sql exception
-   */
   public void createSequence(String name, long initialValue, Connection connection) throws SQLException {
     if (sequenceSupported) {
       DBUtil.executeUpdate("create sequence " + name + " start with " + initialValue, connection);
@@ -269,12 +184,6 @@ public abstract class DatabaseDialect {
     }
   }
 
-  /**
-   * Render create sequence string.
-   *
-   * @param sequence the sequence
-   * @return the string
-   */
   public String renderCreateSequence(DBSequence sequence) {
     StringBuilder builder = new StringBuilder("CREATE SEQUENCE ");
     builder.append(renderSequenceNameAndType(sequence));
@@ -303,43 +212,18 @@ public abstract class DatabaseDialect {
     return builder.toString();
   }
 
-  /**
-   * Render sequence name and type string.
-   *
-   * @param sequence the sequence
-   * @return the string
-   */
   protected String renderSequenceNameAndType(DBSequence sequence) {
     return sequence.getName();
   }
 
-  /**
-   * Sequence no cycle string.
-   *
-   * @return the string
-   */
   protected String sequenceNoCycle() {
     return "NOCYCLE";
   }
 
-  /**
-   * Render fetch sequence value string.
-   *
-   * @param sequenceName the sequence name
-   * @return the string
-   */
   public String renderFetchSequenceValue(String sequenceName) {
     throw checkSequenceSupport("nextSequenceValue");
   }
 
-  /**
-   * Sets next sequence value.
-   *
-   * @param sequenceName the sequence name
-   * @param value        the value
-   * @param connection   the connection
-   * @throws SQLException the sql exception
-   */
   public void setNextSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
     if (sequenceSupported) {
       long old = DBUtil.queryLong(renderFetchSequenceValue(sequenceName), connection);
@@ -355,14 +239,6 @@ public abstract class DatabaseDialect {
     }
   }
 
-  /**
-   * Gets sequence.
-   *
-   * @param sequenceName the sequence name
-   * @param connection   the connection
-   * @return the sequence
-   * @throws SQLException the sql exception
-   */
   public DBSequence getSequence(String sequenceName, Connection connection) throws SQLException {
     DBSequence[] sequences = querySequences(connection);
     for (DBSequence seq : sequences) {
@@ -373,12 +249,6 @@ public abstract class DatabaseDialect {
     throw new ObjectNotFoundException("No sequence found with name '" + sequenceName + "'");
   }
 
-  /**
-   * Render drop sequence string.
-   *
-   * @param sequenceName the sequence name
-   * @return the string
-   */
   public String renderDropSequence(String sequenceName) {
     if (sequenceSupported) {
       return "drop sequence " + sequenceName;
@@ -387,17 +257,10 @@ public abstract class DatabaseDialect {
     }
   }
 
-  /**
-   * Insert string.
-   *
-   * @param table       the table
-   * @param columnInfos the column infos
-   * @return the string
-   */
   public String insert(DBTable table, List<ColumnInfo> columnInfos) {
     StringBuilder builder = new StringBuilder("insert into ");
     builder.append(createCatSchTabString(table.getCatalog().getName(), table.getSchema().getName(), table.getName(), this)).append(" (");
-    if (columnInfos.size() > 0) {
+    if (!columnInfos.isEmpty()) {
       appendColumnName(columnInfos.get(0).name, builder, this);
     }
     for (int i = 1; i < columnInfos.size(); i++) {
@@ -405,24 +268,16 @@ public abstract class DatabaseDialect {
       appendColumnName(columnInfos.get(i).name, builder, this);
     }
     builder.append(") values (");
-    if (columnInfos.size() > 0) {
+    if (!columnInfos.isEmpty()) {
       builder.append("?");
     }
     builder.append(",?".repeat(Math.max(0, columnInfos.size() - 1)));
     builder.append(")");
     String sql = builder.toString();
-    logger.debug("built SQL statement: " + sql);
+    logger.debug("built SQL statement: {}", sql);
     return sql;
   }
 
-  /**
-   * Update string.
-   *
-   * @param table         the table
-   * @param pkColumnNames the pk column names
-   * @param columnInfos   the column infos
-   * @return the string
-   */
   public String update(DBTable table, String[] pkColumnNames, List<ColumnInfo> columnInfos) {
     if (pkColumnNames.length == 0) {
       throw new UnsupportedOperationException("Cannot update table without primary key: " + table.getName());
@@ -449,16 +304,10 @@ public abstract class DatabaseDialect {
       }
     }
     String sql = builder.toString();
-    logger.debug("built SQL statement: " + sql);
+    logger.debug("built SQL statement: {}", sql);
     return sql;
   }
 
-  /**
-   * Format value string.
-   *
-   * @param value the value
-   * @return the string
-   */
   public String formatValue(Object value) {
     if (value instanceof CharSequence || value instanceof Character) {
       return "'" + DBUtil.escape(value.toString()) + "'";
@@ -477,12 +326,6 @@ public abstract class DatabaseDialect {
     }
   }
 
-  /**
-   * Format timestamp string.
-   *
-   * @param timestamp the timestamp
-   * @return the string
-   */
   public String formatTimestamp(Timestamp timestamp) {
     return "'" + new TimestampFormatter(DEFAULT_TIMESTAMP_PATTERN).format(timestamp) + "'";
   }
@@ -490,12 +333,6 @@ public abstract class DatabaseDialect {
   // private helpers for prepared statements-------------------------------------------------------------------------------------------------
 
 
-  /**
-   * Check sequence support unsupported operation exception.
-   *
-   * @param methodName the method name
-   * @return the unsupported operation exception
-   */
   protected UnsupportedOperationException checkSequenceSupport(String methodName) {
     if (!sequenceSupported) {
       return new UnsupportedOperationException("Sequence not supported in " + system);
@@ -504,82 +341,41 @@ public abstract class DatabaseDialect {
     }
   }
 
-  /**
-   * Determines if a primary key constraint name was explicitly specified on creation
-   * or at least generated by the database in a deterministic (reproducible) way
-   *
-   * @param pkName the pk name
-   * @return the boolean
-   */
+  /** Determines if a primary key constraint name was explicitly specified on creation
+   *  or at least generated by the database in a deterministic (reproducible) way */
   public abstract boolean isDeterministicPKName(String pkName);
 
-  /**
-   * Determines if a unique key constraint name was explicitly specified on creation
-   * or at least generated by the database in a deterministic (reproducible) way
-   *
-   * @param ukName the uk name
-   * @return the boolean
-   */
+  /** Determines if a unique key constraint name was explicitly specified on creation
+   *  or at least generated by the database in a deterministic (reproducible) way */
   public abstract boolean isDeterministicUKName(String ukName);
 
-  /**
-   * Determines if a foreign key constraint name was explicitly specified creation
-   * or at least generated by the database in a deterministic (reproducible) way
-   *
-   * @param fkName the fk name
-   * @return the boolean
-   */
+  /** Determines if a foreign key constraint name was explicitly specified creation
+   *  or at least generated by the database in a deterministic (reproducible) way */
   public abstract boolean isDeterministicFKName(String fkName);
 
-  /**
-   * Determines if an index name was explicitly specified creation
-   * or at least generated by the database in a deterministic (reproducible) way
-   *
-   * @param indexName the index name
-   * @return the boolean
-   */
+  /** Determines if an index name was explicitly specified creation
+   * or at least generated by the database in a deterministic (reproducible) way */
   public abstract boolean isDeterministicIndexName(String indexName);
 
-  /**
-   * Tells if the database supports regular expressions
-   *
-   * @return the boolean
-   */
+  /** Tells if the database supports regular expressions */
   public boolean supportsRegex() {
     return false;
   }
 
-  /**
-   * Renders a query condition for a regular expression.
-   *
-   * @param expression a column name or a SQL value expression to be checked with a regular expression
-   * @param not        if set to true, the query fits expressions which do not match the regular expression
-   * @param regex      the regular expression to check with
-   * @return a string with a SQL query condition.
-   * @throws UnsupportedOperationException if the database does not support regular expressions
-   */
+  /** Renders a query condition for a regular expression.
+   *  @param expression a column name or a SQL value expression to be checked with a regular expression
+   *  @param not        if set to true, the query fits expressions which do not match the regular expression
+   *  @param regex      the regular expression to check with
+   *  @return a string with a SQL query condition.
+   *  @throws UnsupportedOperationException if the database does not support regular expressions */
   public String regexQuery(String expression, boolean not, String regex) {
     throw new UnsupportedOperationException(system + " does not support regular expressions");
   }
 
-  /**
-   * Trim string.
-   *
-   * @param expression the expression
-   * @return the string
-   */
   public String trim(String expression) {
     throw new UnsupportedOperationException(system + " does not support trimming");
   }
 
-  /**
-   * Render case string.
-   *
-   * @param columnName              the column name
-   * @param elseExpression          the else expression
-   * @param whenThenExpressionPairs the when then expression pairs
-   * @return the string
-   */
   public String renderCase(String columnName, String elseExpression, String... whenThenExpressionPairs) {
     StringBuilder builder = new StringBuilder();
     builder.append("CASE");
@@ -618,35 +414,18 @@ public abstract class DatabaseDialect {
 	}
   */
 
-  /**
-   * Query triggers.
-   *
-   * @param schema     the schema
-   * @param connection the connection
-   * @throws SQLException the sql exception
-   */
   public void queryTriggers(DBSchema schema, Connection connection) throws SQLException {
   }
 
-  /**
-   * Query packages list.
-   *
-   * @param schema     the schema
-   * @param connection the connection
-   * @return the list
-   * @throws SQLException the sql exception
-   */
   public List<DBPackage> queryPackages(DBSchema schema, Connection connection) throws SQLException {
     return new ArrayList<>();
   }
 
-  /**
-   * Restrict rownums.
-   *
-   * @param rowOffset the row offset
-   * @param rowCount  the row count
-   * @param query     the query
-   */
   public abstract void restrictRownums(int rowOffset, int rowCount, Query query);
+
+  /** returns a database dialect's special type name for a primitive type. */
+  public String getSpecialType(String primitiveType) {
+    return primitiveType;
+  }
 
 }

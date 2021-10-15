@@ -27,6 +27,7 @@
 package com.rapiddweller.jdbacl.dialect;
 
 import com.rapiddweller.common.ArrayBuilder;
+import com.rapiddweller.common.Assert;
 import com.rapiddweller.common.CollectionUtil;
 import com.rapiddweller.common.NameUtil;
 import com.rapiddweller.common.OrderedMap;
@@ -58,13 +59,10 @@ import java.util.regex.Pattern;
 /**
  * Implements generic database concepts for Oracle.<br/><br/>
  * Created: 26.01.2008 07:05:28
- *
  * @author Volker Bergmann
  * @since 0.4.0
  */
 public class OracleDialect extends DatabaseDialect {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(OracleDialect.class);
 
   private static final String DATE_PATTERN = "'to_date('''yyyy-MM-dd''', ''yyyy-mm-dd'')'";
   private static final String TIME_PATTERN = "'to_date('''HH:mm:ss''', ''HH24:mi:ss'')'";
@@ -73,14 +71,8 @@ public class OracleDialect extends DatabaseDialect {
   private static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
   private static final Pattern SIMPLE_NOT_NULL_CHECK = Pattern.compile("\"[A-Z0-9_]+\" IS NOT NULL");
 
-  /**
-   * The Random name pattern.
-   */
   final Pattern randomNamePattern = Pattern.compile("SYS_C\\d{8}");
 
-  /**
-   * Instantiates a new Oracle dialect.
-   */
   public OracleDialect() {
     super("oracle", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
   }
@@ -155,7 +147,7 @@ public class OracleDialect extends DatabaseDialect {
         sequence.setCache(resultSet.getLong(7));
         sequence.setLastNumber(new BigInteger(resultSet.getString(8)));
         builder.add(sequence);
-        LOGGER.debug("Imported sequence {}", sequence.getName());
+        logger.debug("Imported sequence {}", sequence.getName());
       }
       return builder.toArray();
     } finally {
@@ -163,14 +155,6 @@ public class OracleDialect extends DatabaseDialect {
     }
   }
 
-  /**
-   * Query check constraints db check constraint [ ].
-   *
-   * @param connection the connection
-   * @param schemaName the schema name
-   * @return the db check constraint [ ]
-   * @throws SQLException the sql exception
-   */
   public DBCheckConstraint[] queryCheckConstraints(Connection connection, String schemaName) throws SQLException {
     Statement statement = connection.createStatement();
     statement.setFetchSize(300);
@@ -194,10 +178,10 @@ public class OracleDialect extends DatabaseDialect {
                   constraintName, !isDeterministicCheckName(constraintName), tableName, condition);
               builder.add(constraint);
             } catch (Exception e) {
-              LOGGER.error("Error parsing check constraint ", e);
+              logger.error("Error parsing check constraint ", e);
             }
           }
-          LOGGER.debug("Imported check for table {}: {}", tableName, condition);
+          logger.debug("Imported check for table {}: {}", tableName, condition);
         }
       }
     } finally {
@@ -206,12 +190,6 @@ public class OracleDialect extends DatabaseDialect {
     return builder.toArray();
   }
 
-  /**
-   * Is deterministic check name boolean.
-   *
-   * @param checkName the check name
-   * @return the boolean
-   */
   public boolean isDeterministicCheckName(String checkName) {
     return !randomNamePattern.matcher(checkName).matches();
   }
@@ -309,7 +287,7 @@ public class OracleDialect extends DatabaseDialect {
       while (resultSet.next()) {
         DBTrigger trigger = new DBTrigger(resultSet.getString(2), null);
         trigger.setOwner(schema);
-        assert schema != null;
+        Assert.isTrue(schema != null, "schema is null");
         schema.receiveTrigger(trigger); // use receiveTrigger(), because the DBTrigger ctor would cause a recursion in trigger import
         trigger.setTriggerType(resultSet.getString(3));
         trigger.setTriggeringEvent(resultSet.getString(4));
@@ -324,7 +302,7 @@ public class OracleDialect extends DatabaseDialect {
         trigger.setActionType(resultSet.getString(13));
         trigger.setTriggerBody(resultSet.getString(14));
         triggers.add(trigger);
-        LOGGER.debug("Imported trigger: {}", trigger.getName());
+        logger.debug("Imported trigger: {}", trigger.getName());
       }
     } finally {
       DBUtil.closeResultSetAndStatement(resultSet);
@@ -350,7 +328,7 @@ public class OracleDialect extends DatabaseDialect {
       if (schema == null || schema.getName().equals(ownerName)) {
         String name = (String) pkgInfo[1];
         DBPackage pkg = new DBPackage(name, null);
-        assert schema != null;
+        Assert.isTrue(schema != null, "Schema is null");
         schema.receivePackage(pkg);
         pkg.setSchema(schema);
         pkg.setSubObjectName((String) pkgInfo[2]);
@@ -358,7 +336,7 @@ public class OracleDialect extends DatabaseDialect {
         pkg.setObjectType((String) pkgInfo[4]);
         pkg.setStatus((String) pkgInfo[5]);
         packages.put(pkg.getName(), pkg);
-        LOGGER.debug("Imported package {}", pkg);
+        logger.debug("Imported package {}", pkg);
       }
     }
 
@@ -375,7 +353,7 @@ public class OracleDialect extends DatabaseDialect {
       proc.setObjectId(procInfo[2].toString());
       proc.setSubProgramId(procInfo[3].toString());
       proc.setOverload((String) procInfo[4]);
-      LOGGER.debug("Imported package procedure {}.{}", owner.getName(), proc.getName());
+      logger.debug("Imported package procedure {}.{}", owner.getName(), proc.getName());
     }
     return packages.values();
   }
@@ -396,4 +374,14 @@ public class OracleDialect extends DatabaseDialect {
     return "TRIM(" + expression + ")";
   }
 
+  @Override
+  public String getSpecialType(String primitiveType) {
+    if ("varchar".equals(primitiveType)) {
+      return "varchar2";
+    } else if ("double".equals(primitiveType)) {
+      return "number";
+    } else {
+      return super.getSpecialType(primitiveType);
+    }
+  }
 }
