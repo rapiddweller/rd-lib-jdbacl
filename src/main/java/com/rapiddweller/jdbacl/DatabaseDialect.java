@@ -424,8 +424,8 @@ public abstract class DatabaseDialect {
   public abstract void restrictRownums(int rowOffset, int rowCount, Query query);
 
   /** returns a database dialect's special type name for a primitive type. */
-  public String getSpecialType(String primitiveType) {
-    return primitiveType;
+  public String getSpecialType(String type) {
+    return type;
   }
 
 }
