@@ -220,7 +220,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
         return schema;
       }
     }
-    throw new ObjectNotFoundException("Schema '" + name + "'");
+    throw new ObjectNotFoundException("Schema '" + schemaName + "'");
   }
 
   // table operations ------------------------------------------------------------------------------------------------
