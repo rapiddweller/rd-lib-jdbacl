@@ -124,9 +124,9 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     init();
   }
 
-  public JDBCDBImporter(Connection connection, String environment, String user, String catalogName, String schemaName) {
+  public JDBCDBImporter(Connection connection, String environment, String folder, String user, String catalogName, String schemaName) {
     this.environment = (environment != null ? environment : TEMPORARY_ENVIRONMENT);
-    this.folder = ".";
+    this.folder = folder;
     this.connection = connection;
     this.user = user;
     this.catalogName = catalogName;
