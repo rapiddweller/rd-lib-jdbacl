@@ -375,13 +375,13 @@ public class OracleDialect extends DatabaseDialect {
   }
 
   @Override
-  public String getSpecialType(String primitiveType) {
-    if ("varchar".equals(primitiveType)) {
+  public String getSpecialType(String type) {
+    if ("varchar".equals(type)) {
       return "varchar2";
-    } else if ("double".equals(primitiveType)) {
+    } else if ("double".equals(type)) {
       return "number";
     } else {
-      return super.getSpecialType(primitiveType);
+      return super.getSpecialType(type);
     }
   }
 }
