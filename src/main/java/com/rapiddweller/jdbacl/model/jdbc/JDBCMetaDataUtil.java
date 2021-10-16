@@ -73,29 +73,30 @@ public class JDBCMetaDataUtil {
     return importer;
   }
 
-  public static Database getMetaData(Connection target, String user, String catalog, String schema)
-      throws ConnectFailedException, ImportFailedException {
-    return getMetaData(target, user, catalog, schema, true, true, true, true, ".*", null);
-  }
-
-  public static Database getMetaData(Connection connection, String user, String catalogName, String schemaName,
-                                     boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
-                                     String tableInclusionPattern, String tableExclusionPattern)
-      throws ConnectFailedException, ImportFailedException {
-    DBMetaDataImporter importer = getJDBCDBImporter(connection, user, catalogName, schemaName,
-        importUKs, importIndexes, importSequences, importChecks,
-        tableInclusionPattern, tableExclusionPattern);
-    return importer.importDatabase();
-  }
-
-  public static JDBCDBImporter getJDBCDBImporter(Connection connection, String user, String catalogName, String schemaName,
+  public static JDBCDBImporter getJDBCDBImporter(Connection connection, String environment,
+                                                 String user, String catalogName, String schemaName,
                                                  boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
                                                  String tableInclusionPattern, String tableExclusionPattern) {
     JDBCDBImporter importer;
-    importer = new JDBCDBImporter(connection, user, catalogName, schemaName);
+    importer = new JDBCDBImporter(connection, environment, user, catalogName, schemaName);
     importer.setTableInclusionPattern(tableInclusionPattern);
     importer.setTableExclusionPattern(tableExclusionPattern);
     return importer;
+  }
+
+  public static Database getMetaData(Connection target, String environment, String user, String catalog, String schema)
+      throws ConnectFailedException, ImportFailedException {
+    return getMetaData(target, environment, user, catalog, schema, true, true, true, true, ".*", null);
+  }
+
+  public static Database getMetaData(Connection connection, String environment, String user, String catalogName, String schemaName,
+                                     boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
+                                     String tableInclusionPattern, String tableExclusionPattern)
+      throws ConnectFailedException, ImportFailedException {
+    DBMetaDataImporter importer = getJDBCDBImporter(connection, environment, user, catalogName, schemaName,
+        importUKs, importIndexes, importSequences, importChecks,
+        tableInclusionPattern, tableExclusionPattern);
+    return importer.importDatabase();
   }
 
 }
