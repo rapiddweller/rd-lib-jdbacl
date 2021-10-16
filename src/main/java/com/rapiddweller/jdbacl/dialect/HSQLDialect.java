@@ -189,4 +189,13 @@ public class HSQLDialect extends DatabaseDialect {
     }
   }
 
+  @Override
+  public String getSpecialType(String type) {
+    if ("long".equals(type)) {
+      return "bigint";
+    } else {
+      return super.getSpecialType(type);
+    }
+  }
+
 }
