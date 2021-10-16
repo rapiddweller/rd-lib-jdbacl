@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -39,20 +39,13 @@ import static org.junit.Assert.assertTrue;
 /**
  * Parent class for {@link IdentityModel} tests.<br/><br/>
  * Created: 06.12.2010 06:45:34
- *
  * @author Volker Bergmann
  * @since 0.4
  */
 public abstract class AbstractIdentityTest {
 
-  /**
-   * The constant LF.
-   */
   protected static final String LF = SystemInfo.getLineSeparator();
 
-  /**
-   * The constant CREATE_COUNTRY_TABLE.
-   */
   protected static final String CREATE_COUNTRY_TABLE =
       "create table country (" + LF +
           "	code char(2)," + LF +
@@ -60,27 +53,12 @@ public abstract class AbstractIdentityTest {
           "	constraint country_pk primary key (code)" + LF +
           ")";
 
-  /**
-   * The constant DROP_COUNTRY_TABLE.
-   */
   protected static final String DROP_COUNTRY_TABLE = "drop table country";
 
-  /**
-   * The constant INSERT_COUNTRY_DE.
-   */
   protected static final String INSERT_COUNTRY_DE = "insert into country values ('DE', 'GERMANY')";
-  /**
-   * The constant INSERT_COUNTRY_FR.
-   */
   protected static final String INSERT_COUNTRY_FR = "insert into country values ('FR', 'FRANCE')";
-  /**
-   * The constant INSERT_COUNTRY_UK.
-   */
   protected static final String INSERT_COUNTRY_UK = "insert into country values ('UK', 'UNITED KINGDOM')";
 
-  /**
-   * The constant CREATE_STATE_TABLE.
-   */
   protected static final String CREATE_STATE_TABLE =
       "create table state (" + LF +
           "	id int," + LF +
@@ -90,44 +68,20 @@ public abstract class AbstractIdentityTest {
           "	constraint state_country_fk foreign key (country) references country (code)" + LF +
           ")";
 
-  /**
-   * The constant DROP_STATE_TABLE.
-   */
   protected static final String DROP_STATE_TABLE = "drop table state";
 
-  /**
-   * The constant INSERT_STATE_BY.
-   */
   protected static final String INSERT_STATE_BY = "insert into state values (1, 'DE', 'BY')";
 
-  /**
-   * Create tables.
-   *
-   * @param source the source
-   * @throws SQLException the sql exception
-   */
   protected void createTables(Connection source) throws SQLException {
     DBUtil.executeUpdate(CREATE_COUNTRY_TABLE, source);
     DBUtil.executeUpdate(CREATE_STATE_TABLE, source);
   }
 
-  /**
-   * Drop tables.
-   *
-   * @param source the source
-   * @throws SQLException the sql exception
-   */
   protected void dropTables(Connection source) throws SQLException {
     DBUtil.executeUpdate(DROP_STATE_TABLE, source);
     DBUtil.executeUpdate(DROP_COUNTRY_TABLE, source);
   }
 
-  /**
-   * Insert data.
-   *
-   * @param source the source
-   * @throws SQLException the sql exception
-   */
   protected void insertData(Connection source) throws SQLException {
     DBUtil.executeUpdate(INSERT_COUNTRY_DE, source);
     DBUtil.executeUpdate(INSERT_COUNTRY_FR, source);
@@ -135,12 +89,6 @@ public abstract class AbstractIdentityTest {
     DBUtil.executeUpdate(INSERT_STATE_BY, source);
   }
 
-  /**
-   * Create identities identity provider.
-   *
-   * @param database the database
-   * @return the identity provider
-   */
   protected IdentityProvider createIdentities(Database database) {
     IdentityProvider identityProvider = new IdentityProvider();
 
@@ -156,37 +104,14 @@ public abstract class AbstractIdentityTest {
     return identityProvider;
   }
 
-  /**
-   * Import database database.
-   *
-   * @param target the target
-   * @return the database
-   * @throws ConnectFailedException the connect failed exception
-   * @throws ImportFailedException  the import failed exception
-   */
   protected Database importDatabase(Connection target) throws ConnectFailedException, ImportFailedException {
-    return JDBCMetaDataUtil.getMetaData(target, "sa", null, "PUBLIC");
+    return JDBCMetaDataUtil.getMetaData(target, null, "sa", null, "PUBLIC");
   }
 
-  /**
-   * Connect db connection.
-   *
-   * @param dbName the db name
-   * @param port   the port
-   * @return the connection
-   * @throws ConnectFailedException the connect failed exception
-   */
   protected Connection connectDB(String dbName, int port) throws ConnectFailedException {
     return HSQLUtil.connectInMemoryDB(dbName, port);
   }
 
-  /**
-   * Expect country nk pk.
-   *
-   * @param nk       the nk
-   * @param pk       the pk
-   * @param iterator the iterator
-   */
   protected void expectCountryNkPk(String nk, String pk, HeavyweightIterator<Object[]> iterator) {
     assertTrue(iterator.hasNext());
     Object[] cells = iterator.next();
@@ -194,11 +119,6 @@ public abstract class AbstractIdentityTest {
     assertEquals(pk, cells[1]);
   }
 
-  /**
-   * Expect state nk pk.
-   *
-   * @param iterator the iterator
-   */
   protected void expectStateNkPk(HeavyweightIterator<Object[]> iterator) {
     assertTrue(iterator.hasNext());
     Object[] cells = iterator.next();
