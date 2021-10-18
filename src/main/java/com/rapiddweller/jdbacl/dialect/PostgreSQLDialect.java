@@ -168,6 +168,8 @@ public class PostgreSQLDialect extends DatabaseDialect {
   public String getSpecialType(String type) {
     if ("long".equals(type)) {
       return "bigint";
+    } else if ("double".equals(type)) {
+      return "double precision";
     } else {
       return super.getSpecialType(type);
     }

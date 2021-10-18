@@ -94,4 +94,11 @@ public class MySQLDialect extends DatabaseDialect {
         "MySQLDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
   }
 
+  @Override
+  public String getSpecialType(String type) {
+    if ("long".equals(type)) {
+      return "bigint";
+    }
+    return super.getSpecialType(type);
+  }
 }
