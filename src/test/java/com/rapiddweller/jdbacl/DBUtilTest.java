@@ -105,12 +105,12 @@ public class DBUtilTest {
   @Test
   public void testEnvironmentFileName() throws IOException {
     thrown.expect(ConfigurationError.class);
-    DBUtil.environmentFileName("Environment", ".");
+    DBUtil.environmentFilePath("Environment", ".");
   }
 
   @Test
   public void testEnvironmentFileName2() throws IOException {
-    assertEquals("string://.env.properties", DBUtil.environmentFileName("string://", "."));
+    assertEquals("string://.env.properties", DBUtil.environmentFilePath("string://", "."));
   }
 
   @Test

@@ -34,7 +34,6 @@ import com.rapiddweller.common.ConfigUtil;
 import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.ConnectFailedException;
 import com.rapiddweller.common.ErrorHandler;
-import com.rapiddweller.common.FileUtil;
 import com.rapiddweller.common.HeavyweightIterator;
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.common.LogCategoriesConstants;
@@ -105,8 +104,8 @@ public class DBUtil {
   // connection handling ---------------------------------------------------------------------------------------------
 
   public static String[] getEnvironmentNames() {
-    File databeneFolder = new File(SystemInfo.getUserHome(), "rapiddweller");
-    String[] fileNames = databeneFolder.list((dir, name) -> (name.toLowerCase().endsWith(ENV_PROPERTIES_SUFFIX)));
+    File rapiddwellerFolder = new File(SystemInfo.getUserHome(), "rapiddweller");
+    String[] fileNames = rapiddwellerFolder.list((dir, name) -> (name.toLowerCase().endsWith(ENV_PROPERTIES_SUFFIX)));
     String[] result = new String[Objects.requireNonNull(fileNames).length];
     for (int i = 0; i < fileNames.length; i++) {
       String fileName = fileNames[i];
@@ -116,7 +115,7 @@ public class DBUtil {
   }
 
   /** Determines if a configuration exists for the specified environment.
-   *  Read {@link #environmentFileName(String, String)} to find out where the
+   *  Read {@link #environmentFilePath(String, String)} to find out where the
    *  configuration file is searched. */
   public static boolean existsEnvironment(String environment, String folder) {
     try {
@@ -128,12 +127,12 @@ public class DBUtil {
   }
 
   public static Map<String, String> getEnvironmentData(String environment, String folder) throws IOException {
-    return IOUtil.readProperties(environmentFileName(environment, folder));
+    return IOUtil.readProperties(environmentFilePath(environment, folder));
   }
 
   public static JDBCConnectData getConnectData(String environment, String folder) {
     try {
-      String path = environmentFileName(environment, folder);
+      String path = environmentFilePath(environment, folder);
       return JDBCConnectData.parseSingleDbProperties(path);
     } catch (IOException e) {
       throw new ConfigurationError("Error reading environment data for '" + environment + "'");
@@ -147,34 +146,14 @@ public class DBUtil {
    * returns the first match. The search order is
    * <ol>
    *   <li>the directory specified by the 'folder' parameter (which can be absolute or relative)</li>
+   *   <li>a sub directory 'conf' of the directory specified by the 'folder' parameter</li>
    *   <li>the current working directory</li>
    *   <li>the directory ${USER_HOME}/rapiddweller</li>
    * </ol>
-   *
    */
-  public static String environmentFileName(String environment, String folder) throws IOException {
+  public static String environmentFilePath(String environment, String folder) throws IOException {
     String filename = environment + ENV_PROPERTIES_SUFFIX;
-    File file = FileUtil.getFileIgnoreCase(new File(folder, filename), false);
-    if (!file.exists()) {
-      file = FileUtil.getFileIgnoreCase(new File(filename), false);
-    }
-    if (!file.exists()) {
-      folder = folder + SystemInfo.getFileSeparator() + "conf";
-      file = FileUtil.getFileIgnoreCase(new File(folder, filename), false);
-    }
-    if (!file.exists()) {
-      File defaultUserHomeFile = new File(ConfigUtil.userConfigFolder(), filename);
-      file = FileUtil.getFileIgnoreCase(defaultUserHomeFile, false);
-    }
-    String path;
-    if (file.exists()) {
-      path = file.getCanonicalPath();
-    } else if (IOUtil.isURIAvailable(filename)) {
-      path = filename;
-    } else {
-      throw new ConfigurationError("No environment definition '" + filename + "' found");
-    }
-    return path;
+    return ConfigUtil.configFilePath(filename, folder);
   }
 
   public static Connection connect(String environment, String folder, boolean readOnly) throws ConnectFailedException {
@@ -404,7 +383,7 @@ public class DBUtil {
     return resultSet.getMetaData().getColumnCount();
   }
 
-  public static long countRows(DBTable table, Connection connection) throws SQLException {
+  public static long countRows(DBTable table, Connection connection) {
     return DBUtil.queryLong(
         "SELECT COUNT(*) FROM " + createCatSchTabString(table.getCatalog().getName(), table.getSchema().getName(), table.getName()) + table.getName(),
         connection);
