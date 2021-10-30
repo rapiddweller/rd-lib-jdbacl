@@ -153,7 +153,7 @@ public class DBUtil {
    */
   public static String environmentFilePath(String environment, String folder) throws IOException {
     String filename = environment + ENV_PROPERTIES_SUFFIX;
-    return ConfigUtil.configFilePath(filename, folder);
+    return ConfigUtil.configFilePathDefaultLocations(filename, folder);
   }
 
   public static Connection connect(String environment, String folder, boolean readOnly) throws ConnectFailedException {
