@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2012-2014 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2012-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -28,6 +28,7 @@ import com.rapiddweller.common.Filter;
 import com.rapiddweller.common.ImportFailedException;
 import com.rapiddweller.common.Level;
 import com.rapiddweller.common.LoggerEscalator;
+import com.rapiddweller.common.NameUtil;
 import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.common.ProgrammerError;
 import com.rapiddweller.common.StringUtil;
@@ -208,6 +209,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     return this.connection;
   }
 
+  /** @deprecated */
   @Deprecated
   public void setTablePattern(String tablePattern) {
     this.tableInclusionPattern = tablePattern;
@@ -287,7 +289,9 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     int catalogCount = 0;
     while (catalogSet.next()) {
       String foundCatalog = catalogSet.getString(1);
-      logger.debug("found catalog {}", StringUtil.quoteIfNotNull(foundCatalog));
+      if (logger.isDebugEnabled()) {
+        logger.debug("found catalog {}", StringUtil.quoteIfNotNull(foundCatalog));
+      }
       if (StringUtil.equalsIgnoreCase(foundCatalog, this.catalogName) // this is the configured catalog
           || (StringUtil.isEmpty(this.catalogName) && ( // no catalog configured but...
           dialect.isDefaultCatalog(foundCatalog, user) // ...the one found is the default for the database
@@ -306,10 +310,8 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   }
 
 
-  // table import ----------------------------------------------------------------------------------------------------
-
   // schema import ---------------------------------------------------------------------------------------------------
-  // TODO refactor to support all dialects properly
+
   private Set<String> getForeignSchemas(String schemaName) throws SQLException {
     Set<String> set = new HashSet<>();
     if (schemaName != null) {
@@ -336,29 +338,32 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     ResultSet schemaSet = metaData.getSchemas();
     Set<String> neededSchemas = getForeignSchemas(this.schemaName);
     while (schemaSet.next()) {
-      String schemaName = schemaSet.getString(1);
-      String catalogName = null;
+      String declaredSchemaName = schemaSet.getString(1);
       int columnCount = schemaSet.getMetaData().getColumnCount();
-      if (columnCount >= 2) {
-        catalogName = schemaSet.getString(2);
-      }
-      if (neededSchemas.contains(schemaName)
-          || (this.schemaName == null && dialect.isDefaultSchema(schemaName, user))) {
-        logger.debug("importing schema {}", StringUtil.quoteIfNotNull(schemaName));
-        this.schemaName = schemaName; // take over capitalization used in the DB
-        String catalogNameOfSchema = (columnCount >= 2 && catalogName != null ? catalogName :
-            this.catalogName); // PostgreSQL and SQL Server do not necessarily tell you the catalog name
+      String declaredCatalogName = (columnCount >= 2 ? schemaSet.getString(2) : null);
+      if (neededSchemas.contains(declaredSchemaName)
+          || (this.schemaName == null && dialect.isDefaultSchema(declaredSchemaName, user))) {
+        debug("importing schema {}", StringUtil.quoteIfNotNull(declaredSchemaName));
+        this.schemaName = declaredSchemaName; // take over capitalization used in the DB
+        // PostgreSQL and SQL Server do not necessarily tell you the catalog name
+        String catalogNameOfSchema = (declaredCatalogName != null ? declaredCatalogName : this.catalogName);
         DBCatalog catalogOfSchema = database.getCatalog(catalogNameOfSchema);
         if (catalogOfSchema == null) {
-          throw new ObjectNotFoundException("Catalog of Schema not found: " + schemaName);
+          throw new ObjectNotFoundException("Catalog of Schema not found: " + declaredSchemaName);
         }
-        new DBSchema(schemaName, catalogOfSchema);
-        importAllTables(database, schemaName);
+        new DBSchema(declaredSchemaName, catalogOfSchema);
+        importAllTables(database, declaredSchemaName);
         schemaCount++;
       } else {
-        logger.debug("ignoring schema {}", StringUtil.quoteIfNotNull(schemaName));
+        debug("ignoring schema {}", StringUtil.quoteIfNotNull(declaredSchemaName));
       }
     }
+    haveAtLeastOneSchema(database, schemaCount);
+    schemaSet.close();
+    watch.stop();
+  }
+
+  private void haveAtLeastOneSchema(Database database, int schemaCount) throws SQLException {
     if (schemaCount == 0) {
       // add a default schema if none was reported (e.g. by MySQL)
       DBCatalog catalogToUse = database.getCatalog(catalogName);
@@ -368,8 +373,6 @@ public class JDBCDBImporter implements DBMetaDataImporter {
       catalogToUse.addSchema(new DBSchema(null));
       this.importAllTables(database);
     }
-    schemaSet.close();
-    watch.stop();
   }
 
   public void importAllTables(Database database) throws SQLException {
@@ -412,19 +415,8 @@ public class JDBCDBImporter implements DBMetaDataImporter {
       String tableCatalogName = tableSet.getString(1);
       String tableSchemaName = tableSet.getString(2);
       String tableName = tableSet.getString(3);
-      if (tableName.startsWith("BIN$")) {
-        if (isOracle() && tableName.startsWith("BIN$")) {
-          escalator.escalate("BIN$ table found (for improved performance " +
-              "execute 'PURGE RECYCLEBIN;')", this, tableName);
-        }
-        continue;
-      }
-      // exclude oracle system tables
-      if (tableName.startsWith("SYS_") && isOracle()) {
-        continue;
-      }
       if (!tableSupported(tableName)) {
-        logger.debug("ignoring table: {}, {}, {}", new Object[] {tableCatalogName, tableSchemaName, tableName});
+        logger.debug("ignoring table: {}, {}, {}", tableCatalogName, tableSchemaName, tableName);
         continue;
       }
       String tableTypeSpec = tableSet.getString(4);
@@ -433,7 +425,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         logger.warn("Table name is a reserved word: '{}'", tableName);
       }
       logger.debug("importing table: {}, {}, {}, {}, {}",
-          new Object[] {tableCatalogName, tableSchemaName, tableName, tableTypeSpec, tableRemarks});
+          tableCatalogName, tableSchemaName, tableName, tableTypeSpec, tableRemarks);
       TableType tableType = tableType(tableTypeSpec, tableName);
       DBCatalog catalog = database.getCatalog(tableCatalogName);
       DBSchema schema;
@@ -453,6 +445,20 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     }
     tableSet.close();
     watch.stop();
+  }
+
+  private boolean isOracleInternalTable(String tableName) {
+    if (!isOracle()) {
+      return false;
+    } else if (tableName.startsWith("BIN$")) {
+      // exclude Oracle BIN tables
+      escalator.escalate("BIN$ table found (for improved performance " +
+          "execute 'PURGE RECYCLEBIN;')", this, tableName);
+      return true;
+    } else {
+      // exclude Oracle system tables
+      return tableName.startsWith("SYS_");
+    }
   }
 
   private TableType tableType(String tableTypeSpec, String tableName) {
@@ -500,69 +506,19 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   protected void importColumns(DBCatalog catalog, String schemaName, String tablePattern,
                                Filter<String> tableFilter, ColumnReceiver receiver, ErrorHandler errorHandler) {
     StopWatch watch = new StopWatch("importColumns");
-    String catalogName = catalog.getName();
-    String schemaPattern = (schemaName != null ? schemaName : (catalog.getSchemas().size() == 1 ? catalog.getSchemas().get(0).getName() : null));
-    logger.debug("Importing columns for catalog {}, schemaPattern {}, tablePattern '{}'",
-        StringUtil.quoteIfNotNull(catalogName), StringUtil.quoteIfNotNull(schemaName),
-            StringUtil.quoteIfNotNull(tablePattern));
+    String schemaPattern = schemaPattern(catalog, schemaName);
+    debug("Importing columns for catalog {}, schemaPattern {}, tablePattern '{}'",
+        StringUtil.quoteIfNotNull(catalog.getName()), StringUtil.quoteIfNotNull(schemaName),
+        StringUtil.quoteIfNotNull(tablePattern));
     ResultSet columnSet = null;
     try {
-      columnSet = metaData.getColumns(catalogName, schemaPattern, tablePattern, null);
+      columnSet = metaData.getColumns(catalog.getName(), schemaPattern, tablePattern, null);
       ResultSetMetaData setMetaData = columnSet.getMetaData();
       if (setMetaData.getColumnCount() == 0) {
         return;
       }
       while (columnSet.next()) {
-        String colSchemaName = columnSet.getString(2);
-        String tableName = columnSet.getString(3);
-        String columnName = columnSet.getString(4);
-        if (tableName.startsWith("BIN$") || (tableFilter != null && !tableFilter.accept(tableName))) {
-          logger.debug("ignoring column {}.{}.{}.{}", new Object[] {catalogName, colSchemaName, tableName, columnName});
-          continue;
-        }
-        int sqlType = columnSet.getInt(5);
-        String columnType = columnSet.getString(6);
-        Integer columnSize = columnSet.getInt(7);
-        if (columnSize == 0) // happens with INTEGER values on HSQLDB
-        {
-          columnSize = null;
-        }
-        int decimalDigits = columnSet.getInt(9);
-        boolean nullable = columnSet.getBoolean(11);
-        String comment = columnSet.getString(12);
-        String defaultValue = columnSet.getString(13);
-
-        // Bug fix 3075401: boolean value generation problem in postgresql 8.4
-        if (sqlType == Types.BIT && "bool".equalsIgnoreCase(columnType) && databaseProductName.toLowerCase().startsWith("postgres")) {
-          sqlType = Types.BOOLEAN;
-        }
-
-        logger.debug("found column: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}",
-            catalogName, colSchemaName, tableName,
-            columnName, sqlType, columnType, columnSize, decimalDigits,
-            nullable, comment, defaultValue);
-        // determine table
-        DBTable table = catalog.getTable(tableName, false);
-        if (table == null) {
-          logger.debug("Ignoring column {}.{}", tableName, columnName);
-          continue; // PostgreSQL returns the columns of indexes, too
-        }
-        DBSchema schema = catalog.getSchema(schemaName);
-        if (schema != null) {
-          table = schema.getTable(tableName);
-        }
-        // create column
-        Integer fractionDigits = (decimalDigits > 0 ? decimalDigits : null);
-        DBDataType dataType = DBDataType.getInstance(sqlType, columnType);
-        if (!StringUtil.isEmpty(defaultValue)) {
-          if (!dataType.isAlpha()) {
-            defaultValue = removeBrackets(defaultValue); // some driver adds brackets to number defaults
-          }
-          defaultValue = defaultValue.trim(); // oracle thin driver produces "1 "
-        }
-        receiver.receiveColumn(columnName, dataType, columnSize, fractionDigits, nullable, defaultValue,
-            comment, table);
-        // not used: importVersionColumnInfo(catalogName, table, metaData);
+        importColumn(columnSet, catalog, schemaName, tableFilter, receiver);
       }
     } catch (SQLException e) {
       // possibly we try to access a catalog to which we do not have access rights
@@ -574,6 +530,80 @@ public class JDBCDBImporter implements DBMetaDataImporter {
       DBUtil.close(columnSet);
     }
     watch.stop();
+  }
+
+  private void importColumn(ResultSet columnSet, DBCatalog catalog, String schemaName, Filter<String> tableFilter,
+                            ColumnReceiver receiver) throws SQLException {
+    String colSchemaName = columnSet.getString(2);
+    String tableName = columnSet.getString(3);
+    String columnName = columnSet.getString(4);
+    if (ignoreColumn(tableName, tableFilter)) {
+      logger.debug("ignoring column {}.{}.{}.{}", catalog.getName(), colSchemaName, tableName, columnName);
+    } else {
+      int sqlType = columnSet.getInt(5);
+      String columnType = columnSet.getString(6);
+      Integer columnSize = columnSet.getInt(7);
+      if (columnSize == 0) { // this happens with INTEGER values on HSQLDB
+        columnSize = null;
+      }
+      int decimalDigits = columnSet.getInt(9);
+      boolean nullable = columnSet.getBoolean(11);
+      String comment = columnSet.getString(12);
+      String defaultValue = columnSet.getString(13);
+
+      // Bug fix 3075401: boolean value generation problem in postgresql 8.4
+      if (sqlType == Types.BIT && "bool".equalsIgnoreCase(columnType) && databaseProductName.toLowerCase().startsWith("postgres")) {
+        sqlType = Types.BOOLEAN;
+      }
+
+      logger.debug("found column: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}",
+          catalog.getName(), colSchemaName, tableName,
+          columnName, sqlType, columnType, columnSize, decimalDigits,
+          nullable, comment, defaultValue);
+      // determine table
+      DBTable table = catalog.getTable(tableName, false);
+      if (table == null) {
+        logger.debug("Ignoring column {}.{}", tableName, columnName);
+        return;
+      }
+      DBSchema schema = catalog.getSchema(schemaName);
+      if (schema != null) {
+        table = schema.getTable(tableName);
+      }
+      // create column
+      Integer fractionDigits = (decimalDigits > 0 ? decimalDigits : null);
+      DBDataType dataType = DBDataType.getInstance(sqlType, columnType);
+      defaultValue = parseDefaultValue(defaultValue, dataType);
+      receiver.receiveColumn(columnName, dataType, columnSize, fractionDigits, nullable, defaultValue,
+          comment, table);
+      // not used: importVersionColumnInfo(catalogName, table, metaData)
+    }
+  }
+
+  private String parseDefaultValue(String defaultValue, DBDataType dataType) {
+    if (!StringUtil.isEmpty(defaultValue)) {
+      if (!dataType.isAlpha()) {
+        defaultValue = removeBrackets(defaultValue); // some driver adds brackets to number defaults
+      }
+      defaultValue = defaultValue.trim(); // oracle thin driver produces "1 "
+    }
+    return defaultValue;
+  }
+
+  private boolean ignoreColumn(String tableName, Filter<String> tableFilter) {
+    return tableName.startsWith("BIN$") || (tableFilter != null && !tableFilter.accept(tableName));
+  }
+
+  private String schemaPattern(DBCatalog catalog, String schemaName) {
+    String schemaPattern;
+    if (schemaName != null) {
+      schemaPattern = schemaName;
+    } else if (catalog.getSchemas().size() == 1) {
+      schemaPattern = catalog.getSchemas().get(0).getName();
+    } else {
+      schemaPattern = null;
+    }
+    return schemaPattern;
   }
 
   public void importPrimaryKeyOfTable(DBTable table, PKReceiver receiver) {
@@ -594,7 +624,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         short keySeq = pkset.getShort(5);
         pkComponents.put(keySeq, columnName);
         pkName = pkset.getString(6);
-        logger.debug("found pk column {}, {}, {}", new Object[] {columnName, keySeq, pkName});
+        logger.debug("found pk column {}, {}, {}", columnName, keySeq, pkName);
       }
       if (pkComponents.size() > 0) {
         String[] columnNames = pkComponents.values().toArray(new String[0]);
@@ -657,7 +687,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         }
         String columnName = indexSet.getString(9);
         String ascOrDesc = indexSet.getString(10);
-        Boolean ascending = (ascOrDesc != null ? ascOrDesc.charAt(0) == 'A' : null);
+        Boolean ascending = isAscending(ascOrDesc);
         int cardinality = indexSet.getInt(11);
         int pages = indexSet.getInt(12);
         String filterCondition = indexSet.getString(13);
@@ -678,12 +708,16 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         errorHandler.handleError("Error importing index " + indexName);
       }
     }
+    mapIndexes(schema, queriedTable, receiver, indexes);
+    watch.stop();
+  }
+
+  private void mapIndexes(DBSchema schema, DBTable queriedTable, IndexReceiver receiver, OrderedNameMap<DBIndexInfo> indexes) {
     for (DBIndexInfo indexInfo : indexes.values()) {
       DBTable table = (queriedTable != null ? queriedTable : schema.getTable(indexInfo.tableName));
       boolean deterministicName = dialect.isDeterministicIndexName(indexInfo.name);
       receiver.receiveIndex(indexInfo, deterministicName, table, schema);
     }
-    watch.stop();
   }
 
 
@@ -694,13 +728,10 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     StopWatch watch = new StopWatch("importImportedKeys");
     DBCatalog catalog = table.getCatalog();
     DBSchema schema = table.getSchema();
-    String catalogName = (catalog != null ? catalog.getName() : null);
     String tableName = table.getName();
-    String schemaName = (schema != null ? schema.getName() : null);
     ResultSet resultSet = null;
     try {
-      resultSet = metaData.getImportedKeys(catalogName, schemaName, tableName);
-
+      resultSet = metaData.getImportedKeys(NameUtil.nameOrNull(catalog), NameUtil.nameOrNull(schema), tableName);
       List<ImportedKey> keyList = new ArrayList<>();
       Map<String, ImportedKey> keysByName = OrderedNameMap.createCaseIgnorantMap();
       ImportedKey recent = null;
@@ -726,41 +757,46 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         recent = cursor;
       }
       // build DBForeignKeyConstraint objects from the gathered information
-      for (ImportedKey key : keyList) {
-        int n = key.getForeignKeyColumnNames().size();
-        DBTable pkTable = key.getPkTable();
-        if (pkTable == null && catalog != null) {
-          DBSchema pkSchema = catalog.getSchema(key.getPkSchemaName());
-          if (pkSchema != null) {
-            pkTable = pkSchema.getTable(key.getPkTableName());
-          } else {
-            logger.warn("build DBForeignKeyConstraint objects from the gathered information could not get the proper Schema, " +
-                "there might be an Error with this Database Dialect implementation!");
-          }
-        }
-        String[] columnNames = new String[n];
-        String[] refereeColumnNames = new String[n];
-        for (int i = 0; i < n; i++) {
-          columnNames[i] = key.getForeignKeyColumnNames().get(i);
-          refereeColumnNames[i] = key.getRefereeColumnNames().get(i);
-        }
-        DBForeignKeyConstraint foreignKeyConstraint = new DBForeignKeyConstraint(
-            key.fk_name, dialect.isDeterministicFKName(key.fk_name),
-            table,
-            columnNames,
-            pkTable,
-            refereeColumnNames);
-        foreignKeyConstraint.setUpdateRule(parseRule(key.update_rule));
-        foreignKeyConstraint.setDeleteRule(parseRule(key.delete_rule));
-        receiver.receiveFK(foreignKeyConstraint, table);
-        logger.debug("Imported foreign key {}", foreignKeyConstraint);
-      }
+      buildFKConstraints(keyList, table, receiver);
     } catch (SQLException e) {
       errorHandler.handleError("Error importing foreign key constraints", e);
     } finally {
       DBUtil.close(resultSet);
     }
     watch.stop();
+  }
+
+  private void buildFKConstraints(List<ImportedKey> keyList, DBTable table, FKReceiver receiver) {
+    for (ImportedKey key : keyList) {
+      int n = key.getForeignKeyColumnNames().size();
+      DBTable pkTable = key.getPkTable();
+      DBCatalog catalog = table.getCatalog();
+      if (pkTable == null && catalog != null) {
+        DBSchema pkSchema = catalog.getSchema(key.getPkSchemaName());
+        if (pkSchema != null) {
+          pkTable = pkSchema.getTable(key.getPkTableName());
+        } else {
+          logger.warn("build DBForeignKeyConstraint objects from the gathered information could not get the proper Schema, " +
+              "there might be an Error with this Database Dialect implementation!");
+        }
+      }
+      String[] columnNames = new String[n];
+      String[] refereeColumnNames = new String[n];
+      for (int i = 0; i < n; i++) {
+        columnNames[i] = key.getForeignKeyColumnNames().get(i);
+        refereeColumnNames[i] = key.getRefereeColumnNames().get(i);
+      }
+      DBForeignKeyConstraint foreignKeyConstraint = new DBForeignKeyConstraint(
+          key.fk_name, dialect.isDeterministicFKName(key.fk_name),
+          table,
+          columnNames,
+          pkTable,
+          refereeColumnNames);
+      foreignKeyConstraint.setUpdateRule(parseRule(key.update_rule));
+      foreignKeyConstraint.setDeleteRule(parseRule(key.delete_rule));
+      receiver.receiveFK(foreignKeyConstraint, table);
+      logger.debug("Imported foreign key {}", foreignKeyConstraint);
+    }
   }
 
 
@@ -774,16 +810,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
       if (dialect instanceof OracleDialect) {
         for (DBCatalog catalog : database.getCatalogs()) {
           for (DBSchema schema : catalog.getSchemas()) {
-            OracleDialect oraDialect = (OracleDialect) dialect;
-            DBCheckConstraint[] newChecks = oraDialect.queryCheckConstraints(getConnection(), schema.getName());
-            for (DBCheckConstraint newCheck : newChecks) {
-              if (!tableSupported(newCheck.getTableName())) {
-                continue;
-              }
-              DBTable table = schema.getTable(newCheck.getTableName());
-              table.receiveCheckConstraint(newCheck);
-              newCheck.setTable(table);
-            }
+            importChecksOfSchema(schema);
           }
         }
       }
@@ -791,6 +818,19 @@ public class JDBCDBImporter implements DBMetaDataImporter {
       throw new RuntimeException("Error importing checks from " + database.getEnvironment(), e);
     }
     watch.stop();
+  }
+
+  private void importChecksOfSchema(DBSchema schema) throws SQLException, ConnectFailedException {
+    OracleDialect oraDialect = (OracleDialect) dialect;
+    DBCheckConstraint[] newChecks = oraDialect.queryCheckConstraints(getConnection(), schema.getName());
+    for (DBCheckConstraint newCheck : newChecks) {
+      if (!tableSupported(newCheck.getTableName())) {
+        continue;
+      }
+      DBTable table = schema.getTable(newCheck.getTableName());
+      table.receiveCheckConstraint(newCheck);
+      newCheck.setTable(table);
+    }
   }
 
 
@@ -801,15 +841,15 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     logger.debug("Importing exported keys for table '{}'", table);
     DBCatalog catalog = table.getCatalog();
     DBSchema schema = table.getSchema();
-    String catalogName = (catalog != null ? catalog.getName() : null);
+    String declaredCatalogName = NameUtil.nameOrNull(catalog);
+    String declaredSchemaName = NameUtil.nameOrNull(schema);
     String tableName = table.getName();
-    String schemaName = (schema != null ? schema.getName() : null);
     ResultSet resultSet = null;
     try {
-      resultSet = metaData.getExportedKeys(catalogName, schemaName, tableName);
+      resultSet = metaData.getExportedKeys(declaredCatalogName, declaredSchemaName, tableName);
       while (resultSet.next()) {
-        String fktableCat = resultSet.getString(5);
-        String fktableSchem = resultSet.getString(6);
+        // ignoring String fktableCat = resultSet.getString(5)
+        // ignoring String fktableSchem = resultSet.getString(6)
         String fktableName = resultSet.getString(7);
         if (tableSupported(fktableName)) {
           logger.debug("Importing referrer: {}", fktableName);
@@ -890,7 +930,15 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   }
 
   protected boolean tableSupported(String tableName) {
-    return tableNameFilter.accept(tableName);
+    return (tableNameFilter.accept(tableName) && !isOracleInternalTable(tableName));
+  }
+
+  private Boolean isAscending(String ascOrDesc) {
+    return ascOrDesc != null ? ascOrDesc.charAt(0) == 'A' : null;
+  }
+
+  private void debug(String format, Object... data) {
+    logger.debug(format, data);
   }
 
 
