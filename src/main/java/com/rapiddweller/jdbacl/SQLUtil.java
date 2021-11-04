@@ -1046,7 +1046,7 @@ public class SQLUtil {
 
   // helper
   private static void checkCatSchTab(String catalog, String schema, String table, DatabaseDialect dialect, StringBuilder builder) {
-    if (catalog != null && !catalog.equals("") && !dialect.getSystem().equalsIgnoreCase("oracle")) {
+    if (catalog != null && !catalog.equals("") && !dialect.getDbType().equalsIgnoreCase("oracle")) {
       builder.append(quoteIfNecessary(catalog, dialect.quoteTableNames)).append('.');
     }
     if (schema != null && !schema.equals("")) {

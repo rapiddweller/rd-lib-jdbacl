@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2009-2012 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2009-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -38,83 +38,55 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests the {@link HSQLDialect}.<br/><br/>
  * Created: 10.11.2009 18:55:15
- *
  * @author Volker Bergmann
  * @since 0.6.0
  */
 public class HSQLDialectTest extends DatabaseDialectTest<HSQLDialect> {
 
-  /**
-   * Test constructor.
-   */
   @Test
   public void testConstructor() {
     HSQLDialect actualHsqlDialect = new HSQLDialect();
-    assertEquals("hsql", actualHsqlDialect.getSystem());
+    assertEquals("hsql", actualHsqlDialect.getDbType());
     assertTrue(actualHsqlDialect.isSequenceSupported());
   }
 
-  /**
-   * Test is default catalog.
-   */
   @Test
   public void testIsDefaultCatalog() {
     assertFalse((new HSQLDialect()).isDefaultCatalog("Catalog", "User"));
     assertTrue((new HSQLDialect()).isDefaultCatalog(null, "User"));
   }
 
-  /**
-   * Test is default schema.
-   */
   @Test
   public void testIsDefaultSchema() {
     assertFalse((new HSQLDialect()).isDefaultSchema("Schema", "User"));
     assertTrue((new HSQLDialect()).isDefaultSchema("PUBLIC", "User"));
   }
 
-  /**
-   * Instantiates a new Hsql dialect test.
-   */
   public HSQLDialectTest() {
     super(new HSQLDialect());
   }
 
-  /**
-   * Test format date.
-   */
   @Test
   public void testFormatDate() {
     assertEquals("'1971-02-03'", dialect.formatValue(DATE_19710203));
   }
 
-  /**
-   * Test format datetime.
-   */
   @Test
   public void testFormatDatetime() {
     assertEquals("'1971-02-03 13:14:15'", dialect.formatValue(DATETIME_19710203131415));
   }
 
-  /**
-   * Test format time.
-   */
   @Test
   public void testFormatTime() {
     assertEquals("'13:14:15'", dialect.formatValue(TIME_131415));
   }
 
-  /**
-   * Test format timestamp.
-   */
   @Test
   public void testFormatTimestamp() {
     assertEquals("'1971-02-03 13:14:15.123456789'",
         dialect.formatValue(TIMESTAMP_19710203131415123456789));
   }
 
-  /**
-   * Test is deterministic pk name.
-   */
   @Test
   public void testIsDeterministicPKName() {
     assertFalse(dialect.isDeterministicPKName("SYS_IDX_54"));
@@ -123,9 +95,6 @@ public class HSQLDialectTest extends DatabaseDialectTest<HSQLDialect> {
     assertFalse((new HSQLDialect()).isDeterministicPKName("SYS_IDX_U"));
   }
 
-  /**
-   * Test is deterministic uk name.
-   */
   @Test
   public void testIsDeterministicUKName() {
     assertFalse(dialect.isDeterministicUKName("SYS_IDX_SYS_CT_80_83"));
@@ -134,9 +103,6 @@ public class HSQLDialectTest extends DatabaseDialectTest<HSQLDialect> {
     assertFalse((new HSQLDialect()).isDeterministicUKName("SYS_IDX_SYS_U"));
   }
 
-  /**
-   * Test is deterministic fk name.
-   */
   @Test
   public void testIsDeterministicFKName() {
     assertFalse(dialect.isDeterministicFKName("SYS_FK_84"));
@@ -145,9 +111,6 @@ public class HSQLDialectTest extends DatabaseDialectTest<HSQLDialect> {
     assertFalse((new HSQLDialect()).isDeterministicFKName("SYS_FK_U"));
   }
 
-  /**
-   * Test is deterministic index name.
-   */
   @Test
   public void testIsDeterministicIndexName() {
     assertFalse(dialect.isDeterministicIndexName("SYS_IDX_56"));
@@ -156,25 +119,16 @@ public class HSQLDialectTest extends DatabaseDialectTest<HSQLDialect> {
     assertFalse((new HSQLDialect()).isDeterministicIndexName("SYS_IDX_U"));
   }
 
-  /**
-   * Test supports regex.
-   */
   @Test
   public void testSupportsRegex() {
     assertFalse((new HSQLDialect()).supportsRegex());
   }
 
-  /**
-   * Test trim.
-   */
   @Test
   public void testTrim() {
     assertEquals("LTRIM(RTRIM(Expression))", (new HSQLDialect()).trim("Expression"));
   }
 
-  /**
-   * Test restrict rownums.
-   */
   @Test
   public void testRestrictRownums() {
     Query selectResult = Query.select("Selection");
@@ -182,9 +136,6 @@ public class HSQLDialectTest extends DatabaseDialectTest<HSQLDialect> {
     assertEquals("SELECT LIMIT 1 3 Selection FROM ", selectResult.toString());
   }
 
-  /**
-   * Test restrict rownums 2.
-   */
   @Test
   public void testRestrictRownums2() {
     Query selectResult = Query.select("Selection");
@@ -192,18 +143,12 @@ public class HSQLDialectTest extends DatabaseDialectTest<HSQLDialect> {
     assertEquals("SELECT TOP 3 Selection FROM ", selectResult.toString());
   }
 
-  /**
-   * Test regex.
-   */
   @Test(expected = UnsupportedOperationException.class)
   public void testRegex() {
     assertFalse(dialect.supportsRegex());
     dialect.regexQuery("code", false, "[A-Z]{4}");
   }
 
-  /**
-   * Test render create sequence.
-   */
   @Test
   public void testRenderCreateSequence() {
     assertEquals("CREATE SEQUENCE my_seq", dialect.renderCreateSequence(new DBSequence("my_seq", null)));
@@ -211,21 +156,11 @@ public class HSQLDialectTest extends DatabaseDialectTest<HSQLDialect> {
         dialect.renderCreateSequence(createConfiguredSequence()));
   }
 
-  /**
-   * Test sequences online.
-   *
-   * @throws Exception the exception
-   */
   @Test
   public void testSequencesOnline() throws Exception {
     testSequencesOnline("hsqlmem");
   }
 
-  /**
-   * Test set sequence value.
-   *
-   * @throws Exception the exception
-   */
   @Test
   public void testSetSequenceValue() throws Exception {
     Connection connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
@@ -237,55 +172,34 @@ public class HSQLDialectTest extends DatabaseDialectTest<HSQLDialect> {
     DBUtil.executeUpdate("drop sequence " + sequenceName, connection);
   }
 
-  /**
-   * Test render fetch sequence value.
-   */
   @Test
   public void testRenderFetchSequenceValue() {
     assertEquals("call next value for SEQ", dialect.renderFetchSequenceValue("SEQ"));
     assertEquals("call next value for Sequence Name", (new HSQLDialect()).renderFetchSequenceValue("Sequence Name"));
   }
 
-  /**
-   * Test render sequence value.
-   */
   @Test
   public void testRenderSequenceValue() {
     assertEquals("alter sequence Sequence Name restart with 42",
         (new HSQLDialect()).renderSequenceValue("Sequence Name", 42L));
   }
 
-  /**
-   * Test render drop sequence.
-   */
   @Test
   public void testRenderDropSequence() {
     assertEquals("drop sequence Name", (new HSQLDialect()).renderDropSequence("Name"));
   }
 
-  /**
-   * Test drop sequence.
-   */
   @Test
   public void testDropSequence() {
     assertEquals("drop sequence SEQ", dialect.renderDropSequence("SEQ"));
   }
 
-  /**
-   * Test render case.
-   */
   @Test
   public void testRenderCase() {
     assertEquals("CASE WHEN condition1 THEN result1 WHEN condition2 THEN result2 ELSE result4 END AS col",
         dialect.renderCase("col", "result4", "condition1", "result1", "condition2", "result2"));
   }
 
-  /**
-   * Test offset and row count restriction.
-   *
-   * @throws ConnectFailedException the connect failed exception
-   * @throws SQLException           the sql exception
-   */
   @Test
   public void testOffsetAndRowCountRestriction() throws ConnectFailedException, SQLException {
     Connection connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
@@ -303,12 +217,6 @@ public class HSQLDialectTest extends DatabaseDialectTest<HSQLDialect> {
     }
   }
 
-  /**
-   * Test offset restriction.
-   *
-   * @throws ConnectFailedException the connect failed exception
-   * @throws SQLException           the sql exception
-   */
   @Test
   public void testOffsetRestriction() throws ConnectFailedException, SQLException {
     Connection connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
@@ -326,12 +234,6 @@ public class HSQLDialectTest extends DatabaseDialectTest<HSQLDialect> {
     }
   }
 
-  /**
-   * Test row count restriction.
-   *
-   * @throws ConnectFailedException the connect failed exception
-   * @throws SQLException           the sql exception
-   */
   @Test
   public void testRowCountRestriction() throws ConnectFailedException, SQLException {
     Connection connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());

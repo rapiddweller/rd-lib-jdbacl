@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2009-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2009-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -30,26 +30,19 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests the {@link DB2Dialect}.<br/><br/>
  * Created: 10.11.2009 17:33:48
- *
  * @author Volker Bergmann
  * @since 0.6.0
  */
 public class DB2DialectTest extends DatabaseDialectTest<DB2Dialect> {
 
-  /**
-   * Test constructor.
-   */
   @Test
   public void testConstructor() {
     DB2Dialect actualDb2Dialect = new DB2Dialect();
-    assertEquals("db2", actualDb2Dialect.getSystem());
+    assertEquals("db2", actualDb2Dialect.getDbType());
     assertFalse(actualDb2Dialect.quoteTableNames);
     assertTrue(actualDb2Dialect.isSequenceSupported());
   }
 
-  /**
-   * Test render fetch sequence value.
-   */
   @Test
   public void testRenderFetchSequenceValue() {
     assertEquals("select nextval for Sequence Name from sysibm.sysdummy1",
@@ -58,65 +51,41 @@ public class DB2DialectTest extends DatabaseDialectTest<DB2Dialect> {
         (new DB2Dialect()).renderFetchSequenceValue("sysibm.sysdummy1"));
   }
 
-  /**
-   * Instantiates a new Db 2 dialect test.
-   */
   public DB2DialectTest() {
     super(new DB2Dialect());
   }
 
-  /**
-   * Testnext sequence value.
-   */
   @Test
   public void testnextSequenceValue() {
     assertEquals("select nextval for SEQ from sysibm.sysdummy1", dialect.renderFetchSequenceValue("SEQ"));
   }
 
-  /**
-   * Test drop sequence.
-   */
   @Test
   public void testDropSequence() {
     assertEquals("drop sequence SEQ", dialect.renderDropSequence("SEQ"));
   }
 
-  /**
-   * Test format date.
-   */
   @Test
   public void testFormatDate() {
     assertEquals("'1971-02-03'", dialect.formatValue(DATE_19710203));
   }
 
-  /**
-   * Test format datetime.
-   */
   @Test
   public void testFormatDatetime() {
     assertEquals("'1971-02-03 13:14:15'", dialect.formatValue(DATETIME_19710203131415));
   }
 
-  /**
-   * Test format time.
-   */
   @Test
   public void testFormatTime() {
     assertEquals("'13:14:15'", dialect.formatValue(TIME_131415));
   }
 
-  /**
-   * Test format timestamp.
-   */
   @Test
   public void testFormatTimestamp() {
     assertEquals("'1971-02-03 13:14:15.123456789'",
         dialect.formatValue(TIMESTAMP_19710203131415123456789));
   }
 
-  /**
-   * Test is deterministic pk name.
-   */
   @Test
   public void testIsDeterministicPKName() {
     assertFalse(dialect.isDeterministicPKName("SQL110710154222500"));
@@ -125,9 +94,6 @@ public class DB2DialectTest extends DatabaseDialectTest<DB2Dialect> {
     assertFalse((new DB2Dialect()).isDeterministicPKName("SQL999999999999999"));
   }
 
-  /**
-   * Test is deterministic uk name.
-   */
   @Test
   public void testIsDeterministicUKName() {
     assertFalse(dialect.isDeterministicUKName("SQL110710154222560"));
@@ -136,9 +102,6 @@ public class DB2DialectTest extends DatabaseDialectTest<DB2Dialect> {
     assertFalse((new DB2Dialect()).isDeterministicUKName("SQL999999999999999"));
   }
 
-  /**
-   * Test is deterministic fk name.
-   */
   @Test
   public void testIsDeterministicFKName() {
     assertFalse(dialect.isDeterministicFKName("SQL110710154222560"));
@@ -147,9 +110,6 @@ public class DB2DialectTest extends DatabaseDialectTest<DB2Dialect> {
     assertFalse((new DB2Dialect()).isDeterministicFKName("SQL999999999999999"));
   }
 
-  /**
-   * Test is deterministic index name.
-   */
   @Test
   public void testIsDeterministicIndexName() {
     assertFalse(dialect.isDeterministicIndexName("SQL110710154222480"));
@@ -158,18 +118,16 @@ public class DB2DialectTest extends DatabaseDialectTest<DB2Dialect> {
     assertFalse((new DB2Dialect()).isDeterministicIndexName("SQL999999999999999"));
   }
 
-  /**
-   * Test regex.
-   */
-  @Test(expected = UnsupportedOperationException.class)
-  public void testRegex() {
+  @Test
+  public void testSupportsRegex() {
     assertFalse(dialect.supportsRegex());
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void testRegexQuery() {
     dialect.regexQuery("code", false, "[A-Z]{4}");
   }
 
-  /**
-   * Test render case.
-   */
   @Test
   public void testRenderCase() {
     assertEquals("CASE WHEN condition1 THEN result1 WHEN condition2 THEN result2 ELSE result4 END AS col",

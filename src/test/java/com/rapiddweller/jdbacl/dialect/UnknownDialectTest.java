@@ -6,16 +6,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 /**
- * The type Unknown dialect test.
+ * Tests the {@link UnknownDialect}.
  */
 public class UnknownDialectTest {
-  /**
-   * Test constructor.
-   */
   @Test
   public void testConstructor() {
     UnknownDialect actualUnknownDialect = new UnknownDialect("System");
-    assertEquals("System", actualUnknownDialect.getSystem());
+    assertEquals("System", actualUnknownDialect.getDbType());
     assertFalse(actualUnknownDialect.quoteTableNames);
     assertFalse(actualUnknownDialect.isSequenceBoundarySupported());
   }

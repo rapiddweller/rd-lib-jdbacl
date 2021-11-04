@@ -44,7 +44,7 @@ public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
   @Test
   public void testConstructor() {
     FirebirdDialect actualFirebirdDialect = new FirebirdDialect();
-    assertEquals("firebird", actualFirebirdDialect.getSystem());
+    assertEquals("firebird", actualFirebirdDialect.getDbType());
     assertTrue(actualFirebirdDialect.isSequenceSupported());
   }
 
@@ -105,9 +105,13 @@ public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
     assertFalse((new FirebirdDialect()).isDeterministicIndexName("RDB$U"));
   }
 
+  @Test
+  public void testSupportsRegex() {
+    assertFalse(dialect.supportsRegex());
+  }
+
   @Test(expected = UnsupportedOperationException.class)
   public void testRegex() {
-    assertFalse(dialect.supportsRegex());
     dialect.regexQuery("code", false, "[A-Z]{4}");
   }
 

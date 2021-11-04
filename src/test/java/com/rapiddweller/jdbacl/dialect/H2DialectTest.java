@@ -38,83 +38,55 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests the {@link H2Dialect}.<br/><br/>
  * Created: 28.03.2010 11:44:38
- *
  * @author Volker Bergmann
  * @since 0.6.0
  */
 public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
 
-  /**
-   * Test constructor.
-   */
   @Test
   public void testConstructor() {
     H2Dialect actualH2Dialect = new H2Dialect();
-    assertEquals("h2", actualH2Dialect.getSystem());
+    assertEquals("h2", actualH2Dialect.getDbType());
     assertTrue(actualH2Dialect.isSequenceSupported());
   }
 
-  /**
-   * Test is default catalog.
-   */
   @Test
   public void testIsDefaultCatalog() {
     assertFalse((new H2Dialect()).isDefaultCatalog("Catalog", "User"));
     assertTrue((new H2Dialect()).isDefaultCatalog(null, "User"));
   }
 
-  /**
-   * Test is default schema.
-   */
   @Test
   public void testIsDefaultSchema() {
     assertFalse((new H2Dialect()).isDefaultSchema("Schema", "User"));
     assertTrue((new H2Dialect()).isDefaultSchema("PUBLIC", "User"));
   }
 
-  /**
-   * Instantiates a new H 2 dialect test.
-   */
   public H2DialectTest() {
     super(new H2Dialect());
   }
 
-  /**
-   * Test format date.
-   */
   @Test
   public void testFormatDate() {
     assertEquals("'1971-02-03'", dialect.formatValue(DATE_19710203));
   }
 
-  /**
-   * Test format datetime.
-   */
   @Test
   public void testFormatDatetime() {
     assertEquals("'1971-02-03 13:14:15'", dialect.formatValue(DATETIME_19710203131415));
   }
 
-  /**
-   * Test format time.
-   */
   @Test
   public void testFormatTime() {
     assertEquals("'13:14:15'", dialect.formatValue(TIME_131415));
   }
 
-  /**
-   * Test format timestamp.
-   */
   @Test
   public void testFormatTimestamp() {
     assertEquals("'1971-02-03 13:14:15.123456789'",
         dialect.formatValue(TIMESTAMP_19710203131415123456789));
   }
 
-  /**
-   * Test is deterministic pk name.
-   */
   @Test
   public void testIsDeterministicPKName() {
     assertFalse(dialect.isDeterministicPKName("CONSTRAINT_6D"));
@@ -123,9 +95,6 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
     assertFalse((new H2Dialect()).isDeterministicPKName("CONSTRAINT_U"));
   }
 
-  /**
-   * Test is deterministic uk name.
-   */
   @Test
   public void testIsDeterministicUKName() {
     assertFalse(dialect.isDeterministicUKName("CONSTRAINT_INDEX_6"));
@@ -134,9 +103,6 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
     assertFalse((new H2Dialect()).isDeterministicUKName("CONSTRAINT_INDEX_U"));
   }
 
-  /**
-   * Test is deterministic fk name.
-   */
   @Test
   public void testIsDeterministicFKName() {
     assertFalse(dialect.isDeterministicFKName("CONSTRAINT_34"));
@@ -145,9 +111,6 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
     assertFalse((new H2Dialect()).isDeterministicFKName("CONSTRAINT_U"));
   }
 
-  /**
-   * Test is deterministic index name.
-   */
   @Test
   public void testIsDeterministicIndexName() {
     assertFalse(dialect.isDeterministicIndexName("PRIMARY_KEY_6"));
@@ -157,26 +120,17 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
     assertFalse((new H2Dialect()).isDeterministicIndexName("CONSTRAINT_INDEX_U"));
   }
 
-  /**
-   * Test supports regex.
-   */
   @Test
   public void testSupportsRegex() {
     assertTrue((new H2Dialect()).supportsRegex());
   }
 
-  /**
-   * Test regex query.
-   */
   @Test
   public void testRegexQuery() {
     assertEquals("Expression NOT REGEXP 'Regex'", (new H2Dialect()).regexQuery("Expression", true, "Regex"));
     assertEquals("Expression REGEXP 'Regex'", (new H2Dialect()).regexQuery("Expression", false, "Regex"));
   }
 
-  /**
-   * Test restrict rownums.
-   */
   @Test
   public void testRestrictRownums() {
     Query selectResult = Query.select("Selection");
@@ -184,9 +138,6 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
     assertEquals("SELECT Selection FROM  LIMIT 3 OFFSET 1", selectResult.toString());
   }
 
-  /**
-   * Test restrict rownums 2.
-   */
   @Test
   public void testRestrictRownums2() {
     Query selectResult = Query.select("Selection");
@@ -194,9 +145,6 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
     assertEquals("SELECT Selection FROM  LIMIT 3", selectResult.toString());
   }
 
-  /**
-   * Test regex.
-   */
   @Test
   public void testRegex() {
     assertTrue(dialect.supportsRegex());
@@ -204,9 +152,6 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
     assertEquals("code NOT REGEXP '[A-Z]{5}'", dialect.regexQuery("code", true, "[A-Z]{5}"));
   }
 
-  /**
-   * Test render create sequence.
-   */
   @Test
   public void testRenderCreateSequence() {
     assertEquals("CREATE SEQUENCE my_seq", dialect.renderCreateSequence(new DBSequence("my_seq", null)));
@@ -214,30 +159,17 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
         dialect.renderCreateSequence(createConfiguredSequence()));
   }
 
-  /**
-   * Test sequences online.
-   *
-   * @throws Exception the exception
-   */
   @Test
   public void testSequencesOnline() throws Exception {
     testSequencesOnline("h2");
   }
 
-  /**
-   * Test render fetch sequence value.
-   */
   @Test
   public void testRenderFetchSequenceValue() {
     assertEquals("select next value for SEQ", dialect.renderFetchSequenceValue("SEQ"));
     assertEquals("select next value for Sequence Name", (new H2Dialect()).renderFetchSequenceValue("Sequence Name"));
   }
 
-  /**
-   * Test set next sequence value.
-   *
-   * @throws Exception the exception
-   */
   @Test
   public void testSetNextSequenceValue() throws Exception {
     Connection connection = H2Util.connectInMemoryDB(getClass().getSimpleName());
@@ -252,46 +184,28 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
     }
   }
 
-  /**
-   * Test set sequence value.
-   */
   @Test
   public void testSetSequenceValue() {
     assertEquals("alter sequence Sequence Name restart with 42",
         (new H2Dialect()).setSequenceValue("Sequence Name", 42L));
   }
 
-  /**
-   * Test render drop sequence.
-   */
   @Test
   public void testRenderDropSequence() {
     assertEquals("drop sequence Name", (new H2Dialect()).renderDropSequence("Name"));
   }
 
-  /**
-   * Test drop sequence.
-   */
   @Test
   public void testDropSequence() {
     assertEquals("drop sequence SEQ", dialect.renderDropSequence("SEQ"));
   }
 
-  /**
-   * Test render case.
-   */
   @Test
   public void testRenderCase() {
     assertEquals("CASE WHEN condition1 THEN result1 WHEN condition2 THEN result2 ELSE result4 END AS col",
         dialect.renderCase("col", "result4", "condition1", "result1", "condition2", "result2"));
   }
 
-  /**
-   * Test offset and row count restriction.
-   *
-   * @throws ConnectFailedException the connect failed exception
-   * @throws SQLException           the sql exception
-   */
   @Test
   public void testOffsetAndRowCountRestriction() throws ConnectFailedException, SQLException {
     Connection connection = H2Util.connectInMemoryDB(getClass().getSimpleName());
@@ -309,12 +223,6 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
     }
   }
 
-  /**
-   * Test offset restriction.
-   *
-   * @throws ConnectFailedException the connect failed exception
-   * @throws SQLException           the sql exception
-   */
   @Test
   public void testOffsetRestriction() throws ConnectFailedException, SQLException {
     Connection connection = H2Util.connectInMemoryDB(getClass().getSimpleName());
@@ -332,12 +240,6 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
     }
   }
 
-  /**
-   * Test row count restriction.
-   *
-   * @throws ConnectFailedException the connect failed exception
-   * @throws SQLException           the sql exception
-   */
   @Test
   public void testRowCountRestriction() throws ConnectFailedException, SQLException {
     Connection connection = H2Util.connectInMemoryDB(getClass().getSimpleName());

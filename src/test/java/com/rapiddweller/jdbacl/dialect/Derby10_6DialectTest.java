@@ -45,7 +45,7 @@ public class Derby10_6DialectTest extends DatabaseDialectTest<Derby10_6Dialect> 
   @Test
   public void testConstructor() {
     Derby10_6Dialect actualDerby10_6Dialect = new Derby10_6Dialect();
-    assertEquals("derby", actualDerby10_6Dialect.getSystem());
+    assertEquals("derby", actualDerby10_6Dialect.getDbType());
     assertTrue(actualDerby10_6Dialect.isSequenceSupported());
   }
 

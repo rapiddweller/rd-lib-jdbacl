@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -32,72 +32,47 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests the {@link SqlServerDialect}.<br/><br/>
  * Created: 09.04.2010 07:51:17
- *
  * @author Volker Bergmann
  * @since 0.6.0
  */
 public class SqlServerDialectTest extends DatabaseDialectTest<SqlServerDialect> {
 
-  /**
-   * The Thrown.
-   */
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
-  /**
-   * Test constructor.
-   */
   @Test
   public void testConstructor() {
     SqlServerDialect actualSqlServerDialect = new SqlServerDialect();
-    assertEquals("sql_server", actualSqlServerDialect.getSystem());
+    assertEquals("sql_server", actualSqlServerDialect.getDbType());
     assertTrue(actualSqlServerDialect.quoteTableNames);
     assertFalse(actualSqlServerDialect.isSequenceSupported());
   }
 
-  /**
-   * Test is default schema.
-   */
   @Test
   public void testIsDefaultSchema() {
     assertFalse((new SqlServerDialect()).isDefaultSchema("Schema", "User"));
     assertTrue((new SqlServerDialect()).isDefaultSchema("DBO", "User"));
   }
 
-  /**
-   * Instantiates a new Sql server dialect test.
-   */
   public SqlServerDialectTest() {
     super(new SqlServerDialect());
   }
 
-  /**
-   * Test sequence supported.
-   */
   @Test
   public void testSequenceSupported() {
     assertFalse(dialect.isSequenceSupported());
   }
 
-  /**
-   * Test format date.
-   */
   @Test
   public void testFormatDate() {
     assertEquals("'1971-02-03T13:14:15'", dialect.formatValue(DATETIME_19710203131415));
   }
 
-  /**
-   * Test format time.
-   */
   @Test
   public void testFormatTime() {
     assertEquals("'13:14:15'", dialect.formatValue(TIME_131415));
   }
 
-  /**
-   * Test is deterministic pk name.
-   */
   @Test
   public void testIsDeterministicPKName() {
     assertFalse(dialect.isDeterministicPKName("SYS_XYZ"));
@@ -106,9 +81,6 @@ public class SqlServerDialectTest extends DatabaseDialectTest<SqlServerDialect> 
     assertFalse((new SqlServerDialect()).isDeterministicPKName("SYS_U"));
   }
 
-  /**
-   * Test is deterministic uk name.
-   */
   @Test
   public void testIsDeterministicUKName() {
     assertFalse(dialect.isDeterministicUKName("SYS_XYZ"));
@@ -117,9 +89,6 @@ public class SqlServerDialectTest extends DatabaseDialectTest<SqlServerDialect> 
     assertFalse((new SqlServerDialect()).isDeterministicUKName("SYS_U"));
   }
 
-  /**
-   * Test is deterministic fk name.
-   */
   @Test
   public void testIsDeterministicFKName() {
     assertFalse(dialect.isDeterministicFKName("SYS_XYZ"));
@@ -128,9 +97,6 @@ public class SqlServerDialectTest extends DatabaseDialectTest<SqlServerDialect> 
     assertFalse((new SqlServerDialect()).isDeterministicFKName("SYS_U"));
   }
 
-  /**
-   * Test is deterministic index name.
-   */
   @Test
   public void testIsDeterministicIndexName() {
     assertFalse(dialect.isDeterministicIndexName("SYS_XYZ"));
@@ -139,18 +105,12 @@ public class SqlServerDialectTest extends DatabaseDialectTest<SqlServerDialect> 
     assertFalse((new SqlServerDialect()).isDeterministicIndexName("SYS_U"));
   }
 
-  /**
-   * Test regex.
-   */
   @Test(expected = UnsupportedOperationException.class)
   public void testRegex() {
     assertFalse(dialect.supportsRegex());
     dialect.regexQuery("code", false, "[A-Z]{4}");
   }
 
-  /**
-   * Test render case.
-   */
   @Test
   public void testRenderCase() {
     assertEquals("col = CASE WHEN condition1 THEN result1 WHEN condition2 THEN result2 ELSE result4 END",
@@ -160,9 +120,6 @@ public class SqlServerDialectTest extends DatabaseDialectTest<SqlServerDialect> 
     assertEquals("Column Name = CASE END", (new SqlServerDialect()).renderCase("Column Name", ""));
   }
 
-  /**
-   * Test render case 2.
-   */
   @Test
   public void testRenderCase2() {
     thrown.expect(ArrayIndexOutOfBoundsException.class);
