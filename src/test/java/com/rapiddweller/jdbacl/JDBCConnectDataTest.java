@@ -8,14 +8,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 /**
- * The type Jdbc connect data test.
+ * Tests the {@link JDBCConnectData} class.
  */
 public class JDBCConnectDataTest {
-  /**
-   * Test parse single db properties.
-   *
-   * @throws IOException the io exception
-   */
+
   @Test
   public void testParseSingleDbProperties() throws IOException {
     JDBCConnectData actualParseSingleDbPropertiesResult = JDBCConnectData.parseSingleDbProperties("string://");
@@ -27,5 +23,6 @@ public class JDBCConnectDataTest {
     assertNull(actualParseSingleDbPropertiesResult.url);
     assertNull(actualParseSingleDbPropertiesResult.user);
   }
+
 }
 

@@ -37,60 +37,20 @@ import java.util.Map;
  */
 public class JDBCConnectData {
 
-  /**
-   * The Driver.
-   */
   public final String driver;
-  /**
-   * The Url.
-   */
   public final String url;
-  /**
-   * The User.
-   */
   public final String user;
-  /**
-   * The Password.
-   */
   public final String password;
 
-  /**
-   * The Catalog.
-   */
   public final String catalog;
-  /**
-   * The Schema.
-   */
   public final String schema;
 
-  /**
-   * The Read only.
-   */
   public final boolean readOnly;
 
-  /**
-   * Instantiates a new Jdbc connect data.
-   *
-   * @param driver   the driver
-   * @param url      the url
-   * @param user     the user
-   * @param password the password
-   */
   public JDBCConnectData(String driver, String url, String user, String password) {
     this(driver, url, user, password, null, null, false);
   }
 
-  /**
-   * Instantiates a new Jdbc connect data.
-   *
-   * @param driver   the driver
-   * @param url      the url
-   * @param user     the user
-   * @param password the password
-   * @param catalog  the catalog
-   * @param schema   the schema
-   * @param readOnly the read only
-   */
   public JDBCConnectData(String driver, String url, String user, String password, String catalog, String schema, boolean readOnly) {
     this.driver = driver;
     this.url = url;
@@ -101,18 +61,10 @@ public class JDBCConnectData {
     this.readOnly = readOnly;
   }
 
-  /**
-   * Parse single db properties jdbc connect data.
-   *
-   * @param filename the filename
-   * @return the jdbc connect data
-   * @throws IOException the io exception
-   */
   public static JDBCConnectData parseSingleDbProperties(String filename) throws IOException {
     Map<String, String> properties = IOUtil.readProperties(filename);
     String readOnlyConfig = properties.get("db_readonly");
-    boolean readOnly = (!StringUtil.isEmpty(readOnlyConfig) ? ParseUtil.parseBoolean(readOnlyConfig, true) : false);
-
+    boolean readOnly = (!StringUtil.isEmpty(readOnlyConfig) && ParseUtil.parseBoolean(readOnlyConfig, true));
     return new JDBCConnectData(
         properties.get("db_driver"), properties.get("db_url"),
         properties.get("db_user"), properties.get("db_password"),
