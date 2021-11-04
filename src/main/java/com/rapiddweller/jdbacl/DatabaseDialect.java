@@ -72,15 +72,15 @@ public abstract class DatabaseDialect {
   public final boolean quoteTableNames;
   protected final Logger logger = LoggerFactory.getLogger(getClass());
   protected final boolean sequenceSupported;
-  private final String system;
+  private final String dbType;
   private final DateFormat dateFormat;
   private final DateFormat datetimeFormat;
   private final DateFormat timeFormat;
   private Set<String> reservedWords;
 
-  protected DatabaseDialect(String system, boolean quoteTableNames, boolean sequenceSupported,
+  protected DatabaseDialect(String dbType, boolean quoteTableNames, boolean sequenceSupported,
                          String datePattern, String timePattern, String datetimePattern) {
-    this.system = system;
+    this.dbType = dbType;
     this.quoteTableNames = quoteTableNames;
     this.sequenceSupported = sequenceSupported;
     this.dateFormat = new SimpleDateFormat(datePattern);
@@ -93,8 +93,8 @@ public abstract class DatabaseDialect {
     return (BigInteger.ONE.compareTo(i) != 0);
   }
 
-  public String getSystem() {
-    return system;
+  public String getDbType() {
+    return dbType;
   }
 
   public boolean isReservedWord(String word, Connection connection) throws SQLException {
@@ -140,7 +140,7 @@ public abstract class DatabaseDialect {
   }
 
   private void parseReservedWordsConfigFile() {
-    String resourceName = "com/rapiddweller/jdbacl/dialect/" + system + "-reserved_words.txt";
+    String resourceName = "com/rapiddweller/jdbacl/dialect/" + dbType + "-reserved_words.txt";
     if (IOUtil.isURIAvailable(resourceName)) {
       parseReservedWords(resourceName);
     } else {
@@ -335,7 +335,7 @@ public abstract class DatabaseDialect {
 
   protected UnsupportedOperationException checkSequenceSupport(String methodName) {
     if (!sequenceSupported) {
-      return new UnsupportedOperationException("Sequence not supported in " + system);
+      return new UnsupportedOperationException("Sequence not supported in " + dbType);
     } else {
       return new UnsupportedOperationException(methodName + "() not implemented");
     }
@@ -369,11 +369,11 @@ public abstract class DatabaseDialect {
    *  @return a string with a SQL query condition.
    *  @throws UnsupportedOperationException if the database does not support regular expressions */
   public String regexQuery(String expression, boolean not, String regex) {
-    throw new UnsupportedOperationException(system + " does not support regular expressions");
+    throw new UnsupportedOperationException(dbType + " does not support regular expressions");
   }
 
   public String trim(String expression) {
-    throw new UnsupportedOperationException(system + " does not support trimming");
+    throw new UnsupportedOperationException(dbType + " does not support trimming");
   }
 
   public String renderCase(String columnName, String elseExpression, String... whenThenExpressionPairs) {
@@ -393,7 +393,7 @@ public abstract class DatabaseDialect {
     return builder.toString();
   }
 	
-  /* TODO v0.8.x implement queries for indexes, views, functions and procedures
+  /* TODO implement queries for indexes, views, functions and procedures
     public List<DBView> queryViews(Connection connection) throws SQLException {
 		return new ArrayList<DBView>();
 		// ORA: select VIEW_NAME, OWNER from SYS.ALL_VIEWS order by OWNER, VIEW_NAME
