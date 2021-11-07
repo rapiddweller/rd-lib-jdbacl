@@ -76,41 +76,25 @@ public class PooledConnectionHandler implements InvocationHandler {
 
   // InvocationHandler implementation --------------------------------------------------------------------------------
 
-  /**
-   * Instantiates a new Pooled connection handler.
-   *
-   * @param realConnection the real connection
-   * @param readOnly       the read only
-   */
   public PooledConnectionHandler(Connection realConnection, boolean readOnly) {
     this.readOnly = readOnly;
     this.id = nextId();
     this.realConnection = realConnection;
     this.listeners = new ArrayList<>();
     this.closed = false;
-    if (jdbcLogger.isDebugEnabled()) {
-      jdbcLogger.debug("Created connection #" + id + ": " + realConnection);
-    }
+    jdbcLogger.debug("Created connection #{}: {}", id, realConnection);
     openConnectionCount.incrementAndGet();
     if (openConnectionMonitor != null) {
       openConnectionMonitor.register(this);
     }
   }
 
-  /**
-   * Gets open connection count.
-   *
-   * @return the open connection count
-   */
   public static int getOpenConnectionCount() {
     return openConnectionCount.get();
   }
 
   // PooledConnection implementation ---------------------------------------------------------------------------------
 
-  /**
-   * Reset monitors.
-   */
   public static void resetMonitors() {
     openConnectionCount.set(0);
     if (openConnectionMonitor != null) {
@@ -118,12 +102,6 @@ public class PooledConnectionHandler implements InvocationHandler {
     }
   }
 
-  /**
-   * Assert all connections closed boolean.
-   *
-   * @param critical the critical
-   * @return the boolean
-   */
   public static boolean assertAllConnectionsClosed(boolean critical) {
     return openConnectionMonitor.assertNoRegistrations(critical);
   }
@@ -183,11 +161,6 @@ public class PooledConnectionHandler implements InvocationHandler {
 
   // connection count ------------------------------------------------------------------------------------------------
 
-  /**
-   * Close.
-   *
-   * @throws SQLException the sql exception
-   */
   public void close() throws SQLException {
     if (closed) {
       return;
@@ -201,7 +174,7 @@ public class PooledConnectionHandler implements InvocationHandler {
       }
       closed = true;
       if (jdbcLogger.isDebugEnabled()) {
-        jdbcLogger.debug("Closed connection #" + id + ": " + realConnection);
+        jdbcLogger.debug("Closed connection #{}: {}", id, realConnection);
       }
     } catch (SQLException e) {
       jdbcLogger.error("Error closing connection #" + id + ": " + realConnection, e);
@@ -209,31 +182,16 @@ public class PooledConnectionHandler implements InvocationHandler {
     }
   }
 
-  /**
-   * Gets connection.
-   *
-   * @return the connection
-   */
   public Connection getConnection() {
     return realConnection;
   }
 
-  /**
-   * Add connection event listener.
-   *
-   * @param listener the listener
-   */
   public void addConnectionEventListener(ConnectionEventListener listener) {
     listeners.add(listener);
   }
 
   // private helpers -------------------------------------------------------------------------------------------------
 
-  /**
-   * Remove connection event listener.
-   *
-   * @param listener the listener
-   */
   public void removeConnectionEventListener(ConnectionEventListener listener) {
     listeners.remove(listener);
   }

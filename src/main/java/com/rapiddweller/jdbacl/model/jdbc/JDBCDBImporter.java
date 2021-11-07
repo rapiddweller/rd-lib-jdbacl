@@ -82,7 +82,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   protected String url;
   protected String driver;
   protected String password;
-  protected String user;
+  protected final String user;
   protected String catalogName;
   protected String schemaName;
   protected String tableInclusionPattern;
@@ -150,9 +150,6 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   }
 
   public String getUrl() {
-    if (url == null) {
-      url = "no url used";
-    }
     return url;
   }
 

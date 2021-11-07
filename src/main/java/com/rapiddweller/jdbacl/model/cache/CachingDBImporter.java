@@ -21,6 +21,7 @@
 
 package com.rapiddweller.jdbacl.model.cache;
 
+import com.rapiddweller.common.Assert;
 import com.rapiddweller.common.ConfigUtil;
 import com.rapiddweller.common.ConnectFailedException;
 import com.rapiddweller.common.FileUtil;
@@ -56,9 +57,13 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 
   private static final String CACHE_FILE_SUFFIX = ".meta.xml";
 
+  /** URL of the connected database. Most data is stored in the {@link #realImporter},
+   *  but since if that has been initialized with a connection, its URL is null. */
+  protected final String url;
   protected final JDBCDBImporter realImporter;
 
-  public CachingDBImporter(JDBCDBImporter realImporter) {
+  public CachingDBImporter(String url, JDBCDBImporter realImporter) {
+    this.url = url;
     this.realImporter = realImporter;
   }
 
@@ -67,12 +72,20 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
   }
 
   public void invalidate() {
-    File bufferFile = getCacheFile();
-    if (bufferFile.exists()) {
-      if (!bufferFile.delete()) {
-        logger.error("Deleting {} failed", bufferFile);
+    deleteCacheFile(getCacheFile());
+  }
+
+  public static void deleteCacheFile(String url, String user, String catalog, String schema) {
+    deleteCacheFile(getCacheFile(url, user, catalog, schema));
+  }
+
+  private static void deleteCacheFile(File file) {
+    FileUtil.deleteIfExists(file);
+    if (file.exists()) {
+      if (!file.delete()) {
+        logger.error("Deleting {} failed", file);
       } else {
-        logger.info("Deleted meta data cache file: {}", bufferFile);
+        logger.info("Deleted meta data cache file: {}", file);
       }
     }
   }
@@ -141,9 +154,12 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
     return database;
   }
 
+  public static File getCacheFile(String url, String user, String catalog, String schema) {
+    return new File(getMetaCacheFolder(), getCacheFileName(url, user, catalog, schema));
+  }
 
   protected File getCacheFile() {
-    File cacheFile = new File(getMetaCacheFolder(), getCacheFileName(getRealImporter()));
+    File cacheFile = new File(getMetaCacheFolder(), getCacheFileName(url, getRealImporter()));
     return FileUtil.getFileIgnoreCase(cacheFile, false);
   }
 
@@ -151,11 +167,12 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
     return new File(ConfigUtil.commonCacheFolder(), "db-meta-data");
   }
 
-  private String getCacheFileName(JDBCDBImporter imp) {
-    return getCacheFileName(imp.getUrl(), imp.getUser(), imp.getCatalogName(), imp.getSchemaName());
+  private String getCacheFileName(String url, JDBCDBImporter imp) {
+    return getCacheFileName(url, imp.getUser(), imp.getCatalogName(), imp.getSchemaName());
   }
 
   static String getCacheFileName(String url, String user, String catalog, String schema) {
+    Assert.notNull(url, "url");
     String result = normalize(url);
     if (!StringUtil.isEmpty(user)) {
       result += "-usr_" + user;

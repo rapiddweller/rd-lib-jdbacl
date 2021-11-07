@@ -54,7 +54,7 @@ public class CachingDBImporterTest extends AbstractJDBCDBImporterTest {
     JDBCDBImporter realImporter = new JDBCDBImporter(URL, DRIVER, USER, PASSWORD, CATALOG, SCHEMA);
     CachingDBImporter importer = null;
     try {
-      importer = new CachingDBImporter(realImporter);
+      importer = new CachingDBImporter(URL, realImporter);
       File cacheFile = importer.getCacheFile();
       FileUtil.deleteIfExists(cacheFile);
       // when importing the database without accessing the indexes...

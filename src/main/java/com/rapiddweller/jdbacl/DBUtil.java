@@ -34,6 +34,7 @@ import com.rapiddweller.common.ConfigUtil;
 import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.ConnectFailedException;
 import com.rapiddweller.common.ErrorHandler;
+import com.rapiddweller.common.HF;
 import com.rapiddweller.common.HeavyweightIterator;
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.common.LogCategoriesConstants;
@@ -738,18 +739,18 @@ public class DBUtil {
       if (!success) {
         StringBuilder builder = new StringBuilder();
         if (c != 0) {
-          builder.append(c).append(" connection(s)");
+          builder.append(HF.pluralize(c, "connection"));
         }
         if (r != 0) {
-          builder.append(builder.length() > 0 ? ", " : "").append(r).append(" result set(s)");
+          builder.append(builder.length() > 0 ? ", " : "").append(HF.pluralize(r, "result set"));
         }
         if (s != 0) {
-          builder.append(builder.length() > 0 ? ", " : "").append(s).append(" statement(s)");
+          builder.append(builder.length() > 0 ? ", " : "").append(HF.pluralize(s, "statement"));
         }
         if (p != 0) {
-          builder.append(builder.length() > 0 ? ", " : "").append(s).append(" prepared statement(s)");
+          builder.append(builder.length() > 0 ? ", " : "").append(HF.pluralize(p, " prepared statement(s)"));
         }
-        message = "There are unclosed database resources: " + builder.toString();
+        message = "There are unclosed database resources: " + builder;
       }
     }
     if (!success) {
