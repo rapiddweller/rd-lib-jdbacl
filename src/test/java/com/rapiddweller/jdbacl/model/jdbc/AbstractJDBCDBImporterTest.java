@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2012 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2012-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -46,65 +46,42 @@ import static org.junit.Assert.fail;
 /**
  * Abstract parent class for tests that relate to child classes of {@link JDBCDBImporter}.<br/><br/>
  * Created: 02.02.2012 14:02:05
- *
  * @author Volker Bergmann
  * @since 0.8.0
  */
 public abstract class AbstractJDBCDBImporterTest {
 
-  /**
-   * Sets database.
-   *
-   * @return the database
-   * @throws ConnectFailedException the connect failed exception
-   * @throws IOException            the io exception
-   */
+  protected static final String URL = "jdbc:hsqldb:mem:benerator";
+  protected static final String DRIVER = "org.hsqldb.jdbcDriver";
+  protected static final String USER = "sa";
+  protected static final String PASSWORD = null;
+  protected static final String CATALOG = null;
+  protected static final String SCHEMA = "PUBLIC";
+
+  public static final String CREATE_TABLES_FILE = "com/rapiddweller/jdbacl/model/jdbc/create_tables.hsql.sql";
+
   protected Connection setupDatabase() throws ConnectFailedException, IOException {
-    Connection connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
-    DBUtil
-        .executeScriptFile("com/rapiddweller/jdbacl/model/jdbc/create_tables.hsql.sql", "ISO-8859-1", connection, true, new ErrorHandler(getClass()));
+    Connection connection = DBUtil.connect(URL, DRIVER, USER, PASSWORD, false);
+    DBUtil.executeScriptFile(CREATE_TABLES_FILE, "ISO-8859-1", connection, true, new ErrorHandler(getClass()));
     return connection;
   }
 
-  /**
-   * Drop database tables.
-   *
-   * @param connection the connection
-   * @throws SQLException the sql exception
-   */
   protected void dropDatabaseTables(Connection connection) throws SQLException {
     DBUtil.executeUpdate("drop table t1;", connection);
     connection.close();
   }
 
-  /**
-   * Check schema db schema.
-   *
-   * @param db the db
-   * @return the db schema
-   */
   protected static DBSchema checkSchema(Database db) {
     DBSchema schema = db.getCatalog(null).getSchema("public");
     assertNotNull(schema);
     return schema;
   }
 
-  /**
-   * Check tables db table.
-   *
-   * @param schema the schema
-   * @return the db table
-   */
   protected static DBTable checkTables(DBSchema schema) {
     assertEquals(1, schema.getTables().size());
     return schema.getTable("T1");
   }
 
-  /**
-   * Check indexes.
-   *
-   * @param table the table
-   */
   protected static void checkIndexes(DBTable table) {
     List<DBIndex> indexes = table.getIndexes();
     assertEquals(3, indexes.size());

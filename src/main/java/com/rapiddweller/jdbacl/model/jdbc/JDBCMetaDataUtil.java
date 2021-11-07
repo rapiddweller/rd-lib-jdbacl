@@ -25,12 +25,9 @@ import com.rapiddweller.common.ConnectFailedException;
 import com.rapiddweller.common.ImportFailedException;
 import com.rapiddweller.jdbacl.model.DBMetaDataImporter;
 import com.rapiddweller.jdbacl.model.Database;
-import com.rapiddweller.jdbacl.model.cache.CachingDBImporter;
 
+import java.io.IOException;
 import java.sql.Connection;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * Utility class for JDBC meta data retrieval.<br/><br/>
@@ -40,64 +37,43 @@ import java.util.concurrent.Future;
  */
 public class JDBCMetaDataUtil {
 
-  public static Future<Database> getFutureMetaData(String environment, String folder,
-                                                   boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
-                                                   String tableInclusionPattern, String tableExclusionPattern, boolean lazy, boolean cached)
-      throws ImportFailedException {
-    final DBMetaDataImporter importer = getJDBCDBImporter(environment, folder, importUKs, importIndexes, importSequences,
-        importChecks, tableInclusionPattern, tableExclusionPattern, cached);
-    Callable<Database> callable = importer::importDatabase;
-    return Executors.newSingleThreadExecutor().submit(callable);
+  private JDBCMetaDataUtil() {
+    // Private constructor to prevent instantiation of this utility class
   }
 
-  public static Database getMetaData(String environment, String folder,
-                                     boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
-                                     String tableInclusionPattern, String tableExclusionPattern, boolean lazy, boolean cached)
+  public static Database getMetaData(String url, String driver, String user, String password, String catalogName, String schemaName,
+                                   String tableInclusionPattern, String tableExclusionPattern)
+    throws ConnectFailedException, IOException {
+  try (DBMetaDataImporter importer = createJDBCDBImporter(url, driver, user, password, catalogName, schemaName,
+      tableInclusionPattern, tableExclusionPattern)) {
+    return importer.importDatabase();
+  }
+}
+
+  public static Database getMetaData(Connection connection, String user, String catalogName, String schemaName,
+                                     String tableInclusionPattern, String tableExclusionPattern)
       throws ConnectFailedException, ImportFailedException {
-    DBMetaDataImporter importer = getJDBCDBImporter(environment, folder,
-        importUKs, importIndexes, importSequences, importChecks, tableInclusionPattern, tableExclusionPattern, cached);
+    DBMetaDataImporter importer = createJDBCDBImporter(connection, user, catalogName, schemaName,
+        tableInclusionPattern, tableExclusionPattern);
     return importer.importDatabase();
   }
 
-  public static DBMetaDataImporter getJDBCDBImporter(
-      String environment, String folder, boolean importUKs, boolean importIndexes, boolean importSequences,
-      boolean importChecks, String tableInclusionPattern, String tableExclusionPattern, boolean cached) {
-    JDBCDBImporter dbImporter;
-    dbImporter = new JDBCDBImporter(environment, folder);
-    dbImporter.setTableInclusionPattern(tableInclusionPattern);
-    dbImporter.setTableExclusionPattern(tableExclusionPattern);
-    DBMetaDataImporter importer = dbImporter;
-    if (cached) {
-      importer = new CachingDBImporter((JDBCDBImporter) importer, environment);
-    }
-    return importer;
-  }
-
-  public static JDBCDBImporter getJDBCDBImporter(Connection connection, String environment, String folder,
-                                                 String user, String catalogName, String schemaName,
-                                                 boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
-                                                 String tableInclusionPattern, String tableExclusionPattern) {
-    JDBCDBImporter importer;
-    importer = new JDBCDBImporter(connection, environment, folder, user, catalogName, schemaName);
+  public static JDBCDBImporter createJDBCDBImporter(
+      String url, String driver, String user, String password, String catalogName, String schemaName,
+      String tableInclusionPattern, String tableExclusionPattern) {
+    JDBCDBImporter importer = new JDBCDBImporter(url, driver, user, password, catalogName, schemaName);
     importer.setTableInclusionPattern(tableInclusionPattern);
     importer.setTableExclusionPattern(tableExclusionPattern);
     return importer;
   }
 
-  public static Database getMetaData(Connection target, String environment, String folder, String user, String catalog, String schema)
-      throws ConnectFailedException, ImportFailedException {
-    return getMetaData(target, environment, folder, user, catalog, schema, true, true, true, true, ".*", null);
-  }
-
-  public static Database getMetaData(Connection connection, String environment, String folder,
-                                     String user, String catalogName, String schemaName,
-                                     boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
-                                     String tableInclusionPattern, String tableExclusionPattern)
-      throws ConnectFailedException, ImportFailedException {
-    DBMetaDataImporter importer = getJDBCDBImporter(connection, environment, folder, user, catalogName, schemaName,
-        importUKs, importIndexes, importSequences, importChecks,
-        tableInclusionPattern, tableExclusionPattern);
-    return importer.importDatabase();
+  public static JDBCDBImporter createJDBCDBImporter(
+      Connection connection, String user, String catalogName, String schemaName,
+      String tableInclusionPattern, String tableExclusionPattern) {
+    JDBCDBImporter importer = new JDBCDBImporter(connection, user, catalogName, schemaName);
+    importer.setTableInclusionPattern(tableInclusionPattern);
+    importer.setTableExclusionPattern(tableExclusionPattern);
+    return importer;
   }
 
 }

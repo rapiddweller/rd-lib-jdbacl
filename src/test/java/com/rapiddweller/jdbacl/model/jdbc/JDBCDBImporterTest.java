@@ -37,7 +37,6 @@ import static org.junit.Assert.assertEquals;
 /**
  * Tests the {@link JDBCDBImporter}.<br/><br/>
  * Created: 31.01.2012 12:32:56
- *
  * @author Volker Bergmann
  * @since 0.8.0
  */
@@ -45,32 +44,19 @@ public class JDBCDBImporterTest extends AbstractJDBCDBImporterTest {
 
   private Connection connection;
 
-  /**
-   * Sets up.
-   *
-   * @throws Exception the exception
-   */
   @Before
   public void setUp() throws Exception {
     this.connection = setupDatabase();
   }
 
-  /**
-   * Tear down.
-   *
-   * @throws Exception the exception
-   */
   @After
   public void tearDown() throws Exception {
     dropDatabaseTables(connection);
   }
 
-  /**
-   * Test import database hsql.
-   */
   @Test
   public void testImportDatabase_HSQL() {
-    Database db = new Database("hsqlmem", new JDBCDBImporter(connection, null, null, "sa", null, null), true);
+    Database db = new Database("hsqlmem", new JDBCDBImporter(URL, DRIVER, USER, PASSWORD, CATALOG, SCHEMA), true);
     checkImports(false, false, false, db);
     DBSchema schema = checkSchema(db);
     DBTable table = checkTables(schema);
@@ -98,14 +84,6 @@ public class JDBCDBImporterTest extends AbstractJDBCDBImporterTest {
     assertEquals(0, schema.getPackages().size());
   }
 
-  /**
-   * Check imports.
-   *
-   * @param sequences the sequences
-   * @param triggers  the triggers
-   * @param packages  the packages
-   * @param db        the db
-   */
   public void checkImports(boolean sequences, boolean triggers, boolean packages, Database db) {
     assertEquals(sequences, db.isSequencesImported());
     assertEquals(triggers, db.isTriggersImported());

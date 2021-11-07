@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -37,6 +37,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -62,7 +63,7 @@ public class XMLModelImporterTest extends AbstractModelTest {
     XMLModelImporter importer = new XMLModelImporter(EAGER_TEST_MODEL_FILENAME, null);
     try {
       Database actual = importer.importDatabase();
-      assertTrue(actual instanceof Database);
+      assertNotNull(actual);
       new TreeLogger().log(new DBTreeModel(actual));
       Database expected = createTestModel();
       assertTrue(expected.isIdentical(actual));
@@ -73,7 +74,8 @@ public class XMLModelImporterTest extends AbstractModelTest {
 
   @Test
   public void testOnline() {
-    XMLModelImporter importer = new XMLModelImporter(LAZY_TEST_MODEL_FILENAME, new JDBCDBImporter(ENVIRONMENT, "."));
+    XMLModelImporter importer = new XMLModelImporter(
+        LAZY_TEST_MODEL_FILENAME, new JDBCDBImporter(URL, DRIVER, USER, PASSWORD, CATALOG, SCHEMA));
     try {
       Database db = importer.importDatabase();
       new TreeLogger().log(new DBTreeModel(db));

@@ -1,3 +1,10 @@
+drop table table1 if exists;
+drop index index1 if exists;
+drop table table3 if exists;
+drop table table4 if exists;
+drop index index4 if exists;
+drop sequence seq1 if exists;
+
 create table table1 (
 	id1 int,
 	name1 int,

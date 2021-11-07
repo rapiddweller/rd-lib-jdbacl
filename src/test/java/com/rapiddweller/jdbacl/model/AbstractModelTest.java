@@ -37,7 +37,13 @@ import java.util.Date;
  */
 public abstract class AbstractModelTest {
 
-  protected static final String ENVIRONMENT = "com/rapiddweller/jdbacl/model/hsqlmem";
+  protected static final String URL = "jdbc:hsqldb:mem:benerator";
+  protected static final String DRIVER = "org.hsqldb.jdbcDriver";
+  protected static final String USER = "sa";
+  protected static final String PASSWORD = null;
+  protected static final String CATALOG = null;
+  protected static final String SCHEMA = "PUBLIC";
+
   protected static final String CREATE_TABLES_FILE_NAME = "com/rapiddweller/jdbacl/model/xml/create_tables.sql";
   protected static final String DROP_TABLES_FILE_NAME = "com/rapiddweller/jdbacl/model/xml/drop_tables.sql";
   protected static final String EAGER_TEST_MODEL_FILENAME = "com/rapiddweller/jdbacl/model/xml/testmodel-eager.xml";
@@ -47,7 +53,7 @@ public abstract class AbstractModelTest {
 
   @SuppressWarnings("unused")
   protected static Database createTestModel() {
-    Database db = new Database(ENVIRONMENT, "hsql", "1.5.8", new Date());
+    Database db = new Database("HSQL", "hsql", "1.5.8", new Date());
     db.setImportDate(TimeUtil.date(2011, 9, 21, 16, 50, 38, 0));
     db.setUser("Alice");
     db.setTableInclusionPattern("MY_.*");
@@ -90,13 +96,13 @@ public abstract class AbstractModelTest {
   }
 
   protected void createTables() throws Exception {
-    connection = DBUtil.connect(ENVIRONMENT, ".", false);
+    connection = DBUtil.connect(URL, DRIVER, USER, PASSWORD, false);
     DBUtil.executeScriptFile(CREATE_TABLES_FILE_NAME, Encodings.UTF_8, connection, false, null);
   }
 
   protected void dropTables() throws Exception {
     try {
-      connection = DBUtil.connect(ENVIRONMENT, ".", false);
+      connection = DBUtil.connect(URL, DRIVER, USER, PASSWORD, false);
       DBUtil.executeScriptFile(DROP_TABLES_FILE_NAME, Encodings.UTF_8, connection, false, null);
     } finally {
       DBUtil.close(connection);

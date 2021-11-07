@@ -46,6 +46,10 @@ public abstract class AbstractIdentityTest {
 
   protected static final String LF = SystemInfo.getLineSeparator();
 
+  public static final String USER = "sa";
+  public static final String CATALOG = null;
+  public static final String SCHEMA = "PUBLIC";
+
   protected static final String CREATE_COUNTRY_TABLE =
       "create table country (" + LF +
           "	code char(2)," + LF +
@@ -89,7 +93,7 @@ public abstract class AbstractIdentityTest {
     DBUtil.executeUpdate(INSERT_STATE_BY, source);
   }
 
-  protected IdentityProvider createIdentities(Database database) {
+  protected IdentityProvider createIdentities() {
     IdentityProvider identityProvider = new IdentityProvider();
 
     NkPkQueryIdentity countryIdentity = new NkPkQueryIdentity(
@@ -105,7 +109,7 @@ public abstract class AbstractIdentityTest {
   }
 
   protected Database importDatabase(Connection target) throws ConnectFailedException, ImportFailedException {
-    return JDBCMetaDataUtil.getMetaData(target, null, null, "sa", null, "PUBLIC");
+    return JDBCMetaDataUtil.getMetaData(target, USER, CATALOG, SCHEMA, null, null);
   }
 
   protected Connection connectDB(String dbName, int port) throws ConnectFailedException {

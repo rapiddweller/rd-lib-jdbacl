@@ -34,16 +34,8 @@ import java.io.Closeable;
 /**
  * Interface for classes that can import a database.<br/><br/>
  * Created: 06.01.2007 19:17:27
- *
  * @author Volker Bergmann
  */
 public interface DBMetaDataImporter extends Closeable {
-  /**
-   * Import database database.
-   *
-   * @return the database
-   * @throws ConnectFailedException the connect failed exception
-   * @throws ImportFailedException  the import failed exception
-   */
   Database importDatabase() throws ConnectFailedException, ImportFailedException;
 }

@@ -52,7 +52,7 @@ public class NkPkQueryIdentityTest extends AbstractIdentityTest {
     insertData(connection);
 
     Database database = importDatabase(connection);
-    IdentityProvider identityProvider = createIdentities(database);
+    IdentityProvider identityProvider = createIdentities();
     IdentityModel countryIdentity = identityProvider.getIdentity("country");
 
     MemKeyMapper mapper = new MemKeyMapper(connection, "db", null, null, identityProvider, database);

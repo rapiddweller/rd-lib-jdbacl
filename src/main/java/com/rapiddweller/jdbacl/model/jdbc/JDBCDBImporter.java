@@ -38,7 +38,6 @@ import com.rapiddweller.contiperf.StopWatch;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.DatabaseDialectManager;
-import com.rapiddweller.jdbacl.JDBCConnectData;
 import com.rapiddweller.jdbacl.dialect.OracleDialect;
 import com.rapiddweller.jdbacl.model.DBCatalog;
 import com.rapiddweller.jdbacl.model.DBCheckConstraint;
@@ -79,10 +78,6 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
   protected static final Logger logger = LoggerFactory.getLogger(JDBCDBImporter.class);
 
-  private static final String TEMPORARY_ENVIRONMENT = "___temp";
-
-  protected final String environment;
-  protected final String folder;
   final Escalator escalator = new LoggerEscalator();
   protected String url;
   protected String driver;
@@ -93,6 +88,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   protected String tableInclusionPattern;
   protected String tableExclusionPattern;
   Connection connection;
+  boolean connectionOwned;
   DatabaseDialect dialect;
   String databaseProductName;
   ErrorHandler errorHandler;
@@ -100,20 +96,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   DatabaseMetaData metaData;
   private VersionNumber databaseProductVersion;
 
-  public JDBCDBImporter(String environment, String folder) {
-    this.connection = null;
-    this.environment = environment;
-    this.folder = folder;
-    this.tableInclusionPattern = ".*";
-    this.tableExclusionPattern = null;
-    this.errorHandler = new ErrorHandler(getClass().getName(), Level.error);
-    init();
-  }
-
   public JDBCDBImporter(String url, String driver, String user, String password, String catalog, String schema) {
-    this.connection = null;
-    this.environment = TEMPORARY_ENVIRONMENT;
-    this.folder = ".";
     this.url = url;
     this.driver = driver;
     this.user = user;
@@ -121,14 +104,15 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     this.catalogName = catalog;
     this.schemaName = schema;
     this.tableInclusionPattern = ".*";
+    this.connection = null;
+    this.connectionOwned = true;
     this.errorHandler = new ErrorHandler(getClass().getName(), Level.error);
     init();
   }
 
-  public JDBCDBImporter(Connection connection, String environment, String folder, String user, String catalogName, String schemaName) {
-    this.environment = (environment != null ? environment : TEMPORARY_ENVIRONMENT);
-    this.folder = folder;
+  public JDBCDBImporter(Connection connection, String user, String catalogName, String schemaName) {
     this.connection = connection;
+    this.connectionOwned = false;
     this.user = user;
     this.catalogName = catalogName;
     this.schemaName = schemaName;
@@ -165,12 +149,15 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     return removeBrackets(defaultValue.substring(1, defaultValue.length() - 1));
   }
 
-  public String getSchemaName() {
-    return schemaName;
+  public String getUrl() {
+    if (url == null) {
+      url = "no url used";
+    }
+    return url;
   }
 
-  public void setSchemaName(String schemaName) {
-    this.schemaName = schemaName;
+  public String getUser() {
+    return user;
   }
 
   public String getCatalogName() {
@@ -181,11 +168,12 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     this.catalogName = catalogName;
   }
 
-  public String getUrl() {
-    if (url == null) {
-      url = "no url used";
-    }
-    return url;
+  public String getSchemaName() {
+    return schemaName;
+  }
+
+  public void setSchemaName(String schemaName) {
+    this.schemaName = schemaName;
   }
 
   public String getDatabaseProductName() {
@@ -232,7 +220,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
   @Override
   public Database importDatabase() throws ConnectFailedException, ImportFailedException {
-    return new Database(environment, this, true);
+    return new Database(url, this, true);
   }
 
 
@@ -240,27 +228,6 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
   protected void init() {
     try {
-      if (!TEMPORARY_ENVIRONMENT.equals(environment)) {
-        JDBCConnectData cd = DBUtil.getConnectData(environment, folder);
-        if (this.url == null) {
-          this.url = cd.url;
-        }
-        if (this.driver == null) {
-          this.driver = cd.driver;
-        }
-        if (this.user == null) {
-          this.user = cd.user;
-        }
-        if (this.password == null) {
-          this.password = cd.password;
-        }
-        if (this.catalogName == null) {
-          this.catalogName = cd.catalog;
-        }
-        if (this.schemaName == null) {
-          this.schemaName = cd.schema;
-        }
-      }
       tableNameFilter = new TableNameFilter(tableInclusionPattern, tableExclusionPattern);
       StopWatch watch = new StopWatch("getMetaData");
       metaData = getConnection().getMetaData();
@@ -279,11 +246,13 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
   @Override
   public void close() {
-    DBUtil.close(connection);
+    if (connectionOwned) {
+      DBUtil.close(connection);
+    }
   }
 
   public void importCatalogs(Database database) throws SQLException, ConnectFailedException {
-    logger.debug("Importing catalogs from environment '{}'", database.getEnvironment());
+    logger.debug("Importing catalogs from '{}'", url);
     StopWatch watch = new StopWatch("importCatalogs");
     ResultSet catalogSet = metaData.getCatalogs();
     int catalogCount = 0;
@@ -332,7 +301,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   }
 
   public void importSchemas(Database database) throws SQLException {
-    logger.debug("Importing schemas from environment '{}'", database.getEnvironment());
+    logger.debug("Importing schemas from system '{}'", url);
     StopWatch watch = new StopWatch("importSchemas");
     int schemaCount = 0;
     ResultSet schemaSet = metaData.getSchemas();
@@ -363,8 +332,8 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     watch.stop();
   }
 
-  private void haveAtLeastOneSchema(Database database, int schemaCount) throws SQLException {
-    if (schemaCount == 0) {
+  private void haveAtLeastOneSchema(Database database, int importedSchemaCount) throws SQLException {
+    if (importedSchemaCount == 0) {
       // add a default schema if none was reported (e.g. by MySQL)
       DBCatalog catalogToUse = database.getCatalog(catalogName);
       if (catalogToUse == null) {
@@ -376,7 +345,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   }
 
   public void importAllTables(Database database) throws SQLException {
-    logger.info("Importing tables from environment '{}'", database.getEnvironment());
+    logger.info("Importing tables from environment '{}'", url);
     if (tableExclusionPattern != null) {
       logger.debug("excluding tables: {}", tableExclusionPattern);
     }
@@ -473,25 +442,6 @@ public class JDBCDBImporter implements DBMetaDataImporter {
       return TableType.TABLE;
     }
   }
-
-  /*
-    private void importVersionColumnInfo(DBCatalog catalogName, DBTable table, DatabaseMetaData metaData) throws SQLException {
-        ResultSet versionColumnSet = metaData.getVersionColumns(catalogName.getName(), null, table.getName());
-  //        DBUtil.print(versionColumnSet);
-        while (versionColumnSet.next()) {
-            // short scope = versionColumnSet.getString(1);
-            String columnName = versionColumnSet.getString(2);
-            //int dataType = versionColumnSet.getInt(3);
-            //String typeName = versionColumnSet.getString(4);
-            //int columnSize = versionColumnSet.getInt(5);
-            //int bufferLength = versionColumnSet.getInt(6);
-            //short decimalDigits = versionColumnSet.getShort(7);
-            //short pseudoColumn = versionColumnSet.getShort(8);
-            DBColumn column = table.getColumn(columnName);
-            column.setVersionColumn(true);
-        }
-    }
-*/
 
 
   // primary key import ----------------------------------------------------------------------------------------------
@@ -803,7 +753,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   // referrer table import -------------------------------------------------------------------------------------------
 
   public final void importAllChecks(Database database) {
-    logger.info("Importing checks from environment '{}'", database.getEnvironment());
+    logger.info("Importing checks from environment '{}'", url);
     StopWatch watch = new StopWatch("importAllChecks");
     try {
       database.setChecksImported(true);
@@ -815,7 +765,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         }
       }
     } catch (Exception e) {
-      throw new RuntimeException("Error importing checks from " + database.getEnvironment(), e);
+      throw new RuntimeException("Error importing checks from " + url, e);
     }
     watch.stop();
   }
@@ -868,7 +818,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   // trigger import --------------------------------------------------------------------------------------------------
 
   public void importSequences(Database database) {
-    logger.info("Importing sequences from environment '{}'", database.getEnvironment());
+    logger.info("Importing sequences from environment '{}'", url);
     StopWatch watch = new StopWatch("importSequences");
     try {
       if (dialect.isSequenceSupported()) {
@@ -886,7 +836,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         }
       }
     } catch (Exception e) {
-      logger.error("Error importing sequences from environment '{}'", database.getEnvironment(), e);
+      logger.error("Error importing sequences from environment '{}'", url, e);
     }
     watch.stop();
   }

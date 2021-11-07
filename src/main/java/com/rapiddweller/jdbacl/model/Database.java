@@ -44,14 +44,9 @@ import java.util.Set;
 /**
  * Represents a database.<br/><br/>
  * Created: 06.01.2007 18:34:20
- *
  * @author Volker Bergmann
  */
 public class Database extends AbstractCompositeDBObject<DBCatalog> implements TableHolder, SequenceHolder {
-
-  private static final long serialVersionUID = -1975619615948817919L;
-
-  private final String environment;
 
   private String productName;
   private VersionNumber productVersion;
@@ -73,21 +68,16 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 
   // constructors ----------------------------------------------------------------------------------------------------
 
-  public Database(String environment, String folder) {
-    this(environment, new JDBCDBImporter(environment, folder), true);
-  }
-
-  public Database(String environment, String productName, String productVersion, Date importDate) {
-    this(environment, null, false);
+  public Database(String name, String productName, String productVersion, Date importDate) {
+    this(name, null, false);
     this.productName = productName;
     this.productVersion = VersionNumber.valueOf(productVersion);
     this.importDate = importDate;
   }
 
-  public Database(String environment, JDBCDBImporter importer, boolean prepopulate) throws RuntimeException {
-    super(environment, "database");
+  public Database(String name, JDBCDBImporter importer, boolean prepopulate) {
+    super(name, "name");
     try {
-      this.environment = environment;
       this.reservedWords = null;
       this.catalogs = OrderedNameMap.createCaseIgnorantMap();
       this.sequencesImported = false;
@@ -105,8 +95,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
         }
       }
     } catch (Exception e) {
-      StringBuilder messageBuilder = new StringBuilder("Database import failed. environment (" +
-          environment + ")");
+      StringBuilder messageBuilder = new StringBuilder("Database import of " + name + " failed.");
       if (importer != null) {
         messageBuilder.append(", catalog (").append(importer.getCatalogName())
             .append("), schema (").append(importer.getSchemaName())
@@ -118,10 +107,6 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
   }
 
   // properties ------------------------------------------------------------------------------------------------------
-
-  public String getEnvironment() {
-    return environment;
-  }
 
   public String getDatabaseProductName() {
     return productName;

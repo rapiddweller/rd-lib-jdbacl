@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -24,6 +24,7 @@ package com.rapiddweller.jdbacl.model.xml;
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.jdbacl.model.AbstractModelTest;
 import com.rapiddweller.jdbacl.model.Database;
+import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
@@ -33,17 +34,20 @@ import static org.junit.Assert.assertArrayEquals;
 /**
  * Tests the {@link XMLModelExporter}.<br/><br/>
  * Created: 28.11.2010 09:55:52
- *
  * @author Volker Bergmann
  * @since 0.6.4
  */
 public class XMLModelExporterTest extends AbstractModelTest {
 
-  /**
-   * Test lazy.
-   *
-   * @throws Exception the exception
-   */
+  @After
+  public void cleanUp() throws Exception {
+    try {
+      dropTables();
+    } catch (Exception e) {
+      // this may happen if a former test broke
+    }
+  }
+
   @Test
   public void testLazy() throws Exception {
     Database db = createTestModel();
@@ -54,11 +58,6 @@ public class XMLModelExporterTest extends AbstractModelTest {
     assertArrayEquals(expectedLines, actualLines);
   }
 
-  /**
-   * Test eager.
-   *
-   * @throws Exception the exception
-   */
   @Test
   public void testEager() throws Exception {
     Database db = createTestModel();

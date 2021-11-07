@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -21,12 +21,12 @@
 
 package com.rapiddweller.jdbacl.model.cache;
 
+import com.rapiddweller.common.ConfigUtil;
 import com.rapiddweller.common.ConnectFailedException;
 import com.rapiddweller.common.FileUtil;
 import com.rapiddweller.common.ImportFailedException;
 import com.rapiddweller.common.Period;
 import com.rapiddweller.common.StringUtil;
-import com.rapiddweller.common.SystemInfo;
 import com.rapiddweller.jdbacl.model.DBMetaDataImporter;
 import com.rapiddweller.jdbacl.model.Database;
 import com.rapiddweller.jdbacl.model.jdbc.JDBCDBImporter;
@@ -57,11 +57,24 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
   private static final String CACHE_FILE_SUFFIX = ".meta.xml";
 
   protected final JDBCDBImporter realImporter;
-  protected final String environment;
 
-  public CachingDBImporter(JDBCDBImporter realImporter, String environment) {
+  public CachingDBImporter(JDBCDBImporter realImporter) {
     this.realImporter = realImporter;
-    this.environment = environment;
+  }
+
+  public JDBCDBImporter getRealImporter() {
+    return realImporter;
+  }
+
+  public void invalidate() {
+    File bufferFile = getCacheFile();
+    if (bufferFile.exists()) {
+      if (!bufferFile.delete()) {
+        logger.error("Deleting {} failed", bufferFile);
+      } else {
+        logger.info("Deleted meta data cache file: {}", bufferFile);
+      }
+    }
   }
 
   @Override
@@ -97,18 +110,7 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
     }
   }
 
-  public static File getCacheFile(String environment) {
-    String fileSeparator = File.separator;
-    String cacheDirName = SystemInfo.getUserHome() + fileSeparator + "rapiddweller" + fileSeparator + "cache";
-    String cacheFileName = environment + CACHE_FILE_SUFFIX;
-    return FileUtil.getFileIgnoreCase(new File(cacheDirName, cacheFileName), false);
-  }
-
   // non-public helpers ----------------------------------------------------------------------------------------------
-
-  protected File getCacheFile() {
-    return getCacheFile(environment);
-  }
 
   protected Database readCachedData(File cacheFile) throws ConnectFailedException, ImportFailedException {
     try {
@@ -127,19 +129,8 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
     return writeCacheFile(file, database);
   }
 
-  public static void updateCacheFile(Database database) {
-    if (database == null) {
-      throw new IllegalArgumentException("database is null");
-    }
-    String environment = database.getEnvironment();
-    if (environment != null) {
-      File cacheFile = getCacheFile(environment);
-      writeCacheFile(cacheFile, database);
-    }
-  }
-
   public static Database writeCacheFile(File file, Database database) {
-    logger.info("Exporting Database meta data of {} to cache file", database.getEnvironment());
+    logger.info("Exporting Database meta data of {} to cache file", database.getName());
     try {
       FileUtil.ensureDirectoryExists(file.getParentFile());
       new XMLModelExporter(file).export(database);
@@ -148,6 +139,39 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
       logger.error("Error writing database meta data file " + ": " + e.getMessage(), e);
     }
     return database;
+  }
+
+
+  protected File getCacheFile() {
+    File cacheFile = new File(getMetaCacheFolder(), getCacheFileName(getRealImporter()));
+    return FileUtil.getFileIgnoreCase(cacheFile, false);
+  }
+
+  private static File getMetaCacheFolder() {
+    return new File(ConfigUtil.commonCacheFolder(), "db-meta-data");
+  }
+
+  private String getCacheFileName(JDBCDBImporter imp) {
+    return getCacheFileName(imp.getUrl(), imp.getUser(), imp.getCatalogName(), imp.getSchemaName());
+  }
+
+  static String getCacheFileName(String url, String user, String catalog, String schema) {
+    String result = normalize(url);
+    if (!StringUtil.isEmpty(user)) {
+      result += "-usr_" + user;
+    }
+    if (!StringUtil.isEmpty(catalog)) {
+      result += "-cat_" + catalog;
+    }
+    if (!StringUtil.isEmpty(schema)) {
+      result += "-sch_" + schema;
+    }
+    result += CACHE_FILE_SUFFIX;
+    return result.toLowerCase();
+  }
+
+  static String normalize(String url) {
+    return url.replace(":", "_").replace("/", "_").toLowerCase();
   }
 
 }

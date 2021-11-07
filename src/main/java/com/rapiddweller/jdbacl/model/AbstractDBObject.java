@@ -27,52 +27,24 @@ import com.rapiddweller.common.NullSafeComparator;
  * Abstract implementation of the {@link DBObject} interface which serves as
  * parent class for concrete implementations.<br/><br/>
  * Created: 09.11.2010 11:45:20
- *
  * @author Volker Bergmann
  * @since 0.6.4
  */
 public abstract class AbstractDBObject implements DBObject {
 
-  private static final long serialVersionUID = -9344600767967258L;
-
-  /**
-   * The Name.
-   */
   protected String name;
-  /**
-   * The Object type.
-   */
   protected final String objectType;
-  /**
-   * The Doc.
-   */
   protected String doc;
-  /**
-   * The Owner.
-   */
   protected CompositeDBObject<?> owner;
 
   // constructors ----------------------------------------------------------------------------------------------------
 
-  /**
-   * Instantiates a new Abstract db object.
-   *
-   * @param name       the name
-   * @param objectType the object type
-   */
-  public AbstractDBObject(String name, String objectType) {
+  protected AbstractDBObject(String name, String objectType) {
     this(name, objectType, null);
   }
 
-  /**
-   * Instantiates a new Abstract db object.
-   *
-   * @param name       the name
-   * @param objectType the object type
-   * @param owner      the owner
-   */
   @SuppressWarnings({"rawtypes"})
-  public AbstractDBObject(String name, String objectType, CompositeDBObject owner) {
+  protected AbstractDBObject(String name, String objectType, CompositeDBObject owner) {
     this.name = name;
     this.objectType = objectType;
     setOwner(owner); // allow child classes to do additional work when setting the owner
@@ -90,11 +62,6 @@ public abstract class AbstractDBObject implements DBObject {
     return objectType;
   }
 
-  /**
-   * Sets name.
-   *
-   * @param name the name
-   */
   public void setName(String name) {
     this.name = name;
   }
@@ -104,11 +71,6 @@ public abstract class AbstractDBObject implements DBObject {
     return doc;
   }
 
-  /**
-   * Sets doc.
-   *
-   * @param doc the doc
-   */
   public void setDoc(String doc) {
     this.doc = doc;
   }
@@ -140,7 +102,7 @@ public abstract class AbstractDBObject implements DBObject {
     if (this == obj) {
       return true;
     }
-    if (obj == null || !DBObject.class.isAssignableFrom(obj.getClass())) {
+    if (!(obj instanceof DBObject)) {
       return false;
     }
     DBObject that = (DBObject) obj;

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -35,17 +35,11 @@ import static org.junit.Assert.assertFalse;
 /**
  * Tests the {@link UniqueKeyIdentity} class.<br/><br/>
  * Created: 06.12.2010 10:18:49
- *
  * @author Volker Bergmann
  * @since 0.4
  */
 public class UniqueKeyIdentityTest extends AbstractIdentityTest {
 
-  /**
-   * Test.
-   *
-   * @throws Exception the exception
-   */
   @Test
   public void test() throws Exception {
     Connection connection = connectDB("db", HSQLUtil.DEFAULT_PORT + 1);
@@ -53,7 +47,7 @@ public class UniqueKeyIdentityTest extends AbstractIdentityTest {
     insertData(connection);
 
     Database database = importDatabase(connection);
-    IdentityProvider identityProvider = createIdentities(database);
+    IdentityProvider identityProvider = createIdentities();
     DBTable countryDbTable = database.getTable("country");
     UniqueKeyIdentity countryIdentity = new UniqueKeyIdentity(
         countryDbTable.getName(), "CODE");

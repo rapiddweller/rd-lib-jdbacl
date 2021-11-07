@@ -485,7 +485,7 @@ public class DBUtil {
     ReaderLineIterator iterator = new ReaderLineIterator(reader);
     SQLScriptException exception = null;
     Object result = null;
-    Boolean changedStructure = false;
+    boolean changedStructure = false;
     try {
       StringBuilder cmd = new StringBuilder();
       while (iterator.hasNext()) {
@@ -509,13 +509,7 @@ public class DBUtil {
                 result = queryAndSimplify(sql, connection);
               } else {
                 result = executeUpdate(sql, connection);
-                if (!Boolean.TRUE.equals(changedStructure)) {
-                  // if we are not already certain that structure was changed, check it
-                  Boolean tmp = SQLUtil.mutatesStructure(sql);
-                  if (!(changedStructure == null && Boolean.FALSE.equals(tmp))) {
-                    changedStructure = tmp; // merge results using the worse one (true worse than null worse than false)
-                  }
-                }
+                changedStructure |= SQLUtil.mutatesStructure(sql);
               }
             } catch (SQLException e) {
               if (errorHandler == null) {
@@ -524,8 +518,7 @@ public class DBUtil {
               errorHandler.handleError("Error in executing SQL: " + SystemInfo.getLineSeparator() + cmd, e);
               // if we arrive here, the ErrorHandler decided not to throw an exception
               // so we save the exception and line number and continue execution
-              if (exception != null) // only the first exception is saved
-              {
+              if (exception != null) { // only the first exception is saved
                 exception = new SQLScriptException(e, iterator.lineCount());
               }
             }

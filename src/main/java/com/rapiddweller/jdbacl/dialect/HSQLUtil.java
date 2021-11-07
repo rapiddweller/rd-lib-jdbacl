@@ -38,56 +38,26 @@ import java.sql.Statement;
 /**
  * Provides utility methods for using HSQLDB.<br/><br/>
  * Created at 02.05.2008 19:56:35
- *
  * @author Volker Bergmann
  * @since 0.4.3
  */
 public class HSQLUtil {
 
-  /**
-   * The constant IN_MEMORY_URL_PREFIX.
-   */
   public static final String IN_MEMORY_URL_PREFIX = "jdbc:hsqldb:mem:";
-  /**
-   * The constant DRIVER.
-   */
   public static final String DRIVER = "org.hsqldb.jdbcDriver";
-  /**
-   * The constant DEFAULT_USER.
-   */
   public static final String DEFAULT_USER = "sa";
-  /**
-   * The constant DEFAULT_PASSWORD.
-   */
-  public static final String DEFAULT_PASSWORD = "";
-  /**
-   * The constant DEFAULT_SCHEMA.
-   */
+  public static final String DEFAULT_PASSWORD = null;
   public static final String DEFAULT_SCHEMA = "PUBLIC";
-  /**
-   * The constant DEFAULT_PORT.
-   */
   public static final int DEFAULT_PORT = 9001;
 
-  /**
-   * Connect in memory db connection.
-   *
-   * @param dbName the db name
-   * @param port   the port
-   * @return the connection
-   * @throws ConnectFailedException the connect failed exception
-   */
+  private HSQLUtil() {
+    // private constructor to prevent instantiation of this utility class
+  }
+
   public static Connection connectInMemoryDB(String dbName, int port) throws ConnectFailedException {
     return connectInMemoryDB(dbName + ":" + port);
   }
 
-  /**
-   * Connect in memory db connection.
-   *
-   * @param dbName the db name
-   * @return the connection
-   * @throws ConnectFailedException the connect failed exception
-   */
   public static Connection connectInMemoryDB(String dbName) throws ConnectFailedException {
     String driver = DRIVER;
     try {
@@ -99,30 +69,14 @@ public class HSQLUtil {
     }
   }
 
-  /**
-   * Gets in memory url.
-   *
-   * @param dbName the db name
-   * @return the in memory url
-   */
   public static String getInMemoryURL(String dbName) {
     return IN_MEMORY_URL_PREFIX + dbName;
   }
 
-  /**
-   * Shutdown statement.
-   *
-   * @param url      the url
-   * @param user     the user
-   * @param password the password
-   * @return the statement
-   * @throws ClassNotFoundException the class not found exception
-   * @throws SQLException           the sql exception
-   */
   public static Statement shutdown(String url, String user, String password)
       throws ClassNotFoundException, SQLException {
     Statement statement;
-    Class.forName("org.hsqldb.jdbcDriver");
+    Class.forName(DRIVER);
     Connection con = DriverManager.getConnection(url, user, password);
     statement = con.createStatement();
     statement.executeUpdate("SHUTDOWN");

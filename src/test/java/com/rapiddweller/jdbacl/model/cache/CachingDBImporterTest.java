@@ -26,9 +26,8 @@ import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.model.DBTable;
 import com.rapiddweller.jdbacl.model.Database;
+import com.rapiddweller.jdbacl.model.jdbc.AbstractJDBCDBImporterTest;
 import com.rapiddweller.jdbacl.model.jdbc.JDBCDBImporter;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import org.junit.Test;
 
 import java.io.File;
@@ -43,27 +42,19 @@ import static org.junit.Assert.assertFalse;
  * @author Volker Bergmann
  * @since 0.8.1
  */
-public class CachingDBImporterTest {
+public class CachingDBImporterTest extends AbstractJDBCDBImporterTest {
 
-  private static final String ENVIRONMENT = "hsqlmem";
-  private static final Logger LOGGER = LoggerFactory.getLogger(CachingDBImporterTest.class);
   private static final String TEST_TABLE_NAME = "CachingDBImporterTest";
 
   @Test
   public void testLazyImport() throws Exception {
-    // if no environment 'hsqlmem' is defined on the system, skip the test
-    if (!DBUtil.existsEnvironment(ENVIRONMENT, ".")) {
-      LOGGER.warn("Skipping test: testLazyImport()");
-      return;
-    }
-
     // given a database which has not been cached yet
-    Connection connection = DBUtil.connect(ENVIRONMENT, ".", false);
+    Connection connection = DBUtil.connect(URL, DRIVER, USER, PASSWORD, false);
     DBUtil.executeUpdate("create table " + TEST_TABLE_NAME + " ( id int, primary key (id))", connection);
-    JDBCDBImporter realImporter = new JDBCDBImporter(ENVIRONMENT, ".");
+    JDBCDBImporter realImporter = new JDBCDBImporter(URL, DRIVER, USER, PASSWORD, CATALOG, SCHEMA);
     CachingDBImporter importer = null;
     try {
-      importer = new CachingDBImporter(realImporter, ENVIRONMENT);
+      importer = new CachingDBImporter(realImporter);
       File cacheFile = importer.getCacheFile();
       FileUtil.deleteIfExists(cacheFile);
       // when importing the database without accessing the indexes...
@@ -77,8 +68,17 @@ public class CachingDBImporterTest {
       // then the cache must be able to fetch the missing information dynamically
       assertEquals(1, table2.getIndexes().size());
     } finally {
+      DBUtil.executeUpdate("drop table " + TEST_TABLE_NAME, connection);
       IOUtil.close(importer);
     }
+  }
+
+  @Test
+  public void testGetCacheFileName() {
+    assertEquals("jdbc_hsqldb_mem_mydb_9001-usr_sa-cat_topcat-sch_public.meta.xml",
+        CachingDBImporter.getCacheFileName("jdbc:hsqldb:mem:mydb:9001", "sa", "TOPCAT", "PUBLIC"));
+    assertEquals("jdbc_hsqldb_mem_mydb_9001-usr_sa.meta.xml", CachingDBImporter.getCacheFileName(
+        "jdbc:hsqldb:mem:mydb:9001", "sa", null, null));
   }
 
 }

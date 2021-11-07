@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2014 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -28,7 +28,6 @@ import java.util.List;
  * Abstract implementation of the {@link CompositeDBObject} interface which serves as parent class
  * for individual implementations.<br/><br/>
  * Created: 09.11.2010 11:47:43
- *
  * @param <C> the type parameter
  * @author Volker Bergmann
  * @since 0.6.4
@@ -39,23 +38,10 @@ public abstract class AbstractCompositeDBObject<C extends DBObject> extends Abst
 
   // constructors ----------------------------------------------------------------------------------------------------
 
-  /**
-   * Instantiates a new Abstract composite db object.
-   *
-   * @param name the name
-   * @param type the type
-   */
   public AbstractCompositeDBObject(String name, String type) {
     this(name, type, null);
   }
 
-  /**
-   * Instantiates a new Abstract composite db object.
-   *
-   * @param name  the name
-   * @param type  the type
-   * @param owner the owner
-   */
   public AbstractCompositeDBObject(String name, String type, CompositeDBObject<?> owner) {
     super(name, type, owner);
   }

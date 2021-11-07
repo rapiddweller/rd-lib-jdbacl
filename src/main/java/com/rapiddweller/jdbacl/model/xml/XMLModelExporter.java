@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2014 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -22,7 +22,6 @@
 package com.rapiddweller.jdbacl.model.xml;
 
 import com.rapiddweller.common.Encodings;
-import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.common.xml.SimpleXMLWriter;
 import com.rapiddweller.jdbacl.SQLUtil;
 import com.rapiddweller.jdbacl.model.DBCatalog;
@@ -58,11 +57,15 @@ import static com.rapiddweller.common.xml.SimpleXMLWriter.createAttributes;
 /**
  * Saves a database meta data model as XML file.<br/><br/>
  * Created: 28.11.2010 06:30:25
- *
  * @author Volker Bergmann
  * @since 0.6.4
  */
 public class XMLModelExporter implements DBMetaDataExporter {
+
+  private static final String COLUMNS = "columns";
+  private static final String COLUMN = "column";
+  private static final String NAME = "name";
+  private static final String FALSE = "false";
 
   private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -72,32 +75,14 @@ public class XMLModelExporter implements DBMetaDataExporter {
 
   // constructors ----------------------------------------------------------------------------------------------------
 
-  /**
-   * Instantiates a new Xml model exporter.
-   *
-   * @param file the file
-   */
   public XMLModelExporter(File file) {
     this(file, true);
   }
 
-  /**
-   * Instantiates a new Xml model exporter.
-   *
-   * @param file the file
-   * @param lazy the lazy
-   */
   public XMLModelExporter(File file, boolean lazy) {
     this(file, Encodings.UTF_8, lazy);
   }
 
-  /**
-   * Instantiates a new Xml model exporter.
-   *
-   * @param file     the file
-   * @param encoding the encoding
-   * @param lazy     the lazy
-   */
   public XMLModelExporter(File file, String encoding, boolean lazy) {
     this.file = file;
     this.encoding = encoding;
@@ -109,16 +94,12 @@ public class XMLModelExporter implements DBMetaDataExporter {
   @Override
   public void export(Database database) throws IOException {
     OutputStream out = new FileOutputStream(file);
-    SimpleXMLWriter writer = null;
-    try {
-      writer = new SimpleXMLWriter(out, encoding, true);
+    try (SimpleXMLWriter writer = new SimpleXMLWriter(out, encoding, true)) {
       writer.startDocument();
       exportDatabase(database, writer);
       writer.endDocument();
     } catch (SAXException e) {
       throw new RuntimeException("Error exporting database " + database, e);
-    } finally {
-      IOUtil.close(writer);
     }
   }
 
@@ -126,7 +107,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 
   private void exportDatabase(Database database, SimpleXMLWriter writer)
       throws SAXException {
-    AttributesImpl attribs = createAttributes("environment", database.getName());
+    AttributesImpl attribs = createAttributes(NAME, database.getName());
     if (database.getDatabaseProductName() != null) {
       addAttribute("databaseProductName", database.getDatabaseProductName(), attribs);
     }
@@ -151,7 +132,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
   }
 
   private void exportCatalog(DBCatalog catalog, SimpleXMLWriter writer) throws SAXException {
-    writer.startElement("catalog", createAttributes("name", catalog.getName()));
+    writer.startElement("catalog", createAttributes(NAME, catalog.getName()));
     for (DBSchema schema : catalog.getSchemas()) {
       exportSchema(schema, writer);
     }
@@ -160,7 +141,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 
   private void exportSchema(DBSchema schema, SimpleXMLWriter writer) throws SAXException {
     Database db = schema.getDatabase();
-    AttributesImpl atts = createAttributes("name", schema.getName());
+    AttributesImpl atts = createAttributes(NAME, schema.getName());
     writer.startElement("schema", atts);
     for (DBTable table : schema.getTables()) {
       exportTable(table, writer);
@@ -184,21 +165,21 @@ public class XMLModelExporter implements DBMetaDataExporter {
   }
 
   private void exportTable(DBTable table, SimpleXMLWriter writer) throws SAXException {
-    AttributesImpl atts = createAttributes("name", table.getName());
+    AttributesImpl atts = createAttributes(NAME, table.getName());
     if (lazy && !table.areColumnsImported()) {
-      addAttribute("columnsImported", "false", atts);
+      addAttribute("columnsImported", FALSE, atts);
     }
     if (lazy && !table.isPKImported()) {
-      addAttribute("pkImported", "false", atts);
+      addAttribute("pkImported", FALSE, atts);
     }
     if (lazy && !table.areFKsImported()) {
-      addAttribute("fksImported", "false", atts);
+      addAttribute("fksImported", FALSE, atts);
     }
     if (lazy && !table.areIndexesImported()) {
-      addAttribute("indexesImported", "false", atts);
+      addAttribute("indexesImported", FALSE, atts);
     }
     if (lazy && !table.areChecksImported()) {
-      addAttribute("checksImported", "false", atts);
+      addAttribute("checksImported", FALSE, atts);
     }
     writer.startElement("table", atts);
     exportColumns(table, writer);
@@ -219,13 +200,13 @@ public class XMLModelExporter implements DBMetaDataExporter {
   }
 
   private static void exportColumn(DBColumn column, SimpleXMLWriter writer) throws SAXException {
-    AttributesImpl atts = createAttributes("name", column.getName());
+    AttributesImpl atts = createAttributes(NAME, column.getName());
     addAttribute("default", column.getDefaultValue(), atts);
     addAttribute("jdbcType", String.valueOf(column.getType().getJdbcType()), atts);
     addAttribute("type", SQLUtil.renderColumnTypeWithSize(column), atts);
-    addAttribute("nullable", (column.isNullable() ? null : "false"), atts);
-    writer.startElement("column", atts);
-    writer.endElement("column");
+    addAttribute("nullable", (column.isNullable() ? null : FALSE), atts);
+    writer.startElement(COLUMN, atts);
+    writer.endElement(COLUMN);
   }
 
   private void exportPK(DBTable table, SimpleXMLWriter writer)
@@ -242,10 +223,10 @@ public class XMLModelExporter implements DBMetaDataExporter {
   }
 
   private void exportPK(DBPrimaryKeyConstraint pk, SimpleXMLWriter writer) throws SAXException {
-    AttributesImpl pkAtts = createAttributes("name", pk.getName());
+    AttributesImpl pkAtts = createAttributes(NAME, pk.getName());
     String[] pkColumnNames = pk.getColumnNames();
     if (pkColumnNames.length == 1) {
-      addAttribute("column", pkColumnNames[0], pkAtts);
+      addAttribute(COLUMN, pkColumnNames[0], pkAtts);
     }
     writer.startElement("pk", pkAtts);
     if (pkColumnNames.length > 1) {
@@ -254,13 +235,6 @@ public class XMLModelExporter implements DBMetaDataExporter {
     writer.endElement("pk");
   }
 
-  /**
-   * Export f ks.
-   *
-   * @param table  the table
-   * @param writer the writer
-   * @throws SAXException the sax exception
-   */
   public void exportFKs(DBTable table, SimpleXMLWriter writer) throws SAXException {
     if (!lazy || table.areFKsImported()) {
       for (DBForeignKeyConstraint fk : table.getForeignKeyConstraints()) {
@@ -270,10 +244,10 @@ public class XMLModelExporter implements DBMetaDataExporter {
   }
 
   private static void exportFk(DBForeignKeyConstraint fk, SimpleXMLWriter writer) throws SAXException {
-    AttributesImpl atts = createAttributes("name", fk.getName());
+    AttributesImpl atts = createAttributes(NAME, fk.getName());
     String[] columnNames = fk.getColumnNames();
     if (columnNames.length == 1) {
-      addAttribute("column", columnNames[0], atts);
+      addAttribute(COLUMN, columnNames[0], atts);
     }
     addAttribute("refereeTable", fk.getRefereeTable().getName(), atts);
     String[] refereeColumns = fk.getRefereeColumnNames();
@@ -288,25 +262,18 @@ public class XMLModelExporter implements DBMetaDataExporter {
     }
     writer.startElement("fk", atts);
     if (columnNames.length > 1) {
-      writer.startElement("columns");
+      writer.startElement(COLUMNS);
       for (String columnName : columnNames) {
-        AttributesImpl colAtts = createAttributes("name", columnName);
+        AttributesImpl colAtts = createAttributes(NAME, columnName);
         addAttribute("refereeColumn", fk.columnReferencedBy(columnName), colAtts);
-        writer.startElement("column", colAtts);
-        writer.endElement("column");
+        writer.startElement(COLUMN, colAtts);
+        writer.endElement(COLUMN);
       }
-      writer.endElement("columns");
+      writer.endElement(COLUMNS);
     }
     writer.endElement("fk");
   }
 
-  /**
-   * Export u ks and indexes.
-   *
-   * @param table  the table
-   * @param writer the writer
-   * @throws SAXException the sax exception
-   */
   public void exportUKsAndIndexes(DBTable table, SimpleXMLWriter writer) throws SAXException {
     if (!lazy || table.areIndexesImported()) {
       exportUKs(table.getUniqueConstraints(false), writer);
@@ -319,10 +286,10 @@ public class XMLModelExporter implements DBMetaDataExporter {
       if (uk instanceof DBPrimaryKeyConstraint) {
         continue;
       }
-      AttributesImpl atts = createAttributes("name", uk.getName());
+      AttributesImpl atts = createAttributes(NAME, uk.getName());
       String[] columnNames = uk.getColumnNames();
       if (columnNames.length == 1) {
-        addAttribute("column", columnNames[0], atts);
+        addAttribute(COLUMN, columnNames[0], atts);
       }
       writer.startElement("uk", atts);
       if (columnNames.length > 1) {
@@ -332,13 +299,6 @@ public class XMLModelExporter implements DBMetaDataExporter {
     }
   }
 
-  /**
-   * Export checks.
-   *
-   * @param table  the table
-   * @param writer the writer
-   * @throws SAXException the sax exception
-   */
   public void exportChecks(DBTable table, SimpleXMLWriter writer) throws SAXException {
     if (!lazy || table.areChecksImported()) {
       exportChecks(table.getCheckConstraints(), writer);
@@ -348,7 +308,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
   private static void exportChecks(List<DBCheckConstraint> checks, SimpleXMLWriter writer)
       throws SAXException {
     for (DBCheckConstraint check : checks) {
-      AttributesImpl atts = createAttributes("name", check.getName());
+      AttributesImpl atts = createAttributes(NAME, check.getName());
       addAttribute("definition", check.getConditionText(), atts);
       writer.startElement("check", atts);
       writer.endElement("check");
@@ -357,12 +317,12 @@ public class XMLModelExporter implements DBMetaDataExporter {
 
   private void exportIndexes(List<DBIndex> indexes, SimpleXMLWriter writer) throws SAXException {
     for (DBIndex index : indexes) {
-      AttributesImpl atts = createAttributes("name", index.getName());
+      AttributesImpl atts = createAttributes(NAME, index.getName());
       addAttribute("unique", (index.isUnique() ? "true" : null), atts);
-      addAttribute("nameDeterministic", (index.isNameDeterministic() ? null : "false"), atts);
+      addAttribute("nameDeterministic", (index.isNameDeterministic() ? null : FALSE), atts);
       String[] columnNames = index.getColumnNames();
       if (columnNames.length == 1) {
-        addAttribute("column", columnNames[0], atts);
+        addAttribute(COLUMN, columnNames[0], atts);
       }
       writer.startElement("index", atts);
       if (columnNames.length > 1) {
@@ -372,25 +332,18 @@ public class XMLModelExporter implements DBMetaDataExporter {
     }
   }
 
-  /**
-   * Write column group.
-   *
-   * @param pkColumnNames the pk column names
-   * @param writer        the writer
-   * @throws SAXException the sax exception
-   */
   public void writeColumnGroup(String[] pkColumnNames, SimpleXMLWriter writer) throws SAXException {
-    writer.startElement("columns");
+    writer.startElement(COLUMNS);
     for (String pkColumnName : pkColumnNames) {
-      AttributesImpl colAtts = createAttributes("name", pkColumnName);
-      writer.startElement("column", colAtts);
-      writer.endElement("column");
+      AttributesImpl colAtts = createAttributes(NAME, pkColumnName);
+      writer.startElement(COLUMN, colAtts);
+      writer.endElement(COLUMN);
     }
-    writer.endElement("columns");
+    writer.endElement(COLUMNS);
   }
 
   private static void exportSequence(DBSequence sequence, SimpleXMLWriter writer) throws SAXException {
-    AttributesImpl atts = createAttributes("name", sequence.getName());
+    AttributesImpl atts = createAttributes(NAME, sequence.getName());
     addIfNotNull("start", sequence.getStartIfNotDefault(), atts);
     addIfNotNull("increment", sequence.getIncrementIfNotDefault(), atts);
     addIfNotNull("maxValue", sequence.getMaxValueIfNotDefault(), atts);
@@ -403,7 +356,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
   }
 
   private static void exportTrigger(DBTrigger trigger, SimpleXMLWriter writer) throws SAXException {
-    AttributesImpl atts = createAttributes("name", trigger.getName());
+    AttributesImpl atts = createAttributes(NAME, trigger.getName());
     addIfNotNull("triggerType", trigger.getTriggerType(), atts);
     addIfNotNull("triggeringEvent", trigger.getTriggeringEvent(), atts);
     addIfNotNull("tableOwner", trigger.getTableOwner(), atts);
@@ -421,7 +374,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
   }
 
   private static void exportPackage(DBPackage pkg, SimpleXMLWriter writer) throws SAXException {
-    AttributesImpl atts = createAttributes("name", pkg.getName());
+    AttributesImpl atts = createAttributes(NAME, pkg.getName());
     addIfNotNull("subObjectName", pkg.getSubObjectName(), atts);
     addIfNotNull("objectId", pkg.getObjectId(), atts);
     addIfNotNull("dataObjectId", pkg.getDataObjectId(), atts);
@@ -434,7 +387,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 
   private static void exportPackageProcedures(DBPackage pkg, SimpleXMLWriter writer) throws SAXException {
     for (DBProcedure procedure : pkg.getProcedures()) {
-      AttributesImpl atts = createAttributes("name", procedure.getName());
+      AttributesImpl atts = createAttributes(NAME, procedure.getName());
       addIfNotNull("objectId", procedure.getObjectId(), atts);
       addIfNotNull("subProgramId", procedure.getSubProgramId(), atts);
       addIfNotNull("overload", procedure.getOverload(), atts);

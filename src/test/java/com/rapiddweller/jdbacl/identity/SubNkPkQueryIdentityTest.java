@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -34,17 +34,11 @@ import static org.junit.Assert.assertFalse;
 /**
  * Tests the {@link SubNkPkQueryIdentity}.<br/><br/>
  * Created: 06.12.2010 07:10:25
- *
  * @author Volker Bergmann
  * @since 0.4
  */
 public class SubNkPkQueryIdentityTest extends AbstractIdentityTest {
 
-  /**
-   * Test.
-   *
-   * @throws Exception the exception
-   */
   @Test
   public void test() throws Exception {
     Connection connection = connectDB("db", HSQLUtil.DEFAULT_PORT + 1);
@@ -52,7 +46,7 @@ public class SubNkPkQueryIdentityTest extends AbstractIdentityTest {
     insertData(connection);
 
     Database database = importDatabase(connection);
-    IdentityProvider identityProvider = createIdentities(database);
+    IdentityProvider identityProvider = createIdentities();
     IdentityModel identity = identityProvider.getIdentity("state");
 
     MemKeyMapper mapper = new MemKeyMapper(connection, "db", null, null, identityProvider, database);
