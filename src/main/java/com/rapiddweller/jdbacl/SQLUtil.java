@@ -502,24 +502,20 @@ public class SQLUtil {
   public static StringBuilder appendConstraintName(DBConstraint constraint, StringBuilder builder, NameSpec nameSpec) {
     if (constraint.getName() != null &&
         (nameSpec == NameSpec.ALWAYS || (nameSpec == NameSpec.IF_REPRODUCIBLE && constraint.isNameDeterministic()))) {
-      appendConstraint(quoteNameIfNullOrSpaces(constraint.getName()), builder);
+      builder.append("CONSTRAINT ").append(quoteNameIfNullOrSpaces(constraint.getName())).append(' ');
     }
     return builder;
   }
 
   public static void appendConstraintName(DBConstraint constraint, StringBuilder builder) {
     if (constraint.getName() != null) {
-      appendConstraint(quoteNameIfNullOrSpaces(constraint.getName()), builder);
+      builder.append("CONSTRAINT ").append(quoteNameIfNullOrSpaces(constraint.getName())).append(' ');
     }
   }
 
   public static String constraintName(DBConstraint constraint) {
     return (constraint.getName() != null ?
         "CONSTRAINT " + quoteNameIfNullOrSpaces(constraint.getName()) + ' ' : "");
-  }
-
-  private static void appendConstraint(String spec, StringBuilder builder) {
-    builder.append("CONSTRAINT ").append(spec).append("' '");
   }
 
   public static String typeAndName(DBObject dbObject) {
