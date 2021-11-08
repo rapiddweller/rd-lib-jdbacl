@@ -37,7 +37,6 @@ import java.util.Set;
 /**
  * Represents a database column type.<br/><br/>
  * Created: 06.01.2007 10:12:29
- *
  * @author Volker Bergmann
  */
 public class DBDataType implements Named, Serializable {
@@ -117,6 +116,7 @@ public class DBDataType implements Named, Serializable {
       "REF", Types.REF,
       "ROWID", Types.ROWID,
       "UROWID", Types.ROWID, // Oracle
+      "UUID", Types.OTHER, // Postgres
       "SMALLINT", Types.SMALLINT,
       "XML", Types.SQLXML, // MS SQL Server
       "XMLType", Types.SQLXML, // Oracle
@@ -139,10 +139,6 @@ public class DBDataType implements Named, Serializable {
   private final String name;
   private final int jdbcType;
 
-  private DBDataType(String name) {
-    this(jdbcTypeFor(name), name);
-  }
-
   private DBDataType(int sqlType, String name) {
     if (name.equals("NCLOB")) {
       sqlType = Types.NCLOB; // fix for Oracle
@@ -153,29 +149,11 @@ public class DBDataType implements Named, Serializable {
 
   // constructors ----------------------------------------------------------------------------------------------------
 
-  /**
-   * Gets instance.
-   *
-   * @param name the name
-   * @return the instance
-   */
   public static DBDataType getInstance(String name) {
-    name = name.toUpperCase();
-    DBDataType result = INSTANCES_BY_NAME.get(name);
-    if (result == null) {
-      result = new DBDataType(jdbcTypeFor(name), name);
-      INSTANCES_BY_NAME.put(name, result);
-    }
-    return result;
+    final String key = name.toUpperCase();
+    return INSTANCES_BY_NAME.computeIfAbsent(key, k -> new DBDataType(jdbcTypeFor(key), key));
   }
 
-  /**
-   * Gets instance.
-   *
-   * @param jdbcType the jdbc type
-   * @param name     the name
-   * @return the instance
-   */
   public static DBDataType getInstance(int jdbcType, String name) {
     TypeDescriptor descriptor = new TypeDescriptor(jdbcType, name.toUpperCase());
     DBDataType result = INSTANCES_BY_TYPE_AND_NAME.get(descriptor);
@@ -191,12 +169,6 @@ public class DBDataType implements Named, Serializable {
     return result;
   }
 
-  /**
-   * Jdbc type for int.
-   *
-   * @param name the name
-   * @return the int
-   */
   public static int jdbcTypeFor(String name) {
     return JDBC_TYPE_FOR_DB_TYPE.get(name.toUpperCase());
   }
@@ -209,39 +181,19 @@ public class DBDataType implements Named, Serializable {
     return name;
   }
 
-  /**
-   * Gets jdbc type.
-   *
-   * @return the jdbc type
-   */
   public int getJdbcType() {
     return jdbcType;
   }
 
-  /**
-   * Is lob boolean.
-   *
-   * @return the boolean
-   */
   public boolean isLOB() {
     return jdbcType == Types.BLOB || jdbcType == Types.CLOB || jdbcType == Types.NCLOB ||
         name.endsWith("CLOB") || "BLOB".equals(name);
   }
 
-  /**
-   * Is var char boolean.
-   *
-   * @return the boolean
-   */
   public boolean isVarChar() {
     return jdbcType == Types.VARCHAR || jdbcType == Types.NVARCHAR;
   }
 
-  /**
-   * Is alpha boolean.
-   *
-   * @return the boolean
-   */
   public boolean isAlpha() {
     if (ALPHA_TYPES.contains(jdbcType)) // standard types
     {
@@ -250,38 +202,18 @@ public class DBDataType implements Named, Serializable {
     return name.endsWith("VARCHAR2") || name.endsWith("CLOB"); // fixes for Oracle
   }
 
-  /**
-   * Is number boolean.
-   *
-   * @return the boolean
-   */
   public boolean isNumber() {
     return NUMBER_TYPES.contains(jdbcType);
   }
 
-  /**
-   * Is integer boolean.
-   *
-   * @return the boolean
-   */
   public boolean isInteger() {
     return INTEGER_TYPES.contains(jdbcType);
   }
 
-  /**
-   * Is decimal boolean.
-   *
-   * @return the boolean
-   */
   public boolean isDecimal() {
     return jdbcType == Types.DECIMAL || jdbcType == Types.NUMERIC;
   }
 
-  /**
-   * Is temporal boolean.
-   *
-   * @return the boolean
-   */
   public boolean isTemporal() {
     return jdbcType == Types.DATE ||
         jdbcType == Types.TIMESTAMP ||
@@ -315,21 +247,9 @@ public class DBDataType implements Named, Serializable {
   }
 
   private static class TypeDescriptor {
-    /**
-     * The Jdbc type.
-     */
     final int jdbcType;
-    /**
-     * The Name.
-     */
     final String name;
 
-    /**
-     * Instantiates a new Type descriptor.
-     *
-     * @param jdbcType the jdbc type
-     * @param name     the name
-     */
     TypeDescriptor(int jdbcType, String name) {
       this.jdbcType = jdbcType;
       this.name = name;
@@ -351,6 +271,6 @@ public class DBDataType implements Named, Serializable {
       TypeDescriptor that = (TypeDescriptor) other;
       return (this.jdbcType == that.jdbcType && name.equals(that.name));
     }
-
   }
+
 }
