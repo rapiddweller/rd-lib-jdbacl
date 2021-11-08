@@ -248,6 +248,9 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     }
   }
 
+
+  // catalog import --------------------------------------------------------------------------------------------------
+
   public void importCatalogs(Database database) throws SQLException, ConnectFailedException {
     logger.debug("Importing catalogs from '{}'", url);
     StopWatch watch = new StopWatch("importCatalogs");
@@ -341,6 +344,8 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     }
   }
 
+  // table import ----------------------------------------------------------------------------------------------------
+
   public void importAllTables(Database database) throws SQLException {
     logger.info("Importing tables from environment '{}'", url);
     if (tableExclusionPattern != null) {
@@ -352,7 +357,6 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     StopWatch watch = new StopWatch("importAllTables");
     ResultSet tableSet;
     tableSet = metaData.getTables(this.catalogName, this.schemaName, null, new String[] {"TABLE", "VIEW"});
-
     handleTableImport(database, watch, tableSet);
   }
 
@@ -371,8 +375,6 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     handleTableImport(database, watch, tableSet);
   }
 
-
-  // column import ---------------------------------------------------------------------------------------------------
 
   private void handleTableImport(Database database, StopWatch watch, ResultSet tableSet) throws SQLException {
     while (tableSet.next()) {
@@ -441,14 +443,11 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   }
 
 
-  // primary key import ----------------------------------------------------------------------------------------------
+  // column import ---------------------------------------------------------------------------------------------------
 
   public void importColumnsOfTable(DBTable table, ColumnReceiver receiver) {
     importColumns(table.getCatalog(), table.getSchema().getName(), table.getName(), tableNameFilter, receiver, errorHandler);
   }
-
-
-  // index import ----------------------------------------------------------------------------------------------------
 
   protected void importColumns(DBCatalog catalog, String schemaName, String tablePattern,
                                Filter<String> tableFilter, ColumnReceiver receiver, ErrorHandler errorHandler) {
@@ -586,7 +585,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   }
 
 
-  // foreign key import ----------------------------------------------------------------------------------------------
+  // index import ----------------------------------------------------------------------------------------------------
 
   public void importIndexesOfTable(DBTable table, boolean uniquesOnly, IndexReceiver receiver) {
     StopWatch watch = new StopWatch("importIndexesOfTable");
@@ -668,7 +667,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   }
 
 
-  // check import ----------------------------------------------------------------------------------------------------
+  // foreign key import ----------------------------------------------------------------------------------------------
 
   public void importImportedKeys(DBTable table, FKReceiver receiver) {
     logger.debug("Importing imported keys for table '{}'", table.getName());
@@ -747,7 +746,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   }
 
 
-  // referrer table import -------------------------------------------------------------------------------------------
+  // check import ----------------------------------------------------------------------------------------------------
 
   public final void importAllChecks(Database database) {
     logger.info("Importing checks from environment '{}'", url);
@@ -781,7 +780,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   }
 
 
-  // sequence import -------------------------------------------------------------------------------------------------
+  // referrer table import -------------------------------------------------------------------------------------------
 
   public void importRefererTables(DBTable table, ReferrerReceiver receiver) {
     StopWatch watch = new StopWatch("importRefererTables");
@@ -812,7 +811,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   }
 
 
-  // trigger import --------------------------------------------------------------------------------------------------
+  // sequence import -------------------------------------------------------------------------------------------------
 
   public void importSequences(Database database) {
     logger.info("Importing sequences from environment '{}'", url);
@@ -847,7 +846,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   }
 
 
-  // package import --------------------------------------------------------------------------------------------------
+  // trigger import --------------------------------------------------------------------------------------------------
 
   private void importTriggersForSchema(DBSchema schema) throws SQLException {
     StopWatch watch = new StopWatch("importTriggersForSchema");
@@ -864,7 +863,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   }
 
 
-  // helper methods --------------------------------------------------------------------------------------------------
+  // package import --------------------------------------------------------------------------------------------------
 
   private void importPackagesOfSchema(DBSchema schema) throws SQLException {
     StopWatch watch = new StopWatch("importPackagesOfSchema");
@@ -876,6 +875,8 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     watch.stop();
   }
 
+  // helper methods --------------------------------------------------------------------------------------------------
+  
   protected boolean tableSupported(String tableName) {
     return (tableNameFilter.accept(tableName) && !isOracleInternalTable(tableName));
   }

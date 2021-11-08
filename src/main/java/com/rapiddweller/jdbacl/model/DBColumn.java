@@ -37,64 +37,27 @@ import java.util.List;
 /**
  * Represents a database column.<br/><br/>
  * Created: 06.01.2007 08:58:49
- *
  * @author Volker Bergmann
  */
 public class DBColumn extends AbstractDBTableComponent {
 
   private static final long serialVersionUID = 130665821777405940L;
 
-  /**
-   * The Type.
-   */
   protected DBDataType type;
-  /**
-   * The Size.
-   */
   protected Integer size;
-  /**
-   * The Fraction digits.
-   */
   protected Integer fractionDigits;
-  /**
-   * The Default value.
-   */
   protected String defaultValue;
-  /**
-   * The Version column.
-   */
   protected boolean versionColumn;
 
-  /**
-   * The Uk constraints.
-   */
   protected final List<DBUniqueConstraint> ukConstraints; // constraints may be unnamed, so a Map does not make sense
-  /**
-   * The Not null constraint.
-   */
   protected DBNotNullConstraint notNullConstraint;
 
   // constructors ----------------------------------------------------------------------------------------------------
 
-  /**
-   * Instantiates a new Db column.
-   *
-   * @param name  the name
-   * @param table the table
-   * @param type  the type
-   */
   public DBColumn(String name, DBTable table, DBDataType type) {
     this(name, table, type, null);
   }
 
-  /**
-   * Instantiates a new Db column.
-   *
-   * @param name        the name
-   * @param table       the table
-   * @param jdbcType    the jdbc type
-   * @param typeAndSize the type and size
-   */
   public DBColumn(String name, DBTable table, int jdbcType, String typeAndSize) {
     this(name, table, null, null);
     Object[] tokens = SQLUtil.parseColumnTypeAndSize(typeAndSize);
@@ -109,27 +72,10 @@ public class DBColumn extends AbstractDBTableComponent {
     }
   }
 
-  /**
-   * Instantiates a new Db column.
-   *
-   * @param name  the name
-   * @param table the table
-   * @param type  the type
-   * @param size  the size
-   */
   public DBColumn(String name, DBTable table, DBDataType type, Integer size) {
     this(name, table, type, size, null);
   }
 
-  /**
-   * Instantiates a new Db column.
-   *
-   * @param name           the name
-   * @param table          the table
-   * @param type           the type
-   * @param size           the size
-   * @param fractionDigits the fraction digits
-   */
   public DBColumn(String name, DBTable table, DBDataType type, Integer size, Integer fractionDigits) {
     super(name, "column");
     if (table != null) {
@@ -148,83 +94,38 @@ public class DBColumn extends AbstractDBTableComponent {
 
   // properties ------------------------------------------------------------------------------------------------------
 
-  /**
-   * Gets type.
-   *
-   * @return the type
-   */
   public DBDataType getType() {
     return type;
   }
 
-  /**
-   * Sets type.
-   *
-   * @param type the type
-   */
   public void setType(DBDataType type) {
     this.type = type;
   }
 
-  /**
-   * Gets size.
-   *
-   * @return the size
-   */
   public Integer getSize() {
     return size;
   }
 
-  /**
-   * Sets size.
-   *
-   * @param size the size
-   */
   public void setSize(Integer size) {
     this.size = size;
   }
 
-  /**
-   * Gets fraction digits.
-   *
-   * @return the fraction digits
-   */
   public Integer getFractionDigits() {
     return fractionDigits;
   }
 
-  /**
-   * Sets fraction digits.
-   *
-   * @param fractionDigits the fraction digits
-   */
   public void setFractionDigits(Integer fractionDigits) {
     this.fractionDigits = fractionDigits;
   }
 
-  /**
-   * Gets default value.
-   *
-   * @return the default value
-   */
   public String getDefaultValue() {
     return defaultValue;
   }
 
-  /**
-   * Sets default value.
-   *
-   * @param defaultValue the default value
-   */
   public void setDefaultValue(String defaultValue) {
     this.defaultValue = defaultValue;
   }
 
-  /**
-   * Is unique boolean.
-   *
-   * @return the boolean
-   */
   public boolean isUnique() {
     getTable().getUniqueConstraints(true); // make sure lazy data is fetched before
     for (DBUniqueConstraint constraint : ukConstraints) {
@@ -235,11 +136,6 @@ public class DBColumn extends AbstractDBTableComponent {
     return false;
   }
 
-  /**
-   * Is pk component boolean.
-   *
-   * @return the boolean
-   */
   public boolean isPKComponent() {
     for (String candidate : getTable().getPKColumnNames()) {
       if (name.equals(candidate)) {
@@ -249,56 +145,26 @@ public class DBColumn extends AbstractDBTableComponent {
     return false;
   }
 
-  /**
-   * Gets uk constraints.
-   *
-   * @return the uk constraints
-   */
   public List<DBUniqueConstraint> getUkConstraints() {
     return ukConstraints;
   }
 
-  /**
-   * Add uk constraint.
-   *
-   * @param constraint the constraint
-   */
   public void addUkConstraint(DBUniqueConstraint constraint) {
     this.ukConstraints.add(constraint);
   }
 
-  /**
-   * Gets not null constraint.
-   *
-   * @return the not null constraint
-   */
   public DBNotNullConstraint getNotNullConstraint() {
     return notNullConstraint;
   }
 
-  /**
-   * Sets not null constraint.
-   *
-   * @param notNullConstraint the not null constraint
-   */
   public void setNotNullConstraint(DBNotNullConstraint notNullConstraint) {
     this.notNullConstraint = notNullConstraint;
   }
 
-  /**
-   * Is nullable boolean.
-   *
-   * @return the boolean
-   */
   public boolean isNullable() {
     return (notNullConstraint == null);
   }
 
-  /**
-   * Sets nullable.
-   *
-   * @param nullable the nullable
-   */
   public void setNullable(boolean nullable) {
     if (nullable) {
       // if a NotNullConstraint exists then remove it
@@ -306,44 +172,24 @@ public class DBColumn extends AbstractDBTableComponent {
     } else {
       // if there needs to be a NotNullConstraint, check if there exists one, first
       if (this.isNullable()) {
-        String constraintName = (getTable() != null ? getTable().getName() : "_") + '_' + name + "_NOT_NULL"; // TODO v1.0 get constraint name from DB
+        String constraintName = (getTable() != null ? getTable().getName() : "_") + '_' + name + "_NOT_NULL"; // TODO get constraint name from DB
         this.notNullConstraint = new DBNotNullConstraint(getTable(), constraintName, true, name);
       }
     }
   }
 
-  /**
-   * Is version column boolean.
-   *
-   * @return the boolean
-   */
   public boolean isVersionColumn() {
     return versionColumn;
   }
 
-  /**
-   * Sets version column.
-   *
-   * @param versionColumn the version column
-   */
   public void setVersionColumn(boolean versionColumn) {
     this.versionColumn = versionColumn;
   }
 
-  /**
-   * Is integer type boolean.
-   *
-   * @return the boolean
-   */
   public boolean isIntegerType() {
     return type.isInteger() || (type.isDecimal() && (fractionDigits == null || fractionDigits == 0));
   }
 
-  /**
-   * Gets foreign key constraint.
-   *
-   * @return the foreign key constraint
-   */
   public DBForeignKeyConstraint getForeignKeyConstraint() {
     for (DBForeignKeyConstraint fk : getTable().getForeignKeyConstraints()) {
       if (ArrayUtil.contains(name, fk.getColumnNames())) {
@@ -360,7 +206,7 @@ public class DBColumn extends AbstractDBTableComponent {
     if (this == obj) {
       return true;
     }
-    if (obj == null || !DBColumn.class.isAssignableFrom(obj.getClass())) {
+    if (!(obj instanceof  DBColumn)) {
       return false;
     }
     DBColumn that = (DBColumn) obj;
@@ -395,23 +241,17 @@ public class DBColumn extends AbstractDBTableComponent {
     if (this == other) {
       return true;
     }
-    if (other == null || !(other instanceof DBColumn)) {
+    if (!(other instanceof DBColumn)) {
       return false;
     }
     return this.name.equals(other.getName()) && isEquivalent(other);
   }
 
-  /**
-   * Is equivalent boolean.
-   *
-   * @param other the other
-   * @return the boolean
-   */
   public boolean isEquivalent(DBObject other) {
     if (this == other) {
       return true;
     }
-    if (other == null || !(other instanceof DBColumn)) {
+    if (!(other instanceof DBColumn)) {
       return false;
     }
     DBColumn that = (DBColumn) other;

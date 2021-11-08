@@ -28,32 +28,15 @@ package com.rapiddweller.jdbacl;
 
 /**
  * Holds name and type information of a database column.<br/><br/>
- *
  * @author Volker Bergmann
  * @since 0.3.04
  */
 public class ColumnInfo {
 
-  /**
-   * The Name.
-   */
   public final String name;
-  /**
-   * The Sql type.
-   */
   public final int sqlType;
-  /**
-   * The Type.
-   */
   public final Class<?> type;
 
-  /**
-   * Instantiates a new Column info.
-   *
-   * @param name    the name
-   * @param sqlType the sql type
-   * @param type    the type
-   */
   public ColumnInfo(String name, int sqlType, Class<?> type) {
     super();
     this.name = name;
@@ -65,4 +48,5 @@ public class ColumnInfo {
   public String toString() {
     return name + ": " + type;
   }
+
 }
