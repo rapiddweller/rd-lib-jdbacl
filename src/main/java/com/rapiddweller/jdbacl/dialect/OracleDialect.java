@@ -42,8 +42,6 @@ import com.rapiddweller.jdbacl.model.DBSchema;
 import com.rapiddweller.jdbacl.model.DBSequence;
 import com.rapiddweller.jdbacl.model.DBTrigger;
 import com.rapiddweller.jdbacl.sql.Query;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 
 import java.math.BigInteger;
 import java.sql.Connection;
@@ -93,11 +91,11 @@ public class OracleDialect extends DatabaseDialect {
     //			CREATE SEQUENCE [myschema.]xyz
     //			START WITH 1
     //			INCREMENT BY 1
-    //			MINVALUE 1 | NOMINVALUE
+    //			MINVALUE 1 | NOMINVALUE
     //			MAXVALUE 999999999 | NOMAXVALUE
-    //			CACHE 1 | NOCACHE
+    //			CACHE 1 | NOCACHE
     //			CYCLE | NOCYCLE
-    //			ORDER | NOORDER
+    //			ORDER | NOORDER
 
     String result = super.renderCreateSequence(sequence);
     // apply cache settings
@@ -313,12 +311,6 @@ public class OracleDialect extends DatabaseDialect {
   public List<DBPackage> queryPackages(DBSchema schema, Connection connection) throws SQLException {
 
     // query packages
-    //		TODO v1.3.0 this version does not work on each oracle instance
-    //		String query = "SELECT OWNER, OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, OBJECT_TYPE, STATUS" +
-    //				" FROM USER_OBJECTS WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'";
-    //		if (schema != null)
-    //			query += " AND OWNER = '" + schema.getName().toUpperCase() + "'";
-
     String query = "SELECT USER, OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, OBJECT_TYPE, STATUS" +
         " FROM USER_OBJECTS WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'";
     List<Object[]> pkgInfos = DBUtil.query(query, connection);
@@ -329,7 +321,9 @@ public class OracleDialect extends DatabaseDialect {
         String name = (String) pkgInfo[1];
         DBPackage pkg = new DBPackage(name, null);
         Assert.isTrue(schema != null, "Schema is null");
-        schema.receivePackage(pkg);
+        if (schema != null) {
+          schema.receivePackage(pkg);
+        }
         pkg.setSchema(schema);
         pkg.setSubObjectName((String) pkgInfo[2]);
         pkg.setObjectId(pkgInfo[3].toString());
@@ -347,7 +341,7 @@ public class OracleDialect extends DatabaseDialect {
         CollectionUtil.formatCommaSeparatedList(NameUtil.getNames(packages.values()), '\'') + ")";
     List<Object[]> procInfos = DBUtil.query(query, connection);
     for (Object[] procInfo : procInfos) {
-      DBPackage owner = packages.get((String) procInfo[0]);
+      DBPackage owner = packages.get(procInfo[0]);
       String name = (String) procInfo[1];
       DBProcedure proc = new DBProcedure(name, owner);
       proc.setObjectId(procInfo[2].toString());
