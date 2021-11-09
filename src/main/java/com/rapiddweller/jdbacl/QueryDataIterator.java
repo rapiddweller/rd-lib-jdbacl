@@ -38,13 +38,6 @@ import java.sql.Statement;
  */
 public class QueryDataIterator extends DataIteratorProxy<ResultSet> {
 
-  /**
-   * Instantiates a new Query data iterator.
-   *
-   * @param query      the query
-   * @param connection the connection
-   * @param fetchSize  the fetch size
-   */
   public QueryDataIterator(String query, Connection connection, int fetchSize) {
     super(createSource(query, connection, fetchSize));
   }
@@ -61,11 +54,6 @@ public class QueryDataIterator extends DataIteratorProxy<ResultSet> {
     }
   }
 
-  /**
-   * Get column labels string [ ].
-   *
-   * @return the string [ ]
-   */
   public String[] getColumnLabels() {
     return ((ResultSetIterator) source).getColumnLabels();
   }
