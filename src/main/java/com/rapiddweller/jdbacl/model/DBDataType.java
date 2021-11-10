@@ -81,6 +81,7 @@ public class DBDataType implements Named, Serializable {
       "BLOB", Types.BLOB,
       "BOOLEAN", Types.BOOLEAN,
       "BOOL", Types.BOOLEAN,
+      "BYTEA", Types.BLOB, // Postgres only, driver provides/accepts byte[]
       "CHAR", Types.CHAR,
       "CHARACTER", Types.CHAR, // ANSI SQL
       "CLOB", Types.CLOB,
@@ -116,7 +117,7 @@ public class DBDataType implements Named, Serializable {
       "REF", Types.REF,
       "ROWID", Types.ROWID,
       "UROWID", Types.ROWID, // Oracle
-      "UUID", Types.OTHER, // Postgres
+      "UUID", Types.OTHER, // Postgres only, driver provides String (probably java.util.UUID too?) and accepts java.util.UUID
       "SMALLINT", Types.SMALLINT,
       "XML", Types.SQLXML, // MS SQL Server
       "XMLType", Types.SQLXML, // Oracle
@@ -130,6 +131,7 @@ public class DBDataType implements Named, Serializable {
       "VARCHAR", Types.VARCHAR,
       "CHARACTER VARYING", Types.VARCHAR, // ANSI SQL
       "VARCHAR2", Types.VARCHAR, // Oracle
+      "JSON", Types.VARCHAR,
       "BIT VARYING", Types.OTHER, // ANSI SQL
       "INTERVAL", Types.OTHER // ANSI SQL
   );
