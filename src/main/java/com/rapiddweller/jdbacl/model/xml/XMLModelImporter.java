@@ -23,7 +23,6 @@ package com.rapiddweller.jdbacl.model.xml;
 
 import com.rapiddweller.common.ArrayUtil;
 import com.rapiddweller.common.Assert;
-import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.common.ImportFailedException;
 import com.rapiddweller.common.ParseUtil;
@@ -63,7 +62,6 @@ import java.util.Set;
 /**
  * Imports a meta data model from an XML file.<br/><br/>
  * Created: 28.11.2010 15:18:55
- *
  * @author Volker Bergmann
  * @since 0.6.4
  */
@@ -71,25 +69,16 @@ public class XMLModelImporter implements DBMetaDataImporter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(XMLModelImporter.class);
 
+  public static final String AUTO_NAMED = "autoNamed";
+  public static final String COLUMN = "column";
+
   private final String uri;
   private final JDBCDBImporter realImporter;
 
-  /**
-   * Instantiates a new Xml model importer.
-   *
-   * @param file         the file
-   * @param realImporter the real importer
-   */
   public XMLModelImporter(File file, JDBCDBImporter realImporter) {
     this(file.getAbsolutePath(), realImporter);
   }
 
-  /**
-   * Instantiates a new Xml model importer.
-   *
-   * @param uri          the uri
-   * @param realImporter the real importer
-   */
   public XMLModelImporter(String uri, JDBCDBImporter realImporter) {
     this.uri = uri;
     this.realImporter = realImporter;
@@ -110,14 +99,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
   }
 
   private Database parseDatabase(Element e) {
-    String environment = e.getAttribute("environment");
-    if (StringUtil.isEmpty(environment)) {
-      environment = e.getAttribute("name");
-    }
-    if (StringUtil.isEmpty(environment)) {
-      throw new ConfigurationError("No environment defined in cache file");
-    }
-    Database db = new Database(environment, realImporter, false);
+    Database db = new Database(null, realImporter, false);
+    db.setName(e.getAttribute("name"));
     db.setUser(e.getAttribute("user"));
     db.setTableInclusionPattern(e.getAttribute("tableInclusionPattern"));
     db.setTableExclusionPattern(e.getAttribute("tableExclusionPattern"));
@@ -207,7 +190,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
     table.setChecksImported(checksImported);
     for (Element child : XMLUtil.getChildElements(e)) {
       String childName = child.getNodeName();
-      if ("column".equals(childName)) {
+      if (COLUMN.equals(childName)) {
         parseColumn(child, table);
       } else if ("pk".equals(childName)) {
         parsePK(child, table);
@@ -241,16 +224,16 @@ public class XMLModelImporter implements DBMetaDataImporter {
 
   private void parsePK(Element e, DBTable table) {
     boolean autoNamed = false;
-    if (e.getAttribute("autoNamed") != null) {
-      autoNamed = Boolean.parseBoolean(e.getAttribute("autoNamed"));
+    if (e.getAttribute(AUTO_NAMED) != null) {
+      autoNamed = Boolean.parseBoolean(e.getAttribute(AUTO_NAMED));
     }
     new DBPrimaryKeyConstraint(table, e.getAttribute("name"), autoNamed, parseColumnNames(e));
   }
 
   private void parseUK(Element e, DBTable table) {
     boolean autoNamed = false;
-    if (e.getAttribute("autoNamed") != null) {
-      autoNamed = Boolean.parseBoolean(e.getAttribute("autoNamed"));
+    if (e.getAttribute(AUTO_NAMED) != null) {
+      autoNamed = Boolean.parseBoolean(e.getAttribute(AUTO_NAMED));
     }
     new DBUniqueConstraint(table, e.getAttribute("name"), autoNamed, parseColumnNames(e));
   }
@@ -260,7 +243,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
     String refereeTableName = e.getAttribute("refereeTable");
     DBTable refereeTable = schema.getTable(refereeTableName);
     Assert.notNull(refereeTable, "refereeTable");
-    String colAttr = e.getAttribute("column");
+    String colAttr = e.getAttribute(COLUMN);
     String[] columnNames = null;
     String[] refereeColumnNames = null;
     if (!StringUtil.isEmpty(colAttr)) {
@@ -268,15 +251,15 @@ public class XMLModelImporter implements DBMetaDataImporter {
       refereeColumnNames = new String[] {e.getAttribute("refereeColumn")};
     } else {
       Element colsElement = XMLUtil.getChildElement(e, false, true, "columns");
-      Element[] colElements = XMLUtil.getChildElements(colsElement, false, "column");
+      Element[] colElements = XMLUtil.getChildElements(colsElement, false, COLUMN);
       for (Element colElement : colElements) {
         columnNames = ArrayUtil.append(colElement.getAttribute("name"), columnNames);
         refereeColumnNames = ArrayUtil.append(colElement.getAttribute("refereeColumn"), refereeColumnNames);
       }
     }
     boolean autoNamed = false;
-    if (e.getAttribute("autoNamed") != null) {
-      autoNamed = Boolean.parseBoolean(e.getAttribute("autoNamed"));
+    if (e.getAttribute(AUTO_NAMED) != null) {
+      autoNamed = Boolean.parseBoolean(e.getAttribute(AUTO_NAMED));
     }
     DBForeignKeyConstraint fk = new DBForeignKeyConstraint(name, autoNamed, owner, columnNames, refereeTable, refereeColumnNames);
     // parse rules
@@ -294,8 +277,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
     try {
       table.getCatalog().getDatabase().setChecksImported(true);
       boolean autoNamed = false;
-      if (e.getAttribute("autoNamed") != null) {
-        autoNamed = Boolean.parseBoolean(e.getAttribute("autoNamed"));
+      if (e.getAttribute(AUTO_NAMED) != null) {
+        autoNamed = Boolean.parseBoolean(e.getAttribute(AUTO_NAMED));
       }
       new DBCheckConstraint(e.getAttribute("name"), autoNamed, table, e.getAttribute("definition"));
     } catch (Exception ex) {
@@ -317,20 +300,14 @@ public class XMLModelImporter implements DBMetaDataImporter {
     }
   }
 
-  /**
-   * Parse column names string [ ].
-   *
-   * @param e the e
-   * @return the string [ ]
-   */
   public String[] parseColumnNames(Element e) {
-    String colAttr = e.getAttribute("column");
+    String colAttr = e.getAttribute(COLUMN);
     String[] columnNames = null;
     if (!StringUtil.isEmpty(colAttr)) {
       columnNames = new String[] {colAttr};
     } else {
       Element colsElement = XMLUtil.getChildElement(e, false, true, "columns");
-      Element[] colElements = XMLUtil.getChildElements(colsElement, false, "column");
+      Element[] colElements = XMLUtil.getChildElements(colsElement, false, COLUMN);
       for (Element colElement : colElements) {
         columnNames = ArrayUtil.append(colElement.getAttribute("name"), columnNames);
       }
