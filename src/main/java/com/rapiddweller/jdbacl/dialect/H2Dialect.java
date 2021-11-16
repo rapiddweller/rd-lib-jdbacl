@@ -89,7 +89,7 @@ public class H2Dialect extends DatabaseDialect {
   @Override
   public DBSequence[] querySequences(Connection connection) throws SQLException {
     String query = "select SEQUENCE_CATALOG, SEQUENCE_SCHEMA, SEQUENCE_NAME, CURRENT_VALUE, INCREMENT, CACHE from information_schema.sequences";
-    // TODO v0.8.2 restrict to catalog and schema, see http://www.h2database.com/html/grammar.html
+    // TODO restrict to catalog and schema, see http://www.h2database.com/html/grammar.html
     ArrayBuilder<DBSequence> builder = new ArrayBuilder<>(DBSequence.class);
     ResultSet resultSet = DBUtil.executeQuery(query, connection);
     while (resultSet.next()) {

@@ -382,7 +382,7 @@ public class LoggingPreparedStatementHandler implements InvocationHandler {
   @Override
   public String toString() {
     String[] paramStrings = toStringArrayConverter.convert(params);
-    // TODO v1.0 use DatabaseDialect to render arbitrary data types
+    // TODO use DatabaseDialect to render arbitrary data types
     return "PreparedStatement (" + StringUtil.replaceTokens(sql, "?", paramStrings) + ")";
   }
 

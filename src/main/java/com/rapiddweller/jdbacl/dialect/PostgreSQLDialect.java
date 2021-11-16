@@ -157,7 +157,7 @@ public class PostgreSQLDialect extends DatabaseDialect {
 
   @Override
   public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
-	    /* TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+	    /* TODO implement DatabaseDialect.applyRownumRestriction()
 			MySQL, PostgreSQL, H2: SELECT * FROM T LIMIT 10 OFFSET 20
 	     */
     throw new UnsupportedOperationException(

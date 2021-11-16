@@ -101,7 +101,7 @@ public class SqlServerDialect extends DatabaseDialect {
   @Override
   public void restrictRownums(int firstRowIndex, int rowCount,
                               Query query) {
-	    /* TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+	    /* TODO implement DatabaseDialect.applyRownumRestriction()
 			MS SQL Server: SELECT TOP 10 * FROM T
 	     */
     throw new UnsupportedOperationException("SqlServerDialect.applyRownumRestriction() is not implemented");

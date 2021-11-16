@@ -191,11 +191,11 @@ public class FirebirdDialect extends DatabaseDialect {
 
   @Override
   public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
-	    /* TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+	    /* TODO implement DatabaseDialect.applyRownumRestriction()
 			Firebird: SELECT FIRST 10 SKIP 20 * FROM T
 	     */
     throw new UnsupportedOperationException(
-        "FirebirdDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+        "FirebirdDialect.applyRownumRestriction() is not implemented"); // TODO implement DatabaseDialect.applyRownumRestriction()
   }
 
 }

@@ -111,7 +111,7 @@ public class DerbyDialect extends DatabaseDialect {
   @Override
   public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
     throw new UnsupportedOperationException(
-        "DerbyDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+        "DerbyDialect.applyRownumRestriction() is not implemented"); // TODO implement DatabaseDialect.applyRownumRestriction()
   }
 
 }

@@ -51,7 +51,7 @@ import java.util.Iterator;
  */
 public class SubNkPkQueryIdentity extends IdentityModel {
 
-  private final String[] parentTableNames; // TODO v1.0 support multiple 'parent' and 'parentColumns' property
+  private final String[] parentTableNames; // TODO support multiple 'parent' and 'parentColumns' property
   private String subNkPkQuery;
   private final IdentityProvider identityProvider;
 
@@ -142,7 +142,7 @@ public class SubNkPkQueryIdentity extends IdentityModel {
       this.mapper = mapper;
       this.dialect = DatabaseDialectManager.getDialectForProduct(
           database.getDatabaseProductName(), database.getDatabaseProductVersion());
-      ownerPkIterator = createParentPkIterator(connection, database); // TODO v1.0 support multiple parents
+      ownerPkIterator = createParentPkIterator(connection, database); // TODO support multiple parents
       createSubNkPkIterator(connection, dbId);
     }
 
@@ -201,7 +201,7 @@ public class SubNkPkQueryIdentity extends IdentityModel {
     private void createSubNkPkIterator(Connection connection, String dbId) {
       if (ownerPkIterator.hasNext()) {
         Object ownerPk = ownerPkIterator.next();
-        ownerNK = mapper.getNaturalKey(dbId, identityProvider.getIdentity(parentTableNames[0]), ownerPk); // TODO v1.0 support multiple owners
+        ownerNK = mapper.getNaturalKey(dbId, identityProvider.getIdentity(parentTableNames[0]), ownerPk); // TODO support multiple owners
         if (ownerNK == null) {
           throw new InvalidIdentityDefinitionError(tableName + " row with PK " + ownerPk +
               " cannot be found. Most likely this is a subsequent fault of a parent's identity" +

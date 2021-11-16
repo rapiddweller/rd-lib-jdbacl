@@ -426,37 +426,37 @@ public class SQLParserUtil {
   }
 
   private static Object convertTableComment(CommonTree node) {
-    // TODO v1.0 Process 'comment on table'
+    // TODO Process 'comment on table'
     return null;
   }
 
   private static Object convertColumnComment(CommonTree node) {
-    // TODO v1.0 Process 'comment on column'
+    // TODO Process 'comment on column'
     return null;
   }
 
   private static Object convertAlterTable(CommonTree node) {
-    // TODO v1.0 Process 'alter table'
+    // TODO Process 'alter table'
     return null;
   }
 
   private static Object convertDropTable(CommonTree node) {
-    // TODO v1.0 Process 'drop table'
+    // TODO Process 'drop table'
     return null;
   }
 
   private static Object convertCreateSequence(CommonTree node) {
-    // TODO v1.0 Process 'create sequence'
+    // TODO Process 'create sequence'
     return null;
   }
 
   private static Object convertCreateIndex(CommonTree node) {
-    // TODO v1.0 Process 'create index'
+    // TODO Process 'create index'
     return null;
   }
 
   private static Object convertDropSequence(CommonTree node) {
-    // TODO v1.0 Process 'drop sequence'
+    // TODO Process 'drop sequence'
     return null;
   }
 
@@ -472,7 +472,7 @@ public class SQLParserUtil {
     String tableName = convertString(childAt(0, node));
     DBTable table = new DBTable(tableName);
     convertTableDetails(childAt(1, node), table, dialect);
-    // TODO v1.0 parse ora_configs
+    // TODO parse ora_configs
     return table;
   }
 
@@ -530,7 +530,7 @@ public class SQLParserUtil {
         if (subNode2.getType() == SQLLexer.INT) {
           fractionDigits = convertInteger(subNode2);
         } else {
-          // TODO v1.0 support (n BYTE) / (n CHAR)
+          // TODO support (n BYTE) / (n CHAR)
         }
       }
     }
