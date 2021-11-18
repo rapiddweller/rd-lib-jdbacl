@@ -21,7 +21,7 @@
 
 package com.rapiddweller.jdbacl.model.jdbc;
 
-import com.rapiddweller.common.ConnectFailedException;
+import com.rapiddweller.common.exception.ConnectFailedException;
 import com.rapiddweller.common.ErrorHandler;
 import com.rapiddweller.common.Escalator;
 import com.rapiddweller.common.Filter;
@@ -30,7 +30,7 @@ import com.rapiddweller.common.Level;
 import com.rapiddweller.common.LoggerEscalator;
 import com.rapiddweller.common.NameUtil;
 import com.rapiddweller.common.ObjectNotFoundException;
-import com.rapiddweller.common.ProgrammerError;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.collection.OrderedNameMap;
 import com.rapiddweller.common.version.VersionNumber;
@@ -135,7 +135,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
       case DatabaseMetaData.importedKeyRestrict:
         return FKChangeRule.NO_ACTION;
       default:
-        throw new ProgrammerError("Not a supported rule: " + rule);
+        throw ExceptionFactory.getInstance().programmerUnsupported("Not a supported rule: " + rule);
     }
   }
 

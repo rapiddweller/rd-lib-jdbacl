@@ -22,10 +22,9 @@
 package com.rapiddweller.jdbacl.model.jdbc;
 
 
-import com.rapiddweller.common.ConnectFailedException;
+import com.rapiddweller.common.exception.ConnectFailedException;
 import com.rapiddweller.common.ErrorHandler;
 import com.rapiddweller.jdbacl.DBUtil;
-import com.rapiddweller.jdbacl.dialect.HSQLUtil;
 import com.rapiddweller.jdbacl.model.DBIndex;
 import com.rapiddweller.jdbacl.model.DBNonUniqueIndex;
 import com.rapiddweller.jdbacl.model.DBSchema;

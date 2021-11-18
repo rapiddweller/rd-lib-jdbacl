@@ -23,7 +23,7 @@ package com.rapiddweller.jdbacl.model.cache;
 
 import com.rapiddweller.common.Assert;
 import com.rapiddweller.common.ConfigUtil;
-import com.rapiddweller.common.ConnectFailedException;
+import com.rapiddweller.common.exception.ConnectFailedException;
 import com.rapiddweller.common.FileUtil;
 import com.rapiddweller.common.ImportFailedException;
 import com.rapiddweller.common.Period;

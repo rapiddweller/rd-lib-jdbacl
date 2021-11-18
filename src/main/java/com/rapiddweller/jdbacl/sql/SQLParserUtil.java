@@ -22,9 +22,9 @@
 package com.rapiddweller.jdbacl.sql;
 
 import com.rapiddweller.common.ArrayBuilder;
-import com.rapiddweller.common.ParseException;
+import com.rapiddweller.common.exception.ParseException;
 import com.rapiddweller.common.StringUtil;
-import com.rapiddweller.common.SyntaxError;
+import com.rapiddweller.common.exception.SyntaxError;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.model.DBColumn;
 import com.rapiddweller.jdbacl.model.DBDataType;
@@ -71,25 +71,13 @@ import java.util.List;
 /**
  * Provides SQL parsing functionality.<br/><br/>
  * Created: 05.08.2010 10:19:38
- *
  * @author Volker Bergmann
  * @since 0.1
  */
 public class SQLParserUtil {
 
-  /**
-   * The Logger.
-   */
   static final Logger LOGGER = LoggerFactory.getLogger(SQLParserUtil.class);
 
-  /**
-   * Parse object.
-   *
-   * @param in      the in
-   * @param dialect the dialect
-   * @return the object
-   * @throws ParseException the parse exception
-   */
   public static Object parse(CharStream in, DatabaseDialect dialect) throws ParseException {
     String text = null;
     if (in instanceof TextHolder) {
@@ -115,13 +103,6 @@ public class SQLParserUtil {
     }
   }
 
-  /**
-   * Parse expression expression.
-   *
-   * @param in the in
-   * @return the expression
-   * @throws ParseException the parse exception
-   */
   public static Expression<?> parseExpression(CharStream in) throws ParseException {
     String text = null;
     if (in instanceof TextHolder) {

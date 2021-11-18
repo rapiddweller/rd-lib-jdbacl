@@ -26,7 +26,7 @@
 
 package com.rapiddweller.jdbacl.hsql;
 
-import com.rapiddweller.common.ConnectFailedException;
+import com.rapiddweller.common.exception.ConnectFailedException;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.dialect.HSQLUtil;
 import org.junit.Test;

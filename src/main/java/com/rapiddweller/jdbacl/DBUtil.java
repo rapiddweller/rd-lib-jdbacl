@@ -32,7 +32,7 @@ import com.rapiddweller.common.ArrayUtil;
 import com.rapiddweller.common.BeanUtil;
 import com.rapiddweller.common.ConfigUtil;
 import com.rapiddweller.common.ConfigurationError;
-import com.rapiddweller.common.ConnectFailedException;
+import com.rapiddweller.common.exception.ConnectFailedException;
 import com.rapiddweller.common.ErrorHandler;
 import com.rapiddweller.common.HF;
 import com.rapiddweller.common.HeavyweightIterator;
@@ -46,6 +46,7 @@ import com.rapiddweller.common.converter.AnyConverter;
 import com.rapiddweller.common.converter.ToStringConverter;
 import com.rapiddweller.common.debug.Debug;
 import com.rapiddweller.common.depend.DependencyModel;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.iterator.ConvertingIterator;
 import com.rapiddweller.jdbacl.model.DBConstraint;
 import com.rapiddweller.jdbacl.model.DBPrimaryKeyConstraint;
@@ -198,13 +199,13 @@ public class DBUtil {
       JDBC_LOGGER.debug("opening connection to {}", url);
       Connection connection = driver.connect(url, info);
       if (connection == null) {
-        throw new ConnectFailedException("Connecting the database failed silently - " +
-            "probably due to wrong driver (" + driverClassName + ") or wrong URL format (" + url + ")");
+        throw ExceptionFactory.getInstance().systemNotAvailable("Connecting the database failed silently - " +
+            "probably due to wrong driver (" + driverClassName + ") or wrong URL format (" + url + ")", null);
       }
       connection = wrapWithPooledConnection(connection, readOnly);
       return connection;
     } catch (Exception e) {
-      throw new ConnectFailedException("Connecting " + url + " failed: ", e);
+      throw ExceptionFactory.getInstance().systemNotAvailable("Connect to database at " + url + " failed", e);
     }
   }
 
@@ -415,15 +416,15 @@ public class DBUtil {
     try {
       resultSet = statement.executeQuery();
       if (!resultSet.next()) {
-        throw new RuntimeException("Expected a row.");
+        throw ExceptionFactory.getInstance().unexpectedQueryResult("Expected a row.", null);
       }
       String value = resultSet.getString(1);
       if (resultSet.next()) {
-        throw new RuntimeException("Expected exactly one row, found more.");
+        throw ExceptionFactory.getInstance().unexpectedQueryResult("Expected exactly one row, found more.", null);
       }
       return value;
     } catch (SQLException e) {
-      throw new RuntimeException("Database query failed: ", e);
+      throw ExceptionFactory.getInstance().unexpectedQueryResult("Database query failed: ", e);
     } finally {
       close(resultSet);
     }
@@ -444,15 +445,15 @@ public class DBUtil {
       statement = connection.createStatement();
       resultSet = statement.executeQuery(query);
       if (!resultSet.next()) {
-        throw new RuntimeException("Query has an empty result: " + query);
+        throw ExceptionFactory.getInstance().unexpectedQueryResult("Query has an empty result: " + query, null);
       }
       Object value = resultSet.getObject(1);
       if (resultSet.next()) {
-        throw new RuntimeException("Expected exactly one row, but found more for query: " + query);
+        throw ExceptionFactory.getInstance().unexpectedQueryResult("Expected exactly one row, but found more for query: " + query, null);
       }
       return value;
     } catch (SQLException e) {
-      throw new RuntimeException("Database query failed: " + query, e);
+      throw ExceptionFactory.getInstance().unexpectedQueryResult("Database query failed: " + query, e);
     } finally {
       closeResultSetAndStatement(resultSet, statement);
     }

@@ -27,7 +27,7 @@
 package com.rapiddweller.jdbacl.dialect;
 
 import com.rapiddweller.common.ConfigurationError;
-import com.rapiddweller.common.ConnectFailedException;
+import com.rapiddweller.common.exception.ConnectFailedException;
 import com.rapiddweller.jdbacl.DBUtil;
 
 import java.sql.Connection;

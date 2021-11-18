@@ -26,7 +26,7 @@
 
 package com.rapiddweller.jdbacl.model;
 
-import com.rapiddweller.common.ConnectFailedException;
+import com.rapiddweller.common.exception.ConnectFailedException;
 import com.rapiddweller.common.ImportFailedException;
 
 import java.io.Closeable;

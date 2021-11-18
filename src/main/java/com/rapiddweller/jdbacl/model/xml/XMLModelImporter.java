@@ -27,7 +27,7 @@ import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.common.ImportFailedException;
 import com.rapiddweller.common.ParseUtil;
 import com.rapiddweller.common.StringUtil;
-import com.rapiddweller.common.SyntaxError;
+import com.rapiddweller.common.exception.SyntaxError;
 import com.rapiddweller.common.xml.XMLUtil;
 import com.rapiddweller.jdbacl.model.DBCatalog;
 import com.rapiddweller.jdbacl.model.DBCheckConstraint;
