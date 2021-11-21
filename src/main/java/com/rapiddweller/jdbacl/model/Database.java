@@ -26,6 +26,7 @@
 
 package com.rapiddweller.jdbacl.model;
 
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.collection.OrderedNameMap;
@@ -101,7 +102,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
             .append("), schema (").append(importer.getSchemaName())
             .append("), dbUrl (").append(importer.getUrl()).append(")");
       }
-      throw new RuntimeException(messageBuilder.toString(), e);
+      throw ExceptionFactory.getInstance().connectFailed(messageBuilder.toString(), e);
     }
 
   }
@@ -158,8 +159,8 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
         Connection connection = (importer != null ? importer.getConnection() : null);
         DatabaseDialect dialect = DatabaseDialectManager.getDialectForProduct(productName, productVersion);
         reservedWords = dialect.getReservedWords(connection);
-      } catch (Exception e) {
-        throw new RuntimeException("Error fetching reserved words", e);
+      } catch (SQLException e) {
+        throw ExceptionFactory.getInstance().componentInitializationFailed("Error fetching reserved words", e);
       }
     }
     return reservedWords;
@@ -312,7 +313,8 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
         }
         triggersImported = true;
       } catch (SQLException e) {
-        throw new RuntimeException("Import of database triggers failed: " + getName(), e);
+        throw ExceptionFactory.getInstance().componentInitializationFailed(
+            "Import of database triggers failed: " + getName(), e);
       }
     }
   }
@@ -347,7 +349,8 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
           importer.importPackages(this);
         }
       } catch (SQLException e) {
-        throw new RuntimeException("Import of database packages failed: " + getName(), e);
+        throw ExceptionFactory.getInstance().componentInitializationFailed(
+            "Import of database packages failed: " + getName(), e);
       }
     }
   }
@@ -372,10 +375,8 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
   }
 
   public synchronized void haveChecksImported() {
-    if (!isChecksImported()) {
-      if (importer != null) {
-        importer.importAllChecks(this);
-      }
+    if (!isChecksImported() && importer != null) {
+      importer.importAllChecks(this);
     }
   }
 

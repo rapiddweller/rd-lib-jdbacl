@@ -1,7 +1,6 @@
 package com.rapiddweller.jdbacl;
 
 import com.rapiddweller.common.ConversionException;
-import org.apache.derby.diag.ErrorLogReader;
 //import org.h2.tools.SimpleResultSet;
 import org.junit.Rule;
 import org.junit.Test;

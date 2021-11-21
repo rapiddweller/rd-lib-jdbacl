@@ -22,6 +22,7 @@
 package com.rapiddweller.jdbacl.model.xml;
 
 import com.rapiddweller.common.Encodings;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.xml.SimpleXMLWriter;
 import com.rapiddweller.jdbacl.SQLUtil;
 import com.rapiddweller.jdbacl.model.DBCatalog;
@@ -99,7 +100,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
       exportDatabase(database, writer);
       writer.endDocument();
     } catch (SAXException e) {
-      throw new RuntimeException("Error exporting database " + database, e);
+      throw ExceptionFactory.getInstance().internalError("Error exporting database " + database, e);
     }
   }
 

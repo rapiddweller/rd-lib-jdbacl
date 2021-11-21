@@ -23,12 +23,14 @@ package com.rapiddweller.jdbacl.identity.mem;
 
 import com.rapiddweller.common.HeavyweightIterator;
 import com.rapiddweller.common.bean.ObjectOrArray;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.identity.IdentityModel;
 import com.rapiddweller.jdbacl.identity.KeyMapper;
 import com.rapiddweller.jdbacl.model.Database;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,47 +39,22 @@ import java.util.Map;
  * Parent for classes that map the primary key values of the rows of one table in one database
  * to their natural keys.<br/><br/>
  * Created: 07.09.2010 14:11:16
- *
  * @author Volker Bergmann
  * @since 0.6.4
  */
 public abstract class AbstractTableMapper {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTableMapper.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractTableMapper.class);
 
-  /**
-   * The Root.
-   */
   protected final KeyMapper root;
-  /**
-   * The Connection.
-   */
   protected final Connection connection;
-  /**
-   * The Db id.
-   */
   protected final String dbId;
-  /**
-   * The Identity.
-   */
   protected final IdentityModel identity;
   private final Map<ObjectOrArray, String> pkToNk;
   private MapperState state;
-  /**
-   * The Database.
-   */
   final Database database;
 
-  /**
-   * Instantiates a new Abstract table mapper.
-   *
-   * @param root       the root
-   * @param connection the connection
-   * @param dbId       the db id
-   * @param identity   the identity
-   * @param database   the database
-   */
-  public AbstractTableMapper(KeyMapper root, Connection connection, String dbId, IdentityModel identity, Database database) {
+  protected AbstractTableMapper(KeyMapper root, Connection connection, String dbId, IdentityModel identity, Database database) {
     this.root = root;
     this.connection = connection;
     this.dbId = dbId;
@@ -89,12 +66,6 @@ public abstract class AbstractTableMapper {
 
   // interface -------------------------------------------------------------------------------------------------------
 
-  /**
-   * Store.
-   *
-   * @param pk         the pk
-   * @param naturalKey the natural key
-   */
   public void store(Object pk, String naturalKey) {
     if (state == MapperState.CREATED) {
       state = MapperState.PASSIVE;
@@ -103,12 +74,6 @@ public abstract class AbstractTableMapper {
     pkToNk.put(globalRowId, naturalKey);
   }
 
-  /**
-   * Gets natural key.
-   *
-   * @param pk the pk
-   * @return the natural key
-   */
   public String getNaturalKey(Object pk) {
     assureInitialized();
     return pkToNk.get(new ObjectOrArray(pk));
@@ -118,20 +83,20 @@ public abstract class AbstractTableMapper {
 
   private void populate() {
     this.state = MapperState.POPULATING;
-    LOGGER.debug("Populating key mapper for table {} on database {}", identity.getTableName(), dbId);
-    HeavyweightIterator<Object[]> iterator = identity.createNkPkIterator(connection, dbId, root, database);
-    while (iterator.hasNext()) {
-      Object[] nkPkTuple = iterator.next();
-      Object pk = identity.extractPK(nkPkTuple);
-      String nk = identity.extractNK(nkPkTuple);
-      store(pk, nk);
+    logger.debug("Populating key mapper for table {} on database {}", identity.getTableName(), dbId);
+    try (HeavyweightIterator<Object[]> iterator = identity.createNkPkIterator(connection, dbId, root, database)) {
+      while (iterator.hasNext()) {
+        Object[] nkPkTuple = iterator.next();
+        Object pk = identity.extractPK(nkPkTuple);
+        String nk = identity.extractNK(nkPkTuple);
+        store(pk, nk);
+      }
+      this.state = MapperState.POPULATED;
+    } catch (IOException e) {
+      throw ExceptionFactory.getInstance().operationFailed("table population failed", e);
     }
-    this.state = MapperState.POPULATED;
   }
 
-  /**
-   * Assure initialized.
-   */
   protected void assureInitialized() {
     if (state == MapperState.CREATED) {
       populate();

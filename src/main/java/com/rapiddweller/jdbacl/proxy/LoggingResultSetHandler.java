@@ -39,16 +39,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * {@link InvocationHandler} for the {@link ResultSet} interface
- * that logs certain calls to the category {@link LogCategoriesConstants#JDBC}.<br/>
- * <br/>
+ * that logs certain calls to the category {@link LogCategoriesConstants#JDBC}.<br/><br/>
  * Created: 12.04.2011 14:02:38
- *
  * @author Volker Bergmann
  * @since 0.6.8
  */
 public class LoggingResultSetHandler implements InvocationHandler {
 
-  private static final Logger JDBC_LOGGER = LoggerFactory.getLogger(LogCategoriesConstants.JDBC);
+  private static final Logger jdbcLogger = LoggerFactory.getLogger(LogCategoriesConstants.JDBC);
 
   private static final AtomicInteger openResultSetCount;
   private static ResourceMonitor openResultSetMonitor;
@@ -67,12 +65,6 @@ public class LoggingResultSetHandler implements InvocationHandler {
     }
   }
 
-  /**
-   * Instantiates a new Logging result set handler.
-   *
-   * @param realResultSet the real result set
-   * @param statement     the statement
-   */
   public LoggingResultSetHandler(ResultSet realResultSet, Statement statement) {
     this.realResultSet = realResultSet;
     this.statement = statement;
@@ -80,7 +72,7 @@ public class LoggingResultSetHandler implements InvocationHandler {
     if (openResultSetMonitor != null) {
       openResultSetMonitor.register(this);
     }
-    JDBC_LOGGER.debug("created result set {}", this);
+    jdbcLogger.debug("created result set {}", this);
   }
 
   // InvocationHandler interface implementation ----------------------------------------------------------------------
@@ -96,7 +88,7 @@ public class LoggingResultSetHandler implements InvocationHandler {
           if (openResultSetMonitor != null) {
             openResultSetMonitor.unregister(this);
           }
-          JDBC_LOGGER.debug("closing result set {}", this);
+          jdbcLogger.debug("closing result set {}", this);
           break;
         case "toString":
           return "ResultSet (" + statement + ")";
@@ -115,18 +107,10 @@ public class LoggingResultSetHandler implements InvocationHandler {
 
   // tracking methods ------------------------------------------------------------------------------------------------
 
-  /**
-   * Gets open result set count.
-   *
-   * @return the open result set count
-   */
   public static int getOpenResultSetCount() {
     return openResultSetCount.get();
   }
 
-  /**
-   * Reset monitors.
-   */
   public static void resetMonitors() {
     openResultSetCount.set(0);
     if (openResultSetMonitor != null) {
@@ -134,12 +118,6 @@ public class LoggingResultSetHandler implements InvocationHandler {
     }
   }
 
-  /**
-   * Assert all result sets closed boolean.
-   *
-   * @param critical the critical
-   * @return the boolean
-   */
   public static boolean assertAllResultSetsClosed(boolean critical) {
     return openResultSetMonitor.assertNoRegistrations(critical);
   }

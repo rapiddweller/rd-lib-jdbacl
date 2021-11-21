@@ -22,6 +22,7 @@
 package com.rapiddweller.jdbacl.identity;
 
 import com.rapiddweller.common.ConfigurationError;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.SQLUtil;
 import com.rapiddweller.jdbacl.model.DBForeignKeyConstraint;
 import com.rapiddweller.jdbacl.model.DBRow;
@@ -30,22 +31,11 @@ import com.rapiddweller.jdbacl.model.DBTable;
 /**
  * Simple implementation of a transcoding mechanism.<br/><br/>
  * Created: 08.12.2010 18:45:49
- *
  * @author Volker Bergmann
  * @since 0.6.4
  */
 public class SimpleTranscoder {
 
-  /**
-   * Transcode.
-   *
-   * @param row              the row
-   * @param nk               the nk
-   * @param newPK            the new pk
-   * @param sourceDbId       the source db id
-   * @param identityProvider the identity provider
-   * @param mapper           the mapper
-   */
   public static void transcode(DBRow row, String nk, Object newPK, String sourceDbId, IdentityProvider identityProvider, KeyMapper mapper) {
     DBTable table = row.getTable();
     String tableName = table.getName();
@@ -70,7 +60,7 @@ public class SimpleTranscoder {
           String message = "No mapping found for " + sourceDbId + '.' + refereeTable + "#" + sourceRef +
               " referred in " + table.getName() + SQLUtil.renderColumnNames(fk.getColumnNames()) + ". " +
               "Probably has not been in the result set of the former '" + refereeTable + "' nk query.";
-          throw new RuntimeException(message);
+          throw ExceptionFactory.getInstance().internalError(message, null);
         }
         row.setFKValue(fk, targetRef);
       }

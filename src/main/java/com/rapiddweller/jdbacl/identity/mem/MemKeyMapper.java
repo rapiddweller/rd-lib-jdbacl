@@ -22,6 +22,7 @@
 package com.rapiddweller.jdbacl.identity.mem;
 
 import com.rapiddweller.common.ConfigurationError;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.identity.IdentityModel;
 import com.rapiddweller.jdbacl.identity.IdentityProvider;
 import com.rapiddweller.jdbacl.identity.KeyMapper;
@@ -131,7 +132,7 @@ public class MemKeyMapper extends KeyMapper {
   private SourceDatabaseMapper getSourceDBMapper(String sourceId) {
     SourceDatabaseMapper mapper = sourceDBMappers.get(sourceId);
     if (mapper == null) {
-      throw new RuntimeException("Database not registered: " + sourceId);
+      throw ExceptionFactory.getInstance().configurationError("Database not registered: " + sourceId);
     }
     return mapper;
   }

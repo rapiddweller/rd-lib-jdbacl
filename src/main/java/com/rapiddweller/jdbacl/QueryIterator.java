@@ -21,6 +21,7 @@
 
 package com.rapiddweller.jdbacl;
 
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.iterator.IteratorProxy;
 
 import java.sql.Connection;
@@ -32,19 +33,11 @@ import java.util.Iterator;
 /**
  * Performs a query and wraps the result set with an {@link Iterator} interface.<br/><br/>
  * Created: 13.10.2010 13:17:42
- *
  * @author Volker Bergmann
  * @since 0.6.4
  */
 public class QueryIterator extends IteratorProxy<ResultSet> {
 
-  /**
-   * Instantiates a new Query iterator.
-   *
-   * @param query      the query
-   * @param connection the connection
-   * @param fetchSize  the fetch size
-   */
   public QueryIterator(String query, Connection connection, int fetchSize) {
     super(createSource(query, connection, fetchSize));
   }
@@ -57,15 +50,10 @@ public class QueryIterator extends IteratorProxy<ResultSet> {
       ResultSet resultSet = statement.executeQuery(query);
       return new ResultSetIterator(resultSet, query);
     } catch (SQLException e) {
-      throw new RuntimeException("Error in query: " + query, e);
+      throw ExceptionFactory.getInstance().queryFailed("Error in query: " + query, e);
     }
   }
 
-  /**
-   * Get column labels string [ ].
-   *
-   * @return the string [ ]
-   */
   public String[] getColumnLabels() {
     return ((ResultSetIterator) source).getColumnLabels();
   }

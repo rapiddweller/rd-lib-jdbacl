@@ -30,6 +30,7 @@ import com.rapiddweller.common.BeanUtil;
 import com.rapiddweller.common.LogCategoriesConstants;
 import com.rapiddweller.common.debug.Debug;
 import com.rapiddweller.common.debug.ResourceMonitor;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.DBUtil;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -143,10 +144,10 @@ public class PooledConnectionHandler implements InvocationHandler {
               (Integer) args[1], (Integer) args[2], (Integer) args[3]);
 
         default:
-          throw new RuntimeException(
+          throw ExceptionFactory.getInstance().operationFailed(
               "Error prepareStatement wrong argument input, got "
                   + args.length
-                  + " but only 1,2,3 and 4 are supported arguments");
+                  + " but only 1,2,3 and 4 are supported arguments", null);
       }
     } else if ("createStatement".equals(methodName)) {
       return createStatement(method, args);

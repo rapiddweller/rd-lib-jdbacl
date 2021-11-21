@@ -22,18 +22,17 @@
 package com.rapiddweller.jdbacl;
 
 import com.rapiddweller.common.BeanUtil;
-import com.rapiddweller.common.DeploymentError;
 import com.rapiddweller.common.IOUtil;
+import com.rapiddweller.common.exception.ExceptionFactory;
+import com.rapiddweller.common.file.FileResourceNotFoundException;
 import com.rapiddweller.common.version.VersionNumber;
 import com.rapiddweller.jdbacl.dialect.UnknownDialect;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
  * Manages {@link DatabaseDialect}s.<br/><br/>
  * Created: 18.02.2010 16:32:55
- *
  * @author Volker Bergmann
  * @since 0.6.0
  */
@@ -46,18 +45,22 @@ public class DatabaseDialectManager {
   static {
     try {
       mappings = IOUtil.readProperties(FILENAME);
-    } catch (IOException e) {
-      throw new DeploymentError("Configuration file not found: " + FILENAME);
+    } catch (FileResourceNotFoundException e) {
+      throw ExceptionFactory.getInstance().deploymentFailed(
+          "Database dialect configuration file not found: " + FILENAME, e);
+    } catch (Exception e) {
+      throw ExceptionFactory.getInstance().deploymentFailed(
+          "Error processing Database dialect configuration file: " + FILENAME, e);
     }
   }
 
-  /**
-   * Gets dialect for product.
-   *
-   * @param productName the product name
-   * @param version     if no version is specified, the newest one is assumed
-   * @return the dialect for product
-   */
+  private DatabaseDialectManager() {
+    // private constructor to prevent instantiation of this utility class
+  }
+
+  /** Provides the dialect for a product in a certain version.
+   *  @param productName the product name
+   *  @param version     if no version is specified, the newest one is assumed */
   public static DatabaseDialect getDialectForProduct(String productName, VersionNumber version) {
     String normalizedProductName = productName.toLowerCase().replace(' ', '_');
     for (Map.Entry<String, String> entry : mappings.entrySet()) {

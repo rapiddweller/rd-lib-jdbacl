@@ -237,7 +237,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         DBUtil.executeUpdate("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", getConnection());
       }
     } catch (Exception e) {
-      throw new RuntimeException("Error initializing " + getClass(), e);
+      throw ExceptionFactory.getInstance().componentInitializationFailed("Error initializing " + getClass(), e);
     }
   }
 
@@ -761,7 +761,8 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         }
       }
     } catch (Exception e) {
-      throw new RuntimeException("Error importing checks from " + url, e);
+      throw ExceptionFactory.getInstance().componentInitializationFailed(
+          "Error importing checks from " + url, e);
     }
     watch.stop();
   }
@@ -911,7 +912,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   }
 
   public interface ReferrerReceiver {
-    void receiveReferrer(String fktableName, DBTable table);
+    void receiveReferrer(String fkTableName, DBTable table);
   }
 
   public interface IndexReceiver {

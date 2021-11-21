@@ -27,8 +27,8 @@
 package com.rapiddweller.jdbacl;
 
 import com.rapiddweller.common.ArrayUtil;
-import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.IOUtil;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.TimeUtil;
@@ -41,7 +41,6 @@ import com.rapiddweller.jdbacl.sql.Query;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -155,8 +154,9 @@ public abstract class DatabaseDialect {
       for (String word : IOUtil.readTextLines(resourceName, false)) {
         reservedWords.add(word.trim());
       }
-    } catch (IOException e) {
-      throw new ConfigurationError("Error reading file " + resourceName, e);
+    } catch (Exception e) {
+      throw ExceptionFactory.getInstance().configurationError(
+          "Failed to read reserved words for " + dbType + "  from " + resourceName, e);
     }
   }
 

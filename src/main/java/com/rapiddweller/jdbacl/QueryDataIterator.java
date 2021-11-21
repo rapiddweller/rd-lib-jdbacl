@@ -21,6 +21,7 @@
 
 package com.rapiddweller.jdbacl;
 
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.format.DataIterator;
 import com.rapiddweller.format.util.DataIteratorProxy;
 
@@ -50,7 +51,7 @@ public class QueryDataIterator extends DataIteratorProxy<ResultSet> {
       ResultSet resultSet = statement.executeQuery(query);
       return new ResultSetDataIterator(resultSet, query);
     } catch (SQLException e) {
-      throw new RuntimeException("Error in query: " + query, e);
+      throw ExceptionFactory.getInstance().queryFailed("Error in query: " + query, e);
     }
   }
 

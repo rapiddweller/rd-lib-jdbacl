@@ -76,7 +76,7 @@ import java.util.List;
  */
 public class SQLParserUtil {
 
-  static final Logger LOGGER = LoggerFactory.getLogger(SQLParserUtil.class);
+  static final Logger logger = LoggerFactory.getLogger(SQLParserUtil.class);
 
   public static Object parse(CharStream in, DatabaseDialect dialect) throws ParseException {
     String text = null;
@@ -87,11 +87,7 @@ public class SQLParserUtil {
       SQLParser parser = parser(in);
       SQLParser.commands_return r = parser.commands();
       checkForSyntaxErrors(text, "weightedLiteralList", parser, r);
-      if (r != null) {
-        return convertNode((CommonTree) r.getTree(), dialect);
-      } else {
-        return null;
-      }
+      return convertNode((CommonTree) r.getTree(), dialect);
     } catch (RuntimeException e) {
       if (e.getCause() instanceof RecognitionException) {
         throw mapToParseException((RecognitionException) e.getCause(), text);
@@ -112,11 +108,7 @@ public class SQLParserUtil {
       SQLParser parser = parser(in);
       SQLParser.expression_return r = parser.expression();
       checkForSyntaxErrors(text, "expression", parser, r);
-      if (r != null) {
-        return convertExpressionNode((CommonTree) r.getTree());
-      } else {
-        return null;
-      }
+      return convertExpressionNode((CommonTree) r.getTree());
     } catch (RuntimeException e) {
       if (e.getCause() instanceof RecognitionException) {
         throw mapToParseException((RecognitionException) e.getCause(), text);

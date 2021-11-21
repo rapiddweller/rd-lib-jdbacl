@@ -32,37 +32,17 @@ import java.io.IOException;
  * Helper class which provides the content of a file as {@link ANTLRInputStream}
  * while transforming token characters to upper case.<br/><br/>
  * Created: 10.08.2010 15:44:57
- *
  * @author Volker Bergmann
  * @since 0.1
  */
 public class ANTLRNoCaseFileStream extends ANTLRFileStream implements TextHolder {
 
-  /**
-   * The File name.
-   */
-  String fileName;
-
-  /**
-   * Instantiates a new Antlr no case file stream.
-   *
-   * @param fileName the file name
-   * @throws IOException the io exception
-   */
   public ANTLRNoCaseFileStream(String fileName) throws IOException {
     this(fileName, null);
   }
 
-  /**
-   * Instantiates a new Antlr no case file stream.
-   *
-   * @param fileName the file name
-   * @param encoding the encoding
-   * @throws IOException the io exception
-   */
   public ANTLRNoCaseFileStream(String fileName, String encoding) throws IOException {
     super(fileName, encoding);
-    this.fileName = fileName;
   }
 
   @Override
@@ -81,11 +61,7 @@ public class ANTLRNoCaseFileStream extends ANTLRFileStream implements TextHolder
 
   @Override
   public String getText() {
-    try {
-      return IOUtil.getContentOfURI(fileName);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    return IOUtil.getContentOfURI(fileName);
   }
 
 }

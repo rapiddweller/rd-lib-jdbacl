@@ -29,6 +29,7 @@ package com.rapiddweller.jdbacl;
 import com.rapiddweller.common.ArrayFormat;
 import com.rapiddweller.common.ConversionException;
 import com.rapiddweller.common.converter.UnsafeConverter;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -36,33 +37,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Converts a ResultSet's current cursor position to an array of objects or, if it is of size 1, to a single object.<br/>
- * <br/>
+ * Converts a ResultSet's current cursor position to an array of objects or, if it is of size 1, to a single object.<br/><br/>
  * Created: 15.08.2007 18:19:25
- *
  * @param <E> the type parameter
  * @author Volker Bergmann
  */
 public class ResultSetConverter<E> extends UnsafeConverter<ResultSet, E> {
 
-  private final Class<E> targetType;
+  private final Class<E> targetType; // TODO check with targetType field in AbstractConverter
   private final boolean simplifying;
 
-  /**
-   * Instantiates a new Result set converter.
-   *
-   * @param targetType the target type
-   */
   public ResultSetConverter(Class<E> targetType) {
     this(targetType, true);
   }
 
-  /**
-   * Instantiates a new Result set converter.
-   *
-   * @param targetType  the target type
-   * @param simplifying the simplifying
-   */
   public ResultSetConverter(Class<E> targetType, boolean simplifying) {
     super(ResultSet.class, targetType);
     this.targetType = targetType;
@@ -84,14 +72,6 @@ public class ResultSetConverter<E> extends UnsafeConverter<ResultSet, E> {
 
   // static convenience methods --------------------------------------------------------------------------------------
 
-  /**
-   * Convert object.
-   *
-   * @param resultSet   the result set
-   * @param simplifying the simplifying
-   * @return the object
-   * @throws ConversionException the conversion exception
-   */
   public static Object convert(ResultSet resultSet, boolean simplifying) throws ConversionException {
     Object[] tmp = convertToArray(resultSet);
     return (!simplifying || tmp.length > 1 ? tmp : tmp[0]);
@@ -114,11 +94,11 @@ public class ResultSetConverter<E> extends UnsafeConverter<ResultSet, E> {
         cells[i] = resultSet.getObject(i + 1);
       }
       if (logger.isDebugEnabled()) {
-        logger.debug("Converted: " + ArrayFormat.format(cells));
+        logger.debug("Converted: {}", ArrayFormat.format(cells));
       }
       return cells;
     } catch (SQLException e) {
-      throw new ConversionException(e);
+      throw ExceptionFactory.getInstance().conversionFailed("result set", e);
     }
   }
 

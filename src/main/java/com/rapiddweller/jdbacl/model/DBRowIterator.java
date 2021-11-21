@@ -23,6 +23,7 @@ package com.rapiddweller.jdbacl.model;
 
 import com.rapiddweller.common.HeavyweightIterator;
 import com.rapiddweller.common.LogCategoriesConstants;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.ResultSetIterator;
 import org.slf4j.LoggerFactory;
@@ -37,13 +38,12 @@ import java.sql.Statement;
 /**
  * Iterates through the rows of a database.<br/><br/>
  * Created: 23.07.2010 07:29:47
- *
  * @author Volker Bergmann
  * @since 0.6.3
  */
 public class DBRowIterator implements HeavyweightIterator<DBRow> {
 
-  private static final Logger SQL_LOGGER = LoggerFactory.getLogger(LogCategoriesConstants.SQL);
+  private static final Logger sqlLogger = LoggerFactory.getLogger(LogCategoriesConstants.SQL);
 
   private DBTable table;
   private ResultSet resultSet;
@@ -51,21 +51,13 @@ public class DBRowIterator implements HeavyweightIterator<DBRow> {
   private final ResultSetIterator resultSetIterator;
   private boolean closed;
 
-  /**
-   * Instantiates a new Db row iterator.
-   *
-   * @param table       the table
-   * @param connection  the connection
-   * @param whereClause the where clause
-   * @throws SQLException the sql exception
-   */
   public DBRowIterator(DBTable table, Connection connection, String whereClause) throws SQLException {
     this.table = table;
     String sql = "SELECT * FROM " + table.getName();
     if (whereClause != null) {
       sql += " WHERE " + whereClause;
     }
-    SQL_LOGGER.debug(sql);
+    sqlLogger.debug(sql);
     Statement statement = connection.createStatement(
         ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     statement.setFetchSize(1000);
@@ -75,12 +67,6 @@ public class DBRowIterator implements HeavyweightIterator<DBRow> {
     this.closed = false;
   }
 
-  /**
-   * With table db row iterator.
-   *
-   * @param table the table
-   * @return the db row iterator
-   */
   public DBRowIterator withTable(DBTable table) {
     this.table = table;
     return this;
@@ -110,7 +96,7 @@ public class DBRowIterator implements HeavyweightIterator<DBRow> {
       }
       return row;
     } catch (SQLException e) {
-      throw new RuntimeException("Error querying table " + table, e);
+      throw ExceptionFactory.getInstance().queryFailed("Error querying table " + table, e);
     }
   }
 

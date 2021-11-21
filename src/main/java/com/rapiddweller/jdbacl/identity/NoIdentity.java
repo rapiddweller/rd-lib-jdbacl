@@ -21,6 +21,7 @@
 
 package com.rapiddweller.jdbacl.identity;
 
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.iterator.TabularIterator;
 import com.rapiddweller.jdbacl.model.Database;
 
@@ -29,17 +30,11 @@ import java.sql.Connection;
 /**
  * {@link IdentityModel} implementation that represents a missing identity definition.<br/><br/>
  * Created: 20.01.2011 16:24:48
- *
  * @author Volker Bergmann
  * @since 0.6.8
  */
 public class NoIdentity extends IdentityModel {
 
-  /**
-   * Instantiates a new No identity.
-   *
-   * @param tableName the table name
-   */
   public NoIdentity(String tableName) {
     super(tableName);
   }
@@ -51,7 +46,7 @@ public class NoIdentity extends IdentityModel {
 
   @Override
   public TabularIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
-    throw new RuntimeException(getDescription());
+    throw ExceptionFactory.getInstance().illegalArgument(getDescription());
   }
 
 }

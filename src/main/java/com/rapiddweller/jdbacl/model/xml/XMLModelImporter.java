@@ -24,10 +24,10 @@ package com.rapiddweller.jdbacl.model.xml;
 import com.rapiddweller.common.ArrayUtil;
 import com.rapiddweller.common.Assert;
 import com.rapiddweller.common.IOUtil;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.ImportFailedException;
 import com.rapiddweller.common.ParseUtil;
 import com.rapiddweller.common.StringUtil;
-import com.rapiddweller.common.exception.SyntaxError;
 import com.rapiddweller.common.xml.XMLUtil;
 import com.rapiddweller.jdbacl.model.DBCatalog;
 import com.rapiddweller.jdbacl.model.DBCheckConstraint;
@@ -54,7 +54,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.Set;
@@ -67,7 +66,7 @@ import java.util.Set;
  */
 public class XMLModelImporter implements DBMetaDataImporter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(XMLModelImporter.class);
+  private static final Logger logger = LoggerFactory.getLogger(XMLModelImporter.class);
 
   public static final String AUTO_NAMED = "autoNamed";
   public static final String COLUMN = "column";
@@ -86,15 +85,11 @@ public class XMLModelImporter implements DBMetaDataImporter {
 
   @Override
   public Database importDatabase() throws ImportFailedException {
-    InputStream in = null;
-    try {
-      in = IOUtil.getInputStreamForURI(uri);
+    try (InputStream in = IOUtil.getInputStreamForURI(uri)) {
       Document doc = XMLUtil.parse(in);
       return parseDatabase(doc.getDocumentElement());
-    } catch (IOException e) {
-      throw new ImportFailedException(e);
-    } finally {
-      IOUtil.close(in);
+    } catch (Exception e) {
+      throw ExceptionFactory.getInstance().importFailed("Metadata import failed", e);
     }
   }
 
@@ -116,7 +111,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
       if ("catalog".equals(childName)) {
         parseCatalog(child, db);
       } else {
-        throw new UnsupportedOperationException("Not an allowed element within <database>: " + childName);
+        throw ExceptionFactory.getInstance().syntaxError(
+            "Not an allowed element within <database>: " + childName, null);
       }
     }
     scanReferers(db);
@@ -131,7 +127,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
       if ("schema".equals(childName)) {
         parseSchema(child, catalog);
       } else {
-        throw new UnsupportedOperationException("Not an allowed element within <catalog>: " + childName);
+        throw ExceptionFactory.getInstance().programmerUnsupported(
+            "Not an allowed element within <catalog>: " + childName);
       }
     }
   }
@@ -147,7 +144,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
       if ("table".equals(childName)) {
         parseTableName(child, schema);
       } else if (!"sequence".equals(childName) && !"trigger".equals(childName) && !"package".equals(childName)) {
-        throw new UnsupportedOperationException("Not an allowed element within <schema>: " + childName);
+        throw ExceptionFactory.getInstance().programmerUnsupported(
+            "Not an allowed element within <schema>: " + childName);
       }
     }
 
@@ -163,7 +161,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
       } else if ("package".equals(childName)) {
         parsePackage(child, schema);
       } else {
-        throw new UnsupportedOperationException("Not an allowed element within <schema>: " + childName);
+        throw ExceptionFactory.getInstance().programmerUnsupported(
+            "Not an allowed element within <schema>: " + childName);
       }
     }
   }
@@ -203,7 +202,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
       } else if ("index".equals(childName)) {
         parseIndex(child, table);
       } else {
-        throw new SyntaxError("Not an allowed element within <table>", XMLUtil.format(child));
+        throw ExceptionFactory.getInstance().programmerUnsupported(
+            "Not an allowed element within <table>: " + XMLUtil.format(child));
       }
     }
   }
@@ -282,7 +282,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
       }
       new DBCheckConstraint(e.getAttribute("name"), autoNamed, table, e.getAttribute("definition"));
     } catch (Exception ex) {
-      LOGGER.error("Error parsing check constraint", ex);
+      logger.error("Error parsing check constraint", ex);
     }
   }
 
@@ -460,7 +460,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
           procedure.setOverload(overload);
         }
       } else {
-        throw new SyntaxError("Illegal child element of <package>", XMLUtil.format(e));
+        throw ExceptionFactory.getInstance().programmerUnsupported(
+            "Illegal child element of <package>: " + XMLUtil.format(e));
       }
     }
   }

@@ -32,7 +32,6 @@ import com.rapiddweller.common.ArrayUtil;
 import com.rapiddweller.common.BeanUtil;
 import com.rapiddweller.common.ConfigUtil;
 import com.rapiddweller.common.ConfigurationError;
-import com.rapiddweller.common.exception.ConnectFailedException;
 import com.rapiddweller.common.ErrorHandler;
 import com.rapiddweller.common.HF;
 import com.rapiddweller.common.HeavyweightIterator;
@@ -91,10 +90,10 @@ import static com.rapiddweller.jdbacl.SQLUtil.createCatSchTabString;
  */
 public class DBUtil {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DBUtil.class);
+  private static final Logger logger = LoggerFactory.getLogger(DBUtil.class);
 
-  private static final Logger JDBC_LOGGER = LoggerFactory.getLogger(LogCategoriesConstants.JDBC);
-  private static final Logger SQL_LOGGER = LoggerFactory.getLogger(LogCategoriesConstants.SQL);
+  private static final Logger jdbcLogger = LoggerFactory.getLogger(LogCategoriesConstants.JDBC);
+  private static final Logger sqlLogger = LoggerFactory.getLogger(LogCategoriesConstants.SQL);
 
   public static final String ENV_PROPERTIES_SUFFIX = ".env.properties";
 
@@ -153,17 +152,17 @@ public class DBUtil {
    *   <li>the directory ${USER_HOME}/rapiddweller</li>
    * </ol>
    */
-  public static String environmentFilePath(String environment, String folder) throws IOException {
+  public static String environmentFilePath(String environment, String folder) {
     String filename = environment + ENV_PROPERTIES_SUFFIX;
     return ConfigUtil.configFilePathDefaultLocations(filename, folder);
   }
 
-  public static Connection connect(String environment, String folder, boolean readOnly) throws ConnectFailedException {
+  public static Connection connect(String environment, String folder, boolean readOnly) {
     JDBCConnectData connectData = DBUtil.getConnectData(environment, folder);
     return connect(connectData, readOnly);
   }
 
-  public static Connection connect(JDBCConnectData data, boolean readOnly) throws ConnectFailedException {
+  public static Connection connect(JDBCConnectData data, boolean readOnly) {
     if (StringUtil.isEmpty(data.url)) {
       throw new ConfigurationError("No JDBC URL specified");
     }
@@ -176,7 +175,7 @@ public class DBUtil {
     return connect(data.url, data.driver, data.user, data.password, readOnly);
   }
 
-  public static Connection connect(String url, String driverClassName, String user, String password, boolean readOnly) throws ConnectFailedException {
+  public static Connection connect(String url, String driverClassName, String user, String password, boolean readOnly) {
     try {
       if (driverClassName == null) {
         throw new ConfigurationError("No JDBC driver class name provided");
@@ -196,16 +195,16 @@ public class DBUtil {
       Driver driver = driverClass.getDeclaredConstructor().newInstance();
 
       // connect
-      JDBC_LOGGER.debug("opening connection to {}", url);
+      jdbcLogger.debug("opening connection to {}", url);
       Connection connection = driver.connect(url, info);
       if (connection == null) {
-        throw ExceptionFactory.getInstance().systemNotAvailable("Connecting the database failed silently - " +
+        throw ExceptionFactory.getInstance().connectFailed("Connecting the database failed silently - " +
             "probably due to wrong driver (" + driverClassName + ") or wrong URL format (" + url + ")", null);
       }
       connection = wrapWithPooledConnection(connection, readOnly);
       return connection;
     } catch (Exception e) {
-      throw ExceptionFactory.getInstance().systemNotAvailable("Connect to database at " + url + " failed", e);
+      throw ExceptionFactory.getInstance().connectFailed("Connect to database at " + url + " failed", e);
     }
   }
 
@@ -226,7 +225,7 @@ public class DBUtil {
     try {
       connection.close();
     } catch (SQLException e) {
-      LOGGER.error("Error closing connection", e);
+      logger.error("Error closing connection", e);
     }
   }
 
@@ -270,7 +269,7 @@ public class DBUtil {
       int resultSetType,
       int resultSetConcurrency,
       int resultSetHoldability) throws SQLException {
-    JDBC_LOGGER.debug("preparing statement: {}", sql);
+    jdbcLogger.debug("preparing statement: {}", sql);
     checkReadOnly(sql, readOnly);
     if (connection instanceof PooledConnection) {
       connection = ((PooledConnection) connection).getConnection();
@@ -278,7 +277,7 @@ public class DBUtil {
     PreparedStatement statement = connection.prepareStatement(
         sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-    if (SQL_LOGGER.isDebugEnabled() || JDBC_LOGGER.isDebugEnabled()) {
+    if (sqlLogger.isDebugEnabled() || jdbcLogger.isDebugEnabled()) {
       statement = (PreparedStatement) Proxy.newProxyInstance(classLoader,
           new Class[] {PreparedStatement.class},
           new LoggingPreparedStatementHandler(statement, sql));
@@ -317,7 +316,7 @@ public class DBUtil {
     try {
       return resultSet.getStatement();
     } catch (SQLException e) {
-      throw new RuntimeException("Error getting statement from result set", e);
+      throw ExceptionFactory.getInstance().operationFailed("Error getting statement from result set", e);
     }
   }
 
@@ -326,7 +325,7 @@ public class DBUtil {
       try {
         resultSet.close();
       } catch (SQLException e) {
-        throw new ConfigurationError("Closing statement failed", e);
+        throw ExceptionFactory.getInstance().operationFailed("Closing statement failed", e);
       }
     }
   }
@@ -460,14 +459,12 @@ public class DBUtil {
   }
 
   public static DBExecutionResult executeScriptFile(
-      String scriptUri, String encoding, Connection connection, boolean ignoreComments, ErrorHandler errorHandler)
-      throws IOException {
+      String scriptUri, String encoding, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) {
     return executeScriptFile(scriptUri, encoding, ';', connection, ignoreComments, errorHandler);
   }
 
   public static DBExecutionResult executeScriptFile(
-      String scriptUri, String encoding, char separator, Connection connection, boolean ignoreComments, ErrorHandler errorHandler)
-      throws IOException {
+      String scriptUri, String encoding, char separator, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) {
     BufferedReader reader = IOUtil.getReaderForURI(scriptUri, encoding);
     return runScript(reader, separator, connection, ignoreComments, errorHandler);
   }
@@ -537,7 +534,7 @@ public class DBUtil {
 
   public static int executeUpdate(String sql, Connection connection) throws SQLException {
     if (sql == null || sql.trim().length() == 0) {
-      LOGGER.warn("Empty SQL string in executeUpdate()");
+      logger.warn("Empty SQL string in executeUpdate()");
       return 0;
     }
     int result = 0;
@@ -563,7 +560,7 @@ public class DBUtil {
       }
       return builder.toArray();
     } catch (SQLException e) {
-      throw new RuntimeException("Database query failed: " + query, e);
+      throw ExceptionFactory.getInstance().queryFailed("Database query failed: " + query, e);
     } finally {
       closeResultSetAndStatement(resultSet, statement);
     }
@@ -584,7 +581,7 @@ public class DBUtil {
       assertNoNext(resultSet, query);
       return result;
     } catch (SQLException e) {
-      throw new RuntimeException("Database query failed: " + query, e);
+      throw ExceptionFactory.getInstance().queryFailed("Database query failed: " + query, e);
     } finally {
       closeResultSetAndStatement(resultSet, statement);
     }
@@ -651,7 +648,7 @@ public class DBUtil {
       return statement.executeQuery(query);
     } catch (Exception e) {
       close(statement);
-      throw new RuntimeException("Error executing query: " + query, e);
+      throw ExceptionFactory.getInstance().queryFailed("Error executing query: " + query, e);
     }
   }
 
@@ -699,12 +696,12 @@ public class DBUtil {
   public static void logMetaData(Connection connection) {
     try {
       DatabaseMetaData metaData = connection.getMetaData();
-      JDBC_LOGGER.info("Connected to {} {}", metaData.getDatabaseProductName(), metaData.getDatabaseProductVersion());
-      JDBC_LOGGER.info("Using driver {} {}", metaData.getDriverName(), metaData.getDriverVersion());
-      JDBC_LOGGER.info("JDBC version {}.{}", metaData.getJDBCMajorVersion(), metaData.getJDBCMinorVersion());
+      jdbcLogger.info("Connected to {} {}", metaData.getDatabaseProductName(), metaData.getDatabaseProductVersion());
+      jdbcLogger.info("Using driver {} {}", metaData.getDriverName(), metaData.getDriverVersion());
+      jdbcLogger.info("JDBC version {}.{}", metaData.getJDBCMajorVersion(), metaData.getJDBCMinorVersion());
 
     } catch (SQLException e) {
-      LOGGER.error("Failed to fetch metadata from connection {}", connection);
+      logger.error("Failed to fetch metadata from connection {}", connection);
     }
   }
 
@@ -758,7 +755,7 @@ public class DBUtil {
       if (critical) {
         throw new AssertionError(message);
       } else {
-        LOGGER.warn(message);
+        logger.warn(message);
       }
     }
   }

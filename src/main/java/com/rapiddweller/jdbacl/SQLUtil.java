@@ -22,9 +22,11 @@
 package com.rapiddweller.jdbacl;
 
 import com.rapiddweller.common.ArrayFormat;
+import com.rapiddweller.common.Assert;
 import com.rapiddweller.common.CollectionUtil;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.SystemInfo;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.format.script.ScriptUtil;
 import com.rapiddweller.jdbacl.model.DBCheckConstraint;
 import com.rapiddweller.jdbacl.model.DBColumn;
@@ -83,7 +85,7 @@ public class SQLUtil {
     String type = spec.substring(0, lparen);
     int rparen = spec.indexOf(')', lparen);
     if (rparen < 0) {
-      throw new RuntimeException("Illegal column type format: " + spec);
+      throw ExceptionFactory.getInstance().illegalArgument("Illegal column type format: " + spec);
     }
     String[] sizeAndFractionDigits = spec.substring(lparen + 1, rparen).split(",");
     if (sizeAndFractionDigits.length == 1) {
@@ -593,7 +595,7 @@ public class SQLUtil {
         lastTtype = ttype;
       }
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw ExceptionFactory.getInstance().internalError("Error normalizing " + sql, e);
     }
     return builder.toString();
   }
@@ -690,17 +692,17 @@ public class SQLUtil {
 
   // helper
   private static void checkCatSchTab(String catalog, String schema, String table, DatabaseDialect dialect, StringBuilder builder) {
+    if (StringUtil.isEmpty(table)) {
+      throw ExceptionFactory.getInstance().illegalArgument("No table specified");
+    }
+    Assert.notNull(table, "table");
     if (catalog != null && !catalog.equals("") && !dialect.getDbType().equalsIgnoreCase("oracle")) {
       builder.append(quoteIfNecessary(catalog, dialect.quoteTableNames)).append('.');
     }
     if (schema != null && !schema.equals("")) {
       builder.append(quoteIfNecessary(schema, dialect.quoteTableNames)).append('.');
     }
-    if (table != null && !table.equals("")) {
-      builder.append(quoteIfNecessary(table, dialect.quoteTableNames));
-    } else {
-      throw new RuntimeException("Table is missing");
-    }
+    builder.append(quoteIfNecessary(table, dialect.quoteTableNames));
   }
 
   public static String createCatSchTabString(String catalog, String schema, String table) {

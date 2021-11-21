@@ -27,6 +27,7 @@
 package com.rapiddweller.jdbacl;
 
 import com.rapiddweller.common.HeavyweightIterator;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -35,16 +36,14 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 /**
- * Wraps a ResultSet into the semantic of a {@link HeavyweightIterator}.
- * <br/>
+ * Wraps a ResultSet into the semantic of a {@link HeavyweightIterator}.<br/><br/>
  * Created: 15.08.2007 18:19:25
- *
  * @author Volker Bergmann
  * @see HeavyweightIterator
  */
 public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetIterator.class);
+  private static final Logger logger = LoggerFactory.getLogger(ResultSetIterator.class);
 
   private final ResultSet resultSet;
   private Boolean hasNext;
@@ -54,21 +53,10 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
 
   // constructors ----------------------------------------------------------------------------------------------------
 
-  /**
-   * Instantiates a new Result set iterator.
-   *
-   * @param resultSet the result set
-   */
   public ResultSetIterator(ResultSet resultSet) {
     this(resultSet, "");
   }
 
-  /**
-   * Instantiates a new Result set iterator.
-   *
-   * @param resultSet the result set
-   * @param query     the query
-   */
   public ResultSetIterator(ResultSet resultSet, String query) {
     if (resultSet == null) {
       throw new IllegalArgumentException("resultSet is null");
@@ -81,11 +69,6 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
 
   // interface -------------------------------------------------------------------------------------------------------
 
-  /**
-   * Get column labels string [ ].
-   *
-   * @return the string [ ]
-   */
   public String[] getColumnLabels() {
     if (columnLabels == null) {
       try {
@@ -96,7 +79,7 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
           columnLabels[i] = metaData.getColumnLabel(i + 1);
         }
       } catch (SQLException e) {
-        throw new RuntimeException("Error querying column meta data", e);
+        throw ExceptionFactory.getInstance().internalError("Error querying column meta data", e);
       }
     }
     return columnLabels;
@@ -104,8 +87,8 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
 
   @Override
   public boolean hasNext() {
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("hasNext() called on: " + this);
+    if (logger.isDebugEnabled()) {
+      logger.debug("hasNext() called on: {}", this);
     }
     if (hasNext != null) {
       return hasNext;
@@ -114,8 +97,8 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
       return false;
     }
     try {
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("hasNext() checks resultSet availability of: " + this);
+      if (logger.isDebugEnabled()) {
+        logger.debug("hasNext() checks resultSet availability of: {}", this);
       }
       hasNext = resultSet.next();
       if (!hasNext) {
@@ -123,14 +106,14 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
       }
       return hasNext;
     } catch (SQLException e) {
-      throw new RuntimeException("Error in query: " + query, e);
+      throw ExceptionFactory.getInstance().queryFailed("Error in query: " + query, e);
     }
   }
 
   @Override
   public ResultSet next() {
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("next() called on: " + this);
+    if (logger.isDebugEnabled()) {
+      logger.debug("next() called on: {}", this);
     }
     if (!hasNext()) {
       throw new IllegalStateException("No more row available. Use hasNext() for checking availability.");
@@ -149,7 +132,7 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
     if (closed) {
       return;
     }
-    LOGGER.debug("closing {}", this);
+    logger.debug("closing {}", this);
     hasNext = false;
     DBUtil.closeResultSetAndStatement(resultSet);
     closed = true;

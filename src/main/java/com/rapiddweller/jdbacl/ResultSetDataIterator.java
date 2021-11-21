@@ -23,6 +23,7 @@ package com.rapiddweller.jdbacl;
 
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.common.StringUtil;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.format.DataContainer;
 import com.rapiddweller.format.DataIterator;
 import org.slf4j.LoggerFactory;
@@ -35,11 +36,12 @@ import java.sql.SQLException;
 /**
  * Provides {@link DataIterator}-style access to a {@link ResultSet}.<br/><br/>
  * Created: 03.08.2011 19:24:35
- *
  * @author Volker Bergmann
  * @since 0.6.10
  */
 public class ResultSetDataIterator implements DataIterator<ResultSet> {
+
+  private static final Logger logger = LoggerFactory.getLogger(ResultSetDataIterator.class);
 
   private ResultSet resultSet;
   private String[] columnLabels;
@@ -48,21 +50,10 @@ public class ResultSetDataIterator implements DataIterator<ResultSet> {
 
   // constructors ----------------------------------------------------------------------------------------------------
 
-  /**
-   * Instantiates a new Result set data iterator.
-   *
-   * @param resultSet the result set
-   */
   public ResultSetDataIterator(ResultSet resultSet) {
     this(resultSet, "");
   }
 
-  /**
-   * Instantiates a new Result set data iterator.
-   *
-   * @param resultSet the result set
-   * @param query     the query
-   */
   public ResultSetDataIterator(ResultSet resultSet, String query) {
     if (resultSet == null) {
       throw new IllegalArgumentException("resultSet is null");
@@ -76,11 +67,6 @@ public class ResultSetDataIterator implements DataIterator<ResultSet> {
 
   // interface -------------------------------------------------------------------------------------------------------
 
-  /**
-   * Get column labels string [ ].
-   *
-   * @return the string [ ]
-   */
   public String[] getColumnLabels() {
     if (columnLabels == null) {
       try {
@@ -91,7 +77,7 @@ public class ResultSetDataIterator implements DataIterator<ResultSet> {
           columnLabels[i] = metaData.getColumnLabel(i + 1);
         }
       } catch (SQLException e) {
-        throw new RuntimeException("Error querying column meta data", e);
+        throw ExceptionFactory.getInstance().queryFailed("Error querying column meta data", e);
       }
     }
     return columnLabels;
@@ -104,7 +90,7 @@ public class ResultSetDataIterator implements DataIterator<ResultSet> {
 
   @Override
   public DataContainer<ResultSet> next(DataContainer<ResultSet> container) {
-    LOGGER.debug("next() called on {}", this);
+    logger.debug("next() called on {}", this);
     if (resultSet == null) {
       return null;
     }
@@ -116,13 +102,13 @@ public class ResultSetDataIterator implements DataIterator<ResultSet> {
         return null;
       }
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw ExceptionFactory.getInstance().queryFailed("ResultSet iteration failed", e);
     }
   }
 
   @Override
   public synchronized void close() {
-    LOGGER.debug("closing {}", this);
+    logger.debug("closing {}", this);
     if (resultSet == null) {
       return;
     }
@@ -136,7 +122,5 @@ public class ResultSetDataIterator implements DataIterator<ResultSet> {
   public String toString() {
     return getClass().getSimpleName() + '[' + query + ']';
   }
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetIterator.class);
 
 }
