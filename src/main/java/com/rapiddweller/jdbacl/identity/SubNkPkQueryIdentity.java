@@ -190,7 +190,7 @@ public class SubNkPkQueryIdentity extends IdentityModel {
 
     @Override
     public void remove() {
-      ExceptionFactory.getInstance().illegalOperation(getClass() + " does not support removal");
+      throw ExceptionFactory.getInstance().illegalOperation(getClass() + " does not support removal");
     }
 
     @Override
