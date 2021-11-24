@@ -30,6 +30,7 @@ import com.rapiddweller.common.ArrayUtil;
 import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.Encodings;
 import com.rapiddweller.common.ErrorHandler;
+import com.rapiddweller.common.exception.ServicePermissionDenied;
 import com.rapiddweller.jdbacl.dialect.HSQLUtil;
 import com.rapiddweller.jdbacl.model.DBPrimaryKeyConstraint;
 import com.rapiddweller.jdbacl.model.DBTable;
@@ -384,12 +385,12 @@ public class DBUtilTest {
     DBUtil.checkReadOnly("select into xyz2 from xyz", false);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test(expected = ServicePermissionDenied.class)
   public void testReadOnly_true_insert() {
     DBUtil.checkReadOnly("insert into xyz (id) values (3)", true);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test(expected = ServicePermissionDenied.class)
   public void testReadOnly_true_update() {
     DBUtil.checkReadOnly("update xyz set id = 3", true);
   }
@@ -399,7 +400,7 @@ public class DBUtilTest {
     DBUtil.checkReadOnly("select * from xyz", true);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test(expected = ServicePermissionDenied.class)
   public void testReadOnly_true_select_into() {
     DBUtil.checkReadOnly("select into xyz2 from xyz", true);
   }

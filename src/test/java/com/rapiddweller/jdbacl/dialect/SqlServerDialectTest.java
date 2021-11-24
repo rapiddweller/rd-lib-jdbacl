@@ -21,6 +21,7 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
+import com.rapiddweller.common.exception.IllegalOperationError;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -105,7 +106,7 @@ public class SqlServerDialectTest extends DatabaseDialectTest<SqlServerDialect> 
     assertFalse((new SqlServerDialect()).isDeterministicIndexName("SYS_U"));
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test(expected = IllegalOperationError.class)
   public void testRegex() {
     assertFalse(dialect.supportsRegex());
     dialect.regexQuery("code", false, "[A-Z]{4}");

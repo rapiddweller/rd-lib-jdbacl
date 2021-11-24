@@ -22,6 +22,7 @@
 package com.rapiddweller.jdbacl.dialect;
 
 import com.rapiddweller.common.exception.ConnectFailedException;
+import com.rapiddweller.common.exception.IllegalOperationError;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.model.DBSequence;
 import com.rapiddweller.jdbacl.sql.Query;
@@ -143,7 +144,7 @@ public class HSQLDialectTest extends DatabaseDialectTest<HSQLDialect> {
     assertEquals("SELECT TOP 3 Selection FROM ", selectResult.toString());
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test(expected = IllegalOperationError.class)
   public void testRegex() {
     assertFalse(dialect.supportsRegex());
     dialect.regexQuery("code", false, "[A-Z]{4}");

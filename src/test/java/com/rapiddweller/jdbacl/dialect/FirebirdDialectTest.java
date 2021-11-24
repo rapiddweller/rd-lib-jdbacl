@@ -21,6 +21,7 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
+import com.rapiddweller.common.exception.IllegalOperationError;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.DatabaseTestUtil;
 import com.rapiddweller.jdbacl.model.DBSequence;
@@ -110,7 +111,7 @@ public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
     assertFalse(dialect.supportsRegex());
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test(expected = IllegalOperationError.class)
   public void testRegex() {
     dialect.regexQuery("code", false, "[A-Z]{4}");
   }

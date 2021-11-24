@@ -21,6 +21,7 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
+import com.rapiddweller.common.exception.IllegalOperationError;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -118,7 +119,7 @@ public class DerbyDialectTest extends DatabaseDialectTest<DerbyDialect> {
     assertFalse((new DerbyDialect()).isDeterministicIndexName("SQL9"));
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test(expected = IllegalOperationError.class)
   public void testRegex() {
     assertFalse(dialect.supportsRegex());
     dialect.regexQuery("code", false, "[A-Z]{4}");

@@ -21,6 +21,7 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
+import com.rapiddweller.common.exception.IllegalOperationError;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -123,7 +124,7 @@ public class DB2DialectTest extends DatabaseDialectTest<DB2Dialect> {
     assertFalse(dialect.supportsRegex());
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test(expected = IllegalOperationError.class)
   public void testRegexQuery() {
     dialect.regexQuery("code", false, "[A-Z]{4}");
   }

@@ -33,6 +33,7 @@ import com.rapiddweller.common.NameUtil;
 import com.rapiddweller.common.OrderedMap;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.converter.TimestampFormatter;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.model.DBCheckConstraint;
@@ -308,48 +309,51 @@ public class OracleDialect extends DatabaseDialect {
   }
 
   @Override
-  public List<DBPackage> queryPackages(DBSchema schema, Connection connection) throws SQLException {
-
-    // query packages
-    String query = "SELECT USER, OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, OBJECT_TYPE, STATUS" +
-        " FROM USER_OBJECTS WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'";
-    List<Object[]> pkgInfos = DBUtil.query(query, connection);
-    OrderedMap<String, DBPackage> packages = new OrderedMap<>();
-    for (Object[] pkgInfo : pkgInfos) {
-      String ownerName = (String) pkgInfo[0];
-      if (schema == null || schema.getName().equals(ownerName)) {
-        String name = (String) pkgInfo[1];
-        DBPackage pkg = new DBPackage(name, null);
-        Assert.isTrue(schema != null, "Schema is null");
-        if (schema != null) {
-          schema.receivePackage(pkg);
+  public List<DBPackage> queryPackages(DBSchema schema, Connection connection) {
+    try {
+      // query packages
+      String query = "SELECT USER, OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, OBJECT_TYPE, STATUS" +
+          " FROM USER_OBJECTS WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'";
+      List<Object[]> pkgInfos = DBUtil.query(query, connection);
+      OrderedMap<String, DBPackage> packages = new OrderedMap<>();
+      for (Object[] pkgInfo : pkgInfos) {
+        String ownerName = (String) pkgInfo[0];
+        if (schema == null || schema.getName().equals(ownerName)) {
+          String name = (String) pkgInfo[1];
+          DBPackage pkg = new DBPackage(name, null);
+          Assert.isTrue(schema != null, "Schema is null");
+          if (schema != null) {
+            schema.receivePackage(pkg);
+          }
+          pkg.setSchema(schema);
+          pkg.setSubObjectName((String) pkgInfo[2]);
+          pkg.setObjectId(pkgInfo[3].toString());
+          pkg.setObjectType((String) pkgInfo[4]);
+          pkg.setStatus((String) pkgInfo[5]);
+          packages.put(pkg.getName(), pkg);
+          logger.debug("Imported package {}", pkg);
         }
-        pkg.setSchema(schema);
-        pkg.setSubObjectName((String) pkgInfo[2]);
-        pkg.setObjectId(pkgInfo[3].toString());
-        pkg.setObjectType((String) pkgInfo[4]);
-        pkg.setStatus((String) pkgInfo[5]);
-        packages.put(pkg.getName(), pkg);
-        logger.debug("Imported package {}", pkg);
       }
-    }
 
-    // query package procedures
-    query = "SELECT OBJECT_NAME, PROCEDURE_NAME, OBJECT_ID, SUBPROGRAM_ID, OVERLOAD" +
-        " FROM SYS.USER_PROCEDURES WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'" +
-        " AND PROCEDURE_NAME IS NOT NULL AND OBJECT_NAME IN (" +
-        CollectionUtil.formatCommaSeparatedList(NameUtil.getNames(packages.values()), '\'') + ")";
-    List<Object[]> procInfos = DBUtil.query(query, connection);
-    for (Object[] procInfo : procInfos) {
-      DBPackage owner = packages.get(procInfo[0]);
-      String name = (String) procInfo[1];
-      DBProcedure proc = new DBProcedure(name, owner);
-      proc.setObjectId(procInfo[2].toString());
-      proc.setSubProgramId(procInfo[3].toString());
-      proc.setOverload((String) procInfo[4]);
-      logger.debug("Imported package procedure {}.{}", owner.getName(), proc.getName());
+      // query package procedures
+      query = "SELECT OBJECT_NAME, PROCEDURE_NAME, OBJECT_ID, SUBPROGRAM_ID, OVERLOAD" +
+          " FROM SYS.USER_PROCEDURES WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'" +
+          " AND PROCEDURE_NAME IS NOT NULL AND OBJECT_NAME IN (" +
+          CollectionUtil.formatCommaSeparatedList(NameUtil.getNames(packages.values()), '\'') + ")";
+      List<Object[]> procInfos = DBUtil.query(query, connection);
+      for (Object[] procInfo : procInfos) {
+        DBPackage owner = packages.get(procInfo[0]);
+        String name = (String) procInfo[1];
+        DBProcedure proc = new DBProcedure(name, owner);
+        proc.setObjectId(procInfo[2].toString());
+        proc.setSubProgramId(procInfo[3].toString());
+        proc.setOverload((String) procInfo[4]);
+        logger.debug("Imported package procedure {}.{}", owner.getName(), proc.getName());
+      }
+      return packages.values();
+    } catch (SQLException e) {
+      throw ExceptionFactory.getInstance().queryFailed("Package query failed", e);
     }
-    return packages.values();
   }
 
   @Override
