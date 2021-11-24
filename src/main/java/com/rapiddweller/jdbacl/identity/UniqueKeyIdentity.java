@@ -24,8 +24,8 @@ package com.rapiddweller.jdbacl.identity;
 import com.rapiddweller.common.ArrayBuilder;
 import com.rapiddweller.common.ArrayFormat;
 import com.rapiddweller.common.ArrayUtil;
-import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.converter.ThreadSafeConverter;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.iterator.ConvertingIterator;
 import com.rapiddweller.common.iterator.TabularIterator;
 import com.rapiddweller.jdbacl.model.Database;
@@ -35,7 +35,6 @@ import java.sql.Connection;
 /**
  * {@link IdentityModel} implementation based on a unique-key-constraint.<br/><br/>
  * Created: 06.12.2010 09:10:05
- *
  * @author Volker Bergmann
  * @since 0.6.4
  */
@@ -43,22 +42,11 @@ public class UniqueKeyIdentity extends IdentityModel {
 
   private String[] columnNames;
 
-  /**
-   * Instantiates a new Unique key identity.
-   *
-   * @param tableName   the table name
-   * @param columnNames the column names
-   */
   public UniqueKeyIdentity(String tableName, String... columnNames) {
     super(tableName);
     setColumns(columnNames);
   }
 
-  /**
-   * Sets columns.
-   *
-   * @param columnNames the column names
-   */
   public void setColumns(String[] columnNames) {
     this.columnNames = columnNames;
   }
@@ -67,7 +55,7 @@ public class UniqueKeyIdentity extends IdentityModel {
   public TabularIterator createNkPkIterator(
       Connection connection, String dbId, KeyMapper mapper, Database database) {
     if (ArrayUtil.isEmpty(columnNames)) {
-      throw new ConfigurationError("No unique key columns defined");
+      throw ExceptionFactory.getInstance().configurationError("No unique key columns defined");
     }
     StringBuilder builder = new StringBuilder("select ");
     builder.append(columnNames[0]);
@@ -91,23 +79,10 @@ public class UniqueKeyIdentity extends IdentityModel {
     return "Identity definition by unique key: " + ArrayFormat.format(columnNames);
   }
 
-  /**
-   * The type Unique key nk pk iterator.
-   */
   public class UniqueKeyNkPkIterator extends ConvertingIterator<Object[], Object[]> implements TabularIterator {
 
-    /**
-     * The Pk column names.
-     */
     final String[] pkColumnNames;
 
-    /**
-     * Instantiates a new Unique key nk pk iterator.
-     *
-     * @param rawIterator   the raw iterator
-     * @param converter     the converter
-     * @param pkColumnNames the pk column names
-     */
     public UniqueKeyNkPkIterator(TabularIterator rawIterator, ColumnToNkConverter converter, String[] pkColumnNames) {
       super(rawIterator, converter);
       this.pkColumnNames = columnNames;

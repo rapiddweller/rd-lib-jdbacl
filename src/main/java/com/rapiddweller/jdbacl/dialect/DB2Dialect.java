@@ -26,6 +26,7 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.sql.Query;
 
@@ -103,7 +104,8 @@ public class DB2Dialect extends DatabaseDialect {
     /* TODO implement DatabaseDialect.applyRownumRestriction()
 			DB2: SELECT * FROM T WHERE ID_T > 20 FETCH FIRST 10 ROWS ONLY
 	*/
-    throw new UnsupportedOperationException("DB2Dialect.applyRownumRestriction() is not implemented");
+    throw ExceptionFactory.getInstance().programmerUnsupported(
+        "DB2Dialect.applyRownumRestriction() is not implemented");
   }
 
 }

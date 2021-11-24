@@ -24,82 +24,41 @@ package com.rapiddweller.jdbacl.model;
 import com.rapiddweller.common.Assert;
 import com.rapiddweller.common.collection.OrderedNameMap;
 
-import java.io.Serializable;
 import java.util.Map;
 
 /**
  * Represents a row in a database table.<br/><br/>
  * Created: 23.07.2010 07:29:14
- *
  * @author Volker Bergmann
  * @since 0.6.3
  */
-public class DBRow implements Serializable {
+public class DBRow {
 
-  private static final long serialVersionUID = 644247555736773166L;
-
-  /**
-   * The Table.
-   */
   DBTable table;
-  /**
-   * The Cells.
-   */
   final OrderedNameMap<Object> cells;
 
-  /**
-   * Instantiates a new Db row.
-   *
-   * @param table the table
-   */
   public DBRow(DBTable table) {
     this.table = table;
     this.cells = OrderedNameMap.createCaseIgnorantMap();
   }
 
-  /**
-   * Gets table.
-   *
-   * @return the table
-   */
   public DBTable getTable() {
     return table;
   }
 
-  /**
-   * With table db row.
-   *
-   * @param table the table
-   * @return the db row
-   */
   public DBRow withTable(DBTable table) {
     this.table = table;
     return this;
   }
 
-  /**
-   * Gets cells.
-   *
-   * @return the cells
-   */
   public Map<String, Object> getCells() {
     return cells;
   }
 
-  /**
-   * Get pk values object [ ].
-   *
-   * @return the object [ ]
-   */
   public Object[] getPKValues() {
     return getCellValues(table.getPKColumnNames());
   }
 
-  /**
-   * Gets pk value.
-   *
-   * @return the pk value
-   */
   public Object getPKValue() {
     String[] columnNames = table.getPKColumnNames();
     if (columnNames.length == 1) {
@@ -109,12 +68,6 @@ public class DBRow implements Serializable {
     }
   }
 
-  /**
-   * Gets fk value.
-   *
-   * @param fk the fk
-   * @return the fk value
-   */
   public Object getFKValue(DBForeignKeyConstraint fk) {
     String[] columnNames = fk.getColumnNames();
     if (columnNames.length == 1) {
@@ -124,12 +77,6 @@ public class DBRow implements Serializable {
     }
   }
 
-  /**
-   * Sets fk value.
-   *
-   * @param fkConstraint the fk constraint
-   * @param fkValue      the fk value
-   */
   public void setFKValue(DBForeignKeyConstraint fkConstraint, Object fkValue) {
     String[] columnNames = fkConstraint.getColumnNames();
     if (columnNames.length == 1) {
@@ -140,22 +87,10 @@ public class DBRow implements Serializable {
     }
   }
 
-  /**
-   * Get fk components object [ ].
-   *
-   * @param fk the fk
-   * @return the object [ ]
-   */
   public Object[] getFKComponents(DBForeignKeyConstraint fk) {
     return getCellValues(fk.getColumnNames());
   }
 
-  /**
-   * Sets cell values.
-   *
-   * @param columnNames the column names
-   * @param cellValues  the cell values
-   */
   public void setCellValues(String[] columnNames, Object[] cellValues) {
     Assert.equals(columnNames.length, cellValues.length, "mismatch of column and value counts");
     for (int i = 0; i < columnNames.length; i++) {
@@ -171,22 +106,10 @@ public class DBRow implements Serializable {
     return result;
   }
 
-  /**
-   * Gets cell value.
-   *
-   * @param columnName the column name
-   * @return the cell value
-   */
   public Object getCellValue(String columnName) {
     return cells.get(columnName);
   }
 
-  /**
-   * Sets cell value.
-   *
-   * @param columnName the column name
-   * @param value      the value
-   */
   public void setCellValue(String columnName, Object value) {
     cells.put(columnName, value);
   }
@@ -196,11 +119,6 @@ public class DBRow implements Serializable {
     return table.getName() + cells.values();
   }
 
-  /**
-   * Sets pk value.
-   *
-   * @param newPK the new pk
-   */
   public void setPKValue(Object newPK) {
     String[] columnNames = table.getPKColumnNames();
     if (columnNames.length == 1) {

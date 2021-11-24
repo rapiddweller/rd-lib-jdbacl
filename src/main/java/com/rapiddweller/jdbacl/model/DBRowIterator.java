@@ -51,20 +51,21 @@ public class DBRowIterator implements HeavyweightIterator<DBRow> {
   private final ResultSetIterator resultSetIterator;
   private boolean closed;
 
-  public DBRowIterator(DBTable table, Connection connection, String whereClause) throws SQLException {
+  public DBRowIterator(DBTable table, Connection connection, String whereClause) {
     this.table = table;
-    String sql = "SELECT * FROM " + table.getName();
-    if (whereClause != null) {
-      sql += " WHERE " + whereClause;
+    String sql = renderQuery(table, whereClause); // renders 'SELECT * FROM <table>'
+    try {
+      Statement statement = connection.createStatement(
+          ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+      statement.setFetchSize(1000);
+      this.resultSet = statement.executeQuery(sql);
+      this.resultSetMetaData = resultSet.getMetaData();
+      this.resultSetIterator = new ResultSetIterator(resultSet, sql);
+      this.closed = false;
+      // Statement must remain open and will be closed indirectly in the close() method
+    } catch (SQLException e) {
+      throw ExceptionFactory.getInstance().queryFailed("Meta data query failed", e);
     }
-    sqlLogger.debug(sql);
-    Statement statement = connection.createStatement(
-        ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-    statement.setFetchSize(1000);
-    this.resultSet = statement.executeQuery(sql);
-    this.resultSetMetaData = resultSet.getMetaData();
-    this.resultSetIterator = new ResultSetIterator(resultSet, sql);
-    this.closed = false;
   }
 
   public DBRowIterator withTable(DBTable table) {
@@ -102,7 +103,7 @@ public class DBRowIterator implements HeavyweightIterator<DBRow> {
 
   @Override
   public void remove() {
-    throw new UnsupportedOperationException("remove() is not supported by " + getClass());
+    throw ExceptionFactory.getInstance().programmerUnsupported("remove() is not supported by " + getClass());
   }
 
   @Override
@@ -112,6 +113,15 @@ public class DBRowIterator implements HeavyweightIterator<DBRow> {
       resultSet = null;
       closed = true;
     }
+  }
+
+  private String renderQuery(DBTable table, String whereClause) {
+    String sql = "SELECT * FROM " + table.getName();
+    if (whereClause != null) {
+      sql += " WHERE " + whereClause;
+    }
+    sqlLogger.debug(sql);
+    return sql;
   }
 
 }

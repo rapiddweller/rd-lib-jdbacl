@@ -26,6 +26,7 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.sql.Query;
 
@@ -110,8 +111,9 @@ public class DerbyDialect extends DatabaseDialect {
 
   @Override
   public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
-    throw new UnsupportedOperationException(
-        "DerbyDialect.applyRownumRestriction() is not implemented"); // TODO implement DatabaseDialect.applyRownumRestriction()
+    // TODO implement DatabaseDialect.applyRownumRestriction()
+    throw ExceptionFactory.getInstance().programmerUnsupported(
+        "DerbyDialect.applyRownumRestriction() is not implemented");
   }
 
 }

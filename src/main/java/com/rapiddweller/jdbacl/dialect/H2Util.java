@@ -21,8 +21,8 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
-import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.exception.ConnectFailedException;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.DBUtil;
 
 import java.sql.Connection;
@@ -42,6 +42,11 @@ public class H2Util {
   public static final String DEFAULT_SCHEMA = "PUBLIC";
   public static final int DEFAULT_PORT = 9001;
 
+  /** private constructor to prevent instantiation of this utility class. */
+  private H2Util() {
+    // private constructor to prevent instantiation of this utility class
+  }
+
   public static Connection connectInMemoryDB(String dbName, int port) throws ConnectFailedException {
     return connectInMemoryDB(dbName + ":" + port);
   }
@@ -53,7 +58,7 @@ public class H2Util {
       String url = getInMemoryURL(dbName);
       return DBUtil.connect(url, DRIVER, DEFAULT_USER, DEFAULT_PASSWORD, false);
     } catch (ClassNotFoundException e) {
-      throw new ConfigurationError("JDBC driver not found: " + driver, e);
+      throw ExceptionFactory.getInstance().configurationError("JDBC driver not found: " + driver, e);
     }
   }
 

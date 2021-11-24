@@ -29,7 +29,6 @@ package com.rapiddweller.jdbacl;
 import com.rapiddweller.common.ArrayUtil;
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.common.exception.ExceptionFactory;
-import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.TimeUtil;
 import com.rapiddweller.common.converter.TimestampFormatter;
@@ -173,7 +172,8 @@ public abstract class DatabaseDialect {
   }
 
   public DBSequence[] querySequences(Connection connection) throws SQLException {
-    throw new UnsupportedOperationException(getClass().getSimpleName() + " does not support querying sequences");
+    throw ExceptionFactory.getInstance().illegalOperation(
+        getClass().getSimpleName() + " does not support querying sequences");
   }
 
   public void createSequence(String name, long initialValue, Connection connection) throws SQLException {
@@ -246,7 +246,7 @@ public abstract class DatabaseDialect {
         return seq;
       }
     }
-    throw new ObjectNotFoundException("No sequence found with name '" + sequenceName + "'");
+    throw ExceptionFactory.getInstance().objectNotFound("No sequence found with name '" + sequenceName + "'");
   }
 
   public String renderDropSequence(String sequenceName) {
@@ -280,7 +280,8 @@ public abstract class DatabaseDialect {
 
   public String update(DBTable table, String[] pkColumnNames, List<ColumnInfo> columnInfos) {
     if (pkColumnNames.length == 0) {
-      throw new UnsupportedOperationException("Cannot update table without primary key: " + table.getName());
+      throw ExceptionFactory.getInstance().illegalOperation(
+          "Cannot update table without primary key: " + table.getName());
     }
     StringBuilder builder = new StringBuilder("update ");
     builder.append(createCatSchTabString(table.getCatalog().getName(), table.getSchema().getName(), table.getName(), this)).append(" set");
@@ -366,14 +367,13 @@ public abstract class DatabaseDialect {
    *  @param expression a column name or a SQL value expression to be checked with a regular expression
    *  @param not        if set to true, the query fits expressions which do not match the regular expression
    *  @param regex      the regular expression to check with
-   *  @return a string with a SQL query condition.
-   *  @throws UnsupportedOperationException if the database does not support regular expressions */
+   *  @return a string with a SQL query condition. */
   public String regexQuery(String expression, boolean not, String regex) {
-    throw new UnsupportedOperationException(dbType + " does not support regular expressions");
+    throw ExceptionFactory.getInstance().illegalOperation(dbType + " does not support regular expressions");
   }
 
   public String trim(String expression) {
-    throw new UnsupportedOperationException(dbType + " does not support trimming");
+    throw ExceptionFactory.getInstance().illegalOperation(dbType + " does not support trimming");
   }
 
   public String renderCase(String columnName, String elseExpression, String... whenThenExpressionPairs) {
@@ -417,7 +417,7 @@ public abstract class DatabaseDialect {
   public void queryTriggers(DBSchema schema, Connection connection) throws SQLException {
   }
 
-  public List<DBPackage> queryPackages(DBSchema schema, Connection connection) throws SQLException {
+  public List<DBPackage> queryPackages(DBSchema schema, Connection connection) {
     return new ArrayList<>();
   }
 

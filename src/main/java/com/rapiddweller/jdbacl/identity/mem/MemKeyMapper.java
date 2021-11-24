@@ -21,7 +21,6 @@
 
 package com.rapiddweller.jdbacl.identity.mem;
 
-import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.identity.IdentityModel;
 import com.rapiddweller.jdbacl.identity.IdentityProvider;
@@ -35,29 +34,15 @@ import java.util.Map;
 /**
  * In-memory implementation of a {@link KeyMapper}.<br/><br/>
  * Created: 23.08.2010 16:55:53
- *
  * @author Volker Bergmann
  * @since 0.6.4
  */
 public class MemKeyMapper extends KeyMapper {
 
-  /**
-   * The Target db mapper.
-   */
   TargetDatabaseMapper targetDBMapper;
   private final Database database;
   private final Map<String, SourceDatabaseMapper> sourceDBMappers;
 
-  /**
-   * Instantiates a new Mem key mapper.
-   *
-   * @param source           the source
-   * @param sourceDbId       the source db id
-   * @param target           the target
-   * @param targetDbId       the target db id
-   * @param identityProvider the identity provider
-   * @param database         the database
-   */
   public MemKeyMapper(Connection source, String sourceDbId, Connection target, String targetDbId, IdentityProvider identityProvider,
                       Database database) {
     super(identityProvider);
@@ -100,7 +85,7 @@ public class MemKeyMapper extends KeyMapper {
 
   private TargetDatabaseMapper getTargetDBMapper() {
     if (targetDBMapper == null) {
-      throw new ConfigurationError("'target' is undefined. " +
+      throw ExceptionFactory.getInstance().configurationError("'target' is undefined. " +
           "Use MemKeyMapper.setTarget() to register the target database");
     }
     return targetDBMapper;
@@ -110,7 +95,7 @@ public class MemKeyMapper extends KeyMapper {
     if (targetDBMapper == null) {
       targetDBMapper = new TargetDatabaseMapper(this, target, targetDbId, database);
     } else if (!(targetDBMapper.getDbId()).equals(targetDbId)) {
-      throw new ConfigurationError("'target' has already been set to a different database: " +
+      throw ExceptionFactory.getInstance().configurationError("'target' has already been set to a different database: " +
           targetDBMapper.getDbId());
     }
   }

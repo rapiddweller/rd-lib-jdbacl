@@ -29,7 +29,6 @@ package com.rapiddweller.jdbacl.model;
 import com.rapiddweller.common.CollectionUtil;
 import com.rapiddweller.common.Named;
 
-import java.io.Serializable;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Set;
@@ -39,9 +38,7 @@ import java.util.Set;
  * Created: 06.01.2007 10:12:29
  * @author Volker Bergmann
  */
-public class DBDataType implements Named, Serializable {
-
-  private static final long serialVersionUID = 7725335502838132325L;
+public class DBDataType implements Named {
 
   private static final Set<Integer> ALPHA_TYPES = CollectionUtil.toSet(
       Types.CHAR,

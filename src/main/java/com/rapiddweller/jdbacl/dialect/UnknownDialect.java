@@ -26,6 +26,7 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.sql.Query;
 
@@ -83,8 +84,9 @@ public class UnknownDialect extends DatabaseDialect {
 
   @Override
   public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
-    throw new UnsupportedOperationException(
-        "UnknownDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+    // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+    throw ExceptionFactory.getInstance().programmerUnsupported(
+        "UnknownDialect.applyRownumRestriction() is not implemented");
   }
 
 }

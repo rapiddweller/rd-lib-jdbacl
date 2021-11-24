@@ -24,22 +24,10 @@ package com.rapiddweller.jdbacl.model;
 /**
  * Parent interface for all {@link DBObject}s that can be part of a {@link DBTable}.<br/><br/>
  * Created: 28.11.2010 11:57:37
- *
  * @author Volker Bergmann
  * @since 0.6.4
  */
 public interface DBTableComponent extends DBObject {
-  /**
-   * Gets table.
-   *
-   * @return the table
-   */
   DBTable getTable();
-
-  /**
-   * Sets table.
-   *
-   * @param table the table
-   */
   void setTable(DBTable table);
 }

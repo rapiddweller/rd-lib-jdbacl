@@ -22,8 +22,8 @@
 package com.rapiddweller.jdbacl.identity.xml;
 
 import com.rapiddweller.common.CollectionUtil;
-import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.StringUtil;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.xml.XMLUtil;
 import com.rapiddweller.format.xml.AbstractXMLElementParser;
 import com.rapiddweller.format.xml.ParseContext;
@@ -40,29 +40,16 @@ import java.util.Set;
 /**
  * Parses an &lt;identity&gt; element in a DB Sanity XML file.<br/><br/>
  * Created: 05.12.2010 14:39:48
- *
  * @author Volker Bergmann
  * @since 0.7.1
  */
 public class IdentityParser extends AbstractXMLElementParser<Object> {
 
-  /**
-   * The constant IDENTITY.
-   */
   public static final String IDENTITY = "identity";
-  /**
-   * The constant REQUIRED_ATTRIBUTES.
-   */
-  public static final Set<String> REQUIRED_ATTRIBUTES = CollectionUtil.toSet("type", "table");
-  /**
-   * The constant OPTIONAL_ATTRIBUTES.
-   */
-  public static final Set<String> OPTIONAL_ATTRIBUTES =
+  private static final Set<String> REQUIRED_ATTRIBUTES = CollectionUtil.toSet("type", "table");
+  private static final Set<String> OPTIONAL_ATTRIBUTES =
       CollectionUtil.toSet("nk-pk-query", "sub-nk-pk-query", "parents", "unique-key", "natural-pk", "columns");
 
-  /**
-   * Instantiates a new Identity parser.
-   */
   public IdentityParser() {
     super(IDENTITY, REQUIRED_ATTRIBUTES, OPTIONAL_ATTRIBUTES, Object.class);
   }
@@ -83,19 +70,12 @@ public class IdentityParser extends AbstractXMLElementParser<Object> {
     } else if ("natural-pk".equals(type)) {
       identity = parseNaturalPk(element, tableName);
     } else {
-      throw new ConfigurationError("Not a supported <identity> type: " + type);
+      throw ExceptionFactory.getInstance().configurationError("Not a supported <identity> type: " + type);
     }
     identityProvider.registerIdentity(identity, identity.getTableName());
     return identity;
   }
 
-  /**
-   * Create check name string.
-   *
-   * @param tableName the table name
-   * @param type      the type
-   * @return the string
-   */
   public static String createCheckName(String tableName, String type) {
     return tableName + "-identity-" + type;
   }

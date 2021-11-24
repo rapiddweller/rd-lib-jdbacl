@@ -21,6 +21,7 @@
 
 package com.rapiddweller.jdbacl.sql;
 
+import com.rapiddweller.common.exception.IllegalArgumentError;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -30,21 +31,14 @@ import static org.junit.Assert.assertEquals;
 /**
  * Tests the {@link Query} class.<br/><br/>
  * Created: 09.04.2012 10:31:13
- *
  * @author Volker Bergmann
  * @since 0.8.1
  */
 public class QueryTest {
 
-  /**
-   * The Thrown.
-   */
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
-  /**
-   * Test constructor.
-   */
   @Test
   public void testConstructor() {
     assertEquals("SELECT Selection FROM Table", (new Query("Selection", "Table")).toString());
@@ -56,17 +50,11 @@ public class QueryTest {
     assertEquals("SELECT Selection FROM Table", (new Query("Selection", "Table", null)).toString());
   }
 
-  /**
-   * Test select.
-   */
   @Test
   public void testSelect() {
     assertEquals("SELECT Selection FROM ", Query.select("Selection").toString());
   }
 
-  /**
-   * Test add select condition.
-   */
   @Test
   public void testAddSelectCondition() {
     Query selectResult = Query.select("Selection");
@@ -74,78 +62,51 @@ public class QueryTest {
     assertEquals("SELECT Select Condition Selection FROM ", selectResult.toString());
   }
 
-  /**
-   * Test from.
-   */
   @Test
   public void testFrom() {
-    thrown.expect(IllegalArgumentException.class);
+    thrown.expect(IllegalArgumentError.class);
     Query.select("Selection").from("Table Name");
   }
 
-  /**
-   * Test from 2.
-   */
   @Test
   public void testFrom2() {
     assertEquals("SELECT Selection FROM ", Query.select("Selection").from("").toString());
   }
 
-  /**
-   * Test from 3.
-   */
   @Test
   public void testFrom3() {
-    thrown.expect(IllegalArgumentException.class);
+    thrown.expect(IllegalArgumentError.class);
     Query.select("Selection").from("Table Name", "Alias");
   }
 
-  /**
-   * Test from 4.
-   */
   @Test
   public void testFrom4() {
     assertEquals("SELECT Selection FROM  Alias", Query.select("Selection").from("", "Alias").toString());
   }
 
-  /**
-   * Test from 5.
-   */
   @Test
   public void testFrom5() {
     assertEquals("SELECT Selection FROM ", Query.select("Selection").from("", null).toString());
   }
 
-  /**
-   * Test from 6.
-   */
   @Test
   public void testFrom6() {
-    thrown.expect(IllegalArgumentException.class);
+    thrown.expect(IllegalArgumentError.class);
     Query.select("Selection").from("Table Name", null);
   }
 
-  /**
-   * Test count star.
-   */
   @Test
   public void testCountStar() {
     Query query = new Query("COUNT(*)", "TEST");
     assertEquals("SELECT COUNT(*) FROM TEST", query.toString());
   }
 
-  /**
-   * Test literate.
-   */
   @Test
   public void testLiterate() {
     Query query = Query.select("COL").from("TEST").where("ID > 0");
     assertEquals("SELECT COL FROM TEST WHERE ID > 0", query.toString());
   }
 
-  /**
-   * Test left join.
-   */
   @Test
   public void testLeftJoin() {
     Query query =
@@ -153,9 +114,6 @@ public class QueryTest {
     assertEquals("SELECT col FROM left left__ LEFT JOIN right right__ ON left__.l1 = right__.r1 AND left__.l2 = right__.r2", query.toString());
   }
 
-  /**
-   * Test left join 2.
-   */
   @Test
   public void testLeftJoin2() {
     assertEquals(
@@ -167,26 +125,17 @@ public class QueryTest {
             .toString());
   }
 
-  /**
-   * Test where.
-   */
   @Test
   public void testWhere() {
     assertEquals("SELECT Selection FROM  WHERE Where", Query.select("Selection").where("Where").toString());
   }
 
-  /**
-   * Test where 2.
-   */
   @Test
   public void testWhere2() {
-    thrown.expect(IllegalArgumentException.class);
+    thrown.expect(IllegalArgumentError.class);
     (new Query("Selection", "Table", "Where Clause")).where("Where");
   }
 
-  /**
-   * Test and.
-   */
   @Test
   public void testAnd() {
     Query selectResult = Query.select("Selection");
@@ -194,9 +143,6 @@ public class QueryTest {
     assertEquals("SELECT Selection FROM  WHERE Condition", selectResult.toString());
   }
 
-  /**
-   * Test and 2.
-   */
   @Test
   public void testAnd2() {
     Query query = new Query("Selection", "Table", "Where Clause");
@@ -204,9 +150,6 @@ public class QueryTest {
     assertEquals("SELECT Selection FROM Table WHERE Where Clause AND Condition", query.toString());
   }
 
-  /**
-   * Test add option.
-   */
   @Test
   public void testAddOption() {
     Query selectResult = Query.select("Selection");
@@ -214,9 +157,6 @@ public class QueryTest {
     assertEquals("SELECT Selection FROM  Option", selectResult.toString());
   }
 
-  /**
-   * Test to string.
-   */
   @Test
   public void testToString() {
     assertEquals("SELECT Selection FROM ", Query.select("Selection").toString());
@@ -225,9 +165,6 @@ public class QueryTest {
         (new Query("Selection", "Table", "Where Clause")).toString());
   }
 
-  /**
-   * Test to string 2.
-   */
   @Test
   public void testToString2() {
     Query selectResult = Query.select("Selection");
@@ -235,9 +172,6 @@ public class QueryTest {
     assertEquals("SELECT SELECT  Selection FROM ", selectResult.toString());
   }
 
-  /**
-   * Test to string 3.
-   */
   @Test
   public void testToString3() {
     Query selectResult = Query.select("Selection");

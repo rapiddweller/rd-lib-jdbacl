@@ -1,5 +1,6 @@
 package com.rapiddweller.jdbacl.model;
 
+import com.rapiddweller.common.exception.IllegalArgumentError;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -13,15 +14,10 @@ import static org.junit.Assert.assertTrue;
  * The type Foreign key path test.
  */
 public class ForeignKeyPathTest {
-  /**
-   * The Thrown.
-   */
+
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
-  /**
-   * Test constructor.
-   */
   @Test
   public void testConstructor() {
     ForeignKeyPath actualForeignKeyPath = new ForeignKeyPath(
@@ -30,9 +26,6 @@ public class ForeignKeyPathTest {
     assertEquals("", actualForeignKeyPath.getTablePath());
   }
 
-  /**
-   * Test constructor 2.
-   */
   @Test
   public void testConstructor2() {
     Database createTestModelResult = AbstractModelTest.createTestModel();
@@ -42,9 +35,6 @@ public class ForeignKeyPathTest {
     assertEquals("", actualForeignKeyPath.getTablePath());
   }
 
-  /**
-   * Test constructor 3.
-   */
   @Test
   public void testConstructor3() {
     ForeignKeyPath actualForeignKeyPath = new ForeignKeyPath("Start Table");
@@ -52,9 +42,6 @@ public class ForeignKeyPathTest {
     assertEquals("", actualForeignKeyPath.getTablePath());
   }
 
-  /**
-   * Test constructor 4.
-   */
   @Test
   public void testConstructor4() {
     DBTable owner = new DBTable("Name");
@@ -71,9 +58,6 @@ public class ForeignKeyPathTest {
     assertEquals("Name", actualForeignKeyPath.getStartTable());
   }
 
-  /**
-   * Test constructor 5.
-   */
   @Test
   public void testConstructor5() {
     ForeignKeyPath actualForeignKeyPath = new ForeignKeyPath();
@@ -82,17 +66,11 @@ public class ForeignKeyPathTest {
     assertTrue(actualForeignKeyPath.getEdges().isEmpty());
   }
 
-  /**
-   * Test get target table.
-   */
   @Test
   public void testGetTargetTable() {
     assertNull(ForeignKeyPath.parse("Spec", AbstractModelTest.createTestModel()).getTargetTable());
   }
 
-  /**
-   * Test get target table 2.
-   */
   @Test
   public void testGetTargetTable2() {
     DBTable owner = new DBTable("Name");
@@ -107,9 +85,6 @@ public class ForeignKeyPathTest {
         .getTargetTable());
   }
 
-  /**
-   * Test derive path.
-   */
   @Test
   public void testDerivePath() {
     ForeignKeyPath parseResult = ForeignKeyPath.parse("Spec", AbstractModelTest.createTestModel());
@@ -121,9 +96,6 @@ public class ForeignKeyPathTest {
     assertEquals("Name", actualDerivePathResult.getStartTable());
   }
 
-  /**
-   * Test derive path 2.
-   */
   @Test
   public void testDerivePath2() {
     DBTable owner = new DBTable("Name");
@@ -143,21 +115,15 @@ public class ForeignKeyPathTest {
     assertEquals("Name", actualDerivePathResult.getStartTable());
   }
 
-  /**
-   * Test derive path 3.
-   */
   @Test
   public void testDerivePath3() {
     ForeignKeyPath foreignKeyPath = new ForeignKeyPath("Start Table");
     DBTable owner = new DBTable("Name");
-    thrown.expect(IllegalArgumentException.class);
+    thrown.expect(IllegalArgumentError.class);
     foreignKeyPath.derivePath(
         new DBForeignKeyConstraint("Name", true, owner, "Fk Column Name", new DBTable("Name"), "Referee Column Name"));
   }
 
-  /**
-   * Test derive path 4.
-   */
   @Test
   public void testDerivePath4() {
     ForeignKeyPath parseResult = ForeignKeyPath.parse("Spec", AbstractModelTest.createTestModel());
@@ -169,9 +135,6 @@ public class ForeignKeyPathTest {
     assertEquals("Name", actualDerivePathResult.getStartTable());
   }
 
-  /**
-   * Test derive path 5.
-   */
   @Test
   public void testDerivePath5() {
     ForeignKeyPath parseResult = ForeignKeyPath.parse("Spec", AbstractModelTest.createTestModel());
@@ -183,21 +146,15 @@ public class ForeignKeyPathTest {
     assertEquals("Name", actualDerivePathResult.getStartTable());
   }
 
-  /**
-   * Test derive path 6.
-   */
   @Test
   public void testDerivePath6() {
     ForeignKeyPath foreignKeyPath = new ForeignKeyPath("Start Table");
     DBTable owner = new DBTable("Name");
-    thrown.expect(IllegalArgumentException.class);
+    thrown.expect(IllegalArgumentError.class);
     foreignKeyPath.derivePath(new DBForeignKeyConstraint("Name", true, owner, new String[] {"foo", "foo", "foo"},
         new DBTable("Name"), new String[] {"foo", "foo", "foo"}));
   }
 
-  /**
-   * Test derive path 7.
-   */
   @Test
   public void testDerivePath7() {
     ForeignKeyPath foreignKeyPath = new ForeignKeyPath("Name");
@@ -209,9 +166,6 @@ public class ForeignKeyPathTest {
     assertEquals("Name", actualDerivePathResult.getStartTable());
   }
 
-  /**
-   * Test get intermediates.
-   */
   @Test
   public void testGetIntermediates() {
     DBTable owner = new DBTable("Name");
@@ -227,18 +181,12 @@ public class ForeignKeyPathTest {
         .size());
   }
 
-  /**
-   * Test has intermediate.
-   */
   @Test
   public void testHasIntermediate() {
     ForeignKeyPath parseResult = ForeignKeyPath.parse("Spec", AbstractModelTest.createTestModel());
     assertFalse(parseResult.hasIntermediate(new DBTable("Name")));
   }
 
-  /**
-   * Test has intermediate 2.
-   */
   @Test
   public void testHasIntermediate2() {
     DBTable owner = new DBTable("Name");
@@ -253,9 +201,6 @@ public class ForeignKeyPathTest {
     assertTrue(foreignKeyPath.hasIntermediate(new DBTable("Name")));
   }
 
-  /**
-   * Test has intermediate 3.
-   */
   @Test
   public void testHasIntermediate3() {
     DBTable owner = new DBTable("Name");
@@ -270,9 +215,6 @@ public class ForeignKeyPathTest {
     assertTrue(foreignKeyPath.hasIntermediate(new DBTable("Name")));
   }
 
-  /**
-   * Test get end column names.
-   */
   @Test
   public void testGetEndColumnNames() {
     DBTable owner = new DBTable("Name");
@@ -287,9 +229,6 @@ public class ForeignKeyPathTest {
         .getEndColumnNames().length);
   }
 
-  /**
-   * Test parse.
-   */
   @Test
   public void testParse() {
     ForeignKeyPath actualParseResult = ForeignKeyPath.parse("Spec", AbstractModelTest.createTestModel());
@@ -298,17 +237,11 @@ public class ForeignKeyPathTest {
     assertTrue(actualParseResult.getEdges().isEmpty());
   }
 
-  /**
-   * Test get table path.
-   */
   @Test
   public void testGetTablePath() {
     assertEquals("", ForeignKeyPath.parse("Spec", AbstractModelTest.createTestModel()).getTablePath());
   }
 
-  /**
-   * Test get table path 2.
-   */
   @Test
   public void testGetTablePath2() {
     DBTable owner = new DBTable("Name");
@@ -323,17 +256,11 @@ public class ForeignKeyPathTest {
         .getTablePath());
   }
 
-  /**
-   * Test to string.
-   */
   @Test
   public void testToString() {
     assertEquals("", ForeignKeyPath.parse("Spec", AbstractModelTest.createTestModel()).toString());
   }
 
-  /**
-   * Test to string 2.
-   */
   @Test
   public void testToString2() {
     DBTable owner = new DBTable("Name");
@@ -347,5 +274,6 @@ public class ForeignKeyPathTest {
         (new ForeignKeyPath(dbForeignKeyConstraint, dbForeignKeyConstraint1, new DBForeignKeyConstraint("Name", true,
             owner2, "Fk Column Name", new DBTable("Name"), "Referee Column Name"))).toString());
   }
+
 }
 

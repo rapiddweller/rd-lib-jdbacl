@@ -23,6 +23,7 @@ package com.rapiddweller.jdbacl.model.csv;
 
 import com.rapiddweller.common.FileUtil;
 import com.rapiddweller.common.IOUtil;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.format.csv.CSVUtil;
 import com.rapiddweller.jdbacl.SQLUtil;
 import com.rapiddweller.jdbacl.model.DBCheckConstraint;
@@ -48,22 +49,18 @@ import java.io.PrintWriter;
  * columns.csv, primary_keys.csv, unique_keys.csv, foreign_keys.csv, indexes.csv,
  * checks.csv and sequences.csv.<br/><br/>
  * Created: 25.10.2011 14:40:37
- *
  * @author Volker Bergmann
  * @since 0.6.13
  */
 public class CSVModelExporter implements DBMetaDataExporter {
 
-  /**
-   * The Root directory.
-   */
+  public static final String CATALOG = "catalog";
+  public static final String SCHEMA = "schema";
+  public static final String TABLE = "table";
+  public static final String COLUMN_NAME = "column_name";
+
   final File rootDirectory;
 
-  /**
-   * Instantiates a new Csv model exporter.
-   *
-   * @param rootDirectory the root directory
-   */
   public CSVModelExporter(File rootDirectory) {
     this.rootDirectory = rootDirectory;
   }
@@ -85,7 +82,7 @@ public class CSVModelExporter implements DBMetaDataExporter {
     PrintWriter out = null;
     try {
       out = createPrintWriter(file);
-      out.print(CSVUtil.formatHeaderWithLineFeed(',', "catalog", "schema", "table", "column_name",
+      out.print(CSVUtil.formatHeaderWithLineFeed(',', CATALOG, SCHEMA, TABLE, COLUMN_NAME,
           "type", "jdbc_type", "nullable", "defaultValue"));
       for (DBTable table : database.getTables()) {
         for (DBColumn column : table.getColumns()) {
@@ -110,7 +107,7 @@ public class CSVModelExporter implements DBMetaDataExporter {
     PrintWriter out = null;
     try {
       out = createPrintWriter(file);
-      out.print(CSVUtil.formatHeaderWithLineFeed(',', "catalog", "schema", "table", "pk_name", "column_name"));
+      out.print(CSVUtil.formatHeaderWithLineFeed(',', CATALOG, SCHEMA, TABLE, "pk_name", COLUMN_NAME));
       for (DBTable table : database.getTables()) {
         DBPrimaryKeyConstraint pk = table.getPrimaryKeyConstraint();
         if (pk == null) {
@@ -135,7 +132,7 @@ public class CSVModelExporter implements DBMetaDataExporter {
     PrintWriter out = null;
     try {
       out = createPrintWriter(file);
-      out.print(CSVUtil.formatHeaderWithLineFeed(',', "catalog", "schema", "table", "uk_name", "column_name"));
+      out.print(CSVUtil.formatHeaderWithLineFeed(',', CATALOG, SCHEMA, TABLE, "uk_name", COLUMN_NAME));
       for (DBTable table : database.getTables()) {
         for (DBUniqueConstraint uk : table.getUniqueConstraints(false)) {
           for (String columnName : uk.getColumnNames()) {
@@ -159,7 +156,7 @@ public class CSVModelExporter implements DBMetaDataExporter {
     try {
       out = createPrintWriter(file);
       out.print(CSVUtil.formatHeaderWithLineFeed(',',
-          "catalog", "schema", "table", "fk_name", "column",
+          CATALOG, SCHEMA, TABLE, "fk_name", "column",
           "refereeCatalog", "refereeSchema", "refereeTable", "refereeColumn",
           "updateRule", "deleteRule"));
       for (DBTable table : database.getTables()) {
@@ -201,7 +198,7 @@ public class CSVModelExporter implements DBMetaDataExporter {
       case SET_DEFAULT:
         return "SET DEFAULT";
       default:
-        throw new IllegalArgumentException("Not a supported change rule: " + rule);
+        throw ExceptionFactory.getInstance().illegalArgument("Not a supported change rule: " + rule);
     }
   }
 
@@ -210,7 +207,7 @@ public class CSVModelExporter implements DBMetaDataExporter {
     PrintWriter out = null;
     try {
       out = createPrintWriter(file);
-      out.print(CSVUtil.formatHeaderWithLineFeed(',', "catalog", "schema", "table", "check"));
+      out.print(CSVUtil.formatHeaderWithLineFeed(',', CATALOG, SCHEMA, TABLE, "check"));
       for (DBTable table : database.getTables()) {
         for (DBCheckConstraint check : table.getCheckConstraints()) {
           CSVUtil.writeRow(out, ',',
@@ -232,7 +229,7 @@ public class CSVModelExporter implements DBMetaDataExporter {
     try {
       out = createPrintWriter(file);
       out.print(CSVUtil.formatHeaderWithLineFeed(',',
-          "catalog", "schema", "table", "index_name", "index_unique", "column_name"));
+          CATALOG, SCHEMA, TABLE, "index_name", "index_unique", COLUMN_NAME));
       for (DBTable table : database.getTables()) {
         for (DBIndex index : table.getIndexes()) {
           for (String columnName : index.getColumnNames()) {
@@ -257,7 +254,7 @@ public class CSVModelExporter implements DBMetaDataExporter {
     try {
       out = createPrintWriter(file);
       out.print(CSVUtil.formatHeaderWithLineFeed(',',
-          "catalog", "schema", "name",
+          CATALOG, SCHEMA, "name",
           "start", "increment", "maxValue", "minValue", "cycle", "cache", "order", "lastNumber"));
       for (DBSequence sequence : database.getSequences()) {
         CSVUtil.writeRow(out, ',',

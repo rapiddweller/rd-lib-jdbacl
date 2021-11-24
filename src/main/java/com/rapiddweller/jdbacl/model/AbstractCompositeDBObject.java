@@ -34,15 +34,13 @@ import java.util.List;
  */
 public abstract class AbstractCompositeDBObject<C extends DBObject> extends AbstractDBObject implements CompositeDBObject<C> {
 
-  private static final long serialVersionUID = 4823482587175647368L;
-
   // constructors ----------------------------------------------------------------------------------------------------
 
-  public AbstractCompositeDBObject(String name, String type) {
+  protected AbstractCompositeDBObject(String name, String type) {
     this(name, type, null);
   }
 
-  public AbstractCompositeDBObject(String name, String type, CompositeDBObject<?> owner) {
+  protected AbstractCompositeDBObject(String name, String type, CompositeDBObject<?> owner) {
     super(name, type, owner);
   }
 

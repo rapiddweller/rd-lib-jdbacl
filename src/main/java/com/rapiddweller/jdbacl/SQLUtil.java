@@ -57,6 +57,9 @@ import java.util.StringTokenizer;
  */
 public class SQLUtil {
 
+  public static final String AND = " AND ";
+  public static final String CONSTRAINT_ = "CONSTRAINT ";
+
   private SQLUtil() {
     // private constructor to prevent instantiation of this utility class
   }
@@ -263,7 +266,7 @@ public class SQLUtil {
     StringBuilder builder = new StringBuilder();
     for (int i = 0; i < columnNames.length; i++) {
       if (i > 0) {
-        builder.append(" AND ");
+        builder.append(AND);
       }
       builder.append(columnNames[i]).append(" = ").append(dialect.formatValue(values[i]));
     }
@@ -363,8 +366,8 @@ public class SQLUtil {
     } else if (constraint instanceof DBCheckConstraint) {
       return checkSpec((DBCheckConstraint) constraint, nameSpec);
     } else {
-      throw new UnsupportedOperationException("Unknown constraint type: " +
-          constraint.getClass());
+      throw ExceptionFactory.getInstance().programmerUnsupported(
+          "Unknown constraint type: " + constraint.getClass());
     }
   }
 
@@ -464,7 +467,7 @@ public class SQLUtil {
   public static String join(String type, String leftAlias, String[] leftColumns,
                             String rightTable, String rightAlias, String[] rightColumns) {
     if (leftColumns.length != rightColumns.length) {
-      throw new IllegalArgumentException("The join partners' column count does not match: " +
+      throw ExceptionFactory.getInstance().illegalArgument("The join partners' column count does not match: " +
           leftColumns.length + " vs. " + rightColumns.length);
     }
     StringBuilder builder = new StringBuilder();
@@ -475,7 +478,7 @@ public class SQLUtil {
     builder.append(rightTable).append(" ").append(rightAlias).append(" ON ");
     for (int i = 0; i < leftColumns.length; i++) {
       if (i > 0) {
-        builder.append(" AND ");
+        builder.append(AND);
       }
       builder.append(leftAlias).append('.').append(leftColumns[i]);
       builder.append(" = ").append(rightAlias).append('.').append(rightColumns[i]);
@@ -485,7 +488,7 @@ public class SQLUtil {
 
   public static StringBuilder addRequiredCondition(String condition, StringBuilder builder) {
     if (builder.length() > 0) {
-      builder.append(" AND ");
+      builder.append(AND);
     }
     return builder.append(condition);
   }
@@ -504,20 +507,20 @@ public class SQLUtil {
   public static StringBuilder appendConstraintName(DBConstraint constraint, StringBuilder builder, NameSpec nameSpec) {
     if (constraint.getName() != null &&
         (nameSpec == NameSpec.ALWAYS || (nameSpec == NameSpec.IF_REPRODUCIBLE && constraint.isNameDeterministic()))) {
-      builder.append("CONSTRAINT ").append(quoteNameIfNullOrSpaces(constraint.getName())).append(' ');
+      builder.append(CONSTRAINT_).append(quoteNameIfNullOrSpaces(constraint.getName())).append(' ');
     }
     return builder;
   }
 
   public static void appendConstraintName(DBConstraint constraint, StringBuilder builder) {
     if (constraint.getName() != null) {
-      builder.append("CONSTRAINT ").append(quoteNameIfNullOrSpaces(constraint.getName())).append(' ');
+      builder.append(CONSTRAINT_).append(quoteNameIfNullOrSpaces(constraint.getName())).append(' ');
     }
   }
 
   public static String constraintName(DBConstraint constraint) {
     return (constraint.getName() != null ?
-        "CONSTRAINT " + quoteNameIfNullOrSpaces(constraint.getName()) + ' ' : "");
+        CONSTRAINT_ + quoteNameIfNullOrSpaces(constraint.getName()) + ' ' : "");
   }
 
   public static String typeAndName(DBObject dbObject) {
@@ -624,7 +627,7 @@ public class SQLUtil {
     StringBuilder builder = new StringBuilder();
     for (int i = 0; i < colNames1.length; i++) {
       if (i > 0) {
-        builder.append(" AND ");
+        builder.append(AND);
       }
       if (tableAlias1 != null) {
         builder.append(tableAlias1).append('.');
@@ -642,7 +645,7 @@ public class SQLUtil {
     StringBuilder builder = new StringBuilder();
     for (int i = 0; i < columns.length; i++) {
       if (i > 0) {
-        builder.append(" AND ");
+        builder.append(AND);
       }
       if (tableAlias != null) {
         builder.append(tableAlias).append('.');

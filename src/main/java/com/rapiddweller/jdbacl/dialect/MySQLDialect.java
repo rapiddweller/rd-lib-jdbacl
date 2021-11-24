@@ -21,6 +21,7 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.sql.Query;
 
@@ -90,8 +91,8 @@ public class MySQLDialect extends DatabaseDialect {
 	    /* TODO implement DatabaseDialect.applyRownumRestriction()
 			MySQL, PostgreSQL, H2: SELECT * FROM T LIMIT 10 OFFSET 20
 	     */
-    throw new UnsupportedOperationException(
-        "MySQLDialect.applyRownumRestriction() is not implemented"); // TODO implement DatabaseDialect.applyRownumRestriction()
+    throw ExceptionFactory.getInstance().programmerUnsupported(
+        "MySQLDialect.applyRownumRestriction() is not implemented");
   }
 
   @Override

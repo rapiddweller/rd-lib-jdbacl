@@ -27,6 +27,7 @@
 package com.rapiddweller.jdbacl.dialect;
 
 import com.rapiddweller.common.ArrayBuilder;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.model.DBSequence;
@@ -39,10 +40,8 @@ import java.sql.SQLException;
 import java.util.regex.Pattern;
 
 /**
- * {@link DatabaseDialect} implementation for the Firebird database.<br/>
- * <br/>
+ * {@link DatabaseDialect} implementation for the Firebird database.<br/><br/>
  * Created at 09.03.2009 07:13:35
- *
  * @author Volker Bergmann
  * @since 0.5.8
  */
@@ -51,38 +50,19 @@ public class FirebirdDialect extends DatabaseDialect {
   private static final String DATE_PATTERN = "''yyyy-MM-dd''";
   private static final String TIME_PATTERN = "''HH:mm:ss''";
   private static final String DATETIME_PATTERN = "''yyyy-MM-dd HH:mm:ss''";
+  public static final String JDBC_DRIVER_CLASS_NAME = "org.firebirdsql.jdbc.FBDriver";
 
-  /**
-   * The Random pk name pattern.
-   */
   final Pattern randomPKNamePattern = Pattern.compile("INTEG_\\d+");
-  /**
-   * The Random uk name pattern.
-   */
   final Pattern randomUKNamePattern = Pattern.compile("RDB\\$\\w+");
-  /**
-   * The Random fk name pattern.
-   */
   final Pattern randomFKNamePattern = Pattern.compile("INTEG_\\d+");
-  /**
-   * The Random index name pattern.
-   */
   final Pattern randomIndexNamePattern = Pattern.compile("RDB\\$\\w+");
 
-  /**
-   * Instantiates a new Firebird dialect.
-   */
   public FirebirdDialect() {
     super("firebird", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
   }
 
-  /**
-   * Gets jdbc driver class.
-   *
-   * @return the jdbc driver class
-   */
   public String getJDBCDriverClass() {
-    return "org.firebirdsql.jdbc.FBDriver";
+    return JDBC_DRIVER_CLASS_NAME;
   }
 
   @Override
@@ -158,13 +138,6 @@ public class FirebirdDialect extends DatabaseDialect {
     DBUtil.executeUpdate(renderSetSequenceValue(sequenceName, value), connection);
   }
 
-  /**
-   * Render set sequence value string.
-   *
-   * @param sequenceName the sequence name
-   * @param value        the value
-   * @return the string
-   */
   public String renderSetSequenceValue(String sequenceName, long value) {
     return "SET GENERATOR " + sequenceName + " TO " + (value - 1);
   }
@@ -191,11 +164,11 @@ public class FirebirdDialect extends DatabaseDialect {
 
   @Override
   public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
-	    /* TODO implement DatabaseDialect.applyRownumRestriction()
+	    /* TODO implement FirebirdDialect.applyRownumRestriction()
 			Firebird: SELECT FIRST 10 SKIP 20 * FROM T
 	     */
-    throw new UnsupportedOperationException(
-        "FirebirdDialect.applyRownumRestriction() is not implemented"); // TODO implement DatabaseDialect.applyRownumRestriction()
+    throw ExceptionFactory.getInstance().programmerUnsupported(
+        "FirebirdDialect.applyRownumRestriction() is not implemented");
   }
 
 }

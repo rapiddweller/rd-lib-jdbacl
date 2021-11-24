@@ -31,13 +31,11 @@ import com.rapiddweller.common.ArrayFormat;
 import com.rapiddweller.common.ArrayUtil;
 import com.rapiddweller.common.BeanUtil;
 import com.rapiddweller.common.ConfigUtil;
-import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.ErrorHandler;
 import com.rapiddweller.common.HF;
 import com.rapiddweller.common.HeavyweightIterator;
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.common.LogCategoriesConstants;
-import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.common.ReaderLineIterator;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.SystemInfo;
@@ -96,6 +94,7 @@ public class DBUtil {
   private static final Logger sqlLogger = LoggerFactory.getLogger(LogCategoriesConstants.SQL);
 
   public static final String ENV_PROPERTIES_SUFFIX = ".env.properties";
+  public static final String DATABASE_QUERY_FAILED_COLON = "Database query failed: ";
 
   private DBUtil() {
     // private constructor for preventing instantiation.
@@ -127,7 +126,7 @@ public class DBUtil {
     }
   }
 
-  public static Map<String, String> getEnvironmentData(String environment, String folder) throws IOException {
+  public static Map<String, String> getEnvironmentData(String environment, String folder) {
     return IOUtil.readProperties(environmentFilePath(environment, folder));
   }
 
@@ -136,7 +135,7 @@ public class DBUtil {
       String path = environmentFilePath(environment, folder);
       return JDBCConnectData.parseSingleDbProperties(path);
     } catch (IOException e) {
-      throw new ConfigurationError("Error reading environment data for '" + environment + "'");
+      throw ExceptionFactory.getInstance().configurationError("Error reading environment data for '" + environment + "'");
     }
   }
 
@@ -164,13 +163,13 @@ public class DBUtil {
 
   public static Connection connect(JDBCConnectData data, boolean readOnly) {
     if (StringUtil.isEmpty(data.url)) {
-      throw new ConfigurationError("No JDBC URL specified");
+      throw ExceptionFactory.getInstance().configurationError("No JDBC URL specified");
     }
     if (StringUtil.isEmpty(data.driver)) {
-      throw new ConfigurationError("No JDBC driver class name specified");
+      throw ExceptionFactory.getInstance().configurationError("No JDBC driver class name specified");
     }
     if (!readOnly && data.readOnly) {
-      throw new ConfigurationError("Environment is configured to be read only but was connected for read/write access");
+      throw ExceptionFactory.getInstance().configurationError("Environment is configured to be read only but was connected for read/write access");
     }
     return connect(data.url, data.driver, data.user, data.password, readOnly);
   }
@@ -178,7 +177,7 @@ public class DBUtil {
   public static Connection connect(String url, String driverClassName, String user, String password, boolean readOnly) {
     try {
       if (driverClassName == null) {
-        throw new ConfigurationError("No JDBC driver class name provided");
+        throw ExceptionFactory.getInstance().configurationError("No JDBC driver class name provided");
       }
 
       // Wrap connection properties
@@ -290,7 +289,7 @@ public class DBUtil {
       try {
         statement.close();
       } catch (SQLException e) {
-        throw new ConfigurationError("Closing statement failed", e);
+        throw ExceptionFactory.getInstance().configurationError("Closing statement failed", e);
       }
     }
   }
@@ -423,7 +422,7 @@ public class DBUtil {
       }
       return value;
     } catch (SQLException e) {
-      throw ExceptionFactory.getInstance().unexpectedQueryResult("Database query failed: ", e);
+      throw ExceptionFactory.getInstance().unexpectedQueryResult("Database query failed", e);
     } finally {
       close(resultSet);
     }
@@ -452,7 +451,7 @@ public class DBUtil {
       }
       return value;
     } catch (SQLException e) {
-      throw ExceptionFactory.getInstance().unexpectedQueryResult("Database query failed: " + query, e);
+      throw ExceptionFactory.getInstance().unexpectedQueryResult(DATABASE_QUERY_FAILED_COLON + query, e);
     } finally {
       closeResultSetAndStatement(resultSet, statement);
     }
@@ -464,17 +463,19 @@ public class DBUtil {
   }
 
   public static DBExecutionResult executeScriptFile(
-      String scriptUri, String encoding, char separator, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) {
+      String scriptUri, String encoding, char separator, Connection connection, boolean ignoreComments,
+      ErrorHandler errorHandler) {
     BufferedReader reader = IOUtil.getReaderForURI(scriptUri, encoding);
     return runScript(reader, separator, connection, ignoreComments, errorHandler);
   }
 
-  public static DBExecutionResult executeScript(String scriptText, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) {
+  public static DBExecutionResult executeScript(String scriptText, Connection connection, boolean ignoreComments,
+                                                ErrorHandler errorHandler) {
     return executeScript(scriptText, ';', connection, ignoreComments, errorHandler);
   }
 
-  public static DBExecutionResult executeScript(String scriptText, char separator, Connection connection, boolean ignoreComments,
-                                                ErrorHandler errorHandler) {
+  public static DBExecutionResult executeScript(String scriptText, char separator, Connection connection,
+                                                boolean ignoreComments, ErrorHandler errorHandler) {
     StringReader reader = new StringReader(scriptText);
     return runScript(reader, separator, connection, ignoreComments, errorHandler);
   }
@@ -560,7 +561,7 @@ public class DBUtil {
       }
       return builder.toArray();
     } catch (SQLException e) {
-      throw ExceptionFactory.getInstance().queryFailed("Database query failed: " + query, e);
+      throw ExceptionFactory.getInstance().queryFailed(DATABASE_QUERY_FAILED_COLON + query, e);
     } finally {
       closeResultSetAndStatement(resultSet, statement);
     }
@@ -581,7 +582,7 @@ public class DBUtil {
       assertNoNext(resultSet, query);
       return result;
     } catch (SQLException e) {
-      throw ExceptionFactory.getInstance().queryFailed("Database query failed: " + query, e);
+      throw ExceptionFactory.getInstance().queryFailed(DATABASE_QUERY_FAILED_COLON + query, e);
     } finally {
       closeResultSetAndStatement(resultSet, statement);
     }
@@ -623,7 +624,7 @@ public class DBUtil {
   public static void assertNoNext(ResultSet resultSet, String query)
       throws SQLException {
     if (resultSet.next()) {
-      throw new IllegalStateException("One-row database query returned multiple rows: " + query);
+      throw ExceptionFactory.getInstance().assertionFailed("One-row database query returned multiple rows: " + query);
     }
   }
 
@@ -631,7 +632,7 @@ public class DBUtil {
   public static void assertNext(ResultSet resultSet, String query)
       throws SQLException {
     if (!resultSet.next()) {
-      throw new ObjectNotFoundException("Database query did not return a result: " + query);
+      throw ExceptionFactory.getInstance().objectNotFound("Database query did not return a result: " + query);
     }
   }
 
@@ -689,7 +690,7 @@ public class DBUtil {
     }
     Boolean mutation = SQLUtil.mutatesDataOrStructure(sql);
     if (mutation == null || mutation) {
-      throw new IllegalStateException("Tried to mutate a database with read-only settings: " + sql);
+      throw ExceptionFactory.getInstance().servicePermissionDenied("Tried to mutate a database with read-only settings: " + sql);
     }
   }
 
@@ -753,7 +754,7 @@ public class DBUtil {
     }
     if (!success) {
       if (critical) {
-        throw new AssertionError(message);
+        throw ExceptionFactory.getInstance().assertionFailed(message);
       } else {
         logger.warn(message);
       }

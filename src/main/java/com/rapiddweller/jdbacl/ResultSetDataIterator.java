@@ -56,11 +56,11 @@ public class ResultSetDataIterator implements DataIterator<ResultSet> {
 
   public ResultSetDataIterator(ResultSet resultSet, String query) {
     if (resultSet == null) {
-      throw new IllegalArgumentException("resultSet is null");
+      throw ExceptionFactory.getInstance().illegalArgument("resultSet is null");
     }
     this.resultSet = resultSet;
     if (StringUtil.isEmpty(query)) {
-      throw new IllegalArgumentException("query is empty");
+      throw ExceptionFactory.getInstance().illegalArgument("query is empty");
     }
     this.query = query;
   }

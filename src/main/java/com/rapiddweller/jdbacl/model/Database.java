@@ -27,7 +27,6 @@
 package com.rapiddweller.jdbacl.model;
 
 import com.rapiddweller.common.exception.ExceptionFactory;
-import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.collection.OrderedNameMap;
 import com.rapiddweller.common.version.VersionNumber;
@@ -206,7 +205,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
         return schema;
       }
     }
-    throw new ObjectNotFoundException("Schema '" + schemaName + "'");
+    throw ExceptionFactory.getInstance().objectNotFound("Schema '" + schemaName + "'");
   }
 
   // table operations ------------------------------------------------------------------------------------------------
@@ -242,7 +241,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
       }
     }
     if (required) {
-      throw new ObjectNotFoundException("Table '" + name + "'");
+      throw ExceptionFactory.getInstance().objectNotFound("Table '" + name + "'");
     } else {
       return null;
     }

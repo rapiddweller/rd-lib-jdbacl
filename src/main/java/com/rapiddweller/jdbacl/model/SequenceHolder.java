@@ -26,16 +26,9 @@ import java.util.List;
 /**
  * Common interface for {@link DBObject}s which can hold {@link DBSequence}s.<br/><br/>
  * Created: 05.06.2011 16:58:33
- *
  * @author Volker Bergmann
  * @since 0.6.8
  */
 public interface SequenceHolder {
-  /**
-   * Gets sequences.
-   *
-   * @param recursive the recursive
-   * @return the sequences
-   */
   List<DBSequence> getSequences(boolean recursive);
 }

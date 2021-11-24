@@ -22,6 +22,7 @@
 package com.rapiddweller.jdbacl.dialect;
 
 import com.rapiddweller.common.StringUtil;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.sql.Query;
 
@@ -101,10 +102,11 @@ public class SqlServerDialect extends DatabaseDialect {
   @Override
   public void restrictRownums(int firstRowIndex, int rowCount,
                               Query query) {
-	    /* TODO implement DatabaseDialect.applyRownumRestriction()
-			MS SQL Server: SELECT TOP 10 * FROM T
-	     */
-    throw new UnsupportedOperationException("SqlServerDialect.applyRownumRestriction() is not implemented");
+    /* TODO implement DatabaseDialect.applyRownumRestriction()
+        MS SQL Server: SELECT TOP 10 * FROM T
+     */
+    throw ExceptionFactory.getInstance().programmerUnsupported(
+        "SqlServerDialect.applyRownumRestriction() is not implemented");
   }
 
 }

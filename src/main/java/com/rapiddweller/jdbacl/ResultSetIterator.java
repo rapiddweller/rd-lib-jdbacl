@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.NoSuchElementException;
 
 /**
  * Wraps a ResultSet into the semantic of a {@link HeavyweightIterator}.<br/><br/>
@@ -59,7 +60,7 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
 
   public ResultSetIterator(ResultSet resultSet, String query) {
     if (resultSet == null) {
-      throw new IllegalArgumentException("resultSet is null");
+      throw ExceptionFactory.getInstance().illegalArgument("resultSet is null");
     }
     this.resultSet = resultSet;
     this.hasNext = null;
@@ -116,7 +117,7 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
       logger.debug("next() called on: {}", this);
     }
     if (!hasNext()) {
-      throw new IllegalStateException("No more row available. Use hasNext() for checking availability.");
+      throw new NoSuchElementException("No more row available. Use hasNext() for checking availability.");
     }
     hasNext = null;
     return resultSet;
@@ -124,7 +125,7 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
 
   @Override
   public void remove() {
-    throw new UnsupportedOperationException("Not supported");
+    throw ExceptionFactory.getInstance().illegalOperation("Not supported");
   }
 
   @Override

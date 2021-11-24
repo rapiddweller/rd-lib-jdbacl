@@ -22,7 +22,7 @@
 package com.rapiddweller.jdbacl.identity;
 
 import com.rapiddweller.common.ArrayUtil;
-import com.rapiddweller.common.ConfigurationError;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.iterator.TabularIterator;
 import com.rapiddweller.jdbacl.model.Database;
 
@@ -31,17 +31,11 @@ import java.sql.Connection;
 /**
  * {@link IdentityModel} implementation for tables which have a natural key as primary key.<br/><br/>
  * Created: 12.12.2010 12:23:14
- *
  * @author Volker Bergmann
  * @since 0.6.4
  */
 public class NaturalPkIdentity extends IdentityModel {
 
-  /**
-   * Instantiates a new Natural pk identity.
-   *
-   * @param tableName the table name
-   */
   public NaturalPkIdentity(String tableName) {
     super(tableName);
   }
@@ -51,7 +45,7 @@ public class NaturalPkIdentity extends IdentityModel {
       Connection connection, String dbId, KeyMapper mapper, Database database) {
     String[] pkColumnNames = database.getTable(tableName).getPKColumnNames();
     if (ArrayUtil.isEmpty(pkColumnNames)) {
-      throw new ConfigurationError("Table '" + tableName + "' has no primary key");
+      throw ExceptionFactory.getInstance().configurationError("Table '" + tableName + "' has no primary key");
     }
     StringBuilder builder = new StringBuilder("select ");
     builder.append(pkColumnNames[0]);

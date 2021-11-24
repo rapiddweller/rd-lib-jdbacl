@@ -21,13 +21,12 @@
 
 package com.rapiddweller.jdbacl.identity;
 
-import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.common.collection.OrderedNameMap;
+import com.rapiddweller.common.exception.ExceptionFactory;
 
 /**
  * Manages {@link IdentityModel}s.<br/><br/>
  * Created: 10.12.2010 20:10:15
- *
  * @author Volker Bergmann
  * @since 0.6.8
  */
@@ -35,37 +34,18 @@ public class IdentityProvider {
 
   private final OrderedNameMap<IdentityModel> identities = OrderedNameMap.createCaseIgnorantMap();
 
-  /**
-   * Gets identity.
-   *
-   * @param tableName the table name
-   * @return the identity
-   */
   public IdentityModel getIdentity(String tableName) {
     return getIdentity(tableName, true);
   }
 
-  /**
-   * Gets identity.
-   *
-   * @param tableName the table name
-   * @param required  the required
-   * @return the identity
-   */
   public IdentityModel getIdentity(String tableName, boolean required) {
     IdentityModel result = identities.get(tableName);
     if (required && (result == null || result instanceof NoIdentity)) {
-      throw new ObjectNotFoundException("No identity defined for table '" + tableName + "'");
+      throw ExceptionFactory.getInstance().objectNotFound("No identity defined for table '" + tableName + "'");
     }
     return result;
   }
 
-  /**
-   * Register identity.
-   *
-   * @param identity  the identity
-   * @param tableName the table name
-   */
   public void registerIdentity(IdentityModel identity, String tableName) {
     identities.put(tableName, identity);
   }

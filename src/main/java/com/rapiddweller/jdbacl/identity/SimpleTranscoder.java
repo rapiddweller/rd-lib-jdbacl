@@ -21,7 +21,6 @@
 
 package com.rapiddweller.jdbacl.identity;
 
-import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.SQLUtil;
 import com.rapiddweller.jdbacl.model.DBForeignKeyConstraint;
@@ -41,7 +40,7 @@ public class SimpleTranscoder {
     String tableName = table.getName();
     IdentityModel identity = identityProvider.getIdentity(tableName);
     if (identity == null) {
-      throw new ConfigurationError("No identity defined for table " + tableName);
+      throw ExceptionFactory.getInstance().configurationError("No identity defined for table " + tableName);
     }
 
     // transcode primary key

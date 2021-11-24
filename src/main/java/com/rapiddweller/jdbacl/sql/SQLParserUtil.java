@@ -22,9 +22,8 @@
 package com.rapiddweller.jdbacl.sql;
 
 import com.rapiddweller.common.ArrayBuilder;
-import com.rapiddweller.common.exception.ParseException;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.StringUtil;
-import com.rapiddweller.common.exception.SyntaxError;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.model.DBColumn;
 import com.rapiddweller.jdbacl.model.DBDataType;
@@ -60,8 +59,6 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.ParserRuleReturnScope;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -76,9 +73,13 @@ import java.util.List;
  */
 public class SQLParserUtil {
 
-  static final Logger logger = LoggerFactory.getLogger(SQLParserUtil.class);
+  public static final String ERROR_PARSING_SQL = "Error parsing SQL";
 
-  public static Object parse(CharStream in, DatabaseDialect dialect) throws ParseException {
+  private SQLParserUtil() {
+    // private constructor to prevent instantiation of this utility class
+  }
+
+  public static Object parse(CharStream in, DatabaseDialect dialect) {
     String text = null;
     if (in instanceof TextHolder) {
       text = ((TextHolder) in).getText();
@@ -90,16 +91,19 @@ public class SQLParserUtil {
       return convertNode((CommonTree) r.getTree(), dialect);
     } catch (RuntimeException e) {
       if (e.getCause() instanceof RecognitionException) {
-        throw mapToParseException((RecognitionException) e.getCause(), text);
+        RecognitionException cause = (RecognitionException) e.getCause();
+        throw ExceptionFactory.getInstance().syntaxErrorForText(text, ERROR_PARSING_SQL,
+            cause.line, cause.charPositionInLine, cause);
       } else {
         throw e;
       }
     } catch (RecognitionException e) {
-      throw mapToParseException(e, text);
+      throw ExceptionFactory.getInstance().syntaxErrorForText(text, ERROR_PARSING_SQL,
+          e.line, e.charPositionInLine, e);
     }
   }
 
-  public static Expression<?> parseExpression(CharStream in) throws ParseException {
+  public static Expression<?> parseExpression(CharStream in) {
     String text = null;
     if (in instanceof TextHolder) {
       text = ((TextHolder) in).getText();
@@ -111,12 +115,15 @@ public class SQLParserUtil {
       return convertExpressionNode((CommonTree) r.getTree());
     } catch (RuntimeException e) {
       if (e.getCause() instanceof RecognitionException) {
-        throw mapToParseException((RecognitionException) e.getCause(), text);
+        RecognitionException cause = (RecognitionException) e.getCause();
+        throw ExceptionFactory.getInstance().syntaxErrorForText(text, ERROR_PARSING_SQL,
+            cause.line, cause.charPositionInLine, cause);
       } else {
         throw e;
       }
     } catch (RecognitionException e) {
-      throw mapToParseException(e, text);
+      throw ExceptionFactory.getInstance().syntaxErrorForText(text, ERROR_PARSING_SQL,
+          e.line, e.charPositionInLine, e);
     }
   }
 
@@ -138,12 +145,13 @@ public class SQLParserUtil {
         return convertTableComment(node);
       case SQLLexer.COMMENT_COLUMN:
         return convertColumnComment(node);
+      default:
+        if (node.isNil()) {
+          List<Object> nodes = convertNodes(getChildNodes(node), dialect);
+          return nodes.toArray();
+        }
+        throw ExceptionFactory.getInstance().syntaxErrorForText(node.getText(), "Unknown token type");
     }
-    if (node.isNil()) {
-      List<Object> nodes = convertNodes(getChildNodes(node), dialect);
-      return nodes.toArray();
-    }
-    throw new ParseException("Unknown token type", "'" + node.getText() + "'");
   }
 
   @SuppressWarnings("rawtypes")
@@ -204,7 +212,8 @@ public class SQLParserUtil {
       case SQLLexer.INT:
         return convertInt(node);
       default:
-        throw new ParseException("Unknown token type (" + node.getType() + ")", "'" + node.getText() + "'");
+        throw ExceptionFactory.getInstance().syntaxErrorForText(node.getText(),
+            "Unknown token type (" + node.getType() + ")");
     }
   }
 
@@ -464,10 +473,8 @@ public class SQLParserUtil {
         convertInlinePK(node, table, dialect);
         break;
       default:
-        throw new ParseException("Unknown table detail token type",
-            String.valueOf(node.getText()),
-            node.getLine(),
-            node.getCharPositionInLine());
+        throw ExceptionFactory.getInstance().syntaxErrorForText(String.valueOf(node.getText()),
+            "Unknown table detail token type", node.getLine(), node.getCharPositionInLine());
     }
   }
 
@@ -527,8 +534,8 @@ public class SQLParserUtil {
         column.setNullable(false);
         break;
       default:
-        throw new ParseException("Unknown column detail token type",
-            String.valueOf(node.getText()),
+        throw ExceptionFactory.getInstance().syntaxErrorForText(String.valueOf(node.getText()),
+            "Unknown column detail token type",
             node.getLine(),
             node.getCharPositionInLine());
     }
@@ -544,11 +551,6 @@ public class SQLParserUtil {
     return new SQLParser(tokens);
   }
 
-  private static ParseException mapToParseException(RecognitionException cause, String text) {
-    return new ParseException("Error parsing SQL", cause,
-        text, cause.line, cause.charPositionInLine);
-  }
-
   @SuppressWarnings("unchecked")
   private static List<CommonTree> getChildNodes(CommonTree node) {
     return node.getChildren();
@@ -558,17 +560,16 @@ public class SQLParserUtil {
     return (CommonTree) node.getChild(index);
   }
 
-  private static void checkForSyntaxErrors(String text, String type,
-                                           SQLParser parser, ParserRuleReturnScope r) {
+  private static void checkForSyntaxErrors(String text, String type, SQLParser parser, ParserRuleReturnScope r) {
     if (parser.getNumberOfSyntaxErrors() > 0) {
-      throw new SyntaxError("Illegal " + type, text, -1, -1);
+      throw ExceptionFactory.getInstance().syntaxErrorForText(text, "Illegal " + type);
     }
     CommonToken stop = (CommonToken) r.stop;
     if (text != null && stop.getStopIndex() < StringUtil.trimRight(text).length() - 1) {
       if (stop.getStopIndex() == 0) {
-        throw new SyntaxError("Syntax error after " + stop.getText(), text);
+        throw ExceptionFactory.getInstance().syntaxErrorForText(text, "Syntax error after " + stop.getText());
       } else {
-        throw new SyntaxError("Syntax error at the beginning ", text);
+        throw ExceptionFactory.getInstance().syntaxErrorForText(text, "Syntax error at the beginning ");
       }
     }
   }

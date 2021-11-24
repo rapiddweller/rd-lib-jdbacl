@@ -27,6 +27,7 @@
 package com.rapiddweller.jdbacl.model.jdbc;
 
 import com.rapiddweller.common.ObjectNotFoundException;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.model.DBCatalog;
 import com.rapiddweller.jdbacl.model.DBSchema;
 import com.rapiddweller.jdbacl.model.DBTable;
@@ -39,8 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Represents an imported key.
  * Created: 13.01.2007 23:22:55
- *
  * @author Volker Bergmann
  */
 class ImportedKey {
@@ -49,49 +50,31 @@ class ImportedKey {
 
   private DBTable pkTable;
 
-  /**
-   * primary key table catalog being imported (may be null)
-   */
+  /** primary key table catalog being imported (may be null) */
   public String pktable_cat;
 
-  /**
-   * primary key table schema being imported (may be null)
-   */
+  /** primary key table schema being imported (may be null) */
   public String pktable_schem;
 
-  /**
-   * primary key table name being imported
-   */
+  /** primary key table name being imported */
   public String pktable_name;
 
-  /**
-   * primary key column name being imported
-   */
+  /** primary key column name being imported */
   public String pkcolumn_name;
 
-  /**
-   * foreign key table catalog (may be null)
-   */
+  /** foreign key table catalog (may be null) */
   public String fktable_cat;
 
-  /**
-   * foreign key table schema (may be null)
-   */
+  /** foreign key table schema (may be null) */
   public String fktable_schem;
 
-  /**
-   * foreign key table name
-   */
+  /** foreign key table name */
   public String fktable_name;
 
-  /**
-   * foreign key column name
-   */
+  /** foreign key column name */
   public String fkcolumn_name;
 
-  /**
-   * sequence number within a foreign key
-   */
+  /** sequence number within a foreign key */
   public short key_seq;
 
   /**
@@ -118,14 +101,10 @@ class ImportedKey {
    */
   public short delete_rule;
 
-  /**
-   * foreign key name (may be null)
-   */
+  /** foreign key name (may be null) */
   public String fk_name;
 
-  /**
-   * primary key name (may be null)
-   */
+  /** primary key name (may be null) */
   public String pk_name;
 
   /**
@@ -141,45 +120,22 @@ class ImportedKey {
   private final List<String> foreignKeyColumnNames = new ArrayList<>();
   private final List<String> refereeColumnNames = new ArrayList<>();
 
-  /**
-   * Add foreign key column.
-   *
-   * @param foreignKeyColumnName the foreign key column name
-   * @param targetColumnName     the target column name
-   */
+  /** Add foreign key column.
+   *  @param foreignKeyColumnName the name of the foreign key column
+   *  @param targetColumnName     the name of the target column */
   public void addForeignKeyColumn(String foreignKeyColumnName, String targetColumnName) {
     foreignKeyColumnNames.add(foreignKeyColumnName);
     refereeColumnNames.add(targetColumnName);
   }
 
-  /**
-   * Gets foreign key column names.
-   *
-   * @return the foreign key column names
-   */
   public List<String> getForeignKeyColumnNames() {
     return foreignKeyColumnNames;
   }
 
-  /**
-   * Gets referee column names.
-   *
-   * @return the referee column names
-   */
   public List<String> getRefereeColumnNames() {
     return refereeColumnNames;
   }
 
-  /**
-   * Parse imported key.
-   *
-   * @param resultSet the result set
-   * @param catalog   the catalog
-   * @param schema    the schema
-   * @param fkTable   the fk table
-   * @return the imported key
-   * @throws SQLException the sql exception
-   */
   public static ImportedKey parse(ResultSet resultSet, DBCatalog catalog, DBSchema schema, DBTable fkTable) throws SQLException {
     ImportedKey key = new ImportedKey();
     key.pktable_cat = resultSet.getString(1);
@@ -219,7 +175,8 @@ class ImportedKey {
         key.pkTable = schema.getTable(key.pktable_name);
       }
     } catch (ObjectNotFoundException e) {
-      throw new ObjectNotFoundException("Table " + schema.getName() + '.' + key.pktable_name + " is referenced by table " +
+      throw ExceptionFactory.getInstance().objectNotFound(
+          "Table " + schema.getName() + '.' + key.pktable_name + " is referenced by table " +
           key.fktable_name + " but not found in the database. Possibly it was filtered out?");
     }
     key.addForeignKeyColumn(key.fkcolumn_name, key.pkcolumn_name);

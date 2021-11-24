@@ -26,16 +26,10 @@ import java.util.List;
 /**
  * {@link DBObject} implementation that aggregates sub objects of a DBObject sub type C.<br/><br/>
  * Created: 09.11.2010 11:26:08
- *
  * @param <C> the type parameter
  * @author Volker Bergmann
  * @since 0.6.4
  */
 public interface CompositeDBObject<C extends DBObject> extends DBObject {
-  /**
-   * Gets components.
-   *
-   * @return the components
-   */
   List<C> getComponents();
 }

@@ -25,6 +25,7 @@ import com.rapiddweller.common.ArrayFormat;
 import com.rapiddweller.common.HeavyweightIterator;
 import com.rapiddweller.common.IOUtil;
 import com.rapiddweller.common.SystemInfo;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.iterator.ConvertingIterator;
 import com.rapiddweller.common.iterator.TabularIterator;
 import com.rapiddweller.jdbacl.ArrayResultSetIterator;
@@ -189,7 +190,7 @@ public class SubNkPkQueryIdentity extends IdentityModel {
 
     @Override
     public void remove() {
-      throw new UnsupportedOperationException(getClass() + " does not support removal");
+      ExceptionFactory.getInstance().illegalOperation(getClass() + " does not support removal");
     }
 
     @Override

@@ -31,7 +31,6 @@ import com.rapiddweller.common.xml.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,9 +41,7 @@ import java.util.HashMap;
  * @author Volker Bergmann
  * @since 0.4.8
  */
-public class JDBCDriverInfo implements Serializable {
-
-  private static final long serialVersionUID = 190436633421519236L;
+public class JDBCDriverInfo {
 
   private static final String DB_DEFINITION_FILE = "com/rapiddweller/jdbacl/jdbc-driver-info.xml";
 

@@ -26,8 +26,8 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
-import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.exception.ConnectFailedException;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.DBUtil;
 
 import java.sql.Connection;
@@ -65,7 +65,7 @@ public class HSQLUtil {
       String url = getInMemoryURL(dbName);
       return DBUtil.connect(url, DRIVER, DEFAULT_USER, DEFAULT_PASSWORD, false);
     } catch (ClassNotFoundException e) {
-      throw new ConfigurationError("JDBC driver not found: " + driver, e);
+      throw ExceptionFactory.getInstance().configurationError("JDBC driver not found: " + driver, e);
     }
   }
 

@@ -22,6 +22,7 @@
 package com.rapiddweller.jdbacl.sql;
 
 import com.rapiddweller.common.CollectionUtil;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.SQLUtil;
 
 import java.util.ArrayList;
@@ -35,7 +36,6 @@ import java.util.List;
  * [WHERE whereClause] [options]
  * <br/><br/>
  * Created: 09.04.2012 10:16:54
- *
  * @author Volker Bergmann
  * @since 0.8.1
  */
@@ -48,23 +48,10 @@ public class Query {
   private final StringBuilder whereClause;
   private final List<String> options;
 
-  /**
-   * Instantiates a new Query.
-   *
-   * @param selection the selection
-   * @param table     the table
-   */
   public Query(String selection, String table) {
     this(selection, table, null);
   }
 
-  /**
-   * Instantiates a new Query.
-   *
-   * @param selection   the selection
-   * @param table       the table
-   * @param whereClause the where clause
-   */
   public Query(String selection, String table, String whereClause) {
     this.selectConditions = new ArrayList<>();
     this.selections = CollectionUtil.toList(selection);
@@ -80,87 +67,42 @@ public class Query {
     this.options = new ArrayList<>();
   }
 
-  /**
-   * Select query.
-   *
-   * @param selection the selection
-   * @return the query
-   */
   public static Query select(String selection) {
     return new Query(selection, null);
   }
 
-  /**
-   * Add select condition.
-   *
-   * @param selectCondition the select condition
-   */
   public void addSelectCondition(String selectCondition) {
     selectConditions.add(selectCondition);
   }
 
-  /**
-   * From query.
-   *
-   * @param tableName the table name
-   * @return the query
-   */
   public Query from(String tableName) {
     return from(tableName, null);
   }
 
-  /**
-   * From query.
-   *
-   * @param tableName the table name
-   * @param alias     the alias
-   * @return the query
-   */
   public Query from(String tableName, String alias) {
     if (tableName.indexOf(' ') >= 0) {
-      throw new IllegalArgumentException("Tbale name must not contain spaces: '" + tableName + "'");
+      throw ExceptionFactory.getInstance().illegalArgument("Tbale name must not contain spaces: '" + tableName + "'");
     }
     String term = tableName + (alias != null ? " " + alias : "");
     this.tablesWithAliases.add(term);
     return this;
   }
 
-  /**
-   * Left join query.
-   *
-   * @param leftAlias    the left alias
-   * @param leftColumns  the left columns
-   * @param rightTable   the right table
-   * @param rightAlias   the right alias
-   * @param rightColumns the right columns
-   * @return the query
-   */
   public Query leftJoin(String leftAlias, String[] leftColumns,
                         String rightTable, String rightAlias, String[] rightColumns) {
     joins.add(SQLUtil.leftJoin(leftAlias, leftColumns, rightTable, rightAlias, rightColumns));
     return this;
   }
 
-  /**
-   * Where query.
-   *
-   * @param where the where
-   * @return the query
-   */
   public Query where(String where) {
     if (this.whereClause.length() > 0) {
-      throw new IllegalArgumentException("Tried to set where clause to '" + where + "' " +
+      throw ExceptionFactory.getInstance().illegalArgument("Tried to set where clause to '" + where + "' " +
           "but there already exists one: " + this.whereClause);
     }
     whereClause.append(where);
     return this;
   }
 
-  /**
-   * And.
-   *
-   * @param condition the condition
-   */
   public void and(String condition) {
     if (whereClause.length() > 0) {
       whereClause.append(" AND ");
@@ -168,11 +110,6 @@ public class Query {
     whereClause.append(condition);
   }
 
-  /**
-   * Add option.
-   *
-   * @param option the option
-   */
   public void addOption(String option) {
     options.add(option);
   }

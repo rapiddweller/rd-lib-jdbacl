@@ -27,6 +27,7 @@
 package com.rapiddweller.jdbacl.dialect;
 
 import com.rapiddweller.common.ArrayBuilder;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.jdbacl.DatabaseDialect;
 import com.rapiddweller.jdbacl.model.DBSequence;
@@ -41,7 +42,6 @@ import java.util.List;
 /**
  * Implements generic database concepts for PostgreSQL.<br/><br/>
  * Created: 26.01.2008 07:11:06
- *
  * @author Volker Bergmann
  * @since 0.4.0
  */
@@ -51,9 +51,6 @@ public class PostgreSQLDialect extends DatabaseDialect {
   private static final String TIME_PATTERN = "'time '''HH:mm:ss''";
   private static final String DATETIME_PATTERN = "'timestamp '''yyyy-MM-dd HH:mm:ss''";
 
-  /**
-   * Instantiates a new Postgre sql dialect.
-   */
   public PostgreSQLDialect() {
     super("postgres", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
   }
@@ -160,8 +157,8 @@ public class PostgreSQLDialect extends DatabaseDialect {
 	    /* TODO implement DatabaseDialect.applyRownumRestriction()
 			MySQL, PostgreSQL, H2: SELECT * FROM T LIMIT 10 OFFSET 20
 	     */
-    throw new UnsupportedOperationException(
-        "PostgreSQLDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+    throw ExceptionFactory.getInstance().programmerUnsupported(
+        "PostgreSQLDialect.applyRownumRestriction() is not implemented");
   }
 
   @Override

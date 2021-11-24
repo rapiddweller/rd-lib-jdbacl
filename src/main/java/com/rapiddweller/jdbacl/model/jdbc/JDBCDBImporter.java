@@ -29,7 +29,6 @@ import com.rapiddweller.common.ImportFailedException;
 import com.rapiddweller.common.Level;
 import com.rapiddweller.common.LoggerEscalator;
 import com.rapiddweller.common.NameUtil;
-import com.rapiddweller.common.ObjectNotFoundException;
 import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.collection.OrderedNameMap;
@@ -318,7 +317,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         String catalogNameOfSchema = (declaredCatalogName != null ? declaredCatalogName : this.catalogName);
         DBCatalog catalogOfSchema = database.getCatalog(catalogNameOfSchema);
         if (catalogOfSchema == null) {
-          throw new ObjectNotFoundException("Catalog of Schema not found: " + declaredSchemaName);
+          throw ExceptionFactory.getInstance().objectNotFound("Catalog of Schema not found: " + declaredSchemaName);
         }
         new DBSchema(declaredSchemaName, catalogOfSchema);
         importAllTables(database, declaredSchemaName);
