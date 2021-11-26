@@ -111,8 +111,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
       if ("catalog".equals(childName)) {
         parseCatalog(child, db);
       } else {
-        throw ExceptionFactory.getInstance().syntaxError(
-            "Not an allowed element within <database>: " + childName, null);
+        throw ExceptionFactory.getInstance().syntaxErrorForXmlElement(
+            "Not an allowed element within <database>", child);
       }
     }
     scanReferers(db);

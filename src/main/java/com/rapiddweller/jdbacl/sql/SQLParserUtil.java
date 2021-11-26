@@ -92,14 +92,14 @@ public class SQLParserUtil {
     } catch (RuntimeException e) {
       if (e.getCause() instanceof RecognitionException) {
         RecognitionException cause = (RecognitionException) e.getCause();
-        throw ExceptionFactory.getInstance().syntaxErrorForText(text, ERROR_PARSING_SQL,
-            cause.line, cause.charPositionInLine, cause);
+        throw ExceptionFactory.getInstance().syntaxErrorForText(ERROR_PARSING_SQL, cause, text,
+            cause.line, cause.charPositionInLine);
       } else {
         throw e;
       }
     } catch (RecognitionException e) {
-      throw ExceptionFactory.getInstance().syntaxErrorForText(text, ERROR_PARSING_SQL,
-          e.line, e.charPositionInLine, e);
+      throw ExceptionFactory.getInstance().syntaxErrorForText(ERROR_PARSING_SQL, e, text,
+          e.line, e.charPositionInLine);
     }
   }
 
@@ -116,14 +116,14 @@ public class SQLParserUtil {
     } catch (RuntimeException e) {
       if (e.getCause() instanceof RecognitionException) {
         RecognitionException cause = (RecognitionException) e.getCause();
-        throw ExceptionFactory.getInstance().syntaxErrorForText(text, ERROR_PARSING_SQL,
-            cause.line, cause.charPositionInLine, cause);
+        throw ExceptionFactory.getInstance().syntaxErrorForText(ERROR_PARSING_SQL, cause, text,
+            cause.line, cause.charPositionInLine);
       } else {
         throw e;
       }
     } catch (RecognitionException e) {
-      throw ExceptionFactory.getInstance().syntaxErrorForText(text, ERROR_PARSING_SQL,
-          e.line, e.charPositionInLine, e);
+      throw ExceptionFactory.getInstance().syntaxErrorForText(ERROR_PARSING_SQL, e, text,
+          e.line, e.charPositionInLine);
     }
   }
 
@@ -473,8 +473,8 @@ public class SQLParserUtil {
         convertInlinePK(node, table, dialect);
         break;
       default:
-        throw ExceptionFactory.getInstance().syntaxErrorForText(String.valueOf(node.getText()),
-            "Unknown table detail token type", node.getLine(), node.getCharPositionInLine());
+        throw ExceptionFactory.getInstance().syntaxErrorForText("Unknown table detail token type", String.valueOf(node.getText()),
+            node.getLine(), node.getCharPositionInLine());
     }
   }
 
@@ -534,8 +534,7 @@ public class SQLParserUtil {
         column.setNullable(false);
         break;
       default:
-        throw ExceptionFactory.getInstance().syntaxErrorForText(String.valueOf(node.getText()),
-            "Unknown column detail token type",
+        throw ExceptionFactory.getInstance().syntaxErrorForText("Unknown column detail token type", String.valueOf(node.getText()),
             node.getLine(),
             node.getCharPositionInLine());
     }

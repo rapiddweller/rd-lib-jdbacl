@@ -38,19 +38,21 @@ import java.util.Map;
  */
 public class DatabaseDialectManager {
 
+  public static final String COMPONENT_NAME = "rd-lib-jdbacl";
+
   private static final String FILENAME = "com/rapiddweller/jdbacl/databene.db_dialect.properties";
 
-  private static final Map<String, String> mappings;
+  private static Map<String, String> mappings;
 
   static {
+    init();
+  }
+
+  public static void init() {
     try {
       mappings = IOUtil.readProperties(FILENAME);
-    } catch (FileResourceNotFoundException e) {
-      throw ExceptionFactory.getInstance().deploymentFailed(
-          "Database dialect configuration file not found: " + FILENAME, e);
     } catch (Exception e) {
-      throw ExceptionFactory.getInstance().deploymentFailed(
-          "Error processing Database dialect configuration file: " + FILENAME, e);
+      throw ExceptionFactory.getInstance().componentInitializationFailed(COMPONENT_NAME, e);
     }
   }
 
