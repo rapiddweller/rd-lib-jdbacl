@@ -55,10 +55,9 @@ public class IdentityParser extends AbstractXMLElementParser<Object> {
   }
 
   @Override
-  public IdentityModel doParse(Element element, Object[] parentPath, ParseContext<Object> context) {
+  public IdentityModel doParse(Element element, Element[] parentXmlPath, Object[] parentComponentPath, ParseContext<Object> context) {
     String type = getRequiredAttribute("type", element);
     String tableName = getRequiredAttribute("table", element);
-
     IdentityModel identity;
     IdentityProvider identityProvider = ((IdentityParseContext) context).getIdentityProvider();
     if ("nk-pk-query".equals(type)) {
