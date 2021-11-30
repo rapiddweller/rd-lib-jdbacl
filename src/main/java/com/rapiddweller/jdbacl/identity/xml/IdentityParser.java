@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2021 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -21,11 +21,11 @@
 
 package com.rapiddweller.jdbacl.identity.xml;
 
-import com.rapiddweller.common.CollectionUtil;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.xml.XMLUtil;
 import com.rapiddweller.format.xml.AbstractXMLElementParser;
+import com.rapiddweller.format.xml.AttrInfoSupport;
 import com.rapiddweller.format.xml.ParseContext;
 import com.rapiddweller.jdbacl.identity.IdentityModel;
 import com.rapiddweller.jdbacl.identity.IdentityProvider;
@@ -35,7 +35,7 @@ import com.rapiddweller.jdbacl.identity.SubNkPkQueryIdentity;
 import com.rapiddweller.jdbacl.identity.UniqueKeyIdentity;
 import org.w3c.dom.Element;
 
-import java.util.Set;
+import static com.rapiddweller.jdbacl.JdbaclErrorIds.*;
 
 /**
  * Parses an &lt;identity&gt; element in a DB Sanity XML file.<br/><br/>
@@ -46,12 +46,22 @@ import java.util.Set;
 public class IdentityParser extends AbstractXMLElementParser<Object> {
 
   public static final String IDENTITY = "identity";
-  private static final Set<String> REQUIRED_ATTRIBUTES = CollectionUtil.toSet("type", "table");
-  private static final Set<String> OPTIONAL_ATTRIBUTES =
-      CollectionUtil.toSet("nk-pk-query", "sub-nk-pk-query", "parents", "unique-key", "natural-pk", "columns");
+
+  private static final AttrInfoSupport ATTR_SUPPORT;
+  static {
+    ATTR_SUPPORT = new AttrInfoSupport(IDE_ILLEGAL_ATTRIBUTE);
+    ATTR_SUPPORT.add("type", true, IDE_TYPE);
+    ATTR_SUPPORT.add("table", true, IDE_TABLE);
+    ATTR_SUPPORT.add("nk-pk-query", false, IDE_NK_PK_QUERY);
+    ATTR_SUPPORT.add("sub-nk-pk-query", false, IDE_SUB_NK_PK_QUERY);
+    ATTR_SUPPORT.add("parents", false, IDE_PARENTS);
+    ATTR_SUPPORT.add("unique-key", false, IDE_UNIQUE_KEY);
+    ATTR_SUPPORT.add("natural-pk", false, IDE_NATURAL_PK);
+    ATTR_SUPPORT.add("columns", false, IDE_COLUMNS);
+  }
 
   public IdentityParser() {
-    super(IDENTITY, REQUIRED_ATTRIBUTES, OPTIONAL_ATTRIBUTES, Object.class);
+    super(IDENTITY, ATTR_SUPPORT, Object.class);
   }
 
   @Override
