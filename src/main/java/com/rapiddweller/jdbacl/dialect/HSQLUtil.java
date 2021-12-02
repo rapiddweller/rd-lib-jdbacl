@@ -73,14 +73,17 @@ public class HSQLUtil {
     return IN_MEMORY_URL_PREFIX + dbName;
   }
 
-  public static Statement shutdown(String url, String user, String password)
-      throws ClassNotFoundException, SQLException {
-    Statement statement;
-    Class.forName(DRIVER);
-    Connection con = DriverManager.getConnection(url, user, password);
-    statement = con.createStatement();
-    statement.executeUpdate("SHUTDOWN");
-    return statement;
+  public static Statement shutdown(String url, String user, String password) {
+    try {
+      Statement statement;
+      Class.forName(DRIVER);
+      Connection con = DriverManager.getConnection(url, user, password);
+      statement = con.createStatement();
+      statement.executeUpdate("SHUTDOWN");
+      return statement;
+    } catch (ClassNotFoundException | SQLException e) {
+      throw ExceptionFactory.getInstance().operationFailed("HSQL shutdown failed", e);
+    }
   }
 
 }
