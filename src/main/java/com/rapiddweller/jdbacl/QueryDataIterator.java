@@ -33,7 +33,6 @@ import java.sql.Statement;
 /**
  * {@link DataIterator} which provides the results of a SQL query.<br/><br/>
  * Created: 03.08.2011 19:25:54
- *
  * @author Volker Bergmann
  * @since 0.6.10
  */

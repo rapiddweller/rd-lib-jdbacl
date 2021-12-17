@@ -30,18 +30,11 @@ import java.sql.ResultSet;
 /**
  * Provides a {@link ResultSet}'s rows as {@link Object} arrays.<br/><br/>
  * Created: 13.10.2010 13:38:19
- *
  * @author Volker Bergmann
  * @since 0.6.4
  */
 public class ArrayResultSetIterator extends ConvertingIterator<ResultSet, Object[]> implements TabularIterator {
 
-  /**
-   * Instantiates a new Array result set iterator.
-   *
-   * @param connection the connection
-   * @param query      the query
-   */
   public ArrayResultSetIterator(Connection connection, String query) {
     super(new QueryIterator(query, connection, 500), new ResultSetConverter<>(Object[].class, false));
   }

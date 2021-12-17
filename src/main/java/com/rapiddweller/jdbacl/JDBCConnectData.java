@@ -31,7 +31,6 @@ import java.util.Map;
 /**
  * Data Object that contains the typical data required for a JDBC database login.<br/><br/>
  * Created: 10.02.2010 22:59:02
- *
  * @author Volker Bergmann
  * @since 0.5.0
  */

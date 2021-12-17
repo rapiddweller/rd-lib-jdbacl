@@ -31,22 +31,13 @@ import java.util.List;
 /**
  * {@link TreeModel} adapter for DBObject hierarchies.<br/><br/>
  * Created: 02.12.2010 06:56:28
- *
  * @author Volker Bergmann
  * @since 0.6.4
  */
 public class DatabaseTreeModel implements TreeModel<DBObject> {
 
-  /**
-   * The Database.
-   */
   final Database database;
 
-  /**
-   * Instantiates a new Database tree model.
-   *
-   * @param database the database
-   */
   public DatabaseTreeModel(Database database) {
     this.database = database;
   }

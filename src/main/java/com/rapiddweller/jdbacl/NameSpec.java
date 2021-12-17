@@ -22,28 +22,13 @@
 package com.rapiddweller.jdbacl;
 
 /**
- * Enumerates name specification options for database objects.<br/>
- * <br/>
+ * Enumerates name specification options for database objects.<br/><br/>
  * Created: 02.07.2011 15:32:35
- *
  * @author Volker Bergmann
  * @since 0.6.10
  */
 public enum NameSpec {
-
-  /**
-   * the constraint name is never specified
-   */
   NEVER,
-
-  /**
-   * the is only specified, if it is reproducible (not an auto-generated random name)
-   */
   IF_REPRODUCIBLE,
-
-  /**
-   * the constraint name specified in any case
-   */
   ALWAYS
-
 }
