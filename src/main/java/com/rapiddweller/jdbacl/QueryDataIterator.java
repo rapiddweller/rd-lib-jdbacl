@@ -21,6 +21,7 @@
 
 package com.rapiddweller.jdbacl;
 
+import com.rapiddweller.common.ExceptionUtil;
 import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.format.DataIterator;
 import com.rapiddweller.format.util.DataIteratorProxy;
@@ -49,8 +50,16 @@ public class QueryDataIterator extends DataIteratorProxy<ResultSet> {
       statement.setFetchSize(fetchSize);
       ResultSet resultSet = statement.executeQuery(query);
       return new ResultSetDataIterator(resultSet, query);
-    } catch (SQLException e) {
-      throw ExceptionFactory.getInstance().queryFailed("Error in query: " + query, e);
+    } catch (Exception e) {
+      Throwable root = ExceptionUtil.getRootCause(e);
+      String message;
+      if (root instanceof SQLException) {
+        message = "Error in database query: '" + query + "'";
+      } else {
+        message = "Error in query: '" + query + "'";
+      }
+      message += ": " + root.getMessage();
+      throw ExceptionFactory.getInstance().queryFailed(message, e);
     }
   }
 
