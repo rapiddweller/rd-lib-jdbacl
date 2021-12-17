@@ -21,7 +21,7 @@
 
 package com.rapiddweller.jdbacl.sql;
 
-import com.rapiddweller.script.Expression;
+import com.rapiddweller.common.Expression;
 import com.rapiddweller.script.expression.ConstantExpression;
 
 /**

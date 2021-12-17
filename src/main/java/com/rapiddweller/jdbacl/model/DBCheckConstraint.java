@@ -26,7 +26,7 @@ import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.jdbacl.sql.ColumnExpression;
 import com.rapiddweller.jdbacl.sql.SQLParserUtil;
 import com.rapiddweller.jdbacl.sql.parser.ANTLRNoCaseStringStream;
-import com.rapiddweller.script.Expression;
+import com.rapiddweller.common.Expression;
 import com.rapiddweller.script.expression.WrapperExpression;
 
 import java.util.HashSet;

@@ -32,7 +32,7 @@ import com.rapiddweller.jdbacl.model.DBTable;
 import com.rapiddweller.jdbacl.sql.parser.SQLLexer;
 import com.rapiddweller.jdbacl.sql.parser.SQLParser;
 import com.rapiddweller.jdbacl.sql.parser.TextHolder;
-import com.rapiddweller.script.Expression;
+import com.rapiddweller.common.Expression;
 import com.rapiddweller.script.expression.ConcatExpression;
 import com.rapiddweller.script.expression.ConditionalAndExpression;
 import com.rapiddweller.script.expression.ConditionalOrExpression;
