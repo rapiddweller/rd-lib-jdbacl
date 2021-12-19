@@ -35,7 +35,7 @@
         <database_postgresql.version>42.3.0</database_postgresql.version>
         <dependency_junit.version>4.13.2</dependency_junit.version>
         <dependency_slf4j.version>1.7.32</dependency_slf4j.version>
-        <dependency_log4j.version>2.16.0</dependency_log4j.version>
+        <dependency_log4j.version>2.17.0</dependency_log4j.version>
         <plugin_jacoco-maven-plugin.version>0.8.6</plugin_jacoco-maven-plugin.version>
         <plugin_maven-assembly-plugin.version>3.3.0</plugin_maven-assembly-plugin.version>
         <plugin_maven-compiler-plugin.version>3.8.1</plugin_maven-compiler-plugin.version>
