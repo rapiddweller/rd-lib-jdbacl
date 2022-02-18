@@ -545,6 +545,7 @@ public class DBUtil {
       result = statement.executeUpdate(sql);
     } finally {
       close(statement);
+      connection.commit();
     }
     return result;
   }
@@ -730,27 +731,8 @@ public class DBUtil {
         message = "There are unclosed database resources";
       }
     } else {
-      int c = getOpenConnectionCount();
-      int r = getOpenResultSetCount();
-      int s = getOpenStatementCount();
-      int p = getOpenPreparedStatementCount();
-      success = (c == 0 && r == 0 && s == 0 && p == 0);
-      if (!success) {
-        StringBuilder builder = new StringBuilder();
-        if (c != 0) {
-          builder.append(HF.pluralize(c, "connection"));
-        }
-        if (r != 0) {
-          builder.append(builder.length() > 0 ? ", " : "").append(HF.pluralize(r, "result set"));
-        }
-        if (s != 0) {
-          builder.append(builder.length() > 0 ? ", " : "").append(HF.pluralize(s, "statement"));
-        }
-        if (p != 0) {
-          builder.append(builder.length() > 0 ? ", " : "").append(HF.pluralize(p, " prepared statement(s)"));
-        }
-        message = "There are unclosed database resources: " + builder;
-      }
+      message = checkOpenDbResources();
+      success = (message == null);
     }
     if (!success) {
       if (critical) {
@@ -759,6 +741,36 @@ public class DBUtil {
         logger.warn(message);
       }
     }
+  }
+
+  private static String checkOpenDbResources() {
+    int c = getOpenConnectionCount();
+    int r = getOpenResultSetCount();
+    int s = getOpenStatementCount();
+    int p = getOpenPreparedStatementCount();
+    boolean success = (c == 0 && r == 0 && s == 0 && p == 0);
+    if (success) {
+      return null;
+    } else {
+      StringBuilder builder = new StringBuilder();
+      if (c != 0) {
+        builder.append(HF.pluralize(c, "connection"));
+      }
+      if (r != 0) {
+        builder.append(commaIfNotEmpty(builder)).append(HF.pluralize(r, "result set"));
+      }
+      if (s != 0) {
+        builder.append(commaIfNotEmpty(builder)).append(HF.pluralize(s, "statement"));
+      }
+      if (p != 0) {
+        builder.append(commaIfNotEmpty(builder)).append(HF.pluralize(p, " prepared statement(s)"));
+      }
+      return "There are unclosed database resources: " + builder;
+    }
+  }
+
+  private static String commaIfNotEmpty(StringBuilder builder) {
+    return (builder.length() > 0 ? ", " : "");
   }
 
   public static boolean containsMandatoryColumn(DBConstraint fk) {
