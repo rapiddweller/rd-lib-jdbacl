@@ -51,16 +51,20 @@ public class QueryDataIterator extends DataIteratorProxy<ResultSet> {
       ResultSet resultSet = statement.executeQuery(query);
       return new ResultSetDataIterator(resultSet, query);
     } catch (Exception e) {
-      Throwable root = ExceptionUtil.getRootCause(e);
-      String message;
-      if (root instanceof SQLException) {
-        message = "Error in database query: '" + query + "'";
-      } else {
-        message = "Error in query: '" + query + "'";
-      }
-      message += ": " + root.getMessage();
-      throw ExceptionFactory.getInstance().queryFailed(message, e);
+      throw handleException(query, e);
     }
+  }
+
+  private static RuntimeException handleException(String query, Exception e) {
+    Throwable root = ExceptionUtil.getRootCause(e);
+    String message;
+    if (root instanceof SQLException) {
+      message = "Error in database query: '" + query + "'";
+    } else {
+      message = "Error in query: '" + query + "'";
+    }
+    message += ": " + root.getMessage();
+    return ExceptionFactory.getInstance().queryFailed(message, e);
   }
 
   public String[] getColumnLabels() {
