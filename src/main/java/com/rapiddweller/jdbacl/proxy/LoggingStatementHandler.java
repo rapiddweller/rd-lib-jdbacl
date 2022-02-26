@@ -32,6 +32,7 @@ import com.rapiddweller.common.ConfigurationError;
 import com.rapiddweller.common.LogCategoriesConstants;
 import com.rapiddweller.common.debug.Debug;
 import com.rapiddweller.common.debug.ResourceMonitor;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.jdbacl.DBUtil;
 import com.rapiddweller.profile.Profiler;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ import org.slf4j.Logger;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -63,6 +65,7 @@ public class LoggingStatementHandler implements InvocationHandler {
 
   // attributes ------------------------------------------------------------------------------------------------------
 
+  private final Connection connection;
   private final Statement realStatement;
   private final boolean readOnly;
   private String sql;
@@ -79,12 +82,17 @@ public class LoggingStatementHandler implements InvocationHandler {
   }
 
   public LoggingStatementHandler(Statement realStatement, boolean readOnly) {
-    this.realStatement = realStatement;
-    this.readOnly = readOnly;
-    this.closed = false;
-    openStatementCount.incrementAndGet();
-    if (openStatementMonitor != null) {
-      openStatementMonitor.register(this);
+    try {
+      this.realStatement = realStatement;
+      this.connection = realStatement.getConnection();
+      this.readOnly = readOnly;
+      this.closed = false;
+      openStatementCount.incrementAndGet();
+      if (openStatementMonitor != null) {
+        openStatementMonitor.register(this);
+      }
+    } catch (SQLException e) {
+      throw ExceptionFactory.getInstance().accessFailed("Error creating statement", e);
     }
   }
 
@@ -224,9 +232,9 @@ public class LoggingStatementHandler implements InvocationHandler {
 
   // private helpers -------------------------------------------------------------------------------------------------
 
-  private static void logAll(String method, String sql) {
+  private void logAll(String method, String sql) {
     if (jdbcLogger.isDebugEnabled()) {
-      jdbcLogger.debug("{}: {}", method, sql);
+      jdbcLogger.debug("{}: {} on {} ", method, sql, connection);
     }
     sqlLogger.debug(sql);
   }
