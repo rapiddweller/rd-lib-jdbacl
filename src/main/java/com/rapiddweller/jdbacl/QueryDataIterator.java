@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2011-2022 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -39,8 +39,11 @@ import java.sql.Statement;
  */
 public class QueryDataIterator extends DataIteratorProxy<ResultSet> {
 
+  private String query;
+
   public QueryDataIterator(String query, Connection connection, int fetchSize) {
     super(createSource(query, connection, fetchSize));
+    this.query = query;
   }
 
   private static DataIterator<ResultSet> createSource(String query, Connection connection, int fetchSize) {
@@ -69,6 +72,11 @@ public class QueryDataIterator extends DataIteratorProxy<ResultSet> {
 
   public String[] getColumnLabels() {
     return ((ResultSetIterator) source).getColumnLabels();
+  }
+
+  @Override
+  public String toString() {
+    return "QueryDataIterator{" + query + '}';
   }
 
 }
