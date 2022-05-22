@@ -55,6 +55,7 @@ public class ResultSetDataIterator implements DataIterator<ResultSet> {
   }
 
   public ResultSetDataIterator(ResultSet resultSet, String query) {
+    logger.debug("Instantiating {} for query {}", getClass(), query);
     if (resultSet == null) {
       throw ExceptionFactory.getInstance().illegalArgument("resultSet is null");
     }
