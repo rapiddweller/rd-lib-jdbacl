@@ -352,7 +352,7 @@ public class OracleDialect extends DatabaseDialect {
       }
       return packages.values();
     } catch (SQLException e) {
-      throw ExceptionFactory.getInstance().queryFailed("Package query failed", e);
+      throw ExceptionFactory.getInstance().dbQueryFailed("Package query failed", e);
     }
   }
 

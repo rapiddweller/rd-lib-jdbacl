@@ -562,7 +562,7 @@ public class DBUtil {
       }
       return builder.toArray();
     } catch (SQLException e) {
-      throw ExceptionFactory.getInstance().queryFailed(DATABASE_QUERY_FAILED_COLON + query, e);
+      throw ExceptionFactory.getInstance().dbQueryFailed(DATABASE_QUERY_FAILED_COLON + query, e);
     } finally {
       closeResultSetAndStatement(resultSet, statement);
     }
@@ -583,7 +583,7 @@ public class DBUtil {
       assertNoNext(resultSet, query);
       return result;
     } catch (SQLException e) {
-      throw ExceptionFactory.getInstance().queryFailed(DATABASE_QUERY_FAILED_COLON + query, e);
+      throw ExceptionFactory.getInstance().dbQueryFailed(DATABASE_QUERY_FAILED_COLON + query, e);
     } finally {
       closeResultSetAndStatement(resultSet, statement);
     }
@@ -650,7 +650,7 @@ public class DBUtil {
       return statement.executeQuery(query);
     } catch (Exception e) {
       close(statement);
-      throw ExceptionFactory.getInstance().queryFailed("Error executing query: " + query, e);
+      throw ExceptionFactory.getInstance().dbQueryFailed("Error executing query: " + query, e);
     }
   }
 

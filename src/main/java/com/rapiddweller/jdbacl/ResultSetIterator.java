@@ -107,7 +107,7 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
       }
       return hasNext;
     } catch (SQLException e) {
-      throw ExceptionFactory.getInstance().queryFailed("Error in query: " + query, e);
+      throw ExceptionFactory.getInstance().dbQueryFailed("Error in query: " + query, e);
     }
   }
 

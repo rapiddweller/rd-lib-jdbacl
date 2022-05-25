@@ -64,7 +64,7 @@ public class DBRowIterator implements HeavyweightIterator<DBRow> {
       this.closed = false;
       // Statement must remain open and will be closed indirectly in the close() method
     } catch (SQLException e) {
-      throw ExceptionFactory.getInstance().queryFailed("Meta data query failed", e);
+      throw ExceptionFactory.getInstance().dbQueryFailed("Meta data query failed", e);
     }
   }
 
@@ -97,7 +97,7 @@ public class DBRowIterator implements HeavyweightIterator<DBRow> {
       }
       return row;
     } catch (SQLException e) {
-      throw ExceptionFactory.getInstance().queryFailed("Error querying table " + table, e);
+      throw ExceptionFactory.getInstance().dbQueryFailed("Error querying table " + table, e);
     }
   }
 

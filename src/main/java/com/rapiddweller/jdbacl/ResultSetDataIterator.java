@@ -78,7 +78,7 @@ public class ResultSetDataIterator implements DataIterator<ResultSet> {
           columnLabels[i] = metaData.getColumnLabel(i + 1);
         }
       } catch (SQLException e) {
-        throw ExceptionFactory.getInstance().queryFailed("Error querying column meta data", e);
+        throw ExceptionFactory.getInstance().dbQueryFailed("Error querying column meta data", e);
       }
     }
     return columnLabels;
@@ -103,7 +103,7 @@ public class ResultSetDataIterator implements DataIterator<ResultSet> {
         return null;
       }
     } catch (SQLException e) {
-      throw ExceptionFactory.getInstance().queryFailed("ResultSet iteration failed", e);
+      throw ExceptionFactory.getInstance().dbQueryFailed("ResultSet iteration failed", e);
     }
   }
 

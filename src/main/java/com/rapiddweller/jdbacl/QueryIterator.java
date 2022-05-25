@@ -50,7 +50,7 @@ public class QueryIterator extends IteratorProxy<ResultSet> {
       ResultSet resultSet = statement.executeQuery(query);
       return new ResultSetIterator(resultSet, query);
     } catch (SQLException e) {
-      throw ExceptionFactory.getInstance().queryFailed("Error in query: " + query, e);
+      throw ExceptionFactory.getInstance().dbQueryFailed("Error in query: " + query, e);
     }
   }
 

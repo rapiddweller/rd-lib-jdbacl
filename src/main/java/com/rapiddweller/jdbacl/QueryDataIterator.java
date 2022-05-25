@@ -67,7 +67,7 @@ public class QueryDataIterator extends DataIteratorProxy<ResultSet> {
       message = "Error in query: '" + query + "'";
     }
     message += ": " + root.getMessage();
-    return ExceptionFactory.getInstance().queryFailed(message, e);
+    return ExceptionFactory.getInstance().dbQueryFailed(message, e);
   }
 
   public String[] getColumnLabels() {
