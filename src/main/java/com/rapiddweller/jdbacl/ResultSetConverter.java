@@ -44,7 +44,6 @@ import java.sql.SQLException;
  */
 public class ResultSetConverter<E> extends UnsafeConverter<ResultSet, E> {
 
-  private final Class<E> targetType; // TODO check with targetType field in AbstractConverter
   private final boolean simplifying;
 
   public ResultSetConverter(Class<E> targetType) {
@@ -66,7 +65,7 @@ public class ResultSetConverter<E> extends UnsafeConverter<ResultSet, E> {
     if (targetType.isArray()) {
       return (E) tmp;
     } else {
-      return (E) (!simplifying || tmp.length > 1 ? tmp : tmp[0]);
+      return (E) (!simplifying || tmp.length > 1 ? tmp : (tmp.length == 1 ? tmp[0] : null));
     }
   }
 
