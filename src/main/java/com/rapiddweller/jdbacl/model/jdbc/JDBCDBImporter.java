@@ -21,7 +21,6 @@
 
 package com.rapiddweller.jdbacl.model.jdbc;
 
-import com.rapiddweller.common.exception.ConnectFailedException;
 import com.rapiddweller.common.ErrorHandler;
 import com.rapiddweller.common.Escalator;
 import com.rapiddweller.common.Filter;
@@ -29,9 +28,10 @@ import com.rapiddweller.common.ImportFailedException;
 import com.rapiddweller.common.Level;
 import com.rapiddweller.common.LoggerEscalator;
 import com.rapiddweller.common.NameUtil;
-import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.StringUtil;
 import com.rapiddweller.common.collection.OrderedNameMap;
+import com.rapiddweller.common.exception.ConnectFailedException;
+import com.rapiddweller.common.exception.ExceptionFactory;
 import com.rapiddweller.common.version.VersionNumber;
 import com.rapiddweller.contiperf.StopWatch;
 import com.rapiddweller.jdbacl.DBUtil;
@@ -50,8 +50,8 @@ import com.rapiddweller.jdbacl.model.DBTable;
 import com.rapiddweller.jdbacl.model.Database;
 import com.rapiddweller.jdbacl.model.FKChangeRule;
 import com.rapiddweller.jdbacl.model.TableType;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -284,12 +284,15 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     Set<String> set = new HashSet<>();
     if (schemaName != null) {
       set.add(schemaName);
-      if (this.dialect.getDbType().equals("h2")) {
+      if (this.dialect.getDbType().equals("h2") || this.dialect.getDbType().equals("hsql")) {
         ResultSet resultSet = metaData.getSchemas();
         while (resultSet.next()) {
           set.add((String) resultSet.getObject("TABLE_SCHEM"));
         }
-      } else if (!this.dialect.getDbType().equals("sql_server")) {
+      }
+      // ms sql server does not support multischema thats why import of foreign schemas are not handled.
+      // TODO test with oracle
+      else if (!this.dialect.getDbType().equals("sql_server")) {
         ResultSet resultSet = metaData.getImportedKeys(null, schemaName, null);
         while (resultSet.next()) {
           set.add((String) resultSet.getObject("PKTABLE_SCHEM"));
@@ -812,22 +815,39 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
 
   // sequence import -------------------------------------------------------------------------------------------------
-
+  // TODO further tests are needed working with postgres, mysql, hslmem
   public void importSequences(Database database) {
-    logger.info("Importing sequences from environment '{}'", url);
     StopWatch watch = new StopWatch("importSequences");
     try {
       if (dialect.isSequenceSupported()) {
+        String catalogNameLocal = getConnection().getCatalog();
+        if (catalogNameLocal == null) {
+          catalogNameLocal = this.catalogName;
+        }
+        String schemaNameLocal = this.schemaName;
+        if (schemaNameLocal == null) {
+          schemaNameLocal = getConnection().getSchema();
+        }
+        if (schemaNameLocal == null && catalogNameLocal != null) {
+          logger.info("Importing sequences from catalog '{}'", catalogNameLocal);
+        } else {
+          logger.info("Importing sequences from schema '{}'", schemaNameLocal);
+        }
         DBSequence[] sequences = dialect.querySequences(getConnection());
         for (DBSequence sequence : sequences) {
-          DBCatalog catalog = database.getCatalog(sequence.getCatalogName());
-          if (catalog != null) {
-            DBSchema schema = catalog.getSchema(sequence.getSchemaName());
-            if (schema == null) {
-              schema = catalog.getSchema(this.schemaName);
+          if (sequence.getSchemaName().equals(schemaNameLocal)) {
+            DBCatalog catalog = database.getCatalog(catalogNameLocal);
+            DBSchema schema = null;
+
+            if (catalog == null) {
+              schema = database.getSchema(schemaNameLocal);
+            } else {
+              schema = catalog.getSchema(schemaNameLocal);
             }
-            schema.receiveSequence(sequence);
-            sequence.setOwner(schema);
+            if (schema != null) {
+              schema.receiveSequence(sequence);
+              sequence.setOwner(schema);
+            }
           }
         }
       }
@@ -876,7 +896,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
   }
 
   // helper methods --------------------------------------------------------------------------------------------------
-  
+
   protected boolean tableSupported(String tableName) {
     return (tableNameFilter.accept(tableName) && !isOracleInternalTable(tableName));
   }
