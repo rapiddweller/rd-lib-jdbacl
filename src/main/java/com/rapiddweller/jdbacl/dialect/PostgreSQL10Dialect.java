@@ -26,13 +26,14 @@
 
 package com.rapiddweller.jdbacl.dialect;
 
+import com.rapiddweller.common.ArrayBuilder;
+import com.rapiddweller.jdbacl.DBUtil;
+import com.rapiddweller.jdbacl.model.DBSequence;
+
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import com.rapiddweller.common.ArrayBuilder;
-import com.rapiddweller.jdbacl.DBUtil;
-import com.rapiddweller.jdbacl.model.DBSequence;
 
 /**
  * Handles theses changes from PostgresSQL 10:
@@ -53,17 +54,20 @@ public class PostgreSQL10Dialect extends PostgreSQLDialect {
     for (Object[] row : rows) {
       String name = (String) row[0];
       // query sequence details
-      Object[] details = DBUtil.querySingleRow("select sequencename, start_value, increment_by, " +
-          "max_value, min_value, cycle, cache_size, last_value from pg_sequences WHERE sequencename = '" + name + "'", connection);
-      DBSequence sequence = new DBSequence(name, null);
-      sequence.setStart(new BigInteger(details[1].toString()));
-      sequence.setIncrement(new BigInteger(details[2].toString()));
-      sequence.setMaxValue(new BigInteger(details[3].toString()));
-      sequence.setMinValue(new BigInteger(details[4].toString()));
-      sequence.setCycle(Boolean.valueOf(details[5].toString()));
-      sequence.setCache(Long.parseLong(details[6].toString()));
-      sequence.setLastNumber(details[7] != null ? new BigInteger(details[7].toString()) : BigInteger.ZERO);
-      builder.add(sequence);
+      List<Object[]> seqRows = DBUtil.query(String.format("select sequencename, start_value, increment_by, " +
+              "max_value, min_value, cycle, cache_size, last_value, schemaname, sequenceowner from pg_sequences WHERE sequencename = '%s'", name),
+          connection);
+      for (Object[] details : seqRows) {
+        DBSequence sequence = new DBSequence(name, details[9].toString(), details[8].toString());
+        sequence.setStart(new BigInteger(details[1].toString()));
+        sequence.setIncrement(new BigInteger(details[2].toString()));
+        sequence.setMaxValue(new BigInteger(details[3].toString()));
+        sequence.setMinValue(new BigInteger(details[4].toString()));
+        sequence.setCycle(Boolean.valueOf(details[5].toString()));
+        sequence.setCache(Long.parseLong(details[6].toString()));
+        sequence.setLastNumber(details[7] != null ? new BigInteger(details[7].toString()) : BigInteger.ZERO);
+        builder.add(sequence);
+      }
     }
     return builder.toArray();
   }

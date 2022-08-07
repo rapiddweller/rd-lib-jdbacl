@@ -87,7 +87,7 @@ public class PostgreSQLDialect extends DatabaseDialect {
     for (Object[] row : rows) {
       String name = (String) row[0];
       // query sequence details
-      Object[] details = DBUtil.querySingleRow("select sequence_name, start_value, increment_by, " +
+      Object[] details = DBUtil.querySingleRow("select distinct sequence_name, start_value, increment_by, schema_name" +
           "max_value, min_value, is_cycled, cache_value, last_value from " + name, connection);
       DBSequence sequence = new DBSequence(name, null);
       sequence.setStart(new BigInteger(details[1].toString()));

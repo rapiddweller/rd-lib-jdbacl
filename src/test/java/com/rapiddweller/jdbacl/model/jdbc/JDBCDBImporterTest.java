@@ -55,8 +55,8 @@ public class JDBCDBImporterTest extends AbstractJDBCDBImporterTest {
   }
 
   @Test
-  public void testImportDatabase_HSQL() {
-    Database db = new Database("hsqlmem", new JDBCDBImporter(URL, DRIVER, USER, PASSWORD, CATALOG, SCHEMA), true);
+  public void testImportDatabase_H2() {
+    Database db = new Database("hsql", new JDBCDBImporter(URL, DRIVER, USER, PASSWORD, CATALOG, null), true);
     checkImports(false, false, false, db);
     DBSchema schema = checkSchema(db);
     DBTable table = checkTables(schema);
