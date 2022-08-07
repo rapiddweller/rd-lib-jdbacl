@@ -36,10 +36,6 @@ import com.rapiddweller.jdbacl.model.DBPrimaryKeyConstraint;
 import com.rapiddweller.jdbacl.model.DBTable;
 import com.rapiddweller.jdbacl.model.DBUniqueConstraint;
 import com.rapiddweller.jdbacl.model.TableContainerSupport;
-//import org.apache.derby.diag.ErrorLogReader;
-//import org.apache.derby.diag.ErrorMessages;
-//import org.apache.derby.iapi.jdbc.BrokeredConnection30;
-//import org.h2.tools.SimpleResultSet;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -361,7 +357,7 @@ public class DBUtilTest {
     Object[][] rows = (Object[][]) DBUtil.queryAndSimplify("select * from T1", connection);
     assertEquals(1, rows.length);
     assertArrayEquals(ArrayUtil.buildObjectArrayOfType(Object.class, 1, "R&B"), rows[0]);
-    int count = (Integer) DBUtil.queryAndSimplify("select count(*) from T1", connection);
+    int count = (int) DBUtil.queryAndSimplify("select count(*) from T1", connection);
     assertEquals(1, count);
   }
 

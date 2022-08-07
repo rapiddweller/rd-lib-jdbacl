@@ -22,9 +22,10 @@
 package com.rapiddweller.jdbacl.model.jdbc;
 
 
-import com.rapiddweller.common.exception.ConnectFailedException;
 import com.rapiddweller.common.ErrorHandler;
+import com.rapiddweller.common.exception.ConnectFailedException;
 import com.rapiddweller.jdbacl.DBUtil;
+import com.rapiddweller.jdbacl.model.DBCatalog;
 import com.rapiddweller.jdbacl.model.DBIndex;
 import com.rapiddweller.jdbacl.model.DBNonUniqueIndex;
 import com.rapiddweller.jdbacl.model.DBSchema;
@@ -71,7 +72,13 @@ public abstract class AbstractJDBCDBImporterTest {
   }
 
   protected static DBSchema checkSchema(Database db) {
-    DBSchema schema = db.getCatalog(null).getSchema("public");
+    DBCatalog cat = db.getCatalog(null);
+    DBSchema schema = null;
+    if (cat != null) {
+      schema = db.getCatalog(null).getSchema("public");
+    } else {
+      schema = db.getSchema("public");
+    }
     assertNotNull(schema);
     return schema;
   }

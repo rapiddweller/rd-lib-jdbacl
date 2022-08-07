@@ -107,7 +107,7 @@ public class HSQLDialect extends DatabaseDialect {
         sequence.setIncrement(new BigInteger(resultSet.getString("INCREMENT")));
         sequence.setMinValue(new BigInteger(resultSet.getString("MINIMUM_VALUE")));
         sequence.setMaxValue(new BigInteger(resultSet.getString("MAXIMUM_VALUE")));
-        sequence.setCycle(resultSet.getBoolean("CYCLE_OPTION"));
+        sequence.setCycle(Boolean.valueOf(resultSet.getString("CYCLE_OPTION")));
         builder.add(sequence);
       }
     } finally {

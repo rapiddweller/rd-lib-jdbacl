@@ -167,7 +167,7 @@
             <version>${database_mysql-connector-java.version}</version>
         </dependency>
         <dependency>
-            <groupId>hsqldb</groupId>
+            <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
             <version>${database_hsqldb.version}</version>
         </dependency>
