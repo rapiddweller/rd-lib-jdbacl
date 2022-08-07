@@ -357,7 +357,7 @@ public class DBUtilTest {
     Object[][] rows = (Object[][]) DBUtil.queryAndSimplify("select * from T1", connection);
     assertEquals(1, rows.length);
     assertArrayEquals(ArrayUtil.buildObjectArrayOfType(Object.class, 1, "R&B"), rows[0]);
-    long count = (long) DBUtil.queryAndSimplify("select count(*) from T1", connection);
+    int count = (int) DBUtil.queryAndSimplify("select count(*) from T1", connection);
     assertEquals(1, count);
   }
 
