@@ -1,6 +1,17 @@
 # Release 1.1.12-jdk-11
 
 ## Release Highlights
+* fix(hsql): handle Jdbc Metatdataimport import sequences
+* Removed duplicate attribute 2. Avoiding array index exception
+* Introduced DbQueryFailed
+* Improved logging
+* Added QueryDataIterator.toString()
+* Explicitly committing executed DDL statements
+* Using log4j 2.17.0
+* Improved exception handling
+* Migrated to new XML parser setup
+* Introduced UUID, BYTEA and JSON data types of Postgres 
+* Improved code quality
 
 ---
 
