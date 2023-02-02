@@ -1,10 +1,14 @@
 on:
   push:
-    branches:
-      - '**'
-  create:
     tags:
-      - '*'
+      - 1.*
+      - 2.*
+      - 3.*
+    branches:
+      - development
+      - release-prep
+    paths-ignore:
+      - '**.md'
 
 env:
   MAVEN_CLI_OPTS: "--batch-mode --update-snapshots"
@@ -22,7 +26,7 @@ jobs:
         shell: bash
     steps:
       - run: export
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: set ARTIFACT_ID
         run: |
           ARTIFACT_ID=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.artifactId}' --non-recursive exec:exec);
@@ -46,7 +50,7 @@ jobs:
           echo "echo ARTIFACT_FULLNAME=${ARTIFACT_FULLNAME} >> \$GITHUB_ENV" >> dot.env
       - run: export
       - name: Upload setupfile
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: setup
           path: dot.env
@@ -61,15 +65,15 @@ jobs:
       - setup
     container: maven:3.6-adoptopenjdk-11
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Cache Maven packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Download dot.env
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: setup
       - run: bash dot.env
@@ -89,15 +93,15 @@ jobs:
       - setup
     container: maven:3.6-adoptopenjdk-11
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Cache Maven packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Download dot.env
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: setup
       - run: bash dot.env
@@ -117,16 +121,19 @@ jobs:
       - test_jdk11
       - build_jdk11
     container: maven:3.6-adoptopenjdk-11
+    defaults:
+      run:
+        shell: bash
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Cache Maven packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Download dot.env
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: setup
       - run: bash dot.env
@@ -134,7 +141,6 @@ jobs:
       - run: apt update && apt -y install gnupg
       - name: generate key
         run: gpg --batch --import <(echo "$GPG_PRIVATE_KEY_ENCODED" | base64 -d)
-        shell: bash
         env:
           GPG_PRIVATE_KEY_ENCODED: ${{ secrets.GPG_PRIVATE_KEY_ENCODED }}
       - name: Publish package
@@ -144,7 +150,11 @@ jobs:
           OSSRH_USERTOKEN_KEY: ${{ secrets.OSSRH_USERTOKEN_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
+
   ###################### Release ######################
+
+  ###################### Release & Publish ######################
+
 
   release_jdk11:
     runs-on: ubuntu-latest
@@ -154,20 +164,20 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     container: maven:3.6-adoptopenjdk-11
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download dot.env
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: setup
       - run: bash dot.env
       - name: Cache Maven packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Download build_jdk11 for assembly
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build_jdk11
           path: target
@@ -209,3 +219,4 @@ jobs:
           asset_path: target/${{ env.ARTIFACT_FULLNAME }}-dist.tar.gz
           asset_name: ${{ env.ARTIFACT_FULLNAME }}-dist.tar.gz
           asset_content_type: application/zip
+
