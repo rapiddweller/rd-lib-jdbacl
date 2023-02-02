@@ -31,6 +31,7 @@ import com.rapiddweller.common.xml.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,7 +42,7 @@ import java.util.HashMap;
  * @author Volker Bergmann
  * @since 0.4.8
  */
-public class JDBCDriverInfo {
+public class JDBCDriverInfo implements Serializable {
 
   private static final String DB_DEFINITION_FILE = "com/rapiddweller/jdbacl/jdbc-driver-info.xml";
 
@@ -194,6 +195,7 @@ public class JDBCDriverInfo {
       driver.setUrlPattern(driverElement.getAttribute("url"));
       driver.setDownloadUrl(driverElement.getAttribute("info"));
       driver.setDefaultUser(driverElement.getAttribute("user"));
+      driver.setDbSystem(driverElement.getAttribute("system"));
       ArrayBuilder<String> builder = new ArrayBuilder<>(String.class);
       for (Element dependencyElement : XMLUtil.getChildElements(driverElement, false, "dependency")) {
         builder.add(dependencyElement.getAttribute("lib"));
