@@ -383,7 +383,7 @@ public class JDBCDriverInfoTest {
   @Test
   public void testGetInstances() {
     assertTrue(JDBCDriverInfo.getInstances().size() > 0);
-    assertEquals(11, JDBCDriverInfo.getInstances().size());
+    assertEquals(5, JDBCDriverInfo.getInstances().size());
   }
 
   /**
@@ -398,20 +398,20 @@ public class JDBCDriverInfoTest {
    * Test hsql.
    */
   @Test
-  public void testHSQL() {
-    JDBCDriverInfo hsql = JDBCDriverInfo.HSQL;
-    assertEquals("HSQL", hsql.getId());
-    assertEquals("HSQL Server", hsql.getDbSystem());
-    assertEquals("HSQL Server", hsql.getName());
-    assertEquals("org.hsqldb.jdbcDriver", hsql.getDriverClass());
-    assertEquals("9001", hsql.getDefaultPort());
-    assertEquals("jdbc:hsqldb:hsql://{0}:{1}/{2}", hsql.getUrlPattern());
-    assertEquals("PUBLIC", hsql.getDefaultSchema());
-    assertEquals("sa", hsql.getDefaultUser());
-    assertEquals("http://hsqldb.sourceforge.net/", hsql.getDownloadUrl());
-    assertArrayEquals(new String[] {"hsqldb.jar"}, hsql.getJars());
-    assertNull(hsql.getDefaultDatabase());
-    assertEquals("jdbc:hsqldb:hsql://myhost:myport/mydb", hsql.jdbcURL("myhost", "myport", "mydb"));
+  public void testH2() {
+    JDBCDriverInfo h2 = JDBCDriverInfo.H2;
+    assertEquals("H2", h2.getId());
+    assertEquals("H2", h2.getDbSystem());
+    assertEquals("H2", h2.getName());
+    assertEquals("org.h2.Driver", h2.getDriverClass());
+    assertEquals("9001", h2.getDefaultPort());
+    assertEquals("jdbc:h2:tcp://{0}:{1}/~/{2}", h2.getUrlPattern());
+    assertEquals("PUBLIC", h2.getDefaultSchema());
+    assertEquals("sa", h2.getDefaultUser());
+    assertEquals("http://hsqldb.sourceforge.net/", h2.getDownloadUrl());
+    assertArrayEquals(new String[] {"h2-1.4.200.jar"}, h2.getJars());
+    assertEquals("test", h2.getDefaultDatabase());
+    assertEquals("jdbc:h2:tcp://myhost:myport/~/mydb", h2.jdbcURL("myhost", "myport", "mydb"));
   }
 
 }

@@ -52,6 +52,7 @@ public class JDBCDriverInfo implements Serializable {
   private String downloadUrl;
   private String driverClass;
   private String defaultDatabase;
+  private String defaultCatalog;
   private String defaultSchema;
   private String defaultPort;
   private String urlPattern;
@@ -190,8 +191,9 @@ public class JDBCDriverInfo implements Serializable {
       driver.setDbSystem(driverElement.getAttribute("system"));
       driver.setDriverClass(driverElement.getAttribute("class"));
       driver.setDefaultPort(driverElement.getAttribute("port"));
-      driver.setDefaultDatabase(driverElement.getAttribute("defaultDatabase"));
-      driver.setDefaultSchema(driverElement.getAttribute("defaultSchema"));
+      driver.setDefaultCatalog(driverElement.getAttribute("catalog"));
+      driver.setDefaultDatabase(driverElement.getAttribute("database"));
+      driver.setDefaultSchema(driverElement.getAttribute("schema"));
       driver.setUrlPattern(driverElement.getAttribute("url"));
       driver.setDownloadUrl(driverElement.getAttribute("info"));
       driver.setDefaultUser(driverElement.getAttribute("user"));
@@ -227,8 +229,8 @@ public class JDBCDriverInfo implements Serializable {
     return this.id.equals(that.id);
   }
 
-  public static final JDBCDriverInfo HSQL = getInstance("HSQL");
-  public static final JDBCDriverInfo FIREBIRD = getInstance("FIREBIRD");
+  public static final JDBCDriverInfo H2 = getInstance("H2");
+  public static final JDBCDriverInfo POSTGRES = getInstance("POSTGRES");
   public static final JDBCDriverInfo ORACLE = getInstance("ORACLE");
 
   public static Collection<JDBCDriverInfo> getInstances() {
@@ -239,4 +241,11 @@ public class JDBCDriverInfo implements Serializable {
     return instances.get(name);
   }
 
+  public String getDefaultCatalog() {
+    return defaultCatalog;
+  }
+
+  public void setDefaultCatalog(String defaultCatalog) {
+    this.defaultCatalog = defaultCatalog;
+  }
 }

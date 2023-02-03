@@ -25,33 +25,36 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE. -->
 
 <drivers>
-
     <driver id="ORACLE"
             system="Oracle"
             name="Oracle Thin Driver"
-            class="oracle.jdbc.OracleDriver"
+            class="oracle.jdbc.driver.OracleDriver"
+            host="localhost"
             port="1521"
-            defaultDatabase="XE"
-            url="jdbc:oracle:thin:@{0}:{1}:XE"
-            user="system"
+            database="XE"
+            schema="XDB"
+            url="jdbc:oracle:thin:@{0}:{1}:{2}"
+            user="XDB"
+            password="xdb"
             info="http://www.oracle.com/technology/tech/java/sqlj_jdbc/index.html"
             download="http://www.oracle.com/technology/software/tech/java/sqlj_jdbc/index.html">
         <dependency javaVersion="2" lib="classes12.jar" artifact="com.oracle:classes12:10.2.0.4" official="no"/>
         <dependency javaVersion="4" lib="ojdbc14.jar" artifact="com.oracle:ojdbc14:10.2.0.4" official="no"/>
         <dependency javaVersion="5" lib="ojdbc5.jar" artifact="com.oracle:ojdbc5:11.1.0.7" official="no"/>
         <dependency javaVersion="6" lib="ojdbc6.jar" artifact="com.oracle:ojdbc6:11.1.0.7" official="no"/>
-        <!-- alternative paths: oracle:ojdbc:10.2.0.3.0 -->
     </driver>
 
     <driver id="DB2"
             system="IBM DB2"
             name="DB2"
             class="com.ibm.db2.jcc.DB2Driver"
+            host="localhost"
+            database="SHOP"
             port="50000"
             url="jdbc:db2://{0}:{1}/{2}"
-            user="user"
+            user="db2"
             info="http://www-306.ibm.com/software/data/db2/java">
-        <dependency lib="db2jcc.jar" artifact="com.ibm.db2jcc:db2jcc:3.50.152" official="no"/>
+        <dependency lib="icu4j.jar" artifact="com.ibm.icu:icu4j:72.1" official="no"/>
     </driver>
 
     <driver id="SQL_SERVER"
@@ -59,105 +62,57 @@ POSSIBILITY OF SUCH DAMAGE. -->
             system="MS SQL Server (Microsoft Driver)"
             name="MS JDBC SQLServerDriver"
             class="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+            host="localhost"
             port="1433"
-            url="jdbc:sqlserver://{0}:{1}/{2}"
-            user="user"
+            url="jdbc:sqlserver://{0}:{1};encrypt=true;trustServerCertificate=true;"
+            user="sa"
+            schema="dbo"
+            catalog="master"
             info="https://docs.microsoft.com/de-de/sql/connect/jdbc/microsoft-jdbc-driver-for-sql-server?view=sql-server-ver15">
-        <dependency lib="mssql-jdbc-9.2.1.jre11.jar" artifact="com.microsoft.sqlserver:mssql-jdbc:9.2.1.jre11"
+        <dependency lib="mssql-jdbc-12.1.0.jre11-preview.jar"
+                    artifact="com.microsoft.sqlserver:mssql-jdbc:12.1.0.jre11-preview"
                     official="yes"/>
     </driver>
 
-    <driver id="SYBASE"
-            database="Sybase"
-            system="Sybase (jTDS Driver)"
-            name="Sybase"
-            class="net.sourceforge.jtds.jdbc.Driver"
-            port="7100"
-            url="jdbc:jtds:sybase://{0}:{1}/{2}"
-            user="user"
-            info="http://jtds.sourceforge.net/">
-        <dependency lib="jtds-1.2.2.jar" artifact="net.sourceforge.jtds:jtds:1.2.2" official="no"/>
-    </driver>
-
-    <driver id="MYSQL"
-            system="MySQL"
-            name="MySQL"
-            class="com.mysql.jdbc.Driver"
-            port="3306"
-            url="jdbc:mysql://{0}:{1}/{2}"
-            user="user"
-            info="http://dev.mysql.com/downloads/connector/j/">
-        <dependency lib="mysql-connector-java.jar" artifact="mysql:mysql-connector-java:5.1.6" official="yes"/>
-    </driver>
-
-    <driver id="HSQL_EMBEDDED"
-            system="HSQL Embedded"
-            name="HSQL Embedded"
-            class="org.hsqldb.jdbcDriver"
-            url="jdbc:hsqldb:mem:db"
-            defaultSchema="PUBLIC"
-            user="sa"
-            info="http://hsqldb.sourceforge.net/">
-        <dependency lib="hsqldb.jar" artifact="hsqldb:hsqldb:1.8.0.7" official="yes"/>
-    </driver>
-
-    <driver id="HSQL"
-            system="HSQL Server"
-            name="HSQL Server"
-            class="org.hsqldb.jdbcDriver"
-            port="9001"
-            url="jdbc:hsqldb:hsql://{0}:{1}/{2}"
-            defaultSchema="PUBLIC"
-            user="sa"
-            info="http://hsqldb.sourceforge.net/">
-        <dependency lib="hsqldb.jar" artifact="hsqldb:hsqldb:2.6.0" official="yes"/>
-    </driver>
+    <!--    <driver id="MYSQL"
+                system="MySQL"
+                name="MySQL"
+                class="com.mysql.cj.jdbc.Driver"
+                port="3306"
+                url="jdbc:mysql://localhost:3306/database"
+                user="root"
+                info="http://dev.mysql.com/downloads/connector/j/">
+            <dependency lib="mysql-connector-java.jar" artifact="mysql:mysql-connector-java:8.0.29" official="yes"/>
+        </driver>-->
 
     <driver id="H2"
             system="H2"
             name="H2"
             class="org.h2.Driver"
+            host="localhost"
             port="9001"
-            url="jdbc:h2:mem:db"
-            defaultSchema="PUBLIC"
+            database="test"
+            url="jdbc:h2:tcp://{0}:{1}/~/{2}"
+            schema="PUBLIC"
+            catalog=""
             user="sa"
             info="http://hsqldb.sourceforge.net/">
         <dependency lib="h2-1.4.200.jar" artifact="com.h2database:h2:1.4.200" official="yes"/>
-    </driver>
-
-    <driver id="DERBY"
-            system="Derby"
-            name="Derby"
-            class="org.apache.derby.jdbc.ClientDriver"
-            port="1527"
-            url="jdbc:derby://{0}:{1}/{2}"
-            user="user"
-            info="http://db.apache.org/derby/derby_downloads.html">
-        <dependency lib="derbyclient.jar" artifact="org.apache.derby:derbyclient:10.4.2.0" official="yes"/>
     </driver>
 
     <driver id="POSTGRES"
             system="PostgreSQL"
             name="PostgreSQL"
             class="org.postgresql.Driver"
+            host="localhost"
             port="5432"
-            url="jdbc:postgresql://localhost:5432/postgres"
-            defaultSchema="public"
+            database="postgres"
+            url="jdbc:postgresql://{0}:{1}/{2}"
+            catalog=""
+            schema="public"
             user="postgres"
             info="http://jdbc.postgresql.org/download.html">
-        <dependency lib="postgresql-42.2.23.jar" artifact="postgresql:postgresql:42.2.23" official="yes"/>
-    </driver>
-
-    <driver id="FIREBIRD"
-            system="Firebird (Jaybird Driver)"
-            name="Jaybird"
-            class="org.firebirdsql.jdbc.FBDriver"
-            port="3050"
-            url="jdbc:firebirdsql:{0}/{1}:{2}"
-            user="sysdba"
-            password="masterkey"
-            info="http://www.firebirdsql.org/index.php?op=files&amp;id=jaybird">
-        <dependency lib="jaybird-full-2.1.6.jar" artifact="org.firebird:jaybird:2.1.6" official="no"/>
+        <dependency lib="postgresql-42.5.1.jar" artifact="postgresql:postgresql:42.5.1" official="yes"/>
     </driver>
 
 </drivers>
