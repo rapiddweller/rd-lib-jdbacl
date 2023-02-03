@@ -1,3 +1,18 @@
+# Release 1.1.14-jdk-11
+
+## Release Highlights
+* adjust JDBC Details List for benerator CE wizard
+* add dbCatalog to JDBC Details
+
+---
+
+# Release 1.1.13-jdk-11
+
+## Release Highlights
+* add missing Serializable interface
+
+---
+
 # Release 1.1.12-jdk-11
 
 ## Release Highlights
