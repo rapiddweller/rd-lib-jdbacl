@@ -90,7 +90,7 @@ public class ResultSetDataIterator implements DataIterator<ResultSet> {
   }
 
   @Override
-  public DataContainer<ResultSet> next(DataContainer<ResultSet> container) {
+  public synchronized DataContainer<ResultSet> next(DataContainer<ResultSet> container) {
     logger.debug("next() called on {}", this);
     if (resultSet == null) {
       return null;
