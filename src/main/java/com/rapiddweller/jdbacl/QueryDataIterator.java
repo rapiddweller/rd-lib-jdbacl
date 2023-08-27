@@ -48,8 +48,9 @@ public class QueryDataIterator extends DataIteratorProxy<ResultSet> {
 
   private static DataIterator<ResultSet> createSource(String query, Connection connection, int fetchSize) {
     try {
+      int _resultSetHoldability = connection.getMetaData().getResultSetHoldability();
       Statement statement = connection.createStatement(
-          ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+          ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, _resultSetHoldability);
       statement.setFetchSize(fetchSize);
       ResultSet resultSet = statement.executeQuery(query);
       return new ResultSetDataIterator(resultSet, query);

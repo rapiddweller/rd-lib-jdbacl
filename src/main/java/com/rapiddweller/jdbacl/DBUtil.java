@@ -273,8 +273,9 @@ public class DBUtil {
     if (connection instanceof PooledConnection) {
       connection = ((PooledConnection) connection).getConnection();
     }
+    int _resultSetHoldability = connection.getMetaData().getResultSetHoldability();
     PreparedStatement statement = connection.prepareStatement(
-        sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+        sql, resultSetType, resultSetConcurrency, _resultSetHoldability);
     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     if (sqlLogger.isDebugEnabled() || jdbcLogger.isDebugEnabled()) {
       statement = (PreparedStatement) Proxy.newProxyInstance(classLoader,
