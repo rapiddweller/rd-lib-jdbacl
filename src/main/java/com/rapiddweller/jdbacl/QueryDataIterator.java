@@ -50,7 +50,9 @@ public class QueryDataIterator extends DataIteratorProxy<ResultSet> {
     try {
       int _resultSetHoldability = connection.getMetaData().getResultSetHoldability();
       Statement statement = connection.createStatement(
-          ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, _resultSetHoldability);
+              ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, _resultSetHoldability);
+      // disable autocommit , there where issues with open resultSets
+      connection.setAutoCommit(false);
       statement.setFetchSize(fetchSize);
       ResultSet resultSet = statement.executeQuery(query);
       return new ResultSetDataIterator(resultSet, query);
