@@ -96,9 +96,11 @@ public class ResultSetDataIterator implements DataIterator<ResultSet> {
       return null;
     }
     try {
-      if (resultSet.next()) {
+      // make sure resultSet is still open
+      if (!resultSet.isClosed() && resultSet.next()) {
         return container.setData(resultSet);
       } else {
+        resultSet.close();
         IOUtil.close(this);
         return null;
       }
