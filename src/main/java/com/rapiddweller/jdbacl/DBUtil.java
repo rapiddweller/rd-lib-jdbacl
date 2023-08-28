@@ -349,7 +349,9 @@ public class DBUtil {
   }
 
   public static int getOpenResultSetCount() {
-    return LoggingResultSetHandler.getOpenResultSetCount();
+    // if -1 return 0
+    int openResultSetCount = LoggingResultSetHandler.getOpenResultSetCount();
+    return Math.max(openResultSetCount, 0);
   }
 
   public static Object parseAndSimplifyResultSet(ResultSet resultSet) throws SQLException {
