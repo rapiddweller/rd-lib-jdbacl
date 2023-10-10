@@ -42,6 +42,7 @@ import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.Optional;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -357,8 +358,8 @@ public class DBUtilTest {
     Object[][] rows = (Object[][]) DBUtil.queryAndSimplify("select * from T1", connection);
     assertEquals(1, rows.length);
     assertArrayEquals(ArrayUtil.buildObjectArrayOfType(Object.class, 1, "R&B"), rows[0]);
-    int count = (int) DBUtil.queryAndSimplify("select count(*) from T1", connection);
-    assertEquals(1, count);
+    Long count = (Long) DBUtil.queryAndSimplify("select count(*) from T1", connection);
+    assertEquals(Optional.ofNullable(1L), Optional.ofNullable(count));
   }
 
   @Test
