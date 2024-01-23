@@ -1,3 +1,10 @@
+# Release 1.1.15-jdk-11
+
+## Release Highlights
+* support Vertica database now
+* some improvements regarding multi threading
+* some dependency updates
+
 # Release 1.1.14-jdk-11
 
 ## Release Highlights
