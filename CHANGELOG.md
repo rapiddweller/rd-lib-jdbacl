@@ -1,9 +1,18 @@
+# Release 1.1.16-jdk-11
+
+## Release Highlights
+* related to rapiddweller-benerator-ce 3.2.1 release check CHANGE_LOG.md for more details.
+
+---
+
 # Release 1.1.15-jdk-11
 
 ## Release Highlights
 * support Vertica database now
 * some improvements regarding multi threading
 * some dependency updates
+
+---
 
 # Release 1.1.14-jdk-11
 
