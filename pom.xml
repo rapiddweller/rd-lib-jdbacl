@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.rapiddweller</groupId>
     <artifactId>rd-lib-jdbacl</artifactId>
-    <version>1.1.17-jdk-11-SNAPSHOT</version>
+    <version>1.1.18-jdk-11-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>rapiddweller jdbacl</name>
     <description>
@@ -18,7 +18,7 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <_rd_common_version>2.0.1-jdk-11</_rd_common_version>
+        <_rd_common_version>2.1.0-jdk-11</_rd_common_version>
         <_rd_contiperf_version>2.6.0-jdk-11</_rd_contiperf_version>
         <_rd_format_version>1.1.7-jdk-11</_rd_format_version>
         <_rd_script_version>1.1.5-jdk-11</_rd_script_version>
@@ -29,10 +29,10 @@
         <database_hsqldb.version>2.7.2</database_hsqldb.version>
         <database_icu4j.version>72.1</database_icu4j.version>
         <database_jaybird.version>5.0.1.java11</database_jaybird.version>
-        <database_mssqldb.version>12.2.0.jre11</database_mssqldb.version>
-        <database_mysql-connector-java.version>8.0.33</database_mysql-connector-java.version>
+        <database_mssqldb.version>13.4.0.jre11</database_mssqldb.version>
+        <database_mysql-connector-java.version>9.7.0</database_mysql-connector-java.version>
         <database_oracle.version>21.9.0.0</database_oracle.version>
-        <database_postgresql.version>42.5.4</database_postgresql.version>
+        <database_postgresql.version>42.7.11</database_postgresql.version>
         <dependency_junit.version>4.13.2</dependency_junit.version>
         <dependency_slf4j.version>1.7.32</dependency_slf4j.version>
         <dependency_log4j.version>2.17.0</dependency_log4j.version>
@@ -162,8 +162,8 @@
             <version>${database_jaybird.version}</version>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <version>${database_mysql-connector-java.version}</version>
         </dependency>
         <dependency>
