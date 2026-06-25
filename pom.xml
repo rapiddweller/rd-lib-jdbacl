@@ -39,7 +39,7 @@
         <plugin_jacoco-maven-plugin.version>0.8.6</plugin_jacoco-maven-plugin.version>
         <plugin_maven-assembly-plugin.version>3.3.0</plugin_maven-assembly-plugin.version>
         <plugin_maven-compiler-plugin.version>3.8.1</plugin_maven-compiler-plugin.version>
-        <plugin_maven-gpg-plugin.version>1.6</plugin_maven-gpg-plugin.version>
+        <plugin_maven-gpg-plugin.version>3.1.0</plugin_maven-gpg-plugin.version>
         <plugin_maven-jar-plugin.version>2.5</plugin_maven-jar-plugin.version>
         <plugin_maven-javadoc-plugin.version>3.2.0</plugin_maven-javadoc-plugin.version>
         <plugin_maven-project-info-reports-plugin.version>3.1.1</plugin_maven-project-info-reports-plugin.version>
@@ -48,7 +48,7 @@
         <plugin_maven-source-plugin.version>3.2.1</plugin_maven-source-plugin.version>
         <plugin_maven-surefire-plugin.version>3.0.0-M5</plugin_maven-surefire-plugin.version>
         <plugin_maven-surefire-report-plugin.version>3.0.0-M5</plugin_maven-surefire-report-plugin.version>
-        <plugin_nexus-staging-maven-plugin.version>1.6.8</plugin_nexus-staging-maven-plugin.version>
+        <plugin_central-publishing-maven-plugin.version>0.11.0</plugin_central-publishing-maven-plugin.version>
         <plugin_surefire-api.version>3.0.0-M5</plugin_surefire-api.version>
         <plugin_surefire-junit4.version>3.0.0-M5</plugin_surefire-junit4.version>
         <plugin_versions-maven-plugin.version>2.8.1</plugin_versions-maven-plugin.version>
@@ -473,6 +473,10 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
+                        <!-- Pinned for reproducible builds. Without a version the plugin floats to
+                             the newest release; 3.2.x also enforces "best practices" that ignore the
+                             gpg.passphrase supplied via settings.xml. 3.1.0 keeps the classic
+                             settings.xml passphrase + imported-key CI setup. -->
                         <version>${plugin_maven-gpg-plugin.version}</version>
                         <executions>
                             <execution>
@@ -490,26 +494,23 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <!-- OSSRH (oss.sonatype.org) shut down 2025-06-30. Publishing now goes
+                         through the Central Portal. central-publishing-maven-plugin uploads on
+                         `deploy` and, with autoPublish, releases without the old staging UI.
+                         Snapshots go to the Portal snapshots repo by default (centralSnapshotsUrl),
+                         so no distributionManagement block is needed. -->
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>${plugin_nexus-staging-maven-plugin.version}</version>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>${plugin_central-publishing-maven-plugin.version}</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                            <stagingProgressTimeoutMinutes>60</stagingProgressTimeoutMinutes>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>true</autoPublish>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
-            </distributionManagement>
         </profile>
     </profiles>
 
@@ -528,7 +529,7 @@
         </repository>
         <repository>
             <id>snapshots-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
