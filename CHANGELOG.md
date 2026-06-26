@@ -1,3 +1,15 @@
+# Release 1.1.18-jdk-11
+
+## Release Highlights
+* Align dependencies with rapiddweller-benerator-ce 3.3.0:
+  * rd-lib-common 2.1.0-jdk-11 (carries the DependencyModel fix for "Incomplete nodes left" when
+    ordering complex schemas, which surfaces through this library's DBUtil).
+  * Test DB drivers bumped to match benerator: MS SQL `mssql-jdbc` 13.4.0.jre11, MySQL
+    `com.mysql:mysql-connector-j` 9.7.0 (migrated from the retired `mysql:mysql-connector-java`
+    coordinates), PostgreSQL 42.7.11.
+
+---
+
 # Release 1.1.16-jdk-11
 
 ## Release Highlights
