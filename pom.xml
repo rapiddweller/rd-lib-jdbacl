@@ -34,9 +34,9 @@
         <database_oracle.version>21.9.0.0</database_oracle.version>
         <database_postgresql.version>42.7.11</database_postgresql.version>
         <dependency_junit.version>4.13.2</dependency_junit.version>
-        <dependency_slf4j.version>1.7.32</dependency_slf4j.version>
-        <dependency_log4j.version>2.17.0</dependency_log4j.version>
-        <plugin_jacoco-maven-plugin.version>0.8.6</plugin_jacoco-maven-plugin.version>
+        <dependency_slf4j.version>1.7.36</dependency_slf4j.version>
+        <dependency_log4j.version>2.26.0</dependency_log4j.version>
+        <plugin_jacoco-maven-plugin.version>0.8.8</plugin_jacoco-maven-plugin.version>
         <plugin_maven-assembly-plugin.version>3.3.0</plugin_maven-assembly-plugin.version>
         <plugin_maven-compiler-plugin.version>3.8.1</plugin_maven-compiler-plugin.version>
         <plugin_maven-gpg-plugin.version>3.1.0</plugin_maven-gpg-plugin.version>
